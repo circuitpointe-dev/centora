@@ -19,21 +19,21 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-purple-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Back to home link */}
-        <Link to="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-8 transition-colors">
+        <Link to="/" className="inline-flex items-center text-violet-600 hover:text-violet-700 mb-8 transition-colors">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Link>
 
         <Card className="bg-white/80 backdrop-blur-md border-white/20 shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
               Welcome Back
             </CardTitle>
             <CardDescription>
-              Sign in to your account to continue
+              Sign in to your NGO management account
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -78,14 +78,14 @@ const Login = () => {
                   <input type="checkbox" className="mr-2" />
                   <span className="text-sm text-gray-600">Remember me</span>
                 </label>
-                <Link to="#" className="text-sm text-blue-600 hover:text-blue-700">
+                <Link to="#" className="text-sm text-violet-600 hover:text-violet-700">
                   Forgot password?
                 </Link>
               </div>
 
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg transform hover:scale-[1.02] transition-all duration-200"
+                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg transform hover:scale-[1.02] transition-all duration-200"
               >
                 Sign In
               </Button>
@@ -94,7 +94,7 @@ const Login = () => {
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
-                <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
+                <Link to="/register" className="text-violet-600 hover:text-violet-700 font-medium">
                   Sign up
                 </Link>
               </p>
