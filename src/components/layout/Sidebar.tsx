@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Grid3X3, ChevronUp, ChevronRight, ArrowRight } from 'lucide-react';
+import { Grid3X3, ChevronUp, ArrowRight, Menu } from 'lucide-react';
 import { moduleConfigs } from '@/config/moduleConfigs';
 import SidebarHeader from './SidebarHeader';
 import FeatureList from './FeatureList';
@@ -12,9 +12,10 @@ import ModuleSwitcher from './ModuleSwitcher';
 interface SidebarProps {
   currentModule: string;
   isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
-const Sidebar = ({ currentModule, isCollapsed }: SidebarProps) => {
+const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps) => {
   const navigate = useNavigate();
   const [showModuleSwitcher, setShowModuleSwitcher] = useState(false);
   
@@ -38,9 +39,31 @@ const Sidebar = ({ currentModule, isCollapsed }: SidebarProps) => {
   return (
     <div className={cn(
       "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
-      "fixed left-0 top-16 h-[calc(100vh-4rem)] z-10",
+      "fixed left-0 top-0 h-screen z-30",
       isCollapsed ? "w-16" : "w-64"
     )}>
+      {/* Logo and Brand Header */}
+      <div className="p-4 border-b border-gray-200 shrink-0">
+        <div className="flex items-center justify-between">
+          <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-sm font-bold text-white">O</span>
+            </div>
+            {!isCollapsed && (
+              <h1 className="text-xl font-bold text-gray-900">Orbit ERP</h1>
+            )}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleCollapse}
+            className={cn("h-8 w-8 p-0", isCollapsed && "ml-0")}
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
       {/* Current Module Header */}
       <SidebarHeader currentModule={currentModule} isCollapsed={isCollapsed} />
 

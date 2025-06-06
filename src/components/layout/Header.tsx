@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,8 +24,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
-const Header = () => {
+interface HeaderProps {
+  sidebarCollapsed: boolean;
+}
+
+const Header = ({ sidebarCollapsed }: HeaderProps) => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = React.useState(false);
@@ -45,16 +51,10 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-sm font-bold text-white">O</span>
-          </div>
-          <h1 className="text-xl font-bold text-gray-900">Orbit ERP</h1>
-        </div>
-      </div>
-
+    <header className={cn(
+      "bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-end shadow-sm transition-all duration-300 fixed top-0 right-0 z-20",
+      sidebarCollapsed ? "left-16" : "left-64"
+    )}>
       <div className="flex items-center space-x-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
