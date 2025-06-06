@@ -21,7 +21,7 @@ const SidebarHeader = ({ currentModule, isCollapsed }: SidebarHeaderProps) => {
         </div>
         {!isCollapsed && (
           <div>
-            <h2 className="font-medium text-gray-900 text-lg">{currentModuleConfig.name}</h2>
+            <h2 className="font-bold text-gray-900 text-sm">{currentModuleConfig.name}</h2>
           </div>
         )}
       </div>
