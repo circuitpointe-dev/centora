@@ -71,7 +71,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
       )}>
         {/* Welcome Message */}
         <div className="flex items-center">
-          <h2 className="text-lg text-gray-700">
+          <h2 className="text-sm text-gray-700">
             Welcome, <span className="font-semibold text-gray-900">{currentUser.name}</span>
           </h2>
         </div>

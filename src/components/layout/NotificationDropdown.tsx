@@ -10,12 +10,27 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Plus, Trash2 } from 'lucide-react';
+import { Bell, Plus, Trash2, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { toast } from '@/hooks/use-toast';
+import { staffList, Staff } from '@/data/staffData';
 
 const mockNotifications = [
   {
@@ -60,8 +75,11 @@ const NotificationDropdown = () => {
   const [showNewNotification, setShowNewNotification] = useState(false);
   const [newNotification, setNewNotification] = useState({
     title: '',
-    message: ''
+    message: '',
+    recipients: [] as string[]
   });
+  const [open, setOpen] = useState(false);
+  const [sendToAll, setSendToAll] = useState(false);
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
@@ -82,7 +100,39 @@ const NotificationDropdown = () => {
     });
   };
 
+  const handleRecipientSelect = (staffId: string) => {
+    if (sendToAll) return;
+    
+    setNewNotification(prev => ({
+      ...prev,
+      recipients: prev.recipients.includes(staffId)
+        ? prev.recipients.filter(id => id !== staffId)
+        : [...prev.recipients, staffId]
+    }));
+  };
+
+  const handleSendToAllChange = (checked: boolean) => {
+    setSendToAll(checked);
+    if (checked) {
+      setNewNotification(prev => ({
+        ...prev,
+        recipients: staffList.map(staff => staff.id)
+      }));
+    } else {
+      setNewNotification(prev => ({
+        ...prev,
+        recipients: []
+      }));
+    }
+  };
+
   const handleSendNotification = () => {
+    const recipientNames = sendToAll 
+      ? ['All Staff']
+      : newNotification.recipients.map(id => 
+          staffList.find(staff => staff.id === id)?.name
+        ).filter(Boolean);
+
     const newNotif = {
       id: Date.now(),
       title: newNotification.title,
@@ -92,13 +142,28 @@ const NotificationDropdown = () => {
     };
     
     setNotifications(prev => [newNotif, ...prev]);
-    setNewNotification({ title: '', message: '' });
+    setNewNotification({ title: '', message: '', recipients: [] });
+    setSendToAll(false);
     setShowNewNotification(false);
     
     toast({
       title: "Notification Sent",
-      description: "Your notification has been sent successfully.",
+      description: `Notification sent to ${recipientNames.join(', ')}.`,
     });
+  };
+
+  const getSelectedStaffNames = () => {
+    if (sendToAll) return 'All Staff';
+    if (newNotification.recipients.length === 0) return 'Select recipients...';
+    
+    const names = newNotification.recipients.map(id => 
+      staffList.find(staff => staff.id === id)?.name
+    ).filter(Boolean);
+    
+    if (names.length > 2) {
+      return `${names.slice(0, 2).join(', ')} +${names.length - 2} more`;
+    }
+    return names.join(', ');
   };
 
   return (
@@ -176,6 +241,62 @@ const NotificationDropdown = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div>
+              <Label htmlFor="notif-to">To</Label>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="send-to-all"
+                    checked={sendToAll}
+                    onCheckedChange={handleSendToAllChange}
+                  />
+                  <Label htmlFor="send-to-all" className="text-sm">Send to all staff</Label>
+                </div>
+                
+                {!sendToAll && (
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-full justify-between"
+                      >
+                        {getSelectedStaffNames()}
+                        <Check className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput placeholder="Search staff..." />
+                        <CommandList>
+                          <CommandEmpty>No staff found.</CommandEmpty>
+                          <CommandGroup>
+                            {staffList.map((staff) => (
+                              <CommandItem
+                                key={staff.id}
+                                onSelect={() => handleRecipientSelect(staff.id)}
+                              >
+                                <Checkbox
+                                  checked={newNotification.recipients.includes(staff.id)}
+                                  onChange={() => handleRecipientSelect(staff.id)}
+                                  className="mr-2"
+                                />
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{staff.name}</span>
+                                  <span className="text-xs text-gray-500">{staff.role}</span>
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </div>
+            </div>
+            
+            <div>
               <Label htmlFor="notif-title">Title</Label>
               <Input
                 id="notif-title"
@@ -200,7 +321,7 @@ const NotificationDropdown = () => {
               </Button>
               <Button 
                 onClick={handleSendNotification}
-                disabled={!newNotification.title || !newNotification.message}
+                disabled={!newNotification.title || !newNotification.message || (!sendToAll && newNotification.recipients.length === 0)}
               >
                 Send
               </Button>
