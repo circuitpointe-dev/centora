@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Grid3X3, ChevronUp, ChevronRight } from 'lucide-react';
+import { Grid3X3, ChevronUp, ChevronRight, ArrowRight } from 'lucide-react';
 import { moduleConfigs } from '@/config/moduleConfigs';
 import SidebarHeader from './SidebarHeader';
 import FeatureList from './FeatureList';
@@ -38,14 +38,14 @@ const Sidebar = ({ currentModule, isCollapsed }: SidebarProps) => {
   return (
     <div className={cn(
       "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
-      "h-full",
+      "fixed left-0 top-16 h-[calc(100vh-4rem)] z-10",
       isCollapsed ? "w-16" : "w-64"
     )}>
       {/* Current Module Header */}
       <SidebarHeader currentModule={currentModule} isCollapsed={isCollapsed} />
 
       {/* Content Area - Either Features or Module Switcher */}
-      <div className="flex-1 overflow-hidden min-h-0">
+      <div className="flex-1 overflow-auto min-h-0">
         {!showModuleSwitcher ? (
           <FeatureList 
             currentModule={currentModule}
@@ -61,7 +61,7 @@ const Sidebar = ({ currentModule, isCollapsed }: SidebarProps) => {
         )}
       </div>
 
-      {/* Module Switcher Toggle */}
+      {/* Module Switcher Toggle - Fixed to bottom */}
       <div className="border-t border-gray-200 p-4 shrink-0">
         <Button
           variant="ghost"
@@ -82,7 +82,7 @@ const Sidebar = ({ currentModule, isCollapsed }: SidebarProps) => {
               {!isCollapsed && (
                 <>
                   <span className="text-sm font-light flex-1">Switch Module</span>
-                  <ChevronRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </>
