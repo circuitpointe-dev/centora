@@ -13,7 +13,7 @@ const MainLayout = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden h-[calc(100vh-theme(spacing.16))]">
         <Sidebar currentModule={module} isCollapsed={sidebarCollapsed} />
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Sidebar Toggle */}

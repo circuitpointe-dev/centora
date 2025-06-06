@@ -38,7 +38,7 @@ const Sidebar = ({ currentModule, isCollapsed }: SidebarProps) => {
   return (
     <div className={cn(
       "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
-      "h-screen max-h-screen",
+      "h-full",
       isCollapsed ? "w-16" : "w-64"
     )}>
       {/* Current Module Header */}
