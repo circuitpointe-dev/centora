@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Plus } from 'lucide-react';
+import { Bell, Plus, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -73,6 +73,15 @@ const NotificationDropdown = () => {
     );
   };
 
+  const deleteNotification = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setNotifications(prev => prev.filter(notif => notif.id !== id));
+    toast({
+      title: "Notification Deleted",
+      description: "The notification has been removed.",
+    });
+  };
+
   const handleSendNotification = () => {
     const newNotif = {
       id: Date.now(),
@@ -130,9 +139,19 @@ const NotificationDropdown = () => {
                     <p className="text-xs text-gray-500 mt-1">{notification.message}</p>
                     <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
                   </div>
-                  {notification.unread && (
-                    <div className="w-2 h-2 bg-blue-600 rounded-full ml-2 mt-1"></div>
-                  )}
+                  <div className="flex items-center gap-1 ml-2">
+                    {notification.unread && (
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 hover:bg-red-100"
+                      onClick={(e) => deleteNotification(notification.id, e)}
+                    >
+                      <Trash2 className="h-3 w-3 text-red-500" />
+                    </Button>
+                  </div>
                 </div>
               </DropdownMenuItem>
             ))}

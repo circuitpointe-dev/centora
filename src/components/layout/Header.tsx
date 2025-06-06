@@ -84,7 +84,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center space-x-1 h-8 rounded-full">
+              <Button variant="ghost" className="flex items-center gap-1 h-8 rounded-full hover:bg-transparent">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                     <User className="h-4 w-4" />
