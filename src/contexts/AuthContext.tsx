@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface User {
@@ -25,7 +26,12 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  // Initialize with a mock user to simulate being logged in
+  const [user, setUser] = useState<User | null>({
+    id: "1",
+    email: "chioma.ike@ngo.org",
+    name: "Chioma Ike"
+  });
 
   const login = async (email: string, password: string): Promise<boolean> => {
     // Simulate API call
@@ -36,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser({
         id: "1",
         email,
-        name: email.split("@")[0],
+        name: "Chioma Ike", // For demo purposes, always use this name
       });
       return true;
     }
