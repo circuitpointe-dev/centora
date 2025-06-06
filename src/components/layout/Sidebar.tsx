@@ -8,6 +8,7 @@ import { moduleConfigs } from '@/config/moduleConfigs';
 import SidebarHeader from './SidebarHeader';
 import FeatureList from './FeatureList';
 import ModuleSwitcher from './ModuleSwitcher';
+import black_logo from '@/assets/images/black_logo.png';
 
 interface SidebarProps {
   currentModule: string;
@@ -47,10 +48,10 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         <div className="flex items-center justify-between">
           <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
             <img
-                  src={black_logo}
-                  alt="Orbit ERP Logo"
-                  className="h-8 w-auto"
-                />
+              src={black_logo}
+              alt="Orbit ERP Logo"
+              className="h-8 w-auto"
+            />
             {!isCollapsed && (
               <h1 className="text-xl font-bold text-gray-900">Orbit ERP</h1>
             )}
