@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Grid3X3, ChevronUp } from 'lucide-react';
+import { Grid3X3, ChevronUp, ChevronRight } from 'lucide-react';
 import { moduleConfigs } from '@/config/moduleConfigs';
 import SidebarHeader from './SidebarHeader';
 import FeatureList from './FeatureList';
@@ -38,14 +38,14 @@ const Sidebar = ({ currentModule, isCollapsed }: SidebarProps) => {
   return (
     <div className={cn(
       "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
-      "h-[100vh]",
+      "h-screen max-h-screen",
       isCollapsed ? "w-16" : "w-64"
     )}>
       {/* Current Module Header */}
       <SidebarHeader currentModule={currentModule} isCollapsed={isCollapsed} />
 
       {/* Content Area - Either Features or Module Switcher */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden min-h-0">
         {!showModuleSwitcher ? (
           <FeatureList 
             currentModule={currentModule}
@@ -79,7 +79,12 @@ const Sidebar = ({ currentModule, isCollapsed }: SidebarProps) => {
           ) : (
             <>
               <Grid3X3 className={cn("h-4 w-4", isCollapsed ? "" : "mr-3")} />
-              {!isCollapsed && <span className="text-sm font-light">Switch Module</span>}
+              {!isCollapsed && (
+                <>
+                  <span className="text-sm font-light flex-1">Switch Module</span>
+                  <ChevronRight className="h-4 w-4" />
+                </>
+              )}
             </>
           )}
         </Button>
