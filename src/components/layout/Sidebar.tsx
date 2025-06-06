@@ -8,7 +8,6 @@ import { moduleConfigs } from '@/config/moduleConfigs';
 import SidebarHeader from './SidebarHeader';
 import FeatureList from './FeatureList';
 import ModuleSwitcher from './ModuleSwitcher';
-import black_logo from "@/assets/images/black_logo.png";
 
 interface SidebarProps {
   currentModule: string;
