@@ -46,9 +46,11 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
       <div className="p-4 border-b border-gray-200 shrink-0">
         <div className="flex items-center justify-between">
           <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-sm font-bold text-white">O</span>
-            </div>
+            <img
+                  src={black_logo}
+                  alt="Orbit ERP Logo"
+                  className="h-8 w-auto"
+                />
             {!isCollapsed && (
               <h1 className="text-xl font-bold text-gray-900">Orbit ERP</h1>
             )}
