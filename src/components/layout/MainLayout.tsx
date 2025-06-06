@@ -12,7 +12,7 @@ const MainLayout = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header sidebarCollapsed={sidebarCollapsed} />
-      <div className="flex flex-1 overflow-hidden h-[calc(100vh-theme(spacing.16))]">
+      <div className="flex flex-1 overflow-hidden pt-16">
         <Sidebar 
           currentModule={module} 
           isCollapsed={sidebarCollapsed} 

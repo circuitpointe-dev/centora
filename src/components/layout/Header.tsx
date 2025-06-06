@@ -66,12 +66,12 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
   return (
     <>
       <header className={cn(
-        "bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shadow-sm transition-all duration-300 fixed top-0 right-0 z-20",
+        "bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shadow-sm transition-all duration-300 fixed top-0 right-0 z-20 h-16",
         sidebarCollapsed ? "left-16" : "left-64"
       )}>
         {/* Welcome Message */}
         <div className="flex items-center">
-          <h2 className="text-sm text-gray-700">
+          <h2 className="text-xs text-gray-700">
             Welcome, <span className="font-semibold text-gray-900">{currentUser.name}</span>
           </h2>
         </div>
@@ -119,7 +119,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer bg-red-50 text-red-600 hover:bg-red-100 hover:text-black focus:bg-red-100 focus:text-black"
                 onClick={() => setShowLogoutDialog(true)}
               >
                 <LogOut className="mr-2 h-4 w-4" />
