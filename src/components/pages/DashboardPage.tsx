@@ -3,6 +3,8 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { CalendarCard } from '@/components/fundraising/CalendarCard';
+import { DeadlinesCard } from '@/components/fundraising/DeadlinesCard';
 
 const DashboardPage = () => {
   const { module, feature } = useParams();
@@ -23,10 +25,112 @@ const DashboardPage = () => {
     return moduleNames[moduleId] || moduleId;
   };
 
+  // Fundraising-specific content
+  if (module === 'fundraising') {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {getModuleName(module || '')} Dashboard
+          </h1>
+        </div>
+
+        {/* Statistics Cards - Fundraising specific */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#efe8fd' }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Proposals</CardTitle>
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">6</div>
+              <p className="text-xs text-muted-foreground">
+                +2 this month
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#dce3ef' }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">68%</div>
+              <p className="text-xs text-muted-foreground">
+                +5% from last quarter
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#fce3f0' }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Opportunities</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">8</div>
+              <p className="text-xs text-muted-foreground">
+                +3 new this week
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#fef3cd' }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Funds Raised this Quarter</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">$2.3M</div>
+              <p className="text-xs text-muted-foreground">
+                +15% from last quarter
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Calendar and Deadlines */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <CalendarCard />
+          </div>
+          <div>
+            <DeadlinesCard />
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <button className="text-left p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                <div className="font-medium text-sm">Add New Donor</div>
+              </button>
+              <button className="text-left p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                <div className="font-medium text-sm">Create New Opportunity</div>
+              </button>
+              <button className="text-left p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                <div className="font-medium text-sm">Create Proposal</div>
+              </button>
+              <button className="text-left p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                <div className="font-medium text-sm">Generate Reports</div>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Default content for other modules
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-2xl font-semibold text-gray-900">
           {getModuleName(module || '')} Dashboard
         </h1>
         <p className="text-gray-600 mt-2">
