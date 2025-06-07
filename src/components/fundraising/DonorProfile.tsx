@@ -15,15 +15,12 @@ interface DonorProfileProps {
 
 export const DonorProfile: React.FC<DonorProfileProps> = ({ donor, onEdit }) => {
   return (
-    <div
-      className="bg-[#f4f6f9] flex flex-row justify-center w-full"
-      data-model-id="11099:898"
-    >
+    <div className="bg-[#f4f6f9] flex flex-row justify-center w-full">
       <div className="bg-[#f4f6f9] w-[900px] relative">
         <Separator className="w-full" />
 
-        <div className="w-full py-11">
-          <div className="flex items-center justify-between px-8 mb-4">
+        <div className="w-full py-6">
+          <div className="flex items-center justify-between px-6 mb-4">
             <h1 className="font-medium text-[22px] text-[#383839]">
               Edit Donor Profile - {donor.name}
             </h1>
@@ -36,7 +33,7 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({ donor, onEdit }) => 
           <Separator className="w-full" />
         </div>
 
-        <div className="flex flex-col gap-6 px-8 pb-8">
+        <div className="flex flex-col gap-6 px-6 pb-6">
           <EngagementHistorySection />
           <GivingHistorySection />
           <ProfileInformationSection />

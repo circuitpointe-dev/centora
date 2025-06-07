@@ -59,10 +59,10 @@ const FocusAreasCard: React.FC = () => {
       <CardContent className="flex-1 overflow-auto">
         <div className="space-y-3">
           {focusAreas.map((area) => (
-            <div key={area.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <div key={area.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-sm transition-colors">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <Badge className={area.color}>
+                  <Badge className={`${area.color} rounded-sm`}>
                     {area.name}
                   </Badge>
                   <span className="text-sm font-medium text-gray-900">

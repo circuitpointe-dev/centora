@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,23 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { givingHistoryData } from "@/data/givingHistoryData";
 
 export const GivingHistorySection = (): JSX.Element => {
-  // Chart data
-  const chartData = [
-    { month: "Jan", height: "h-[107px]", color: "bg-[#9f9ff8]" },
-    { month: "Feb", height: "h-[189px]", color: "bg-[#96e2d6]" },
-    { month: "Mar", height: "h-[123px]", color: "bg-black" },
-    { month: "Apr", height: "h-[209px]", color: "bg-[#92bfff]" },
-    { month: "May", height: "h-[77px]", color: "bg-[#aec7ed]" },
-    { month: "Jun", height: "h-[156px]", color: "bg-[#94e9b8]" },
-    { month: "Jul", height: "h-[107px]", color: "bg-[#9f9ff8]" },
-    { month: "Aug", height: "h-[189px]", color: "bg-[#96e2d6]" },
-    { month: "Sep", height: "h-[123px]", color: "bg-black" },
-    { month: "Oct", height: "h-[209px]", color: "bg-[#92bfff]" },
-    { month: "Nov", height: "h-[77px]", color: "bg-[#aec7ed]" },
-    { month: "Dec", height: "h-[156px]", color: "bg-[#94e9b8]" },
-  ];
+  const [selectedYear, setSelectedYear] = useState<number>(2024);
+
+  // Get data for selected year
+  const currentYearData = givingHistoryData.find(data => data.year === selectedYear);
+  const chartData = currentYearData?.monthlyData || [];
 
   // Y-axis labels
   const yAxisLabels = ["40k", "30k", "20k", "10k", "0"];
@@ -38,7 +29,7 @@ export const GivingHistorySection = (): JSX.Element => {
           Giving History
         </h2>
 
-        <Select defaultValue="2024">
+        <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
           <SelectTrigger className="w-[113px] border-violet-600 text-violet-600">
             <SelectValue placeholder="Select year" />
           </SelectTrigger>
@@ -51,9 +42,9 @@ export const GivingHistorySection = (): JSX.Element => {
       </div>
 
       <Card className="w-full">
-        <CardContent className="pt-10 pb-10 px-7">
+        <CardContent className="pt-8 pb-8 px-6">
           <div className="flex flex-col items-center w-full">
-            <div className="relative w-full h-[235px] mb-10">
+            <div className="relative w-full max-w-[700px] h-[235px] mb-8">
               {/* Y-axis labels */}
               <div className="flex flex-col w-[22px] items-center gap-8 absolute top-1.5 left-0">
                 {yAxisLabels.map((label, index) => (
@@ -67,14 +58,14 @@ export const GivingHistorySection = (): JSX.Element => {
               </div>
 
               {/* Chart bars */}
-              <div className="inline-flex items-end gap-[53px] absolute top-0 left-[55px]">
+              <div className="flex items-end gap-4 absolute top-0 left-[35px] right-0 overflow-x-auto">
                 {chartData.map((item, index) => (
                   <div
                     key={index}
-                    className="flex flex-col w-[30px] items-center gap-[11px]"
+                    className="flex flex-col min-w-[25px] items-center gap-2"
                   >
                     <div
-                      className={`${item.height} ${item.color} w-full rounded-[10px]`}
+                      className={`${item.height} ${item.color} w-full rounded-[8px] min-w-[25px]`}
                     />
                     <span className="text-[#00000066] text-xs text-center w-full">
                       {item.month}
