@@ -4,9 +4,15 @@ import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Filter } from 'lucide-react';
+import DonorManagementPage from './DonorManagementPage';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
+  
+  // Render specific page components for certain routes
+  if (module === 'fundraising' && feature === 'donor-management') {
+    return <DonorManagementPage />;
+  }
   
   const getFeatureName = (featureId: string) => {
     // Convert kebab-case to Title Case
