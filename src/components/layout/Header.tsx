@@ -71,15 +71,15 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
         "left-0 right-0 md:left-16 lg:left-64",
         sidebarCollapsed ? "md:left-16" : "md:left-16 lg:left-64"
       )}>
-        {/* Welcome Message */}
-        <div className="flex items-center">
+        {/* Welcome Message - Hidden on mobile */}
+        <div className="hidden md:flex items-center">
           <h2 className="text-xs text-gray-700">
             Welcome, <span className="font-semibold text-gray-900">{currentUser.name}</span>
           </h2>
         </div>
 
         {/* Right Side - Notifications and User Menu */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 ml-auto md:ml-0">
           {/* Notifications */}
           <NotificationDropdown />
 

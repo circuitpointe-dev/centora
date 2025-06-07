@@ -40,11 +40,6 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
     setShowModuleSwitcher(!showModuleSwitcher);
   };
 
-  const handleMobileToggle = () => {
-    setIsMobileOpen(!isMobileOpen);
-    onToggleCollapse();
-  };
-
   if (!currentModuleConfig) return null;
 
   return (
@@ -57,35 +52,50 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         />
       )}
 
+      {/* Mobile Toggle Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setIsMobileOpen(true)}
+        className={cn(
+          "fixed top-4 left-4 z-30 h-8 w-8 p-0 md:hidden",
+          isMobileOpen && "hidden"
+        )}
+      >
+        <Menu className="h-4 w-4" />
+      </Button>
+
       {/* Sidebar */}
       <div className={cn(
         "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
         // Mobile: hidden by default, full screen when open
         "fixed left-0 top-0 h-screen z-50",
         // Mobile behavior
-        "md:block",
-        isMobileOpen ? "w-full" : "w-0 md:w-16 lg:w-64 overflow-hidden",
+        "hidden md:flex",
+        isMobileOpen ? "flex w-full" : "",
         // Desktop behavior
         !isCollapsed ? "md:w-16 lg:w-64" : "md:w-16"
       )}>
         {/* Mobile Close Button */}
-        <div className={cn("md:hidden p-4 border-b border-gray-200", !isMobileOpen && "hidden")}>
-          <div className="flex justify-end">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMobileOpen(false)}
-              className="h-8 w-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+        {isMobileOpen && (
+          <div className="md:hidden p-4 border-b border-gray-200">
+            <div className="flex justify-end">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileOpen(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Logo and Brand Header */}
-        <div className={cn("p-4 border-b border-gray-200 shrink-0", !isMobileOpen && "hidden md:block")}>
+        <div className={cn("p-4 border-b border-gray-200 shrink-0", isMobileOpen ? "block" : "hidden md:block")}>
           <div className="flex items-center justify-between">
-            <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center md:block lg:flex")}>
+            <div className={cn("flex items-center space-x-3", isCollapsed && !isMobileOpen && "justify-center md:block lg:flex")}>
               {(!isCollapsed || isMobileOpen) && (
                 <div className="flex items-center space-x-3 animate-fade-in">
                   <img
@@ -102,7 +112,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleMobileToggle}
+              onClick={onToggleCollapse}
               className={cn("h-8 w-8 p-0 hidden md:block", isCollapsed && "ml-0")}
             >
               <Menu className="h-4 w-4" />
@@ -111,12 +121,12 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         </div>
 
         {/* Current Module Header */}
-        <div className={cn(!isMobileOpen && "hidden md:block")}>
+        <div className={cn(isMobileOpen ? "block" : "hidden md:block")}>
           <SidebarHeader currentModule={currentModule} isCollapsed={isCollapsed && !isMobileOpen} />
         </div>
 
         {/* Content Area - Either Features or Module Switcher */}
-        <div className={cn("flex-1 overflow-auto min-h-0", !isMobileOpen && "hidden md:block")}>
+        <div className={cn("flex-1 overflow-auto min-h-0", isMobileOpen ? "block" : "hidden md:block")}>
           {!showModuleSwitcher ? (
             <FeatureList 
               currentModule={currentModule}
@@ -134,8 +144,8 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
 
         {/* Module Switcher Toggle - Fixed to bottom */}
         <div className={cn(
-          "border-t border-gray-200 p-4 shrink-0 mt-auto",
-          !isMobileOpen && "hidden md:block"
+          "border-t border-gray-200 p-4 shrink-0",
+          isMobileOpen ? "block" : "hidden md:block"
         )}>
           <Button
             variant="ghost"
@@ -164,19 +174,6 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
           </Button>
         </div>
       </div>
-
-      {/* Mobile Toggle Button - Only visible on mobile when sidebar is closed */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setIsMobileOpen(true)}
-        className={cn(
-          "fixed top-4 left-4 z-30 h-8 w-8 p-0 md:hidden",
-          isMobileOpen && "hidden"
-        )}
-      >
-        <Menu className="h-4 w-4" />
-      </Button>
     </>
   );
 };
