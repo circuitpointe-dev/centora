@@ -30,40 +30,44 @@ const DashboardPage = () => {
     return (
       <div className="space-y-6">
         {/* Header with Title and Quick Actions */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <h1 className="text-xl font-medium text-gray-900">
             {getModuleName(module || '')} Dashboard
           </h1>
           
-          {/* Quick Actions as Links */}
-          <div className="flex items-center gap-4">
+          {/* Quick Actions as Links - Responsive Grid */}
+          <div className="grid grid-cols-2 lg:flex lg:items-center gap-2 lg:gap-4">
             <a 
               href="#" 
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <UserPlus className="h-4 w-4" />
-              Add New Donor
+              <span className="hidden sm:inline">Add New Donor</span>
+              <span className="sm:hidden">Add Donor</span>
             </a>
             <a 
               href="#" 
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Plus className="h-4 w-4" />
-              Create New Opportunity
+              <span className="hidden sm:inline">Create New Opportunity</span>
+              <span className="sm:hidden">New Opportunity</span>
             </a>
             <a 
               href="#" 
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <FileText className="h-4 w-4" />
-              Create Proposal
+              <span className="hidden sm:inline">Create Proposal</span>
+              <span className="sm:hidden">Create Proposal</span>
             </a>
             <a 
               href="#" 
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <BarChart className="h-4 w-4" />
-              Generate Reports
+              <span className="hidden sm:inline">Generate Reports</span>
+              <span className="sm:hidden">Reports</span>
             </a>
           </div>
         </div>

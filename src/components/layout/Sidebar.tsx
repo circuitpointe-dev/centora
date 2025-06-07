@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Grid3X3, ChevronUp, ArrowRight, Menu } from 'lucide-react';
+import { Grid3X3, ChevronUp, ArrowRight, Menu, X } from 'lucide-react';
 import { moduleConfigs } from '@/config/moduleConfigs';
 import SidebarHeader from './SidebarHeader';
 import FeatureList from './FeatureList';
@@ -19,107 +19,162 @@ interface SidebarProps {
 const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps) => {
   const navigate = useNavigate();
   const [showModuleSwitcher, setShowModuleSwitcher] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   
   const currentModuleConfig = moduleConfigs[currentModule as keyof typeof moduleConfigs];
   
   const handleFeatureClick = (featureId: string) => {
     navigate(`/dashboard/${currentModule}/${featureId}`);
+    // Close mobile sidebar after navigation
+    setIsMobileOpen(false);
   };
   
   const handleModuleSwitch = (moduleId: string) => {
     navigate(`/dashboard/${moduleId}/dashboard`);
     setShowModuleSwitcher(false);
+    // Close mobile sidebar after navigation
+    setIsMobileOpen(false);
   };
 
   const toggleModuleSwitcher = () => {
     setShowModuleSwitcher(!showModuleSwitcher);
   };
 
+  const handleMobileToggle = () => {
+    setIsMobileOpen(!isMobileOpen);
+    onToggleCollapse();
+  };
+
   if (!currentModuleConfig) return null;
 
   return (
-    <div className={cn(
-      "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
-      "fixed left-0 top-0 h-screen z-30",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
-      {/* Logo and Brand Header */}
-      <div className="p-4 border-b border-gray-200 shrink-0">
-        <div className="flex items-center justify-between">
-          <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
-            {!isCollapsed && (
-              <div className="flex items-center space-x-3 animate-fade-in">
-                <img
-                  src={black_logo}
-                  alt="Orbit ERP Logo"
-                  className="h-8 w-auto transition-opacity duration-300"
-                />
-                <h1 className="text-xl font-bold text-gray-900 transition-opacity duration-300">
-                  Orbit ERP
-                </h1>
-              </div>
-            )}
+    <>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={cn(
+        "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
+        // Mobile: hidden by default, full screen when open
+        "fixed left-0 top-0 h-screen z-50",
+        // Mobile behavior
+        "md:block",
+        isMobileOpen ? "w-full" : "w-0 md:w-16 lg:w-64 overflow-hidden",
+        // Desktop behavior
+        !isCollapsed ? "md:w-16 lg:w-64" : "md:w-16"
+      )}>
+        {/* Mobile Close Button */}
+        <div className={cn("md:hidden p-4 border-b border-gray-200", !isMobileOpen && "hidden")}>
+          <div className="flex justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileOpen(false)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
+        </div>
+
+        {/* Logo and Brand Header */}
+        <div className={cn("p-4 border-b border-gray-200 shrink-0", !isMobileOpen && "hidden md:block")}>
+          <div className="flex items-center justify-between">
+            <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center md:block lg:flex")}>
+              {(!isCollapsed || isMobileOpen) && (
+                <div className="flex items-center space-x-3 animate-fade-in">
+                  <img
+                    src={black_logo}
+                    alt="Orbit ERP Logo"
+                    className="h-8 w-auto transition-opacity duration-300"
+                  />
+                  <h1 className="text-xl font-bold text-gray-900 transition-opacity duration-300">
+                    Orbit ERP
+                  </h1>
+                </div>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleMobileToggle}
+              className={cn("h-8 w-8 p-0 hidden md:block", isCollapsed && "ml-0")}
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Current Module Header */}
+        <div className={cn(!isMobileOpen && "hidden md:block")}>
+          <SidebarHeader currentModule={currentModule} isCollapsed={isCollapsed && !isMobileOpen} />
+        </div>
+
+        {/* Content Area - Either Features or Module Switcher */}
+        <div className={cn("flex-1 overflow-auto min-h-0", !isMobileOpen && "hidden md:block")}>
+          {!showModuleSwitcher ? (
+            <FeatureList 
+              currentModule={currentModule}
+              isCollapsed={isCollapsed && !isMobileOpen}
+              onFeatureClick={handleFeatureClick}
+            />
+          ) : (
+            <ModuleSwitcher
+              currentModule={currentModule}
+              isCollapsed={isCollapsed && !isMobileOpen}
+              onModuleSwitch={handleModuleSwitch}
+            />
+          )}
+        </div>
+
+        {/* Module Switcher Toggle - Fixed to bottom */}
+        <div className={cn("border-t border-gray-200 p-4 shrink-0", !isMobileOpen && "hidden md:block")}>
           <Button
             variant="ghost"
-            size="sm"
-            onClick={onToggleCollapse}
-            className={cn("h-8 w-8 p-0", isCollapsed && "ml-0")}
+            className={cn(
+              "w-full justify-start text-left font-light",
+              (isCollapsed && !isMobileOpen) ? "px-2" : "px-3"
+            )}
+            onClick={toggleModuleSwitcher}
           >
-            <Menu className="h-4 w-4" />
+            {showModuleSwitcher ? (
+              <>
+                <ChevronUp className={cn("h-4 w-4", (isCollapsed && !isMobileOpen) ? "" : "mr-3")} />
+                {(!isCollapsed || isMobileOpen) && <span className="text-sm font-light">Back to Features</span>}
+              </>
+            ) : (
+              <>
+                <Grid3X3 className={cn("h-4 w-4", (isCollapsed && !isMobileOpen) ? "" : "mr-3")} />
+                {(!isCollapsed || isMobileOpen) && (
+                  <>
+                    <span className="text-sm font-light flex-1">Switch Module</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
+              </>
+            )}
           </Button>
         </div>
       </div>
 
-      {/* Current Module Header */}
-      <SidebarHeader currentModule={currentModule} isCollapsed={isCollapsed} />
-
-      {/* Content Area - Either Features or Module Switcher */}
-      <div className="flex-1 overflow-auto min-h-0">
-        {!showModuleSwitcher ? (
-          <FeatureList 
-            currentModule={currentModule}
-            isCollapsed={isCollapsed}
-            onFeatureClick={handleFeatureClick}
-          />
-        ) : (
-          <ModuleSwitcher
-            currentModule={currentModule}
-            isCollapsed={isCollapsed}
-            onModuleSwitch={handleModuleSwitch}
-          />
+      {/* Mobile Toggle Button - Only visible on mobile when sidebar is closed */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setIsMobileOpen(true)}
+        className={cn(
+          "fixed top-4 left-4 z-30 h-8 w-8 p-0 md:hidden",
+          isMobileOpen && "hidden"
         )}
-      </div>
-
-      {/* Module Switcher Toggle - Fixed to bottom */}
-      <div className="border-t border-gray-200 p-4 shrink-0">
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full justify-start text-left font-light",
-            isCollapsed ? "px-2" : "px-3"
-          )}
-          onClick={toggleModuleSwitcher}
-        >
-          {showModuleSwitcher ? (
-            <>
-              <ChevronUp className={cn("h-4 w-4", isCollapsed ? "" : "mr-3")} />
-              {!isCollapsed && <span className="text-sm font-light">Back to Features</span>}
-            </>
-          ) : (
-            <>
-              <Grid3X3 className={cn("h-4 w-4", isCollapsed ? "" : "mr-3")} />
-              {!isCollapsed && (
-                <>
-                  <span className="text-sm font-light flex-1">Switch Module</span>
-                  <ArrowRight className="h-4 w-4" />
-                </>
-              )}
-            </>
-          )}
-        </Button>
-      </div>
-    </div>
+      >
+        <Menu className="h-4 w-4" />
+      </Button>
+    </>
   );
 };
 

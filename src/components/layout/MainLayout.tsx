@@ -20,7 +20,9 @@ const MainLayout = () => {
         />
         <div className={cn(
           "flex-1 flex flex-col overflow-hidden transition-all duration-300",
-          sidebarCollapsed ? "ml-16" : "ml-64"
+          // On mobile, always take full width. On desktop, respect sidebar state
+          "ml-0 md:ml-16 lg:ml-64",
+          sidebarCollapsed ? "md:ml-16" : "md:ml-16 lg:ml-64"
         )}>
           {/* Main Content Area */}
           <main className="flex-1 overflow-auto p-6">
