@@ -41,7 +41,7 @@ const FocusAreasCard: React.FC = () => {
         <CardTitle className="text-lg font-semibold">Focus Areas</CardTitle>
         <SideDialog>
           <SideDialogTrigger asChild>
-            <Button size="sm" className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 bg-transparent text-black hover:bg-gray-50">
               <Plus className="h-4 w-4" />
               Create Focus Area
             </Button>

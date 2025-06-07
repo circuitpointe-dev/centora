@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { SideDialog, SideDialogContent } from "@/components/ui/side-dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { donorsData } from "@/data/donorData";
 import { Donor } from "@/types/donor";
 import DonorProfile from "./DonorProfile";
@@ -76,17 +76,17 @@ const DonorList: React.FC = () => {
         />
       </section>
 
-      {/* Donor Profile Side Dialog */}
-      <SideDialog open={showProfile} onOpenChange={setShowProfile}>
-        <SideDialogContent className="sm:w-[800px]">
+      {/* Donor Profile Centralized Dialog */}
+      <Dialog open={showProfile} onOpenChange={setShowProfile}>
+        <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-auto p-0">
           {selectedDonor && (
             <DonorProfile 
               donor={selectedDonor} 
               onEdit={handleEditDonor}
             />
           )}
-        </SideDialogContent>
-      </SideDialog>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
