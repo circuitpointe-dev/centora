@@ -133,7 +133,10 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         </div>
 
         {/* Module Switcher Toggle - Fixed to bottom */}
-        <div className={cn("border-t border-gray-200 p-4 shrink-0", !isMobileOpen && "hidden md:block")}>
+        <div className={cn(
+          "border-t border-gray-200 p-4 shrink-0 mt-auto",
+          !isMobileOpen && "hidden md:block"
+        )}>
           <Button
             variant="ghost"
             className={cn(
