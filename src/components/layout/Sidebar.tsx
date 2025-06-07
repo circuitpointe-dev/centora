@@ -109,14 +109,16 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
                 </div>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onToggleCollapse}
-              className={cn("h-8 w-8 p-0 hidden md:block", isCollapsed && "ml-0")}
-            >
-              <Menu className="h-4 w-4" />
-            </Button>
+            <div className="hidden md:flex">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onToggleCollapse}
+                className="h-8 w-8 p-0 flex items-center justify-center"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
 

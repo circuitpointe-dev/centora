@@ -67,9 +67,10 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
     <>
       <header className={cn(
         "bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shadow-sm transition-all duration-300 fixed top-0 z-20 h-16",
-        // On mobile, take full width. On desktop, respect sidebar state
-        "left-0 right-0 md:left-16 lg:left-64",
-        sidebarCollapsed ? "md:left-16" : "md:left-16 lg:left-64"
+        // Responsive positioning: full width on mobile, respect sidebar on desktop
+        "left-0 right-0",
+        "md:left-16",
+        !sidebarCollapsed && "lg:left-64"
       )}>
         {/* Welcome Message - Hidden on mobile */}
         <div className="hidden md:flex items-center">
