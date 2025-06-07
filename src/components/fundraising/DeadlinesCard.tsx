@@ -21,7 +21,7 @@ const Deadline: React.FC<DeadlineProps> = ({ item, isLast }) => {
   };
 
   return (
-    <div className="mb-4">
+    <div className={`${!isLast ? 'mb-4' : ''}`}>
       <div className={`p-4 rounded-lg ${cardBgColors[item.status]}`}>
         <div className="flex flex-col gap-1">
           <h4 className="text-sm font-medium text-gray-800">{item.title}</h4>
@@ -42,23 +42,21 @@ const Deadline: React.FC<DeadlineProps> = ({ item, isLast }) => {
 
 export const DeadlinesCard: React.FC = () => {
   return (
-    <Card className="h-full">
-      <CardHeader>
+    <Card className="h-full flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-lg font-semibold text-gray-800">
           Upcoming Deadlines
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-[300px] overflow-y-auto pr-2">
-          <div className="flex flex-col">
-            {deadlinesData.map((item, idx) => (
-              <Deadline
-                key={item.id}
-                item={item}
-                isLast={idx === deadlinesData.length - 1}
-              />
-            ))}
-          </div>
+      <CardContent className="flex-1 flex flex-col p-6">
+        <div className="flex-1 overflow-y-auto">
+          {deadlinesData.map((item, idx) => (
+            <Deadline
+              key={item.id}
+              item={item}
+              isLast={idx === deadlinesData.length - 1}
+            />
+          ))}
         </div>
       </CardContent>
     </Card>

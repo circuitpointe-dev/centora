@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, DollarSign, UserPlus, Plus, FileText, BarChart } from 'lucide-react';
 import { CalendarCard } from '@/components/fundraising/CalendarCard';
 import { DeadlinesCard } from '@/components/fundraising/DeadlinesCard';
 
@@ -29,10 +29,43 @@ const DashboardPage = () => {
   if (module === 'fundraising') {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">
+        {/* Header with Title and Quick Actions */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-medium text-gray-900">
             {getModuleName(module || '')} Dashboard
           </h1>
+          
+          {/* Quick Actions as Links */}
+          <div className="flex items-center gap-4">
+            <a 
+              href="#" 
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <UserPlus className="h-4 w-4" />
+              Add New Donor
+            </a>
+            <a 
+              href="#" 
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Create New Opportunity
+            </a>
+            <a 
+              href="#" 
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <FileText className="h-4 w-4" />
+              Create Proposal
+            </a>
+            <a 
+              href="#" 
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <BarChart className="h-4 w-4" />
+              Generate Reports
+            </a>
+          </div>
         </div>
 
         {/* Statistics Cards - Fundraising specific */}
@@ -99,29 +132,6 @@ const DashboardPage = () => {
             <DeadlinesCard />
           </div>
         </div>
-
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-              <button className="text-left p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                <div className="font-medium text-sm">Add New Donor</div>
-              </button>
-              <button className="text-left p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                <div className="font-medium text-sm">Create New Opportunity</div>
-              </button>
-              <button className="text-left p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                <div className="font-medium text-sm">Create Proposal</div>
-              </button>
-              <button className="text-left p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                <div className="font-medium text-sm">Generate Reports</div>
-              </button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     );
   }

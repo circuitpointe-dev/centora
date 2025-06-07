@@ -36,14 +36,14 @@ const Day: React.FC<DayProps> = ({
         {events.map((event) => (
           <div
             key={event.id}
-            className="text-xs p-1 rounded truncate cursor-pointer"
+            className="text-xs p-1 rounded truncate cursor-pointer text-white"
             style={{ backgroundColor: event.color }}
             onClick={(e) => {
               e.stopPropagation();
               onEventClick(event);
             }}
           >
-            <span className="text-white">{event.title}</span>
+            <span>{event.title}</span>
           </div>
         ))}
       </div>
@@ -117,123 +117,121 @@ export const CalendarCard: React.FC = () => {
   };
 
   return (
-    <>
-      <Card className="h-full">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-semibold">Calendar</CardTitle>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-700 font-medium">
-                {currentDate.toLocaleString("default", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handlePrevMonth}
-                  className="p-2 hover:bg-gray-100 rounded-full border border-gray-300 bg-white"
-                >
-                  <ChevronLeft className="h-4 w-4 text-gray-600" />
-                </button>
-                <button
-                  onClick={handleNextMonth}
-                  className="p-2 hover:bg-gray-100 rounded-full border border-gray-300 bg-white"
-                >
-                  <ChevronRight className="h-4 w-4 text-gray-600" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-7 gap-1">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div
-                key={day}
-                className="text-center text-xs font-medium text-gray-500 py-2"
-              >
-                {day}
-              </div>
-            ))}
-            {generateCalendar(currentDate).map((date, index) => (
-              <Day
-                key={index}
-                date={date}
-                events={events.filter(
-                  (e) => e.date.toDateString() === date.toDateString()
-                )}
-                onDateClick={setSelectedDate}
-                currentDate={currentDate}
-                onEventClick={setClickedEvent}
-              />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Event details modal */}
-      {clickedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold mb-2">{clickedEvent.title}</h3>
-            <div className="text-sm text-gray-500 mb-3">
-              {clickedEvent.date.toLocaleDateString("en-US", {
-                weekday: "long",
-                month: "short",
-                day: "numeric",
+    <Card className="h-full">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold text-gray-800">Calendar</CardTitle>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-700 font-medium">
+              {currentDate.toLocaleString("default", {
+                month: "long",
                 year: "numeric",
               })}
-            </div>
-            <div className="flex justify-end gap-2">
+            </span>
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => setClickedEvent(null)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded text-sm"
+                onClick={handlePrevMonth}
+                className="p-2 hover:bg-gray-100 rounded-full border border-gray-300 bg-white"
               >
-                Close
+                <ChevronLeft className="h-4 w-4 text-gray-600" />
               </button>
               <button
-                onClick={() => handleDeleteEvent(clickedEvent.id)}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                onClick={handleNextMonth}
+                className="p-2 hover:bg-gray-100 rounded-full border border-gray-300 bg-white"
               >
-                Delete Event
+                <ChevronRight className="h-4 w-4 text-gray-600" />
               </button>
             </div>
           </div>
         </div>
-      )}
-
-      {/* Add event modal */}
-      {selectedDate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h3 className="text-lg font-semibold mb-4">
-              Add Event for {selectedDate.toLocaleDateString()}
-            </h3>
-            <input
-              type="text"
-              value={newEventTitle}
-              onChange={(e) => setNewEventTitle(e.target.value)}
-              className="w-full p-2 border rounded mb-4"
-              placeholder="Event title"
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-7 gap-1">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <div
+              key={day}
+              className="text-center text-xs font-medium text-gray-500 py-2"
+            >
+              {day}
+            </div>
+          ))}
+          {generateCalendar(currentDate).map((date, index) => (
+            <Day
+              key={index}
+              date={date}
+              events={events.filter(
+                (e) => e.date.toDateString() === date.toDateString()
+              )}
+              onDateClick={setSelectedDate}
+              currentDate={currentDate}
+              onEventClick={setClickedEvent}
             />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setSelectedDate(null)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddEvent}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Add Event
-              </button>
+          ))}
+        </div>
+
+        {/* Event Details Dialog - Black and White Theme */}
+        {clickedEvent && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+              <h3 className="text-lg font-semibold mb-2 text-gray-900">{clickedEvent.title}</h3>
+              <div className="text-sm text-gray-600 mb-4">
+                {clickedEvent.date.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setClickedEvent(null)}
+                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded border border-gray-300 text-sm"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => handleDeleteEvent(clickedEvent.id)}
+                  className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 text-sm"
+                >
+                  Delete Event
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </>
+        )}
+
+        {/* Add Event Dialog - Black and White Theme */}
+        {selectedDate && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-96 border border-gray-200">
+              <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                Add Event for {selectedDate.toLocaleDateString()}
+              </h3>
+              <input
+                type="text"
+                value={newEventTitle}
+                onChange={(e) => setNewEventTitle(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                placeholder="Event title"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setSelectedDate(null)}
+                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded border border-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddEvent}
+                  className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+                >
+                  Add Event
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
