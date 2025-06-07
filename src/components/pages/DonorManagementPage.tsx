@@ -2,6 +2,7 @@
 import React from 'react';
 import FundingCycles from '@/components/fundraising/FundingCycles';
 import DonorList from '@/components/fundraising/DonorList';
+import FocusAreasCard from '@/components/fundraising/FocusAreasCard';
 
 const DonorManagementPage = () => {
   return (
@@ -16,8 +17,15 @@ const DonorManagementPage = () => {
       {/* Funding Cycles Section */}
       <FundingCycles />
 
-      {/* Donor List Section */}
-      <DonorList />
+      {/* Donor List and Focus Areas Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3">
+          <DonorList />
+        </div>
+        <div className="lg:col-span-1">
+          <FocusAreasCard />
+        </div>
+      </div>
     </div>
   );
 };
