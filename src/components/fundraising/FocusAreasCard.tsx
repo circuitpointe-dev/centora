@@ -36,12 +36,12 @@ const FocusAreasCard: React.FC = () => {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+    <Card className="h-[450px] flex flex-col">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 flex-shrink-0">
         <CardTitle className="text-lg font-semibold">Focus Areas</CardTitle>
         <SideDialog>
           <SideDialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="flex items-center gap-2 bg-transparent text-black hover:bg-gray-50">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 bg-transparent text-black hover:bg-gray-50 border border-gray-300">
               <Plus className="h-4 w-4" />
               Create Focus Area
             </Button>
@@ -56,7 +56,7 @@ const FocusAreasCard: React.FC = () => {
           </SideDialogContent>
         </SideDialog>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1 overflow-auto">
         <div className="space-y-3">
           {focusAreas.map((area) => (
             <div key={area.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">

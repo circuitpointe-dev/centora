@@ -19,7 +19,7 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({ donor, onEdit }) => 
       className="bg-[#f4f6f9] flex flex-row justify-center w-full"
       data-model-id="11099:898"
     >
-      <div className="bg-[#f4f6f9] w-[1120px] relative">
+      <div className="bg-[#f4f6f9] w-[900px] relative">
         <Separator className="w-full" />
 
         <div className="w-full py-11">
@@ -36,11 +36,13 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({ donor, onEdit }) => 
           <Separator className="w-full" />
         </div>
 
-        <div className="flex flex-col gap-6 px-8">
+        <div className="flex flex-col gap-6 px-8 pb-8">
           <EngagementHistorySection />
           <GivingHistorySection />
           <ProfileInformationSection />
         </div>
+        
+        <Separator className="w-full" />
       </div>
     </div>
   );

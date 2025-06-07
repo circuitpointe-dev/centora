@@ -15,11 +15,11 @@ const DonorManagementPage = () => {
       </div>
 
       {/* Funding Cycles and Focus Areas Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3">
           <FundingCycles />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-2">
           <FocusAreasCard />
         </div>
       </div>

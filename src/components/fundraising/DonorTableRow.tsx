@@ -31,6 +31,19 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
     });
   };
 
+  // Different colors for interest tags
+  const getTagColor = (index: number) => {
+    const colors = [
+      "bg-blue-100 text-blue-800",
+      "bg-green-100 text-green-800", 
+      "bg-purple-100 text-purple-800",
+      "bg-orange-100 text-orange-800",
+      "bg-pink-100 text-pink-800",
+      "bg-indigo-100 text-indigo-800"
+    ];
+    return colors[index % colors.length];
+  };
+
   return (
     <TableRow 
       className="cursor-pointer hover:bg-gray-50"
@@ -56,12 +69,12 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
       <TableCell>
         <div className="flex flex-wrap gap-1">
           {donor.interestTags.slice(0, 2).map((tag, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
+            <Badge key={index} className={`text-xs rounded-sm ${getTagColor(index)}`}>
               {tag}
             </Badge>
           ))}
           {donor.interestTags.length > 2 && (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs rounded-sm">
               +{donor.interestTags.length - 2}
             </Badge>
           )}

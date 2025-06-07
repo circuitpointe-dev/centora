@@ -8,7 +8,7 @@ const NewDonorDialog: React.FC = () => {
   return (
     <SideDialog>
       <SideDialogTrigger asChild>
-        <Button size="sm" className="flex items-center gap-2">
+        <Button size="sm" className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
           <Plus className="h-4 w-4" />
           New Donor
         </Button>
