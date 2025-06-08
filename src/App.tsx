@@ -1,57 +1,24 @@
-// src/App.tsx
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
 
-import Index from "./components/pages/Index";
-import LoginPage from "./components/auth/LoginPage";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import MainLayout from "./components/layout/MainLayout";
-import DashboardPage from "./components/pages/DashboardPage";
-import GenericFeaturePage from "./components/pages/GenericFeaturePage";
+import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './contexts/AuthContext';
+import { Index } from './pages/Index';
+import { Toaster } from '@/components/ui/toaster';
+import './App.css';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <AuthProvider>
+function App() {
+  return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
+      <AuthProvider>
         <BrowserRouter>
-          <Routes>
-            {/* Public: Landing */}
-            <Route path="/" element={<Index />} />
-
-            {/* Public: Login */}
-            <Route path="/login" element={<LoginPage />} />
-
-            {/* Public: Register (also shows LoginPage, but auto-opens modal) */}
-            <Route path="/register" element={<LoginPage />} />
-
-            {/* Protected: Dashboard + Features */}
-            <Route
-              path="/dashboard/:module"
-              element={
-                <ProtectedRoute>
-                  <MainLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path=":feature" element={<GenericFeaturePage />} />
-            </Route>
-
-            {/* Catch-all: send anything else back to “/” */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Index />
+          <Toaster />
         </BrowserRouter>
-      </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
-  </AuthProvider>
-);
+  );
+}
 
 export default App;
