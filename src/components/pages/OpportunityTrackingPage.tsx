@@ -7,10 +7,11 @@ import AddOpportunityDialog from "@/components/opportunity-tracking/AddOpportuni
 import OpportunityDetailDialog from "@/components/opportunity-tracking/OpportunityDetailDialog";
 import { mockOpportunities, Opportunity } from "@/types/opportunity";
 import { Plus, PanelTop } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
+// New import for pipeline dashboard dialog
 import OpportunityPipelineDialog from "@/components/opportunity-tracking/pipeline/OpportunityPipelineDialog";
 
-const OpportunityTrackingPage: React.FC = () => {
+const OpportunityTracking: React.FC = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
   const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>(mockOpportunities);
   const [filters, setFilters] = useState<FilterOptions>({});
@@ -104,6 +105,7 @@ const OpportunityTrackingPage: React.FC = () => {
         isOpen={showDetailDialog}
         onClose={() => setShowDetailDialog(false)}
       />
+      {/* Show Opportunity Pipeline Dashboard in Dialog */}
       <OpportunityPipelineDialog
         isOpen={showPipelineDialog}
         onClose={() => setShowPipelineDialog(false)}
@@ -117,4 +119,4 @@ const OpportunityTrackingPage: React.FC = () => {
   );
 };
 
-export default OpportunityTrackingPage;
+export default OpportunityTracking;
