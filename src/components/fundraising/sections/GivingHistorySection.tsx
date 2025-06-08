@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ManageGivingRecordsDialog } from "../ManageGivingRecordsDialog";
 
 const givingHistoryData = {
   2024: [
@@ -58,6 +58,7 @@ const givingHistoryData = {
 
 export const GivingHistorySection = (): JSX.Element => {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Get data for selected year
   const chartData = givingHistoryData[selectedYear as keyof typeof givingHistoryData] || [];
@@ -66,68 +67,75 @@ export const GivingHistorySection = (): JSX.Element => {
   const yAxisLabels = ["60k", "45k", "30k", "15k", "0"];
 
   return (
-    <div className="flex flex-col items-start gap-6 w-full px-6 pb-6">
-      <div className="flex items-center justify-between w-full">
-        <h2 className="font-medium text-[#383839] text-base">
-          Giving History
-        </h2>
+    <>
+      <div className="flex flex-col items-start gap-6 w-full px-6 pb-6">
+        <div className="flex items-center justify-between w-full">
+          <h2 className="font-medium text-[#383839] text-base">
+            Giving History
+          </h2>
 
-        <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
-          <SelectTrigger className="w-[113px] border-violet-600 text-violet-600">
-            <SelectValue placeholder="Select year" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="2024">2024</SelectItem>
-            <SelectItem value="2023">2023</SelectItem>
-            <SelectItem value="2022">2022</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
+            <SelectTrigger className="w-[113px] border-violet-600 text-violet-600">
+              <SelectValue placeholder="Select year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="2023">2023</SelectItem>
+              <SelectItem value="2022">2022</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Card className="w-full">
+          <CardContent className="pt-8 pb-8 px-6">
+            <div className="flex flex-col items-center w-full">
+              <div className="relative w-full h-[235px] mb-8">
+                {/* Y-axis labels */}
+                <div className="flex flex-col w-[22px] items-center gap-8 absolute top-1.5 left-0">
+                  {yAxisLabels.map((label, index) => (
+                    <span
+                      key={index}
+                      className="text-[#00000066] text-xs text-center w-full"
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Chart bars */}
+                <div className="flex items-end justify-between gap-2 absolute top-0 left-[35px] right-4 h-full">
+                  {chartData.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col flex-1 max-w-[40px] items-center gap-2"
+                    >
+                      <div
+                        className={`${item.height} ${item.color} w-full rounded-[8px] min-w-[20px]`}
+                      />
+                      <span className="text-[#00000066] text-xs text-center w-full">
+                        {item.month}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                className="text-violet-600 border-violet-600"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                Manage Giving Records
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card className="w-full">
-        <CardContent className="pt-8 pb-8 px-6">
-          <div className="flex flex-col items-center w-full">
-            <div className="relative w-full h-[235px] mb-8">
-              {/* Y-axis labels */}
-              <div className="flex flex-col w-[22px] items-center gap-8 absolute top-1.5 left-0">
-                {yAxisLabels.map((label, index) => (
-                  <span
-                    key={index}
-                    className="text-[#00000066] text-xs text-center w-full"
-                  >
-                    {label}
-                  </span>
-                ))}
-              </div>
-
-              {/* Chart bars */}
-              <div className="flex items-end justify-between gap-2 absolute top-0 left-[35px] right-4 h-full">
-                {chartData.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col flex-1 max-w-[40px] items-center gap-2"
-                  >
-                    <div
-                      className={`${item.height} ${item.color} w-full rounded-[8px] min-w-[20px]`}
-                    />
-                    <span className="text-[#00000066] text-xs text-center w-full">
-                      {item.month}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Button
-              variant="outline"
-              className="text-violet-600 border-violet-600"
-              asChild
-            >
-              <Link to="/giving-history">Manage Giving Records</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <ManageGivingRecordsDialog 
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
+    </>
   );
 };
