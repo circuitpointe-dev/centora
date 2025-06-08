@@ -39,11 +39,11 @@ export const FilesSection: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-start gap-4">
+    <div className="flex flex-col items-start gap-4 h-full">
       <h3 className="font-medium text-black text-base">Files</h3>
 
-      <Card className="w-full">
-        <CardContent className="p-4">
+      <Card className="w-full flex-1">
+        <CardContent className="p-4 h-full flex flex-col">
           {files.length > 0 && (
             <div className="space-y-2 mb-4">
               {files.map((file) => (
@@ -75,7 +75,7 @@ export const FilesSection: React.FC = () => {
             </div>
           )}
           
-          <div className="border-2 border-dashed border-[#d2d2d2] bg-transparent rounded-md p-8">
+          <div className="border-2 border-dashed border-[#d2d2d2] bg-transparent rounded-md p-8 flex-1 flex items-center justify-center">
             <div className="text-center text-[#707070] text-base">
               <span className="font-medium">Drag and drop files here or </span>
               <input

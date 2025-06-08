@@ -53,10 +53,10 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({ donor, onEdit }) => 
 
         <div className="w-full py-6">
           <div className="flex items-center justify-between px-6 mb-4">
-            <h1 className="font-medium text-[22px] text-[#383839]">
-              {isEditing ? 'Edit' : ''} Donor Profile - <span className="font-light">{donor.name}</span>
+            <h1 className="font-medium text-[22px] text-[#383839] flex-1 min-w-0 mr-4">
+              {isEditing ? 'Edit' : ''} Donor Profile - <span className="font-light truncate">{donor.name}</span>
             </h1>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-shrink-0">
               {isEditing ? (
                 <>
                   <Button 
@@ -87,20 +87,28 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({ donor, onEdit }) => 
 
         <div className="flex flex-col gap-6">
           {/* Row 1: Profile Information and Engagement History */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6">
-            <ProfileInformationSection
-              isEditing={isEditing}
-              formData={formData}
-              onInputChange={handleInputChange}
-              interestTags={donor.interestTags}
-            />
-            <EngagementHistorySection />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 items-start">
+            <div className="h-full">
+              <ProfileInformationSection
+                isEditing={isEditing}
+                formData={formData}
+                onInputChange={handleInputChange}
+                interestTags={donor.interestTags}
+              />
+            </div>
+            <div className="h-full">
+              <EngagementHistorySection />
+            </div>
           </div>
 
           {/* Row 2: Communications & Notes and Files */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6">
-            <CommunicationsSection />
-            <FilesSection />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 items-start">
+            <div className="h-full">
+              <CommunicationsSection />
+            </div>
+            <div className="h-full">
+              <FilesSection />
+            </div>
           </div>
 
           {/* Row 3: Giving History (full width) */}

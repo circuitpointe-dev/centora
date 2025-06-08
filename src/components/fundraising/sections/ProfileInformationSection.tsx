@@ -30,10 +30,10 @@ export const ProfileInformationSection: React.FC<ProfileInformationSectionProps>
   interestTags
 }) => {
   return (
-    <div className="flex flex-col items-start gap-4">
+    <div className="flex flex-col items-start gap-4 h-full">
       <h2 className="font-medium text-black text-base">Profile Information</h2>
 
-      <Card className="w-full">
+      <Card className="w-full flex-1">
         <CardContent className="p-6">
           <div className="flex flex-col items-start gap-6 w-full">
             {/* Organization Name */}

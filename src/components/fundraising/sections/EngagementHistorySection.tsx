@@ -29,18 +29,18 @@ export const EngagementHistorySection = (): JSX.Element => {
   ];
 
   return (
-    <div className="flex flex-col items-start gap-4 px-6">
+    <div className="flex flex-col items-start gap-4 h-full">
       <h2 className="font-medium text-black text-base">
         Engagement History
       </h2>
 
-      <Card className="w-full">
-        <CardContent className="p-8">
-          <div className="flex flex-col items-start gap-6 w-full">
+      <Card className="w-full flex-1">
+        <CardContent className="p-8 h-full flex flex-col">
+          <div className="flex flex-col items-start gap-6 w-full flex-1">
             {engagementEntries.map((entry, index) => (
               <div
                 key={index}
-                className="flex flex-col items-start gap-2 px-2.5 py-3 w-full rounded-[5px] border border-solid border-[#dddddd]"
+                className="flex flex-col items-start gap-2 px-2.5 py-3 w-full rounded-[5px]"
               >
                 <h3 className="font-semibold text-[#383839] text-sm w-full">
                   {entry.date}

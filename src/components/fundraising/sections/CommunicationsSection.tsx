@@ -35,13 +35,13 @@ export const CommunicationsSection: React.FC = () => {
   ];
 
   return (
-    <section className="flex flex-col items-start gap-4">
+    <section className="flex flex-col items-start gap-4 h-full">
       <h2 className="font-medium text-black text-base [font-family:'Inter',Helvetica]">
         Communications &amp; Notes
       </h2>
 
-      <div className="flex flex-col items-start gap-6 self-stretch w-full">
-        <Card className="w-full h-[273px] rounded-[10px] bg-white">
+      <div className="flex flex-col items-start gap-6 self-stretch w-full flex-1">
+        <Card className="w-full h-[273px] rounded-[10px] bg-white flex-1">
           <ScrollArea className="h-[272px] w-full rounded-[10px]">
             <CardContent className="p-6 space-y-6">
               {messages.map((message) => (
