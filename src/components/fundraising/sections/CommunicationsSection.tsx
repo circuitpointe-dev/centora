@@ -83,14 +83,13 @@ export const CommunicationsSection: React.FC = () => {
             </ScrollBar>
           </ScrollArea>
         </Card>
-
-        <Button
+      </div>
+      <Button
           variant="outline"
           className="h-auto px-4 py-3 rounded-[5px] border border-solid border-violet-600 text-violet-600 font-medium text-sm [font-family:'Inter',Helvetica]"
         >
           Add Notes
         </Button>
-      </div>
     </section>
   );
 };
