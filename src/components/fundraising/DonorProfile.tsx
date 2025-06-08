@@ -52,9 +52,8 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({ donor, onEdit }) => 
         <div className="w-full py-6">
           <div className="flex items-center justify-between px-6 mb-4">
             <h1 className="font-medium text-[22px] text-[#383839]">
-              {isEditing ? 'Edit' : ''} Donor Profile
+              {isEditing ? 'Edit' : ''} Donor Profile - <span className="font-light">{donor.name}</span>
             </h1>
-            <p className="font-light text-[12px] text-[#383839]">>{donor.name}</p>
             <div className="flex gap-2">
               {isEditing ? (
                 <>
