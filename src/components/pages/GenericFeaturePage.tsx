@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Search, Filter } from 'lucide-react';
 import DonorManagementPage from './DonorManagementPage';
 import OpportunityTrackingPage from './OpportunityTrackingPage';
+import ProposalManagementPage from './ProposalManagementPage';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -19,6 +20,9 @@ const GenericFeaturePage = () => {
       return <OpportunityTrackingPage />;
   }
   
+  if (module === 'fundraising' && feature === 'proposal-management') {
+      return <ProposalManagementPage />;
+  }
   const getFeatureName = (featureId: string) => {
     // Convert kebab-case to Title Case
     return featureId?.split('-').map(word => 
