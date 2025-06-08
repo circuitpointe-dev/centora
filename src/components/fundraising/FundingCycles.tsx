@@ -28,7 +28,7 @@ const FundingCycles: React.FC = () => {
   return (
     <section className="bg-white rounded-lg p-6 shadow-sm h-[450px] flex flex-col">
       <div className="flex justify-between items-center mb-6 flex-shrink-0">
-        <h2 className="text-lg font-semibold text-gray-900">Funding Cycles</h2>
+        <h2 className="text-base font-medium text-gray-900">Funding Cycles</h2>
         
         {/* Year selector dropdown */}
         <Select
