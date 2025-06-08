@@ -1,4 +1,3 @@
-
 export interface FundingCycle {
   name: string;
   width: string;
@@ -29,4 +28,9 @@ export interface FocusArea {
   name: string;
   description: string;
   color: string;
+  fundingStartDate: string;
+  fundingEndDate: string;
+  interestTags: string[];
+  amount: number;
+  currency: string;
 }

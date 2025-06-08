@@ -6,25 +6,45 @@ export const focusAreasData: FocusArea[] = [
     id: "1",
     name: "Education",
     description: "Educational programs and initiatives",
-    color: "bg-blue-100 text-blue-800"
+    color: "bg-blue-100 text-blue-800",
+    fundingStartDate: "2024-01-01",
+    fundingEndDate: "2024-12-31",
+    interestTags: ["Primary Education", "Literacy", "School Infrastructure"],
+    amount: 450000,
+    currency: "USD"
   },
   {
     id: "2", 
     name: "Health",
     description: "Healthcare and medical programs",
-    color: "bg-green-100 text-green-800"
+    color: "bg-green-100 text-green-800",
+    fundingStartDate: "2024-03-01",
+    fundingEndDate: "2025-02-28",
+    interestTags: ["Primary Healthcare", "Maternal Health", "Medical Equipment"],
+    amount: 320000,
+    currency: "USD"
   },
   {
     id: "3",
     name: "Infrastructure",
     description: "Infrastructure development projects",
-    color: "bg-orange-100 text-orange-800"
+    color: "bg-orange-100 text-orange-800",
+    fundingStartDate: "2024-06-01",
+    fundingEndDate: "2025-05-31",
+    interestTags: ["Water Systems", "Road Construction", "Energy"],
+    amount: 280000,
+    currency: "USD"
   },
   {
     id: "4",
     name: "Emergency Response",
     description: "Emergency and disaster response programs",
-    color: "bg-red-100 text-red-800"
+    color: "bg-red-100 text-red-800",
+    fundingStartDate: "2024-01-01",
+    fundingEndDate: "2024-06-30",
+    interestTags: ["Disaster Relief", "Emergency Supplies", "Crisis Management"],
+    amount: 150000,
+    currency: "USD"
   }
 ];
 
