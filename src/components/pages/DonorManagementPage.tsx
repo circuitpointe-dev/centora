@@ -44,7 +44,7 @@ const DonorManagementPage = () => {
           {/* New Donor Quick Action */}
           <SideDialog open={newDonorOpen} onOpenChange={setNewDonorOpen}>
             <SideDialogTrigger asChild>
-              <Button size="sm" variant="outline" className="flex items-center gap-2">
+              <Button size="sm" className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white">
                 <UserPlus className="h-4 w-4" />
                 New Donor
               </Button>
