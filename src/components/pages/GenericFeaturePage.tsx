@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Filter } from 'lucide-react';
 import DonorManagementPage from './DonorManagementPage';
+import OpportunityTrackingPage from './OpportunityTrackingPage';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -12,6 +13,10 @@ const GenericFeaturePage = () => {
   // Render specific page components for certain routes
   if (module === 'fundraising' && feature === 'donor-management') {
     return <DonorManagementPage />;
+  }
+
+  if (module === 'fundraising' && feature === 'opportunity-tracking') {
+      return <OpportunityTrackingPage />;
   }
   
   const getFeatureName = (featureId: string) => {
