@@ -1,9 +1,10 @@
 
 import React from 'react';
-import LandingPage from '@/components/pages/Index';
+import { Navigate } from 'react-router-dom';
 
 const Index = () => {
-  return <LandingPage />;
+  // Redirect to login page since we have a proper login system
+  return <Navigate to="/login" replace />;
 };
 
 export default Index;
