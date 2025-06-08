@@ -66,9 +66,9 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({ donor, onEdit }) => 
                   </Button>
                   <Button 
                     onClick={handleSave}
-                    className="text-violet-600 border-violet-600"
+                    className="bg-violet-600 hover:bg-violet-700 text-white border-violet-600"
                   >
-                    Save
+                    Save Changes
                   </Button>
                 </>
               ) : (
