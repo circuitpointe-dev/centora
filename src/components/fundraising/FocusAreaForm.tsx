@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus } from "lucide-react";
 import { FocusArea } from "@/types/donor";
-import { useToast } from "@/hooks/use-toast";
 
 interface FocusAreaFormProps {
   focusArea?: FocusArea;
@@ -19,8 +19,6 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
   onSave,
   onCancel,
 }) => {
-  const { toast } = useToast();
-  
   const [formData, setFormData] = useState({
     name: focusArea?.name || "",
     description: focusArea?.description || "",
@@ -63,14 +61,6 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
-    
-    // Show success toast
-    toast({
-      title: focusArea ? "Focus Area Updated" : "Focus Area Created",
-      description: focusArea 
-        ? `${formData.name} has been updated successfully.`
-        : `${formData.name} has been created successfully.`,
-    });
   };
 
   return (

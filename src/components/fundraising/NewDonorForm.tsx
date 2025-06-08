@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +9,6 @@ import { Plus, Upload, X } from "lucide-react";
 import { ContactPersonForm, ContactPerson } from "./ContactPersonForm";
 import { focusAreasData, getFocusAreaColor } from "@/data/focusAreaData";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { useToast } from "@/hooks/use-toast";
 
 interface NewDonorFormProps {
   onSubmit: (donorData: any) => void;
@@ -16,8 +16,6 @@ interface NewDonorFormProps {
 }
 
 export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }) => {
-  const { toast } = useToast();
-  
   const [formData, setFormData] = useState({
     organization: "",
     affiliation: "",
@@ -114,12 +112,6 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
     };
 
     onSubmit(donorData);
-    
-    // Show success toast
-    toast({
-      title: "Donor Created Successfully",
-      description: `${formData.organization} has been added to your donor list.`,
-    });
   };
 
   return (
