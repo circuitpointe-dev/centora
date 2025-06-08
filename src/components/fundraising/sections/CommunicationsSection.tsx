@@ -1,16 +1,22 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
+interface Message {
+  id: number;
+  author: string;
+  timestamp: string;
+  content: string;
+  avatar: string;
+}
+
 export const CommunicationsSection: React.FC = () => {
-  // Message data for mapping
-  const messages = [
+  const messages: Message[] = [
     {
       id: 1,
-      author: "John Dhoe",
+      author: "John Doe",
       timestamp: "April 10th, 2:13 AM",
       content:
         "Lorem ipsum dolor sit amet consectetur. Nibh sit enim sagittis in duis non dolor sagittis eu.",
@@ -18,79 +24,68 @@ export const CommunicationsSection: React.FC = () => {
     },
     {
       id: 2,
-      author: "John Dhoe",
-      timestamp: "April 10th, 2:13 AM",
+      author: "Jane Smith",
+      timestamp: "April 11th, 10:45 AM",
       content:
-        "Lorem ipsum dolor sit amet consectetur. Nibh sit enim sagittis in duis non dolor sagittis eu.",
-      avatar: "https://c.animaapp.com/LmQp0a9i/img/profile-picture-2-5@2x.png",
+        "Please review the documents I shared yesterday and let me know your feedback.",
+      avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     },
     {
       id: 3,
-      author: "John Dhoe",
-      timestamp: "April 10th, 2:13 AM",
+      author: "Mike Johnson",
+      timestamp: "April 12th, 4:30 PM",
       content:
-        "Lorem ipsum dolor sit amet consectetur. Nibh sit enim sagittis in duis non dolor sagittis eu.",
-      avatar: "https://c.animaapp.com/LmQp0a9i/img/profile-picture-2-5@2x.png",
+        "The project timeline has been updated. Check the shared spreadsheet for details.",
+      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
     },
   ];
 
   return (
-    <section className="flex flex-col items-start gap-4 h-full">
-      <h2 className="font-medium text-black text-base [font-family:'Inter',Helvetica]">
-        Communications &amp; Notes
+    <div className="flex flex-col gap-4 h-full">
+      <h2 className="font-medium text-base text-gray-900">
+        Communications & Notes
       </h2>
 
-      <div className="flex flex-col items-start gap-6 self-stretch w-full flex-1">
-        <Card className="w-full h-[273px] rounded-[10px] bg-white flex-1">
-          <ScrollArea className="h-[272px] w-full rounded-[10px]">
-            <CardContent className="p-6 space-y-6">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className="flex items-center gap-3 w-full"
-                >
-                  <Avatar className="w-11 h-11">
+      <Card className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full w-full">
+          <CardContent className="p-6 space-y-6">
+            {messages.map((message) => (
+              <div key={message.id} className="flex gap-3 w-full">
+                <div className="pt-1">
+                  <Avatar className="w-10 h-10">
                     <AvatarImage
                       src={message.avatar}
-                      alt="Profile picture"
+                      alt={`${message.author}'s avatar`}
                       className="object-cover"
                     />
                   </Avatar>
-
-                  <div className="flex flex-col w-full items-start gap-2">
-                    <div className="inline-flex items-center gap-4">
-                      <div className="font-bold text-[#00000099] text-base text-center whitespace-nowrap [font-family:'Inter',Helvetica]">
-                        {message.author}
-                      </div>
-
-                      <div className="font-normal text-[#0000004c] text-sm text-center [font-family:'Inter',Helvetica]">
-                        {message.timestamp}
-                      </div>
-                    </div>
-
-                    <div className="w-full [font-family:'Inter',Helvetica] font-normal text-[#00000099] text-sm leading-[18px]">
-                      {message.content}
-                    </div>
-                  </div>
                 </div>
-              ))}
-            </CardContent>
-            <ScrollBar
-              orientation="vertical"
-              className="bg-[#eeeeee] rounded-r-[10px] w-[9px]"
-            >
-              <div className="relative w-[9px] h-[30px] top-2.5 bg-violet-600 rounded-[10px]" />
-            </ScrollBar>
-          </ScrollArea>
-        </Card>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-medium text-gray-700">
+                      {message.author}
+                    </h3>
+                    <span className="text-xs text-gray-500">
+                      {message.timestamp}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {message.content}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+          <ScrollBar orientation="vertical" />
+        </ScrollArea>
+      </Card>
 
-        <Button
-          variant="outline"
-          className="h-auto px-4 py-3 rounded-[5px] border border-solid border-violet-600 text-violet-600 font-medium text-sm [font-family:'Inter',Helvetica]"
-        >
-          Add Notes
-        </Button>
-      </div>
-    </section>
+      <Button
+        variant="outline"
+        className="w-full py-3 border-violet-600 text-violet-600 hover:bg-violet-50 hover:text-violet-700"
+      >
+        Add Notes
+      </Button>
+    </div>
   );
 };
