@@ -86,7 +86,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
         {/* Login form */}
         <form className="space-y-5" onSubmit={handleLogin}>
           <div className="space-y-2">
-            <Label htmlFor="email">Organization Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
