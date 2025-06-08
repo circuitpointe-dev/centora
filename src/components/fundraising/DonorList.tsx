@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -39,7 +38,7 @@ const DonorList: React.FC = () => {
     <>
       <section className="bg-white rounded-lg p-6 shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Donor List</h2>
+          <h2 className="text-base font-medium text-gray-900">Donor List</h2>
           <NewDonorDialog />
         </div>
 

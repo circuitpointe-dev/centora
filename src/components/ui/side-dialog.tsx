@@ -36,7 +36,7 @@ const SideDialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed right-0 top-0 z-50 h-full w-full bg-background shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:w-[480px] border-l",
+        "fixed right-0 top-0 z-50 h-full w-full bg-background shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:w-[480px] border-l flex flex-col",
         className
       )}
       {...props}
@@ -57,7 +57,7 @@ const SideDialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col space-y-1.5 text-center sm:text-left p-6 border-b",
+      "flex flex-col space-y-1.5 text-center sm:text-left p-6 border-b flex-shrink-0",
       className
     )}
     {...props}
@@ -71,7 +71,7 @@ const SideDialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6 border-t",
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6 border-t flex-shrink-0",
       className
     )}
     {...props}
