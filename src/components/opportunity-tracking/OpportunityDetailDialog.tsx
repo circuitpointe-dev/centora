@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -18,6 +17,9 @@ import { useToast } from "@/hooks/use-toast";
 import DonorProfileCard from "./DonorProfileCard";
 import NotesCard from "./NotesCard";
 import AttachmentsCard from "./AttachmentsCard";
+import TasksCard from "./TasksCard";
+import TimelineCard from "./TimelineCard";
+import QuickActionsCard from "./QuickActionsCard";
 
 // Fixed section height for uniformity
 const SECTION_HEIGHT = "h-72";
