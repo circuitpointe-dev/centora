@@ -1,23 +1,22 @@
 
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import { Opportunity } from "@/types/opportunity";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import OpportunitySummaryCards from "./OpportunitySummaryCards";
+import StageDonutChart from "./StageDonutChart";
+import OpportunityCalendarCard from "./OpportunityCalendarCard";
+import StaffOverloadCard from "./StaffOverloadCard";
+import OpportunitiesByStaffCard from "./OpportunitiesByStaffCard";
+import OpportunitiesByStaffDialog from "./OpportunitiesByStaffDialog";
+import UpcomingFundingCyclesCard from "./UpcomingFundingCyclesCard";
 
 interface OpportunityPipelineDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  allOpportunities: Opportunity[];
+  allOpportunities: any[];
   month: number;
   year: number;
-  setMonth: (month: number) => void;
-  setYear: (year: number) => void;
+  setMonth: (m: number) => void;
+  setYear: (y: number) => void;
 }
 
 const OpportunityPipelineDialog: React.FC<OpportunityPipelineDialogProps> = ({
@@ -29,78 +28,47 @@ const OpportunityPipelineDialog: React.FC<OpportunityPipelineDialogProps> = ({
   setMonth,
   setYear,
 }) => {
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  const totalValue = allOpportunities.reduce((sum, opp) => sum + opp.amount, 0);
-  const totalCount = allOpportunities.length;
-
-  const statusCounts = allOpportunities.reduce((acc, opp) => {
-    acc[opp.status] = (acc[opp.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const [showStaffDialog, setShowStaffDialog] = React.useState(false);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] bg-white">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-black">
-            Opportunity Pipeline Dashboard
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Pipeline Overview</h3>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                {monthNames[month]} {year}
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
+    <Dialog open={isOpen} onOpenChange={v => { if (!v) onClose(); }}>
+      <DialogContent
+        className="max-w-[98vw] sm:max-w-[1200px] max-h-[94vh] min-h-[320px] overflow-y-auto bg-[rgba(245,247,250,1)] p-0 rounded-lg shadow-xl"
+      >
+        <div className="p-8 pt-5">
+          <h2 className="text-2xl font-bold mb-6">Opportunity Pipeline</h2>
+          <OpportunitySummaryCards opportunities={allOpportunities} month={month} year={year} />
+          {/* Row 2: Stage & Calendar */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+            <StageDonutChart opportunities={allOpportunities} />
+            <OpportunityCalendarCard
+              month={month}
+              year={year}
+              setMonth={setMonth}
+              setYear={setYear}
+            />
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-violet-50 p-4 rounded-lg border">
-              <div className="text-2xl font-bold text-violet-600">
-                {totalCount}
-              </div>
-              <div className="text-sm text-gray-600">Total Opportunities</div>
-            </div>
-            
-            <div className="bg-green-50 p-4 rounded-lg border">
-              <div className="text-2xl font-bold text-green-600">
-                ${totalValue.toLocaleString()}
-              </div>
-              <div className="text-sm text-gray-600">Total Value</div>
-            </div>
-            
-            <div className="bg-blue-50 p-4 rounded-lg border">
-              <div className="text-2xl font-bold text-blue-600">
-                {statusCounts["In Progress"] || 0}
-              </div>
-              <div className="text-sm text-gray-600">In Progress</div>
-            </div>
+          {/* Row 3: Staff Overload / Opportunities by Staff */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+            <StaffOverloadCard />
+            <OpportunitiesByStaffCard 
+              onViewAll={() => setShowStaffDialog(true)} 
+              month={month}
+            />
           </div>
-
-          <div className="space-y-4">
-            <h4 className="font-semibold">Status Breakdown</h4>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              {Object.entries(statusCounts).map(([status, count]) => (
-                <div key={status} className="bg-gray-50 p-3 rounded border text-center">
-                  <div className="font-medium text-lg">{count}</div>
-                  <div className="text-xs text-gray-600">{status}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button onClick={onClose}>Close</Button>
+          {/* Row 4: Upcoming Funding Cycles */}
+          <div className="mt-8">
+            <UpcomingFundingCyclesCard />
           </div>
         </div>
+        <OpportunitiesByStaffDialog
+          isOpen={showStaffDialog}
+          onClose={() => setShowStaffDialog(false)}
+          month={month}
+          year={year}
+          setMonth={setMonth}
+          setYear={setYear}
+        />
       </DialogContent>
     </Dialog>
   );
