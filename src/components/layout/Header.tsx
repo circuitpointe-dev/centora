@@ -13,7 +13,6 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import NotificationDropdown from './NotificationDropdown';
 import SettingsDialog from './SettingsDialog';
 import UserProfileDialog from './UserProfileDialog';
-import QuickActions from './QuickActions';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -42,9 +41,6 @@ const Header = () => {
         </div>
         
         <div className="flex items-center space-x-4">
-          {/* Quick Actions */}
-          <QuickActions />
-          
           {/* Notifications */}
           <NotificationDropdown />
           
