@@ -37,7 +37,7 @@ const DonorManagementPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-900">Donor Management</h1>
+        <h1 className="text-xl font-medium text-gray-900">Donor Management</h1>
         
         {/* Quick Actions at top right */}
         <div className="flex items-center gap-2">
