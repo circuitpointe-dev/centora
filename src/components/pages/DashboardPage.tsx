@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Users, DollarSign, UserPlus, Plus, FileText, BarChart } from 'lucide-react';
 import { CalendarCard } from '@/components/fundraising/CalendarCard';
 import { DeadlinesCard } from '@/components/fundraising/DeadlinesCard';
+import NewDonorDialog from '@/components/fundraising/NewDonorDialog';
 
 const DashboardPage = () => {
   const { module, feature } = useParams();
@@ -37,14 +37,15 @@ const DashboardPage = () => {
           
           {/* Quick Actions as Links - Responsive Grid */}
           <div className="grid grid-cols-2 lg:flex lg:items-center gap-2 lg:gap-4">
-            <a 
-              href="#" 
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <UserPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">Add New Donor</span>
-              <span className="sm:hidden">Add Donor</span>
-            </a>
+            <NewDonorDialog 
+              triggerButton={
+                <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                  <UserPlus className="h-4 w-4" />
+                  <span className="hidden sm:inline">Add New Donor</span>
+                  <span className="sm:hidden">Add Donor</span>
+                </button>
+              }
+            />
             <a 
               href="#" 
               className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"

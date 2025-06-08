@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Plus, ExternalLink } from "lucide-react";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from "@/components/ui/side-dialog";
+import { useToast } from "@/hooks/use-toast";
 import { focusAreasData } from "@/data/focusAreaData";
 import { FocusArea } from "@/types/donor";
 import { FocusAreaForm } from "./FocusAreaForm";
@@ -14,9 +14,14 @@ const FocusAreasCard: React.FC = () => {
   const [editingArea, setEditingArea] = useState<FocusArea | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleDelete = (id: string) => {
     setFocusAreas(prev => prev.filter(area => area.id !== id));
+    toast({
+      title: "Focus Area Deleted",
+      description: "The focus area has been successfully deleted.",
+    });
   };
 
   const handleCreateSave = (newAreaData: Omit<FocusArea, 'id'>) => {
@@ -26,6 +31,10 @@ const FocusAreasCard: React.FC = () => {
     };
     setFocusAreas(prev => [...prev, newArea]);
     setIsCreateDialogOpen(false);
+    toast({
+      title: "Focus Area Created",
+      description: `${newAreaData.name} has been successfully created.`,
+    });
   };
 
   const handleEditSave = (updatedAreaData: Omit<FocusArea, 'id'>) => {
@@ -39,6 +48,10 @@ const FocusAreasCard: React.FC = () => {
       );
       setEditingArea(null);
       setIsEditDialogOpen(false);
+      toast({
+        title: "Focus Area Updated",
+        description: `${updatedAreaData.name} has been successfully updated.`,
+      });
     }
   };
 
