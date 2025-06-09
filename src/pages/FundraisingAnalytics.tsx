@@ -55,7 +55,7 @@ const periodOptions = [
   { label: "Custom", value: "custom" },
 ];
 
-const FundraisingAnalyticsPage: React.FC = () => {
+const FundraisingAnalytics: React.FC = () => {
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab');
   
@@ -235,4 +235,4 @@ const FundraisingAnalyticsPage: React.FC = () => {
   );
 };
 
-export default FundraisingAnalyticsPage;
+export default FundraisingAnalytics;
