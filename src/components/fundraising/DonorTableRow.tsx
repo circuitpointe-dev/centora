@@ -33,6 +33,7 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({
       <TableCell>
         <div>
           <div className="font-medium">{donor.name}</div>
+          <div className="text-sm text-gray-500">{donor.organization}</div>
         </div>
       </TableCell>
       <TableCell>
@@ -44,7 +45,10 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({
       <TableCell>
         <div className="text-sm">
           {donor.lastDonation ? (
-            <div className="text-gray-700">{donor.lastDonation}</div>
+            <>
+              <div>${donor.lastDonation.amount?.toLocaleString()}</div>
+              <div className="text-gray-500">{donor.lastDonation.date}</div>
+            </>
           ) : (
             <span className="text-gray-500">No donations</span>
           )}
