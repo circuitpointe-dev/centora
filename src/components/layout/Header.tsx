@@ -1,40 +1,26 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Bell, Settings, LogOut, User, Menu } from 'lucide-react';
+import { Bell, Settings, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import NotificationDropdown from './NotificationDropdown';
 import SettingsDialog from './SettingsDialog';
 import UserProfileDialog from './UserProfileDialog';
 
-interface HeaderProps {
-  sidebarCollapsed?: boolean;
-  onMobileSidebarToggle?: () => void;
-}
-
-const Header = ({ sidebarCollapsed = false, onMobileSidebarToggle }: HeaderProps) => {
+const Header = () => {
   const { user, logout } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const handleLogout = () => {
-    setLogoutConfirmOpen(true);
-  };
-
-  const confirmLogout = () => {
     logout();
-    setLogoutConfirmOpen(false);
   };
 
   // Get user initials from name
@@ -49,25 +35,12 @@ const Header = ({ sidebarCollapsed = false, onMobileSidebarToggle }: HeaderProps
 
   return (
     <>
-      <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
-        <div className={`flex items-center space-x-4 transition-all duration-300 ${
-          // Mobile: no left margin, Desktop: responsive to sidebar state
-          'ml-0 md:ml-16'
-        } ${!sidebarCollapsed ? 'lg:ml-64' : ''}`}>
-          {/* Mobile Sidebar Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onMobileSidebarToggle}
-            className="h-8 w-8 p-0 md:hidden"
-          >
-            <Menu className="h-4 w-4" />
-          </Button>
-
+      <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+        <div className="flex items-center space-x-4">
           {/* Welcome message - hidden on small screens */}
           {user?.name && (
             <div className="hidden sm:block">
-              <span className="text-gray-600">Welcome, </span>
+              <span className="text-gray-600">Welcome </span>
               <span className="font-semibold">{user.name}</span>
             </div>
           )}
@@ -138,17 +111,6 @@ const Header = ({ sidebarCollapsed = false, onMobileSidebarToggle }: HeaderProps
           }}
         />
       )}
-
-      {/* Logout Confirmation Dialog */}
-      <ConfirmationDialog
-        open={logoutConfirmOpen}
-        onOpenChange={setLogoutConfirmOpen}
-        title="Confirm Logout"
-        description="Are you sure you want to log out? You will need to sign in again to access your account."
-        onConfirm={confirmLogout}
-        confirmText="Log out"
-        cancelText="Cancel"
-      />
     </>
   );
 };

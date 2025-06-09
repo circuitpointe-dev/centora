@@ -7,22 +7,16 @@ import { cn } from '@/lib/utils';
 
 const MainLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const { module = 'fundraising' } = useParams();
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header 
-        sidebarCollapsed={sidebarCollapsed}
-        onMobileSidebarToggle={() => setMobileSidebarOpen(true)}
-      />
+      <Header />
       <div className="flex flex-1 overflow-hidden pt-16">
         <Sidebar 
           currentModule={module} 
           isCollapsed={sidebarCollapsed} 
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          isMobileOpen={mobileSidebarOpen}
-          onMobileClose={() => setMobileSidebarOpen(false)}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)} 
         />
         <div className={cn(
           "flex-1 flex flex-col overflow-hidden transition-all duration-300",
