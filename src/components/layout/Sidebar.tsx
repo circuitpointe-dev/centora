@@ -14,26 +14,33 @@ interface SidebarProps {
   currentModule: string;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps) => {
+const Sidebar = ({ 
+  currentModule, 
+  isCollapsed, 
+  onToggleCollapse,
+  isMobileOpen = false,
+  onMobileClose = () => {}
+}: SidebarProps) => {
   const navigate = useNavigate();
   const [showModuleSwitcher, setShowModuleSwitcher] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   
   const currentModuleConfig = moduleConfigs[currentModule as keyof typeof moduleConfigs];
   
   const handleFeatureClick = (featureId: string) => {
     navigate(`/dashboard/${currentModule}/${featureId}`);
     // Close mobile sidebar after navigation
-    setIsMobileOpen(false);
+    onMobileClose();
   };
   
   const handleModuleSwitch = (moduleId: string) => {
     navigate(`/dashboard/${moduleId}/dashboard`);
     setShowModuleSwitcher(false);
     // Close mobile sidebar after navigation
-    setIsMobileOpen(false);
+    onMobileClose();
   };
 
   const toggleModuleSwitcher = () => {
@@ -48,22 +55,9 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
       {isMobileOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={() => setIsMobileOpen(false)}
+          onClick={onMobileClose}
         />
       )}
-
-      {/* Mobile Toggle Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setIsMobileOpen(true)}
-        className={cn(
-          "fixed top-4 left-4 z-30 h-8 w-8 p-0 md:hidden",
-          isMobileOpen && "hidden"
-        )}
-      >
-        <Menu className="h-4 w-4" />
-      </Button>
 
       {/* Sidebar */}
       <div className={cn(
@@ -83,7 +77,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsMobileOpen(false)}
+                onClick={onMobileClose}
                 className="h-8 w-8 p-0"
               >
                 <X className="h-4 w-4" />
