@@ -58,7 +58,7 @@ const FocusAreasCard: React.FC = () => {
             <div key={area.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-sm transition-colors hover:bg-gray-50">
               <div className="flex flex-col gap-2 flex-1 min-w-0">
                 <div className="flex items-center gap-3">
-                  <Badge className={`${area.color} rounded-sm flex-shrink-0`}>
+                  <Badge className="text-gray-700 bg-gray-100 border border-gray-300 rounded-sm flex-shrink-0">
                     {area.name}
                   </Badge>
                 </div>
