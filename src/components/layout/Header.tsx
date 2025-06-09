@@ -37,12 +37,12 @@ const Header = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
-        <div className="flex items-center space-x-4">
+      <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+        <div className="flex items-center space-x-4 ml-0 md:ml-16 lg:ml-64">
           {/* Welcome message - hidden on small screens */}
           {user?.name && (
             <div className="hidden sm:block">
-              <span className="text-gray-600">Welcome </span>
+              <span className="text-gray-600">Welcome, </span>
               <span className="font-semibold">{user.name}</span>
             </div>
           )}
