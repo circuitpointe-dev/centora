@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Bell, Settings, LogOut, User } from 'lucide-react';
@@ -7,7 +8,8 @@ import {
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuLabel,
-  DropdownMenuSeparator 
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import NotificationDropdown from './NotificationDropdown';
