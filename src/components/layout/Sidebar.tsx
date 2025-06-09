@@ -161,7 +161,7 @@ const Sidebar = ({
                 <Grid3X3 className={cn("h-4 w-4", (isCollapsed && !isMobileOpen) ? "" : "mr-3")} />
                 {(!isCollapsed || isMobileOpen) && (
                   <>
-                    <span className="text-sm font-light flex-1">Switch Module</span>
+                    <span className="text-sm font-light flex-1">Switch Modules</span>
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
