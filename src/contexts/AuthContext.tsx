@@ -26,14 +26,20 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize with a mock user to simulate being logged in
-  const [user, setUser] = useState<User | null>({
-    id: "1",
-    email: "chioma.ike@ngo.org",
-    name: "Chioma Ike"
+  // Initialize user state from localStorage
+  const [user, setUser] = useState<User | null>(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    if (isAuthenticated) {
+      return {
+        id: "1",
+        email: "chioma.ike@ngo.org",
+        name: "Chioma Ike"
+      };
+    }
+    return null;
   });
 
-  // Sync localStorage on mount and when user changes
+  // Sync localStorage whenever user state changes
   useEffect(() => {
     if (user) {
       localStorage.setItem('isAuthenticated', 'true');

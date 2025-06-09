@@ -63,14 +63,6 @@ const Header = ({ sidebarCollapsed = false, onMobileSidebarToggle }: HeaderProps
           >
             <Menu className="h-4 w-4" />
           </Button>
-
-          {/* Welcome message - hidden on small screens */}
-          {user?.name && (
-            <div className="hidden sm:block">
-              <span className="text-gray-600">Welcome, </span>
-              <span className="font-semibold">{user.name}</span>
-            </div>
-          )}
         </div>
         
         <div className="flex items-center space-x-4">
