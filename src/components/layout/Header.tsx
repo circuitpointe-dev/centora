@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Bell, Settings, LogOut, User } from 'lucide-react';
+import { Bell, Settings, LogOut, User, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -16,7 +16,12 @@ import NotificationDropdown from './NotificationDropdown';
 import SettingsDialog from './SettingsDialog';
 import UserProfileDialog from './UserProfileDialog';
 
-const Header = () => {
+interface HeaderProps {
+  sidebarCollapsed?: boolean;
+  onMobileSidebarToggle?: () => void;
+}
+
+const Header = ({ sidebarCollapsed = false, onMobileSidebarToggle }: HeaderProps) => {
   const { user, logout } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -38,7 +43,20 @@ const Header = () => {
   return (
     <>
       <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
-        <div className="flex items-center space-x-4 ml-0 md:ml-16 lg:ml-64">
+        <div className={`flex items-center space-x-4 transition-all duration-300 ${
+          // Mobile: no left margin, Desktop: responsive to sidebar state
+          'ml-0 md:ml-16'
+        } ${!sidebarCollapsed ? 'lg:ml-64' : ''}`}>
+          {/* Mobile Sidebar Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onMobileSidebarToggle}
+            className="h-8 w-8 p-0 md:hidden"
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+
           {/* Welcome message - hidden on small screens */}
           {user?.name && (
             <div className="hidden sm:block">
