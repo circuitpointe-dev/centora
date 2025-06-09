@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 interface User {
   id: string;
@@ -33,17 +33,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     name: "Chioma Ike"
   });
 
+  // Sync localStorage on mount and when user changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('isAuthenticated', 'true');
+    } else {
+      localStorage.removeItem('isAuthenticated');
+    }
+  }, [user]);
+
   const login = async (email: string, password: string): Promise<boolean> => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Mock validation - in real app, this would call your backend
     if (email && password.length >= 6) {
-      setUser({
+      const newUser = {
         id: "1",
         email,
         name: "Chioma Ike", // For demo purposes, always use this name
-      });
+      };
+      setUser(newUser);
       return true;
     }
     return false;
@@ -59,11 +69,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Mock validation
     if (email && password.length >= 6 && name) {
-      setUser({
+      const newUser = {
         id: "1",
         email,
         name,
-      });
+      };
+      setUser(newUser);
       return true;
     }
     return false;
@@ -71,6 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
+    // localStorage will be cleared by the useEffect
   };
 
   const value = {
