@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Bell, Settings, LogOut, User } from 'lucide-react';
@@ -7,7 +6,8 @@ import {
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuLabel,
+  DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import NotificationDropdown from './NotificationDropdown';
@@ -37,7 +37,13 @@ const Header = () => {
     <>
       <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
         <div className="flex items-center space-x-4">
-          {/* Left side content can go here */}
+          {/* Welcome message - hidden on small screens */}
+          {user?.name && (
+            <div className="hidden sm:block">
+              <span className="text-gray-600">Welcome </span>
+              <span className="font-semibold">{user.name}</span>
+            </div>
+          )}
         </div>
         
         <div className="flex items-center space-x-4">
@@ -65,6 +71,15 @@ const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{user?.name}</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user?.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setProfileOpen(true)}>
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
