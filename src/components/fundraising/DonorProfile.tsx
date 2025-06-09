@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
@@ -51,7 +50,7 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
 
   return (
     <div className="bg-[#f4f6f9] flex flex-row justify-center w-full">
-      <div className="bg-[#f4f6f9] w-[700px] relative">
+      <div className="bg-[#f4f6f9] w-[900px] relative">
         <Separator className="w-full" />
 
         <div className="w-full py-6">
