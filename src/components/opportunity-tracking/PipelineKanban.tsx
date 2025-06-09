@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Opportunity, OpportunityPipeline } from "@/types/opportunity";
-import PipelineCard from "./PIpelineCard";
+import PipelineCard from "./PipelineCard";
 
 interface KanbanBoardProps {
   opportunities: Opportunity[];
