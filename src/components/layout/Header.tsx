@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import NotificationDropdown from './NotificationDropdown';
 import SettingsDialog from './SettingsDialog';
 import UserProfileDialog from './UserProfileDialog';
@@ -25,9 +26,15 @@ const Header = ({ sidebarCollapsed = false, onMobileSidebarToggle }: HeaderProps
   const { user, logout } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const handleLogout = () => {
+    setLogoutConfirmOpen(true);
+  };
+
+  const confirmLogout = () => {
     logout();
+    setLogoutConfirmOpen(false);
   };
 
   // Get user initials from name
@@ -131,6 +138,17 @@ const Header = ({ sidebarCollapsed = false, onMobileSidebarToggle }: HeaderProps
           }}
         />
       )}
+
+      {/* Logout Confirmation Dialog */}
+      <ConfirmationDialog
+        open={logoutConfirmOpen}
+        onOpenChange={setLogoutConfirmOpen}
+        title="Confirm Logout"
+        description="Are you sure you want to log out? You will need to sign in again to access your account."
+        onConfirm={confirmLogout}
+        confirmText="Log out"
+        cancelText="Cancel"
+      />
     </>
   );
 };
