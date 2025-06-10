@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Toaster } from '@/components/ui/sonner';
@@ -22,6 +23,17 @@ import GenericFeaturePage from '@/components/pages/GenericFeaturePage';
 
 const queryClient = new QueryClient();
 
+// Wrapper component for Registration that has access to navigate
+const RegistrationWrapper = () => {
+  const navigate = useNavigate();
+  
+  const handleClose = () => {
+    navigate('/login');
+  };
+
+  return <RegistrationModal onClose={handleClose} />;
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -32,7 +44,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegistrationModal />} />
+              <Route path="/register" element={<RegistrationWrapper />} />
               
               {/* Protected Routes */}
               <Route
