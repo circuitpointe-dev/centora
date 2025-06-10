@@ -1,18 +1,30 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import ManualProposalCreationDialog from '../proposal-management/ManualProposalCreationDialog';
+import { useNavigate } from 'react-router-dom';
 
 const ManualProposalCreationPage = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Open the dialog when the page loads
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    // Navigate back to proposal management when dialog closes
+    navigate('/dashboard/fundraising/proposal-management');
+  };
+
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Manual Proposal Creation
-        </h1>
-        <p className="text-gray-600">
-          This page will be updated soon with the manual proposal creation form.
-        </p>
-      </div>
-    </div>
+    <ManualProposalCreationDialog 
+      open={isOpen} 
+      onOpenChange={handleClose}
+      proposalTitle="New Proposal"
+      opportunityName="Selected Opportunity"
+    />
   );
 };
 
