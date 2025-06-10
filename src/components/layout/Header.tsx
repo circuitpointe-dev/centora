@@ -75,7 +75,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
       >
         {/* Welcome Message - Hidden on mobile */}
         <div className="hidden md:flex items-center">
-          <h2 className="text-xs text-gray-700">
+          <h2 className="text-sm text-gray-700">
             Welcome,{" "}
             <span className="font-semibold text-gray-900">
               {currentUser.name}
