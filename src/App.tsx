@@ -1,57 +1,66 @@
-// src/App.tsx
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { Toaster } from '@/components/ui/sonner';
 
-import Index from "./components/pages/Index";
-import LoginPage from "./components/auth/LoginPage";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import MainLayout from "./components/layout/MainLayout";
-import DashboardPage from "./components/pages/DashboardPage";
-import GenericFeaturePage from "./components/pages/GenericFeaturePage";
+// Components
+import Index from '@/components/pages/Index';
+import LoginPage from '@/components/auth/LoginPage';
+import RegistrationModal from '@/components/auth/RegistrationModal';
+import MainLayout from '@/components/layout/MainLayout';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
+// Dashboard Pages
+import DashboardPage from '@/components/pages/DashboardPage';
+import DonorManagementPage from '@/components/pages/DonorManagementPage';
+import OpportunityTrackingPage from '@/components/pages/OpportunityTrackingPage';
+import ProposalManagementPage from '@/components/pages/ProposalManagementPage';
+import ManualProposalCreationPage from '@/components/pages/ManualProposalCreationPage';
+import FundraisingAnalyticsPage from '@/components/pages/FundraisingAnalyticsPage';
+import GenericFeaturePage from '@/components/pages/GenericFeaturePage';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <AuthProvider>
+function App() {
+  return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public: Landing */}
-            <Route path="/" element={<Index />} />
-
-            {/* Public: Login */}
-            <Route path="/login" element={<LoginPage />} />
-
-            {/* Public: Register (also shows LoginPage, but auto-opens modal) */}
-            <Route path="/register" element={<LoginPage />} />
-
-            {/* Protected: Dashboard + Features */}
-            <Route
-              path="/dashboard/:module"
-              element={
-                <ProtectedRoute>
-                  <MainLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path=":feature" element={<GenericFeaturePage />} />
-            </Route>
-
-            {/* Catch-all: send anything else back to “/” */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <AuthProvider>
+        <Router>
+          <div className="App">
+            <Toaster />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegistrationModal />} />
+              
+              {/* Protected Routes */}
+              <Route
+                path="/dashboard/*"
+                element={
+                  <ProtectedRoute>
+                    <MainLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<DashboardPage />} />
+                
+                {/* Fundraising Module Routes */}
+                <Route path="fundraising/donors" element={<DonorManagementPage />} />
+                <Route path="fundraising/opportunities" element={<OpportunityTrackingPage />} />
+                <Route path="fundraising/proposal-management" element={<ProposalManagementPage />} />
+                <Route path="fundraising/manual-proposal-creation" element={<ManualProposalCreationPage />} />
+                <Route path="fundraising/analytics" element={<FundraisingAnalyticsPage />} />
+                
+                {/* Other module routes */}
+                <Route path=":module" element={<GenericFeaturePage />} />
+              </Route>
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
     </QueryClientProvider>
-  </AuthProvider>
-);
+  );
+}
 
 export default App;
