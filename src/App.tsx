@@ -1,3 +1,4 @@
+
 // src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,6 +13,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MainLayout from "./components/layout/MainLayout";
 import DashboardPage from "./components/pages/DashboardPage";
 import GenericFeaturePage from "./components/pages/GenericFeaturePage";
+import ManualProposalCreationPage from "./components/pages/ManualProposalCreationPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +34,16 @@ const App = () => (
             {/* Public: Register (also shows LoginPage, but auto-opens modal) */}
             <Route path="/register" element={<LoginPage />} />
 
+            {/* Protected: Manual Proposal Creation */}
+            <Route
+              path="/dashboard/fundraising/manual-proposal-creation"
+              element={
+                <ProtectedRoute>
+                  <ManualProposalCreationPage />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Protected: Dashboard + Features */}
             <Route
               path="/dashboard/:module"
@@ -45,7 +57,7 @@ const App = () => (
               <Route path=":feature" element={<GenericFeaturePage />} />
             </Route>
 
-            {/* Catch-all: send anything else back to “/” */}
+            {/* Catch-all: send anything else back to "/" */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
