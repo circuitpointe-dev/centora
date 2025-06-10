@@ -4,29 +4,10 @@ import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Filter } from 'lucide-react';
-import DonorManagementPage from './DonorManagementPage';
-import OpportunityTrackingPage from './OpportunityTrackingPage';
-import ProposalManagementPage from './ProposalManagementPage';
-import FundraisingAnalyticsPage from './FundraisingAnalyticsPage';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
   
-  // Render specific page components for certain routes
-  if (module === 'fundraising' && feature === 'donor-management') {
-    return <DonorManagementPage />;
-  }
-
-  if (module === 'fundraising' && feature === 'opportunity-tracking') {
-      return <OpportunityTrackingPage />;
-  }
-  
-  if (module === 'fundraising' && feature === 'proposal-management') {
-      return <ProposalManagementPage />;
-  }
-  if (module === 'fundraising' && feature === 'fundraising-analytics') {
-      return <FundraisingAnalyticsPage />;
-  }
   const getFeatureName = (featureId: string) => {
     // Convert kebab-case to Title Case
     return featureId?.split('-').map(word => 
@@ -50,15 +31,21 @@ const GenericFeaturePage = () => {
     return moduleNames[moduleId] || moduleId;
   };
 
+  // If no feature is specified, show module dashboard
+  const displayName = feature ? getFeatureName(feature) : `${getModuleName(module || '')} Dashboard`;
+  const displayDescription = feature 
+    ? `Manage ${getFeatureName(feature).toLowerCase()} in ${getModuleName(module || '')}`
+    : `Overview of ${getModuleName(module || '')} activities`;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            {getFeatureName(feature || '')}
+            {displayName}
           </h1>
           <p className="text-gray-600 mt-2">
-            Manage {getFeatureName(feature || '').toLowerCase()} in {getModuleName(module || '')}
+            {displayDescription}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -84,7 +71,7 @@ const GenericFeaturePage = () => {
           <CardHeader>
             <CardTitle>Records</CardTitle>
             <CardDescription>
-              All {getFeatureName(feature || '').toLowerCase()} records
+              All {displayName.toLowerCase()} records
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -98,7 +85,7 @@ const GenericFeaturePage = () => {
                     <div>
                       <h3 className="font-medium">Record {item}</h3>
                       <p className="text-sm text-gray-500">
-                        Sample {getFeatureName(feature || '').toLowerCase()} record
+                        Sample {displayName.toLowerCase()} record
                       </p>
                     </div>
                   </div>
@@ -162,3 +149,4 @@ const GenericFeaturePage = () => {
 };
 
 export default GenericFeaturePage;
+

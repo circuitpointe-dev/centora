@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
@@ -62,9 +61,10 @@ function App() {
                 <Route path="fundraising/opportunities" element={<OpportunityTrackingPage />} />
                 <Route path="fundraising/proposal-management" element={<ProposalManagementPage />} />
                 <Route path="fundraising/manual-proposal-creation" element={<ManualProposalCreationPage />} />
-                <Route path="fundraising/analytics" element={<FundraisingAnalyticsPage />} />
+                <Route path="fundraising/fundraising-analytics" element={<FundraisingAnalyticsPage />} />
                 
                 {/* Other module routes */}
+                <Route path=":module/:feature" element={<GenericFeaturePage />} />
                 <Route path=":module" element={<GenericFeaturePage />} />
               </Route>
             </Routes>
