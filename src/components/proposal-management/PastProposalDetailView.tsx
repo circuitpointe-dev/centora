@@ -1,4 +1,3 @@
-
 import React from "react";
 import { RotateCcw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -45,7 +44,7 @@ const PastProposalDetailView: React.FC<PastProposalDetailViewProps> = ({
       creationContext: creationContext
     };
     
-    navigate("/modules/fundraising/manual-proposal-creation", {
+    navigate("/dashboard/fundraising/manual-proposal-creation", {
       state: { prefilledData: proposalData }
     });
   };

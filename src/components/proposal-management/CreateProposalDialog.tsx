@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -48,11 +47,11 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
     // Navigate based on creation method
     switch (creationMethod) {
       case "ai-wizard":
-        navigate("/modules/fundraising/ai-proposal-wizard");
+        navigate("/dashboard/fundraising/ai-proposal-wizard");
         break;
       case "upload-template":
         // Navigate to proposal management with browse templates tab active
-        navigate("/modules/fundraising/proposal-management?tab=browse-templates&mode=create", {
+        navigate("/dashboard/fundraising/proposal-management?tab=browse-templates&mode=create", {
           state: { 
             creationContext: {
               method: "template",
@@ -65,7 +64,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
         break;
       case "reuse-library":
         // Navigate to proposal management with past proposal library tab active
-        navigate("/modules/fundraising/proposal-management?tab=past-proposals&mode=create", {
+        navigate("/dashboard/fundraising/proposal-management?tab=past-proposals&mode=create", {
           state: { 
             creationContext: {
               method: "reuse",
@@ -77,7 +76,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
         });
         break;
       case "create-manually":
-        navigate("/modules/fundraising/manual-proposal-creation");
+        navigate("/dashboard/fundraising/manual-proposal-creation");
         break;
       default:
         break;

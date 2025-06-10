@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -45,7 +44,7 @@ const BrowseTemplateDetailView: React.FC<BrowseTemplateDetailViewProps> = ({
       creationContext: creationContext
     };
     
-    navigate("/modules/fundraising/manual-proposal-creation", {
+    navigate("/dashboard/fundraising/manual-proposal-creation", {
       state: { prefilledData: templateData }
     });
   };

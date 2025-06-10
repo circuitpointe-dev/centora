@@ -24,6 +24,7 @@ interface BrowseTemplatesTabProps {
   creationContext?: CreationContext;
 }
 
+// ... keep existing code (sampleTemplates array)
 const sampleTemplates: Template[] = [
   {
     title: "Empower Change: A Fundraising Proposal",
@@ -81,6 +82,7 @@ const BrowseTemplateCard: React.FC<{
   onUseTemplate: (template: Template) => void;
   creationContext?: CreationContext;
 }> = ({ template, onPreview, onUseTemplate, creationContext }) => {
+  // ... keep existing code (renderStars, getFileTypeColor functions)
   const renderStars = (rating: number = 0) => {
     return Array.from({ length: 5 }, (_, index) => (
       <svg
@@ -194,7 +196,7 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
       creationContext: creationContext
     };
     
-    navigate("/modules/fundraising/manual-proposal-creation", {
+    navigate("/dashboard/fundraising/manual-proposal-creation", {
       state: { prefilledData: templateData }
     });
   };

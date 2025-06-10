@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BarChart3, Save } from "lucide-react";
@@ -51,7 +50,7 @@ const ManualProposalCreation: React.FC = () => {
 
   const handleBack = () => {
     // Navigate back to proposal management
-    navigate("/modules/fundraising/proposal-management");
+    navigate("/dashboard/fundraising/proposal-management");
   };
 
   const getSubtitleText = () => {
