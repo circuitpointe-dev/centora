@@ -1,11 +1,11 @@
 
 import React, { useState } from "react";
 import {
-  SideDialog,
-  SideDialogContent,
-  SideDialogHeader,
-  SideDialogTitle,
-} from "@/components/ui/side-dialog";
+  LargeSideDialog,
+  LargeSideDialogContent,
+  LargeSideDialogHeader,
+  LargeSideDialogTitle,
+} from "@/components/ui/large-side-dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,13 +63,13 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   ];
 
   return (
-    <SideDialog open={open} onOpenChange={onOpenChange}>
-      <SideDialogContent className="max-w-[90vw] w-full bg-white">
-        <SideDialogHeader className="border-b border-gray-200 pb-4">
+    <LargeSideDialog open={open} onOpenChange={onOpenChange}>
+      <LargeSideDialogContent className="bg-white">
+        <LargeSideDialogHeader className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">
-            <SideDialogTitle className="text-lg font-semibold text-gray-900">
+            <LargeSideDialogTitle className="text-lg font-semibold text-gray-900">
               {proposalTitle} - {opportunityName}
-            </SideDialogTitle>
+            </LargeSideDialogTitle>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
@@ -85,7 +85,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
               </Button>
             </div>
           </div>
-        </SideDialogHeader>
+        </LargeSideDialogHeader>
 
         <div className="flex-1 flex overflow-hidden">
           {/* Main Content Column */}
@@ -242,8 +242,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
             </div>
           </div>
         </div>
-      </SideDialogContent>
-    </SideDialog>
+      </LargeSideDialogContent>
+    </LargeSideDialog>
   );
 };
 
