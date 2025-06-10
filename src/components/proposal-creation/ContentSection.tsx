@@ -1,118 +1,41 @@
 
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import React from "react";
+import ProposalOverviewTab from "./ProposalOverviewTab";
+import ProposalNarrativeTab from "./ProposalNarrativeTab";
+import ProposalBudgetTab from "./ProposalBudgetTab";
+import ProposalLogframeTab from "./ProposalLogframeTab";
+import ProposalAttachmentTab from "./ProposalAttachmentTab";
+import ProposalTeamTab from "./ProposalTeamTab";
 
 interface ContentSectionProps {
   activeTab: string;
 }
 
 const ContentSection = ({ activeTab }: ContentSectionProps): JSX.Element => {
-  // Define the form fields data for different tabs
-  const getFieldsForTab = (tab: string) => {
-    switch (tab) {
+  const renderTabContent = () => {
+    switch (activeTab) {
       case "overview":
-        return [
-          {
-            id: "summary",
-            label: "Summary",
-            placeholder: "Enter project summary...",
-          },
-          {
-            id: "objectives",
-            label: "Objectives",
-            placeholder: "Enter project objectives...",
-          },
-        ];
+        return <ProposalOverviewTab />;
       case "narrative":
-        return [
-          {
-            id: "narrative",
-            label: "Project Narrative",
-            placeholder: "Enter project narrative...",
-          },
-          {
-            id: "background",
-            label: "Background",
-            placeholder: "Enter project background...",
-          },
-        ];
+        return <ProposalNarrativeTab />;
       case "budget":
-        return [
-          {
-            id: "budget-breakdown",
-            label: "Budget Breakdown",
-            placeholder: "Enter budget breakdown...",
-          },
-          {
-            id: "justification",
-            label: "Budget Justification",
-            placeholder: "Enter budget justification...",
-          },
-        ];
+        return <ProposalBudgetTab />;
       case "logframe":
-        return [
-          {
-            id: "outcome",
-            label: "Outcome",
-            placeholder: "Enter expected outcome...",
-          },
-          {
-            id: "indicators",
-            label: "Indicators",
-            placeholder: "Enter indicators...",
-          },
-          {
-            id: "assumptions",
-            label: "Assumptions",
-            placeholder: "Enter assumptions...",
-          },
-        ];
+        return <ProposalLogframeTab />;
       case "attachments":
-        return [
-          {
-            id: "documents",
-            label: "Supporting Documents",
-            placeholder: "List supporting documents...",
-          },
-        ];
+        return <ProposalAttachmentTab />;
       case "team":
-        return [
-          {
-            id: "team-members",
-            label: "Team Members",
-            placeholder: "Enter team member details...",
-          },
-          {
-            id: "roles",
-            label: "Roles & Responsibilities",
-            placeholder: "Enter roles and responsibilities...",
-          },
-        ];
+        return <ProposalTeamTab />;
       default:
-        return [];
+        return <ProposalOverviewTab />;
     }
   };
 
-  const formFields = getFieldsForTab(activeTab);
-
   return (
-    <div className="flex flex-col w-full max-w-3xl gap-8">
-      {formFields.map((field) => (
-        <div key={field.id} className="flex flex-col gap-2 w-full">
-          <Label
-            htmlFor={field.id}
-            className="font-medium text-sm text-[#383839]"
-          >
-            {field.label}
-          </Label>
-          <Textarea
-            id={field.id}
-            placeholder={field.placeholder}
-            className="h-28 resize-none text-sm"
-          />
-        </div>
-      ))}
+    <div className="px-10 py-6">
+      <div className="flex flex-col w-full max-w-3xl gap-8">
+        {renderTabContent()}
+      </div>
     </div>
   );
 };
