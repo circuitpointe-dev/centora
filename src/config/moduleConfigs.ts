@@ -17,6 +17,9 @@ import {
   CheckCircle,
   FileCheck,
   UserCheck,
+  FileSignature,
+  Shield,
+  Template,
 } from 'lucide-react';
 
 export const moduleConfigs = {
@@ -54,9 +57,10 @@ export const moduleConfigs = {
     color: 'text-gray-600',
     features: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'document-library', name: 'Document Library', icon: FileText },
-      { id: 'document-workflow', name: 'Document Workflow', icon: FileText },
-      { id: 'document-analytics', name: 'Analytics', icon: BarChart3 },
+      { id: 'documents', name: 'Documents', icon: FileText },
+      { id: 'e-signature', name: 'E-Signature', icon: FileSignature },
+      { id: 'compliance', name: 'Compliance', icon: Shield },
+      { id: 'templates', name: 'Templates', icon: Template },
       { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
