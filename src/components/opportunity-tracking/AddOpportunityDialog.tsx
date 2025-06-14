@@ -3,11 +3,11 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  SideDialog,
+  SideDialogContent,
+  SideDialogHeader,
+  SideDialogTitle,
+} from "@/components/ui/side-dialog";
 import { Opportunity } from "@/types/opportunity";
 import { useToast } from "@/hooks/use-toast";
 import OpportunityForm from "./OpportunityForm";
@@ -99,15 +99,15 @@ const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-white p-0">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold mb-4 text-black px-6 pt-4">
+    <SideDialog open={isOpen} onOpenChange={onClose}>
+      <SideDialogContent className="w-full sm:w-[600px] bg-white">
+        <SideDialogHeader>
+          <SideDialogTitle className="text-xl font-bold text-black">
             Add New Opportunity
-          </DialogTitle>
-        </DialogHeader>
+          </SideDialogTitle>
+        </SideDialogHeader>
         
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="flex-1 overflow-y-auto p-6">
           <OpportunityForm
             form={form}
             donors={donors}
@@ -115,7 +115,7 @@ const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
             currencyOptions={CURRENCY_OPTIONS}
           />
           
-          <div className="flex justify-end gap-2 p-6 pt-0">
+          <div className="flex justify-end gap-2 pt-6">
             <Button variant="outline" onClick={onClose} type="button">
               Cancel
             </Button>
@@ -127,8 +127,8 @@ const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SideDialogContent>
+    </SideDialog>
   );
 };
 

@@ -28,6 +28,30 @@ export const moduleConfigs = {
       { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
+  grants: {
+    name: 'Grants Management',
+    icon: Award,
+    color: 'text-orange-600',
+    features: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'grant-applications', name: 'Grant Applications', icon: Award },
+      { id: 'grant-tracking', name: 'Grant Tracking', icon: BarChart3 },
+      { id: 'compliance', name: 'Compliance', icon: FileText },
+      { id: 'settings', name: 'Settings', icon: Settings },
+    ]
+  },
+  documents: {
+    name: 'Document Management',
+    icon: FileText,
+    color: 'text-gray-600',
+    features: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'document-library', name: 'Document Library', icon: FileText },
+      { id: 'document-workflow', name: 'Document Workflow', icon: FileText },
+      { id: 'document-analytics', name: 'Analytics', icon: BarChart3 },
+      { id: 'settings', name: 'Settings', icon: Settings },
+    ]
+  },
   programme: {
     name: 'Programme Management',
     icon: Target,
@@ -88,18 +112,6 @@ export const moduleConfigs = {
       { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
-  documents: {
-    name: 'Document Management',
-    icon: FileText,
-    color: 'text-gray-600',
-    features: [
-      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'document-library', name: 'Document Library', icon: FileText },
-      { id: 'document-workflow', name: 'Document Workflow', icon: FileText },
-      { id: 'document-analytics', name: 'Analytics', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
-    ]
-  },
   hr: {
     name: 'HR Management',
     icon: Users,
@@ -121,18 +133,6 @@ export const moduleConfigs = {
       { id: 'user-accounts', name: 'User Accounts', icon: User },
       { id: 'roles-permissions', name: 'Roles & Permissions', icon: User },
       { id: 'user-analytics', name: 'Analytics', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
-    ]
-  },
-  grants: {
-    name: 'Grants Management',
-    icon: Award,
-    color: 'text-orange-600',
-    features: [
-      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'grant-applications', name: 'Grant Applications', icon: Award },
-      { id: 'grant-tracking', name: 'Grant Tracking', icon: BarChart3 },
-      { id: 'compliance', name: 'Compliance', icon: FileText },
       { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
