@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, TrendingUp, Users, DollarSign, UserPlus, Plus, FileText, BarChart, File, Clock, AlertTriangle, CheckCircle, Upload, FolderOpen, BookOpen, Shield, Settings, Building2, Users2, Scale, Monitor } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, DollarSign, UserPlus, Plus, FileText, BarChart as BarChartIcon, File, Clock, AlertTriangle, CheckCircle, Upload, FolderOpen, BookOpen, Shield, Settings, Building2, Users2, Scale, Monitor } from 'lucide-react';
 import { CalendarCard } from '@/components/fundraising/CalendarCard';
 import { DeadlinesCard } from '@/components/fundraising/DeadlinesCard';
 import NewDonorDialog from '@/components/fundraising/NewDonorDialog';
