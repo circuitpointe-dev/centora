@@ -46,6 +46,15 @@ const DashboardPage = () => {
     navigate('/dashboard/fundraising/fundraising-analytics?tab=generate-report');
   };
 
+  // Grants-specific content - redirect to grants-manager
+  if (module === 'grants') {
+    // If we're on the generic dashboard route for grants, redirect to grants-manager
+    if (feature === 'dashboard' || !feature) {
+      navigate('/dashboard/grants/grants-manager', { replace: true });
+      return null;
+    }
+  }
+
   // Fundraising-specific content
   if (module === 'fundraising') {
     return (

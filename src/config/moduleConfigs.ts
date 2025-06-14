@@ -12,6 +12,11 @@ import {
   Award,
   BarChart3,
   Settings,
+  Archive,
+  Clock,
+  CheckCircle,
+  FileCheck,
+  UserCheck,
 } from 'lucide-react';
 
 export const moduleConfigs = {
@@ -33,11 +38,14 @@ export const moduleConfigs = {
     icon: Award,
     color: 'text-orange-600',
     features: [
-      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'grant-applications', name: 'Grant Applications', icon: Award },
-      { id: 'grant-tracking', name: 'Grant Tracking', icon: BarChart3 },
-      { id: 'compliance', name: 'Compliance', icon: FileText },
-      { id: 'settings', name: 'Settings', icon: Settings },
+      { id: 'grants-manager', name: 'Grants Manager', icon: BarChart3 },
+      { id: 'total-grants', name: 'Total Grants', icon: Award },
+      { id: 'active-grants', name: 'Active Grants', icon: CheckCircle },
+      { id: 'pending-grants', name: 'Pending Grants', icon: Clock },
+      { id: 'closed-grants', name: 'Closed Grants', icon: Archive },
+      { id: 'grants-archive', name: 'Grants Archive', icon: Archive },
+      { id: 'grantee-submissions', name: 'Grantee Submissions', icon: FileCheck },
+      { id: 'settings', name: 'Settings/Admin', icon: Settings },
     ]
   },
   documents: {
