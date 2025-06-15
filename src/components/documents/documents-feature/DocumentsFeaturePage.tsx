@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, List, Upload } from 'lucide-react';
@@ -25,8 +26,9 @@ const DocumentsFeaturePage = () => {
   );
 
   return (
-    <div className="flex h-full flex-col pt-[75px]">
-      <header className="fixed left-0 right-0 top-0 z-10 flex h-[75px] w-full shrink-0 items-center justify-between border-b border-[#e6eff5] bg-white px-8 py-0">
+    <div className="flex flex-col h-full gap-6">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
         <h1 className="font-medium text-base text-[#383839]">All Documents</h1>
 
         <div className="flex items-center gap-[30px]">
@@ -39,7 +41,7 @@ const DocumentsFeaturePage = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>View in Grid</p>
+                  <p>Grid View</p>
                 </TooltipContent>
               </Tooltip>
               <Tooltip>
@@ -49,7 +51,7 @@ const DocumentsFeaturePage = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>View as list</p>
+                  <p>List View</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -60,8 +62,10 @@ const DocumentsFeaturePage = () => {
             <span>Upload Document</span>
           </Button>
         </div>
-      </header>
-      <main className="flex-1 overflow-y-auto bg-gray-50 p-8 grid grid-cols-12 gap-8">
+      </div>
+
+      {/* Page Content */}
+      <div className="grid grid-cols-12 gap-8">
         <div className="col-span-12 lg:col-span-9">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {documentsData.map((doc) => (
@@ -91,7 +95,7 @@ const DocumentsFeaturePage = () => {
             )}
           </Card>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
