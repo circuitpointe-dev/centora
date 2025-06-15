@@ -1,9 +1,10 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Filter } from 'lucide-react';
+// Import DocumentsFeature
+import DocumentsFeature from '@/components/documents/DocumentsFeature';
 import DonorManagementPage from './DonorManagementPage';
 import OpportunityTrackingPage from './OpportunityTrackingPage';
 import ProposalManagementPage from './ProposalManagementPage';
@@ -20,6 +21,11 @@ import GrantsSettingsPage from './GrantsSettingsPage';
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
   
+  // Render specific page components for document management
+  if (module === 'documents' && feature === 'documents') {
+    return <DocumentsFeature />;
+  }
+
   // Render specific page components for fundraising routes
   if (module === 'fundraising' && feature === 'donor-management') {
     return <DonorManagementPage />;
