@@ -28,7 +28,9 @@ const Sidebar = ({
     moduleConfigs[currentModule as keyof typeof moduleConfigs];
 
   const handleFeatureClick = (featureId: string) => {
-    navigate(`/dashboard/${currentModule}/${featureId}`);
+    const [path, query] = featureId.split('?');
+    const url = `/dashboard/${currentModule}/${path}${query ? `?${query}` : ''}`;
+    navigate(url);
     // Close mobile sidebar after navigation
     setIsMobileOpen(false);
   };

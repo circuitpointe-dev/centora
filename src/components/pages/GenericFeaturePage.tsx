@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +15,7 @@ import ClosedGrantsPage from './ClosedGrantsPage';
 import GrantsArchivePage from './GrantsArchivePage';
 import GranteeSubmissionsPage from './GranteeSubmissionsPage';
 import GrantsSettingsPage from './GrantsSettingsPage';
+import DocumentsFeaturePage from '@/components/documents/documents-feature/DocumentsFeaturePage';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -35,6 +35,10 @@ const GenericFeaturePage = () => {
   
   if (module === 'fundraising' && feature === 'fundraising-analytics') {
     return <FundraisingAnalyticsPage />;
+  }
+
+  if (module === 'documents' && feature === 'documents') {
+    return <DocumentsFeaturePage />;
   }
 
   // Render specific page components for grants routes
