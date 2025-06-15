@@ -45,17 +45,15 @@ export const NotificationsSection = (): JSX.Element => {
     // ...feel free to add more notifications as necessary
   ];
 
-  // Match the department card height (328px + padding in CardHeader)
-  // CardContent pt-0, so header is pb-4, and padding in department card's .p-8 pt-[33px].
-  // We'll set the Card's min-h to match, and ensure scroll area fills the height minus header.
+  // Make height exactly match DocumentByDepartmentSection (around 412px including padding)
   return (
-    <Card className="border border-gray-200 shadow-sm rounded-lg min-h-[370px] h-[370px] flex flex-col">
-      <CardHeader className="pb-4">
+    <Card className="border border-gray-200 shadow-sm rounded-lg h-[412px] min-h-[412px] flex flex-col">
+      <CardHeader className="pb-4 pt-[33px] px-8">
         <CardTitle className="text-lg font-semibold text-gray-900">
           Notifications
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 flex-1 flex flex-col overflow-hidden">
+      <CardContent className="pt-0 flex-1 flex flex-col overflow-hidden px-8 pb-8">
         <ScrollArea className="h-full">
           <div className="space-y-4 pr-2"> {/* add pr-2 for scrollbar spacing */}
             {notifications.map((notification, index) => (
