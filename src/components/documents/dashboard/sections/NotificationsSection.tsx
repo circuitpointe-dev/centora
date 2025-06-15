@@ -1,6 +1,7 @@
 
 import { CheckCircleIcon, ClockIcon, AlertTriangleIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const NotificationsSection = (): JSX.Element => {
   // Notification data
@@ -41,46 +42,51 @@ export const NotificationsSection = (): JSX.Element => {
       iconColor: "text-green-600",
       type: "success",
     },
+    // ...feel free to add more notifications as necessary
   ];
 
+  // Match the department card height (328px + padding in CardHeader)
+  // CardContent pt-0, so header is pb-4, and padding in department card's .p-8 pt-[33px].
+  // We'll set the Card's min-h to match, and ensure scroll area fills the height minus header.
   return (
-    <Card className="border border-gray-200 shadow-sm rounded-lg">
+    <Card className="border border-gray-200 shadow-sm rounded-lg min-h-[370px] h-[370px] flex flex-col">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-semibold text-gray-900">
           Notifications
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-4">
-          {notifications.map((notification, index) => (
-            <div
-              key={`notification-${index}`}
-              className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
-            >
+      <CardContent className="pt-0 flex-1 flex flex-col overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="space-y-4 pr-2"> {/* add pr-2 for scrollbar spacing */}
+            {notifications.map((notification, index) => (
               <div
-                className={`flex w-8 h-8 items-center justify-center rounded-lg ${notification.iconBg} flex-shrink-0`}
+                key={`notification-${index}`}
+                className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
               >
-                <span className={notification.iconColor}>
-                  {notification.icon}
-                </span>
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-col space-y-1">
-                  <div className="text-sm font-medium text-gray-900">
-                    {notification.title}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {notification.description}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {notification.time}
+                <div
+                  className={`flex w-8 h-8 items-center justify-center rounded-lg ${notification.iconBg} flex-shrink-0`}
+                >
+                  <span className={notification.iconColor}>
+                    {notification.icon}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col space-y-1">
+                    <div className="text-sm font-medium text-gray-900">
+                      {notification.title}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {notification.description}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {notification.time}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
       </CardContent>
     </Card>
   );

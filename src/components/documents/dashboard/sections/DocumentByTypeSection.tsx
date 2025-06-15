@@ -11,13 +11,13 @@ export const DocumentByTypeSection = (): JSX.Element => {
     { name: "Reports", value: 32, color: "#10b981" },
   ];
 
-  // Custom legend, left aligned and close to chart
+  // Custom legend, stacked vertically, left-aligned, and closer to the chart
   const CustomLegend = ({
     payload,
   }: {
     payload: { value: string; color: string; payload: { value: number } }[];
   }) => (
-    <div className="flex flex-col justify-center space-y-3 min-w-[140px]">
+    <div className="flex flex-col justify-center space-y-3 min-w-[120px]">
       {payload.map((entry, index) => (
         <div key={index} className="flex items-center space-x-3">
           <span
@@ -40,39 +40,39 @@ export const DocumentByTypeSection = (): JSX.Element => {
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="flex flex-row items-center w-full h-80">
-          <div className="flex-1 h-full flex items-center justify-end">
-            <div className="flex flex-row items-center">
-              <div className="h-64 w-64 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={documentTypes}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                      isAnimationActive={false}
-                    >
-                      {documentTypes.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              {/* Legend, left-aligned, right beside the chart */}
-              <div className="ml-6 flex items-center">
-                <CustomLegend
-                  payload={documentTypes.map((item) => ({
-                    value: item.name,
-                    color: item.color,
-                    payload: item,
-                  }))}
-                />
-              </div>
+        <div className="flex w-full h-80 items-center justify-center">
+          {/* Layout: chart centered horizontally with legend immediately right */}
+          <div className="flex flex-row items-center mx-auto">
+            {/* Center the pie chart vertically */}
+            <div className="flex items-center justify-center h-64 w-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={documentTypes}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                    isAnimationActive={false}
+                  >
+                    {documentTypes.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Legend closely to the right, left-aligned with chart */}
+            <div className="ml-4 flex items-center self-center">
+              <CustomLegend
+                payload={documentTypes.map((item) => ({
+                  value: item.name,
+                  color: item.color,
+                  payload: item,
+                }))}
+              />
             </div>
           </div>
         </div>
