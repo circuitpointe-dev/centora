@@ -11,13 +11,13 @@ import {
 
 const DocumentsFeaturePage = () => {
   return (
-    <div className="-m-8">
-      <header className="flex h-[75px] w-full items-center justify-between border-b border-[#e6eff5] bg-white px-8 py-0">
+    <div className="-mx-6 -my-2 flex h-full flex-col">
+      <header className="flex h-[75px] w-full shrink-0 items-center justify-between border-b border-[#e6eff5] bg-white px-8 py-0">
         <h1 className="font-medium text-base text-[#383839]">All Documents</h1>
 
         <div className="flex items-center gap-[30px]">
           <TooltipProvider>
-            <div className="flex items-center gap-6 w-[75px]">
+            <div className="flex w-[75px] items-center gap-6">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-10 w-10 p-0">
@@ -47,7 +47,7 @@ const DocumentsFeaturePage = () => {
           </Button>
         </div>
       </header>
-      <main className="p-8 bg-gray-50 h-[calc(100vh-75px)]">
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-8">
         {/* Page content will go here */}
       </main>
     </div>
