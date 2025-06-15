@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import DocumentList from './DocumentList';
 
 const filterOptions = [
   { id: 'all', name: 'All Documents' },
@@ -31,6 +32,7 @@ const filterOptions = [
 ];
 
 const DocumentsFeaturePage = () => {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeFilter, setActiveFilter] = useState('all');
 
   const filteredDocuments = useMemo(
@@ -97,7 +99,7 @@ const DocumentsFeaturePage = () => {
             <div className="flex w-[75px] items-center gap-6">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Button variant="ghost" size="icon" className={`h-9 w-9 ${viewMode === 'grid' ? 'bg-muted' : ''}`} onClick={() => setViewMode('grid')}>
                     <LayoutGrid className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
@@ -107,7 +109,7 @@ const DocumentsFeaturePage = () => {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Button variant="ghost" size="icon" className={`h-9 w-9 ${viewMode === 'list' ? 'bg-muted' : ''}`} onClick={() => setViewMode('list')}>
                     <List className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
@@ -129,22 +131,32 @@ const DocumentsFeaturePage = () => {
       <div className="grid grid-cols-12 gap-8 flex-1 min-h-0">
         <div className="col-span-12 lg:col-span-9">
           <ScrollArea className="h-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 pr-6">
-              {filteredDocuments.length > 0 ? (
-                filteredDocuments.map((doc) => (
-                  <DocumentCard
-                    key={doc.id}
-                    {...doc}
-                    selected={selectedDocumentId === doc.id}
-                    onSelect={() => handleSelectDocument(doc.id)}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full text-center text-gray-500 py-10">
-                  <p>No documents found in this category.</p>
+            {filteredDocuments.length > 0 ? (
+              viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 pr-6">
+                  {filteredDocuments.map((doc) => (
+                    <DocumentCard
+                      key={doc.id}
+                      {...doc}
+                      selected={selectedDocumentId === doc.id}
+                      onSelect={() => handleSelectDocument(doc.id)}
+                    />
+                  ))}
                 </div>
-              )}
-            </div>
+              ) : (
+                <div className="pr-6">
+                  <DocumentList
+                    documents={filteredDocuments}
+                    selectedDocumentId={selectedDocumentId}
+                    onSelectDocument={handleSelectDocument}
+                  />
+                </div>
+              )
+            ) : (
+              <div className="text-center text-gray-500 py-10 pr-6">
+                <p>No documents found in this category.</p>
+              </div>
+            )}
           </ScrollArea>
         </div>
         <div className="hidden lg:block lg:col-span-3">
