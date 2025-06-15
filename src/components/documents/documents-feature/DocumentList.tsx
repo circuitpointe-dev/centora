@@ -20,16 +20,16 @@ interface DocumentListProps {
 }
 
 const DocumentList = ({ documents, selectedDocumentId, onSelectDocument }: DocumentListProps) => {
-  const displayedTagsCount = 2;
+  const displayedTagsCount = 1;
 
   return (
     <Table>
       <TableHeader>
-        <TableRow>
-          <TableHead className="w-[40%]">Name</TableHead>
-          <TableHead>Last Modified</TableHead>
-          <TableHead>Owner</TableHead>
-          <TableHead>Tags</TableHead>
+        <TableRow className="bg-gray-50 hover:bg-gray-50">
+          <TableHead className="w-[40%] text-gray-600">Name</TableHead>
+          <TableHead className="text-gray-600">Last Modified</TableHead>
+          <TableHead className="text-gray-600">Owner</TableHead>
+          <TableHead className="text-gray-600">Tags</TableHead>
           <TableHead className="w-[50px]"></TableHead>
         </TableRow>
       </TableHeader>
