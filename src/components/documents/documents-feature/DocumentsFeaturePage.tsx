@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, List, Upload } from 'lucide-react';
@@ -26,8 +25,8 @@ const DocumentsFeaturePage = () => {
   );
 
   return (
-    <div className="-mx-6 -my-2 flex h-full flex-col">
-      <header className="flex h-[75px] w-full shrink-0 items-center justify-between border-b border-[#e6eff5] bg-white px-8 py-0">
+    <div className="flex h-full flex-col pt-[75px]">
+      <header className="fixed left-0 right-0 top-0 z-10 flex h-[75px] w-full shrink-0 items-center justify-between border-b border-[#e6eff5] bg-white px-8 py-0">
         <h1 className="font-medium text-base text-[#383839]">All Documents</h1>
 
         <div className="flex items-center gap-[30px]">
@@ -64,7 +63,7 @@ const DocumentsFeaturePage = () => {
       </header>
       <main className="flex-1 overflow-y-auto bg-gray-50 p-8 grid grid-cols-12 gap-8">
         <div className="col-span-12 lg:col-span-9">
-          <div className="flex flex-wrap gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {documentsData.map((doc) => (
               <DocumentCard
                 key={doc.id}

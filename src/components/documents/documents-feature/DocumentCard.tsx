@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,7 +30,7 @@ const DocumentCard = ({ fileName, addedTime, owner, tags, onSelect, selected }: 
 
   return (
     <Card 
-      className={`flex flex-col w-[230px] h-[263px] p-0 overflow-hidden cursor-pointer transition-all duration-200 ${selected ? 'border-violet-600 border-2 shadow-lg' : 'border-transparent hover:shadow-md'}`}
+      className={`flex flex-col h-[263px] p-0 overflow-hidden cursor-pointer transition-all duration-200 ${selected ? 'border-violet-600 border-2 shadow-lg' : 'border-transparent hover:shadow-md'}`}
       onClick={onSelect}
     >
       <div className="flex h-28 items-center justify-center bg-[#f2f2f2] rounded-t-[5px]">
