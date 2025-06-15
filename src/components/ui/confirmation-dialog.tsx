@@ -19,6 +19,7 @@ interface ConfirmationDialogProps {
   onConfirm: () => void;
   confirmText?: string;
   cancelText?: string;
+  variant?: 'destructive' | 'constructive';
 }
 
 export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
@@ -29,7 +30,13 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onConfirm,
   confirmText = "Delete",
   cancelText = "Cancel",
+  variant = 'destructive',
 }) => {
+  const confirmButtonClasses = {
+    destructive: "bg-red-600 text-white hover:bg-red-700",
+    constructive: "bg-violet-600 text-white hover:bg-violet-700",
+  };
+  
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="bg-white border-gray-200">
@@ -45,7 +52,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-red-600 text-white hover:bg-red-700"
+            className={confirmButtonClasses[variant]}
           >
             {confirmText}
           </AlertDialogAction>
