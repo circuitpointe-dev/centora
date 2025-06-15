@@ -20,7 +20,7 @@ const DocumentsFeaturePage = () => {
             <div className="flex w-[75px] items-center gap-6">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 p-0">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
                     <LayoutGrid className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
@@ -30,12 +30,12 @@ const DocumentsFeaturePage = () => {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 p-0">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
                     <List className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Details</p>
+                  <p>View as list</p>
                 </TooltipContent>
               </Tooltip>
             </div>
