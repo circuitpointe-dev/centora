@@ -12,6 +12,7 @@ import {
 import DocumentCard from './DocumentCard';
 import { documentsData } from './data';
 import { Card } from '@/components/ui/card';
+import DocumentPreviewCard from './DocumentPreviewCard';
 
 const DocumentsFeaturePage = () => {
   const location = useLocation();
@@ -42,8 +43,13 @@ const DocumentsFeaturePage = () => {
     setSelectedDocumentId(id);
   };
 
-  const selectedDocument = documentsData.find(
-    (doc) => doc.id === selectedDocumentId
+  const handleClosePreview = () => {
+    setSelectedDocumentId(null);
+  };
+
+  const selectedDocument = useMemo(
+    () => documentsData.find((doc) => doc.id === selectedDocumentId),
+    [selectedDocumentId]
   );
 
   return (
@@ -106,21 +112,18 @@ const DocumentsFeaturePage = () => {
           </div>
         </div>
         <div className="hidden lg:block lg:col-span-3">
-          <Card className="h-full sticky top-8">
-            {selectedDocument ? (
-              <div className="p-4">
-                <h3 className="font-bold text-lg mb-4">Preview</h3>
-                <p className="font-medium">{selectedDocument.fileName}</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  More details for the selected document will be shown here.
-                </p>
-              </div>
-            ) : (
+          {selectedDocument ? (
+            <DocumentPreviewCard
+              document={selectedDocument}
+              onClose={handleClosePreview}
+            />
+          ) : (
+            <Card className="h-full sticky top-8">
               <div className="flex h-full items-center justify-center p-4 text-center text-gray-500">
                 <p>Select a document to see the preview</p>
               </div>
-            )}
-          </Card>
+            </Card>
+          )}
         </div>
       </div>
     </div>
