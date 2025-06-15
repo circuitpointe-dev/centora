@@ -1,3 +1,4 @@
+
 import {
   FileTextIcon,
   FolderIcon,
@@ -5,66 +6,71 @@ import {
   ShieldIcon,
   UploadIcon,
 } from "lucide-react";
-import { Card, CardContent } from "../../../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const QuickLinksSection = (): JSX.Element => {
   // Quick links data
   const quickLinks = [
     {
-      icon: <UploadIcon className="h-3.5 w-3.5" />,
-      text: "UploadIcon Document",
-      bgColor: "bg-[#e7eefc]",
+      icon: <UploadIcon className="h-4 w-4" />,
+      text: "Upload Document",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600",
     },
     {
-      icon: <FileTextIcon className="h-3.5 w-3.5" />,
+      icon: <FileTextIcon className="h-4 w-4" />,
       text: "Go to Document Repository",
-      bgColor: "bg-[#e7fcf5]",
+      bgColor: "bg-green-50",
+      iconColor: "text-green-600",
     },
     {
-      icon: <FolderIcon className="h-3.5 w-3.5" />,
+      icon: <FolderIcon className="h-4 w-4" />,
       text: "Access Templates & Library",
-      bgColor: "bg-[#f2e7fc]",
+      bgColor: "bg-purple-50",
+      iconColor: "text-purple-600",
     },
     {
-      icon: <ShieldIcon className="h-3.5 w-3.5" />,
+      icon: <ShieldIcon className="h-4 w-4" />,
       text: "View Compliance Summary",
-      bgColor: "bg-[#fdeee6]",
+      bgColor: "bg-orange-50",
+      iconColor: "text-orange-600",
     },
     {
-      icon: <SettingsIcon className="h-3.5 w-3.5" />,
+      icon: <SettingsIcon className="h-4 w-4" />,
       text: "Open Settings",
-      bgColor: "bg-[#f2f2f2]",
+      bgColor: "bg-gray-50",
+      iconColor: "text-gray-600",
     },
   ];
 
   return (
-    <div>
-      {/* Quick Links Card */}
-      <Card className="w-[382px] shadow-[0px_4px_16px_#eae2fd] rounded-[10px]">
-        <CardContent className="flex flex-col items-start gap-4 pl-6 pr-0 pt-[33px] pb-6">
-          <h3 className="font-medium text-[#383839] text-lg font-['Inter',Helvetica]">
-            Quick Links
-          </h3>
-
-          <div className="flex flex-col items-start gap-[18px]">
-            {quickLinks.map((link, index) => (
-              <button
-                key={index}
-                className="flex items-center gap-2.5 hover:opacity-80 cursor-pointer"
+    <Card className="border border-gray-200 shadow-sm rounded-lg">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg font-semibold text-gray-900">
+          Quick Links
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="space-y-3">
+          {quickLinks.map((link, index) => (
+            <button
+              key={index}
+              className="flex items-center w-full gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors group"
+            >
+              <div
+                className={`flex w-8 h-8 items-center justify-center rounded-lg ${link.bgColor} group-hover:scale-105 transition-transform`}
               >
-                <div
-                  className={`flex w-8 h-8 items-center justify-center rounded-[42px] ${link.bgColor}`}
-                >
+                <span className={link.iconColor}>
                   {link.icon}
-                </div>
-                <span className="font-medium text-[#383839] text-sm font-['Inter',Helvetica]">
-                  {link.text}
                 </span>
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              </div>
+              <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                {link.text}
+              </span>
+            </button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };

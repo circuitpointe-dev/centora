@@ -1,4 +1,3 @@
-import { File, Clock, AlertTriangle, CheckCircle, Upload } from "lucide-react";
 
 import { StatisticsCardSection } from "@/components/documents/dashboard/sections/StatisticsCardSection";
 import { DocumentByTypeSection } from "@/components/documents/dashboard/sections/DocumentByTypeSection";
@@ -9,13 +8,13 @@ import { DocumentByDepartmentSection } from "./dashboard/sections/DocumentByDepa
 
 const DocumentsDashboard = () => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
-      <div>
-        <h1 className="text-xl font-medium text-gray-900">
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Document Management Dashboard
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-600">
           Overview of documents, signatures, and compliance status
         </p>
       </div>
