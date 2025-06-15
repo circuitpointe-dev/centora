@@ -1,8 +1,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, List, Upload } from 'lucide-react';
+import { LayoutGrid, List, Upload, Filter, Check } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -14,18 +13,31 @@ import { documentsData } from './data';
 import { Card } from '@/components/ui/card';
 import DocumentPreviewCard from './DocumentPreviewCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+
+const filterOptions = [
+  { id: 'all', name: 'All Documents' },
+  { id: 'policies', name: 'Policies' },
+  { id: 'finance', name: 'Finance' },
+  { id: 'contracts', name: 'Contracts' },
+  { id: 'm-e', name: 'M & E' },
+  { id: 'uncategorized', name: 'Uncategorized' },
+];
 
 const DocumentsFeaturePage = () => {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const documentType = searchParams.get('type');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const filteredDocuments = useMemo(
     () =>
-      documentType && documentType !== 'all'
-        ? documentsData.filter((doc) => doc.category === documentType)
+      activeFilter && activeFilter !== 'all'
+        ? documentsData.filter((doc) => doc.category === activeFilter)
         : documentsData,
-    [documentType]
+    [activeFilter]
   );
 
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
@@ -53,11 +65,49 @@ const DocumentsFeaturePage = () => {
     [selectedDocumentId]
   );
 
+  const handleFilterChange = (filterId: string) => {
+    setActiveFilter(filterId);
+    setIsFilterOpen(false);
+  };
+
   return (
     <div className="flex flex-col h-full gap-6 pb-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="font-medium text-base text-[#383839]">All Documents</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="font-medium text-base text-[#383839]">
+            All Documents
+          </h1>
+          <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 w-auto px-3 gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                <span>Filter</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-2" align="start">
+              <div className="space-y-1">
+                {filterOptions.map((option) => (
+                  <Button
+                    key={option.id}
+                    variant="ghost"
+                    className="w-full justify-between font-normal"
+                    onClick={() => handleFilterChange(option.id)}
+                  >
+                    {option.name}
+                    {activeFilter === option.id && (
+                      <Check className="h-4 w-4" />
+                    )}
+                  </Button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
 
         <div className="flex items-center gap-[30px]">
           <TooltipProvider>

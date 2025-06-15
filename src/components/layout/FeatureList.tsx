@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { moduleConfigs } from '@/config/moduleConfigs';
-import DocumentsSubMenu from '@/components/documents/documents-feature/DocumentsSubMenu';
 
 interface FeatureListProps {
   currentModule: string;
@@ -21,17 +20,6 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
   return (
     <div className="p-4 space-y-2 h-full overflow-y-auto">
       {currentModuleConfig.features.map((feature) => {
-        if (currentModule === 'documents' && feature.id === 'documents') {
-          return (
-            <DocumentsSubMenu
-              key={feature.id}
-              feature={feature}
-              isCollapsed={isCollapsed}
-              onFeatureClick={onFeatureClick}
-            />
-          );
-        }
-
         const isActive = location.pathname.includes(`/${currentModule}/${feature.id}`);
         
         return (
