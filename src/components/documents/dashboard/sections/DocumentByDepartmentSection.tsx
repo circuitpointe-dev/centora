@@ -12,6 +12,9 @@ export const DocumentByDepartmentSection = (): JSX.Element => {
     { name: "IT", value: 284 },
   ];
 
+  // X-axis labels
+  const xAxisLabels = [0, 50, 100, 150, 200, 250, 300, 350, 400];
+
   return (
     <Card className="border border-gray-200 shadow-sm rounded-sm">
       <CardHeader className="pb-4">
