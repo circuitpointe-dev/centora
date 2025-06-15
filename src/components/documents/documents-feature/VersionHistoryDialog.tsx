@@ -40,6 +40,8 @@ const historyData = [
 
 const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpenChange, document }) => {
   const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
+  const [isRestoreConfirmOpen, setIsRestoreConfirmOpen] = React.useState(false);
+  const [itemToRestore, setItemToRestore] = React.useState<(typeof historyData)[number] | null>(null);
   const { toast } = useToast();
 
   const handleAcceptChanges = () => {
@@ -55,12 +57,29 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
     setIsConfirmOpen(false);
   }
 
+  const handleRestoreClick = (item: (typeof historyData)[number]) => {
+    setItemToRestore(item);
+    setIsRestoreConfirmOpen(true);
+  };
+
+  const onRestoreConfirm = () => {
+    if (itemToRestore) {
+        toast({
+            title: "Version Restored",
+            description: `The document "${document.fileName}" has been restored to the version from ${itemToRestore.date}.`,
+        });
+    }
+    setIsRestoreConfirmOpen(false);
+    setItemToRestore(null);
+  }
+
+
   return (
     <>
       <LargeSideDialog open={open} onOpenChange={onOpenChange}>
         <LargeSideDialogContent className="bg-gray-50 p-0">
           <LargeSideDialogHeader className="px-6 py-4 border-b bg-white">
-            <LargeSideDialogTitle>Version History / {document.fileName}</LargeSideDialogTitle>
+            <LargeSideDialogTitle className="font-normal">Version History / {document.fileName}</LargeSideDialogTitle>
           </LargeSideDialogHeader>
           <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-y-auto">
             {/* Previous Version */}
@@ -136,7 +155,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
                       </div>
                     </div>
                     <p className="text-sm text-gray-600 mt-2">{item.action}</p>
-                    <Button variant="link" className="p-0 h-auto text-violet-600 text-sm font-normal">Restore</Button>
+                    <Button variant="link" className="p-0 h-auto text-violet-600 text-sm font-normal" onClick={() => handleRestoreClick(item)}>Restore</Button>
                   </div>
                 ))}
               </CardContent>
@@ -152,6 +171,15 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
         onConfirm={onConfirm}
         confirmText="Accept"
         variant="constructive"
+      />
+      <ConfirmationDialog
+        open={isRestoreConfirmOpen}
+        onOpenChange={setIsRestoreConfirmOpen}
+        title="Restore Version"
+        description="Are you sure you want to restore this version? This will overwrite the current version."
+        onConfirm={onRestoreConfirm}
+        confirmText="Restore"
+        variant="destructive"
       />
     </>
   );
