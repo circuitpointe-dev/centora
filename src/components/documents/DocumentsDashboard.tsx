@@ -23,9 +23,13 @@ const DocumentsDashboard = () => {
       <StatisticsCardSection />
 
       {/* Section 2: Documents by Type and Quick Links */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DocumentByTypeSection />
-        <QuickLinksSection />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <DocumentByTypeSection />
+        </div>
+        <div className="lg:col-span-1">
+          <QuickLinksSection />
+        </div>
       </div>
 
       {/* Section 3: Documents by Department and Notifications */}
