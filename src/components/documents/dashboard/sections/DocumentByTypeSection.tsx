@@ -11,13 +11,13 @@ export const DocumentByTypeSection = (): JSX.Element => {
     { name: "Reports", value: 32, color: "#10b981" },
   ];
 
-  // Custom legend, shows name and value stacked vertically, aligned right
+  // Custom legend, left aligned and close to chart
   const CustomLegend = ({
     payload,
   }: {
     payload: { value: string; color: string; payload: { value: number } }[];
   }) => (
-    <div className="flex flex-col items-start space-y-3 min-w-[120px]">
+    <div className="flex flex-col justify-center space-y-3 min-w-[140px]">
       {payload.map((entry, index) => (
         <div key={index} className="flex items-center space-x-3">
           <span
@@ -40,37 +40,40 @@ export const DocumentByTypeSection = (): JSX.Element => {
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="flex flex-row items-center justify-between w-full h-80">
-          <div className="flex-1 h-full flex items-center justify-center">
-            <div className="h-64 w-full flex items-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={documentTypes}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                    isAnimationActive={false}
-                  >
-                    {documentTypes.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+        <div className="flex flex-row items-center w-full h-80">
+          <div className="flex-1 h-full flex items-center justify-end">
+            <div className="flex flex-row items-center">
+              <div className="h-64 w-64 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={documentTypes}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                      isAnimationActive={false}
+                    >
+                      {documentTypes.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              {/* Legend, left-aligned, right beside the chart */}
+              <div className="ml-6 flex items-center">
+                <CustomLegend
+                  payload={documentTypes.map((item) => ({
+                    value: item.name,
+                    color: item.color,
+                    payload: item,
+                  }))}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex-shrink-0 ml-8">
-            <CustomLegend
-              payload={documentTypes.map((item) => ({
-                value: item.name,
-                color: item.color,
-                payload: item,
-              }))}
-            />
           </div>
         </div>
       </CardContent>

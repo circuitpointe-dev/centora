@@ -23,24 +23,28 @@ const DocumentsDashboard = () => {
       <StatisticsCardSection />
 
       {/* Section 2: Documents by Type and Quick Links */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8">
           <DocumentByTypeSection />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-4">
           <QuickLinksSection />
         </div>
       </div>
 
       {/* Section 3: Documents by Department and Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DocumentByDepartmentSection />
-        <NotificationsSection />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8">
+          <DocumentByDepartmentSection />
+        </div>
+        <div className="lg:col-span-4">
+          <NotificationsSection />
+        </div>
       </div>
 
-      {/* Section 4: Recent Activities */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-start-2 lg:col-span-2">
+      {/* Section 4: Recent Activities (should match width with Notifications section) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-start-9 lg:col-span-4">
           <RecentActivitySection />
         </div>
       </div>
