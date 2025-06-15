@@ -35,7 +35,7 @@ const documentStats = [
   },
 ];
 
-export const DepartmentDocumentsSection = (): JSX.Element => {
+export const StatisticsCardSection = (): JSX.Element => {
   return (
     <div className="flex items-center gap-8">
       {documentStats.map((stat, index) => (

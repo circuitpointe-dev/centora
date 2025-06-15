@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { File, Clock, AlertTriangle, CheckCircle, Upload, FolderOpen, BookOpen, Shield, Settings } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { StatisticsCardSection } from ".dashboard/sections/StatisticsCardSection";
 
 const DocumentsDashboard = () => {
   // Mock data for charts and statistics
@@ -97,59 +98,7 @@ const DocumentsDashboard = () => {
       </div>
 
       {/* Section 1: Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#e0f2fe' }}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Documents Uploaded</CardTitle>
-            <File className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,247</div>
-            <p className="text-xs text-gray-500">
-              +12% from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#fef3c7' }}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Overdue Signature Requests</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-gray-500">
-              -2 from yesterday
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#fecaca' }}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Documents Expiring in 30 Days</CardTitle>
-            <Clock className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">23</div>
-            <p className="text-xs text-gray-500">
-              Requires attention
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#d1fae5' }}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Acknowledged Policies</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">94%</div>
-            <p className="text-xs text-gray-500">
-              +3% from last week
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatisticsCardSection />
 
       {/* Section 2: Documents by Type and Quick Links */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
