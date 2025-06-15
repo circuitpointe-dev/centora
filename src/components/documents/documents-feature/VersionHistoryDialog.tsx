@@ -45,7 +45,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
         </LargeSideDialogHeader>
         <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-y-auto">
           {/* Previous Version */}
-          <Card className="lg:col-span-5 flex flex-col h-full shadow-sm">
+          <Card className="lg:col-span-4 flex flex-col h-full shadow-sm">
             <CardHeader>
               <div className="flex items-center gap-2 text-gray-500">
                 <Clock className="h-4 w-4" />
@@ -67,7 +67,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
           </Card>
 
           {/* Current Version */}
-          <Card className="lg:col-span-5 flex flex-col h-full shadow-sm">
+          <Card className="lg:col-span-4 flex flex-col h-full shadow-sm">
             <CardHeader>
               <div className="flex items-center gap-2 text-gray-500">
                 <Clock className="h-4 w-4" />
@@ -96,7 +96,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
           </Card>
 
           {/* Current / Activity */}
-          <Card className="lg:col-span-2 flex flex-col h-full shadow-sm">
+          <Card className="lg:col-span-4 flex flex-col h-full shadow-sm">
             <CardHeader>
               <div className="flex items-center gap-2 text-green-600">
                 <CheckCircle className="h-4 w-4" />
@@ -129,3 +129,4 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
 };
 
 export default VersionHistoryDialog;
+
