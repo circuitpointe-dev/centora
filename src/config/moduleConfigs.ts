@@ -40,7 +40,6 @@ export const moduleConfigs = {
     icon: Award,
     color: 'text-orange-600',
     features: [
-      // This will be dynamically populated based on user type
       { id: 'grants-manager', name: 'Grants Manager', icon: BarChart3 },
       { id: 'total-grants', name: 'Total Grants', icon: Award },
       { id: 'active-grants', name: 'Active Grants', icon: CheckCircle },
@@ -60,7 +59,7 @@ export const moduleConfigs = {
       { id: 'documents', name: 'Documents', icon: FileText },
       { id: 'e-signature', name: 'E-Signature', icon: FileSignature },
       { id: 'compliance', name: 'Compliance', icon: Shield },
-      { id: 'templates', name: 'Templates', icon: FileText },
+      { id: 'templates', name: 'Templates', icon: File },
       { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
@@ -151,18 +150,3 @@ export const moduleConfigs = {
 };
 
 export const allModules = Object.keys(moduleConfigs);
-
-// New function to get role-based module configuration
-export const getRoleBasedModuleConfig = (moduleId: string, userType: 'NGO' | 'Donor') => {
-  const baseConfig = moduleConfigs[moduleId as keyof typeof moduleConfigs];
-  
-  if (moduleId === 'grants' && userType) {
-    const { getRoleBasedGrantsFeatures } = require('@/utils/roleBasedModules');
-    return {
-      ...baseConfig,
-      features: getRoleBasedGrantsFeatures(userType)
-    };
-  }
-  
-  return baseConfig;
-};
