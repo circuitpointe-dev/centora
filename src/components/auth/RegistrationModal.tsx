@@ -30,7 +30,6 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
   const [formData, setFormData] = useState<RegistrationData>({
     organizationName: "",
     acronym: "",
-    organizationType: "",
     contactPersonName: "",
     contactEmail: "",
     contactPhone: "",
@@ -38,6 +37,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
     selectedModules: [],
     address: "",
     establishmentDate: "",
+    organizationType: "",
     focusAreas: [],
     currency: "USD",
     annualBudget: "",
