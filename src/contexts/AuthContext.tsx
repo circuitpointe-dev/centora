@@ -57,42 +57,58 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize user state from localStorage
-  const [user, setUser] = useState<User | null>(() => {
+  const [user, setUser] = useState<User | null>(null);
+
+  // Initialize user state from localStorage on mount
+  useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    
+    if (storedUser && isAuthenticated === 'true') {
       try {
-        return JSON.parse(storedUser);
-      } catch {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
         localStorage.removeItem('currentUser');
+        localStorage.removeItem('isAuthenticated');
       }
     }
-    return null;
-  });
-
-  // Sync localStorage whenever user state changes
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      localStorage.setItem('isAuthenticated', 'true');
-    } else {
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('isAuthenticated');
-    }
-  }, [user]);
+  }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Find user by email
+    if (!email || password.length < 6) {
+      return false;
+    }
+
+    // Check if it's a predefined demo user
     const foundUser = DEMO_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
     
-    if (foundUser && password.length >= 6) {
-      setUser(foundUser);
-      return true;
+    let loginUser: User;
+    
+    if (foundUser) {
+      loginUser = foundUser;
+    } else {
+      // Create a new full modules user for any other email
+      loginUser = {
+        id: Date.now().toString(),
+        email,
+        name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        organization: "Demo Organization",
+        userType: "NGO",
+        subscribedModules: ["fundraising", "grants", "documents", "programme", "procurement", "inventory", "finance", "learning", "hr", "users"]
+      };
     }
-    return false;
+
+    // Set user state and localStorage
+    setUser(loginUser);
+    localStorage.setItem('currentUser', JSON.stringify(loginUser));
+    localStorage.setItem('isAuthenticated', 'true');
+    
+    return true;
   };
 
   const register = async (
@@ -103,7 +119,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // For demo purposes, registration creates a new NGO user with basic modules
     if (email && password.length >= 6 && name) {
       const newUser: User = {
         id: Date.now().toString(),
@@ -113,7 +128,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         userType: "NGO",
         subscribedModules: ["fundraising", "grants", "documents"]
       };
+      
       setUser(newUser);
+      localStorage.setItem('currentUser', JSON.stringify(newUser));
+      localStorage.setItem('isAuthenticated', 'true');
       return true;
     }
     return false;
@@ -121,6 +139,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isAuthenticated');
   };
 
   const value = {

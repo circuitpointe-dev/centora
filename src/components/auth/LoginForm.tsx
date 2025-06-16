@@ -54,12 +54,12 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           
           // For donors, navigate directly to the first grants feature (grants-manager)
           if (user.userType === 'Donor' && firstModule === 'grants') {
-            navigate(`/dashboard/grants/grants-manager`);
+            navigate(`/dashboard/grants/grants-manager`, { replace: true });
           } else {
-            navigate(`/dashboard/${firstModule}/dashboard`);
+            navigate(`/dashboard/${firstModule}/dashboard`, { replace: true });
           }
         } else {
-          navigate("/dashboard/fundraising/dashboard");
+          navigate("/dashboard/fundraising/dashboard", { replace: true });
         }
       } else {
         toast({
@@ -96,7 +96,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
         {/* Login form */}
         <form className="space-y-5" onSubmit={handleLogin}>
           <div className="space-y-2">
-            <Label htmlFor="email">Organization Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"

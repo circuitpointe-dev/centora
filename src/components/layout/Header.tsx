@@ -42,19 +42,14 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
 
   // Mock user data - in real app this would come from auth context
   const currentUser = {
-    name: user?.name || "Chioma Ike",
-    email: user?.email || "chioma.ike@ngo.org",
+    name: user?.name || "User",
+    email: user?.email || "user@example.com",
     phone: "+234 802 123 4567",
     avatar: "",
   };
 
   const handleLogout = () => {
-    // Clear local storage first
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userModules");
-    localStorage.removeItem("currentUser");
-
-    // Call auth context logout to reset user state
+    // Call auth context logout which handles localStorage cleanup
     logout();
 
     toast({
@@ -63,12 +58,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
     });
 
     // Navigate to login page
-    navigate("/login");
-    
-    // Force a page reload to ensure clean state
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+    navigate("/login", { replace: true });
   };
 
   return (
