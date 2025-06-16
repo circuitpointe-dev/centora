@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,18 +49,26 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
   };
 
   const handleLogout = () => {
-    // Clear local storage
+    // Clear local storage first
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userModules");
+    localStorage.removeItem("currentUser");
 
-    // Call auth context logout
+    // Call auth context logout to reset user state
     logout();
 
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
     });
+
+    // Navigate to login page
     navigate("/login");
+    
+    // Force a page reload to ensure clean state
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   return (

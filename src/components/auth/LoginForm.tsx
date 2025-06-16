@@ -45,11 +45,19 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           title: "Login Successful",
           description: "Welcome to Orbit ERP!",
         });
-        // Navigate to the first available module for the user
+        
+        // Get the logged in user from localStorage
         const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        
         if (user && user.subscribedModules && user.subscribedModules.length > 0) {
           const firstModule = user.subscribedModules[0];
-          navigate(`/dashboard/${firstModule}/dashboard`);
+          
+          // For donors, navigate directly to the first grants feature (grants-manager)
+          if (user.userType === 'Donor' && firstModule === 'grants') {
+            navigate(`/dashboard/grants/grants-manager`);
+          } else {
+            navigate(`/dashboard/${firstModule}/dashboard`);
+          }
         } else {
           navigate("/dashboard/fundraising/dashboard");
         }
