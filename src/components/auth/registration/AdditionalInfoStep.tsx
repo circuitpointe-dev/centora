@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,14 +22,6 @@ const AdditionalInfoStep = ({
   formData,
   updateFormData,
 }: AdditionalInfoStepProps) => {
-  const organizationTypes = [
-    "Charitable Trust",
-    "Foundation",
-    "Association",
-    "Religious Body",
-    "Other Non-profit",
-  ];
-
   const focusAreaOptions = [
     "Education",
     "Health",
@@ -41,8 +34,6 @@ const AdditionalInfoStep = ({
     "Elderly Care",
     "Disaster Relief",
   ];
-
-  const budgetRanges = ["Under 5M", "5M - 20M", "20M - 50M", "Over 50M"];
 
   const currencies = ["NGN (₦)", "USD ($)", "EUR (€)", "GBP (£)", "Others"];
 
@@ -96,31 +87,6 @@ const AdditionalInfoStep = ({
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="organizationType" className="text-sm">
-              Type of Organization
-            </Label>
-            <Select
-              value={formData.organizationType}
-              onValueChange={(value) =>
-                updateFormData({ organizationType: value })
-              }
-            >
-              <SelectTrigger className="h-8 text-sm">
-                <SelectValue placeholder="Select organization type" />
-              </SelectTrigger>
-              <SelectContent>
-                {organizationTypes.map((type) => (
-                  <SelectItem key={type} value={type} className="text-sm">
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="space-y-1">
             <Label htmlFor="currency" className="text-sm">
               Primary Currency
             </Label>
@@ -144,26 +110,27 @@ const AdditionalInfoStep = ({
               </SelectContent>
             </Select>
           </div>
+        </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="annualBudget" className="text-sm">
-              Annual Operating Budget
-            </Label>
-            <Select
-              value={formData.annualBudget}
-              onValueChange={(value) => updateFormData({ annualBudget: value })}
-            >
-              <SelectTrigger className="h-8 text-sm">
-                <SelectValue placeholder="Select budget range" />
-              </SelectTrigger>
-              <SelectContent>
-                {budgetRanges.map((range) => (
-                  <SelectItem key={range} value={range} className="text-sm">
-                    {range}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="space-y-1">
+          <Label className="text-sm">Focus Areas</Label>
+          <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+            {focusAreaOptions.map((area) => (
+              <div key={area} className="flex items-center space-x-2">
+                <Checkbox
+                  id={area}
+                  checked={formData.focusAreas.includes(area)}
+                  onCheckedChange={() => handleFocusAreaToggle(area)}
+                  className="h-4 w-4"
+                />
+                <Label
+                  htmlFor={area}
+                  className="text-sm font-normal leading-none cursor-pointer"
+                >
+                  {area}
+                </Label>
+              </div>
+            ))}
           </div>
         </div>
       </div>

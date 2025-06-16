@@ -1,3 +1,4 @@
+
 // src/components/auth/RegistrationModal.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; // ← import Link
@@ -29,7 +30,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
 
   const [formData, setFormData] = useState<RegistrationData>({
     organizationName: "",
-    acronym: "",
+    organizationType: "",
     contactPersonName: "",
     contactEmail: "",
     contactPhone: "",
@@ -37,14 +38,25 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
     selectedModules: [],
     address: "",
     establishmentDate: "",
-    organizationType: "",
     focusAreas: [],
     currency: "USD",
-    annualBudget: "",
   });
 
   const updateFormData = (data: Partial<RegistrationData>) => {
-    setFormData((prev) => ({ ...prev, ...data }));
+    setFormData((prev) => {
+      const updated = { ...prev, ...data };
+      
+      // If organization type changes to Donor, auto-select Grant Management
+      if (data.organizationType === "Donor" && prev.organizationType !== "Donor") {
+        updated.selectedModules = ["Grant Management"];
+      }
+      // If organization type changes from Donor to NGO, clear modules
+      else if (data.organizationType === "NGO" && prev.organizationType === "Donor") {
+        updated.selectedModules = [];
+      }
+      
+      return updated;
+    });
   };
 
   const handleNext = () => {
@@ -92,13 +104,17 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
       return;
     }
 
-    const orgNameFirstWord = formData.organizationName
-      .split(" ")[0]
-      .toLowerCase();
-    const orgAcronym = formData.acronym || orgNameFirstWord;
-    const generatedEmail = `orbit@${orgAcronym
-      .toLowerCase()
-      .replace(/\s+/g, "")}.com`;
+    // Generate acronym from organization name
+    const generateAcronym = (name: string) => {
+      return name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .join('')
+        .substring(0, 5); // Limit to 5 characters
+    };
+
+    const acronym = generateAcronym(formData.organizationName);
+    const generatedEmail = `orbit@${acronym.toLowerCase()}.com`;
     const generatedPassword = formData.password;
 
     setGeneratedCredentials({

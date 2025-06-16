@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -12,7 +13,7 @@ import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
 export interface RegistrationData {
   // Basic Info
   organizationName: string;
-  acronym: string;
+  organizationType: "NGO" | "Donor" | "";
   contactPersonName: string;
   contactEmail: string;
   contactPhone: string;
@@ -24,10 +25,8 @@ export interface RegistrationData {
   // Additional Info
   address: string;
   establishmentDate: string;
-  organizationType: string;
   focusAreas: string[];
   currency: string;
-  annualBudget: string;
 }
 
 interface RegistrationFormProps {
@@ -40,7 +39,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
 
   const [formData, setFormData] = useState<RegistrationData>({
     organizationName: "",
-    acronym: "",
+    organizationType: "",
     contactPersonName: "",
     contactEmail: "",
     contactPhone: "",
@@ -48,14 +47,25 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
     selectedModules: [],
     address: "",
     establishmentDate: "",
-    organizationType: "",
     focusAreas: [],
     currency: "USD", // Default currency
-    annualBudget: "",
   });
 
   const updateFormData = (data: Partial<RegistrationData>) => {
-    setFormData((prev) => ({ ...prev, ...data }));
+    setFormData((prev) => {
+      const updated = { ...prev, ...data };
+      
+      // If organization type changes to Donor, auto-select Grant Management
+      if (data.organizationType === "Donor" && prev.organizationType !== "Donor") {
+        updated.selectedModules = ["Grant Management"];
+      }
+      // If organization type changes from Donor to NGO, clear modules
+      else if (data.organizationType === "NGO" && prev.organizationType === "Donor") {
+        updated.selectedModules = [];
+      }
+      
+      return updated;
+    });
   };
 
   const handleNext = () => {

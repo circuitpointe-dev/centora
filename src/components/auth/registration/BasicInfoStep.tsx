@@ -1,6 +1,14 @@
+
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Eye, EyeOff } from "lucide-react";
 import { RegistrationData } from "../RegistrationForm";
 
@@ -24,7 +32,7 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="space-y-1">
+        <div className="space-y-1 md:col-span-2">
           <Label htmlFor="organizationName" className="text-xs">
             Official Organization Name *
           </Label>
@@ -40,18 +48,24 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
           />
         </div>
 
-        <div className="space-y-1">
-          <Label htmlFor="acronym" className="text-xs">
-            Acronym/Short Name
+        <div className="space-y-1 md:col-span-2">
+          <Label htmlFor="organizationType" className="text-xs">
+            Organization Type *
           </Label>
-          <Input
-            id="acronym"
-            type="text"
-            placeholder="e.g., HFAF"
-            value={formData.acronym}
-            onChange={(e) => updateFormData({ acronym: e.target.value })}
-            className="h-10 text-sm"
-          />
+          <Select
+            value={formData.organizationType}
+            onValueChange={(value: "NGO" | "Donor") =>
+              updateFormData({ organizationType: value })
+            }
+          >
+            <SelectTrigger className="h-10 text-sm">
+              <SelectValue placeholder="Select organization type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="NGO">Non-Governmental Organization (NGO)</SelectItem>
+              <SelectItem value="Donor">Donor Organization/Individual Donor</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-1">
