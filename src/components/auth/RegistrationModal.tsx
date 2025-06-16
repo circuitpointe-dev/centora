@@ -1,4 +1,3 @@
-
 // src/components/auth/RegistrationModal.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; // ← import Link
@@ -38,7 +37,6 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
     selectedModules: [],
     address: "",
     establishmentDate: "",
-    focusAreas: [],
     currency: "USD",
   });
 
@@ -288,7 +286,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </AnimatePresence>
 

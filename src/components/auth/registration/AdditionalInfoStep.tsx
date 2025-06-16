@@ -10,7 +10,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { RegistrationData } from "../RegistrationForm";
 
 interface AdditionalInfoStepProps {
@@ -22,28 +31,19 @@ const AdditionalInfoStep = ({
   formData,
   updateFormData,
 }: AdditionalInfoStepProps) => {
-  const focusAreaOptions = [
-    "Education",
-    "Health",
-    "Environment",
-    "Poverty Alleviation",
-    "Human Rights",
-    "Community Development",
-    "Women Empowerment",
-    "Child Welfare",
-    "Elderly Care",
-    "Disaster Relief",
-  ];
-
   const currencies = ["NGN (₦)", "USD ($)", "EUR (€)", "GBP (£)", "Others"];
 
-  const handleFocusAreaToggle = (area: string) => {
-    const updatedAreas = formData.focusAreas.includes(area)
-      ? formData.focusAreas.filter((a) => a !== area)
-      : [...formData.focusAreas, area];
-
-    updateFormData({ focusAreas: updatedAreas });
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      updateFormData({ establishmentDate: format(date, "yyyy-MM-dd") });
+    } else {
+      updateFormData({ establishmentDate: "" });
+    }
   };
+
+  const selectedDate = formData.establishmentDate 
+    ? new Date(formData.establishmentDate) 
+    : undefined;
 
   return (
     <div className="space-y-4">
@@ -72,18 +72,37 @@ const AdditionalInfoStep = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-1">
-            <Label htmlFor="establishmentDate" className="text-sm">
+            <Label className="text-sm">
               Date of Establishment
             </Label>
-            <Input
-              id="establishmentDate"
-              type="date"
-              value={formData.establishmentDate}
-              onChange={(e) =>
-                updateFormData({ establishmentDate: e.target.value })
-              }
-              className="h-8 text-sm"
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "h-8 text-sm justify-start text-left font-normal w-full",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? (
+                    format(selectedDate, "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  disabled={(date) => date > new Date()}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="space-y-1">
@@ -109,28 +128,6 @@ const AdditionalInfoStep = ({
                 ))}
               </SelectContent>
             </Select>
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <Label className="text-sm">Focus Areas</Label>
-          <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
-            {focusAreaOptions.map((area) => (
-              <div key={area} className="flex items-center space-x-2">
-                <Checkbox
-                  id={area}
-                  checked={formData.focusAreas.includes(area)}
-                  onCheckedChange={() => handleFocusAreaToggle(area)}
-                  className="h-4 w-4"
-                />
-                <Label
-                  htmlFor={area}
-                  className="text-sm font-normal leading-none cursor-pointer"
-                >
-                  {area}
-                </Label>
-              </div>
-            ))}
           </div>
         </div>
       </div>

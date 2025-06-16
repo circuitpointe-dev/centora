@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -25,7 +24,6 @@ export interface RegistrationData {
   // Additional Info
   address: string;
   establishmentDate: string;
-  focusAreas: string[];
   currency: string;
 }
 
@@ -47,7 +45,6 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
     selectedModules: [],
     address: "",
     establishmentDate: "",
-    focusAreas: [],
     currency: "USD", // Default currency
   });
 
