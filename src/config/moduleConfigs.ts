@@ -22,7 +22,22 @@ import {
   File,
 } from 'lucide-react';
 
-export const moduleConfigs = {
+interface ModuleFeature {
+  id: string;
+  name: string;
+  icon: any;
+}
+
+interface ModuleConfig {
+  name: string;
+  icon: any;
+  color: string;
+  features: ModuleFeature[];
+  ngoFeatures?: ModuleFeature[];
+  donorFeatures?: ModuleFeature[];
+}
+
+export const moduleConfigs: Record<string, ModuleConfig> = {
   fundraising: {
     name: 'Fundraising',
     icon: Heart,
