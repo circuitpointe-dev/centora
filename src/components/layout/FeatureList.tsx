@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { moduleConfigs } from '@/config/moduleConfigs';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface FeatureListProps {
   currentModule: string;
@@ -13,13 +14,25 @@ interface FeatureListProps {
 
 const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureListProps) => {
   const location = useLocation();
+  const { user } = useAuth();
   const currentModuleConfig = moduleConfigs[currentModule as keyof typeof moduleConfigs];
 
-  if (!currentModuleConfig) return null;
+  if (!currentModuleConfig || !user) return null;
+
+  // Get the appropriate features based on user type for grants module
+  const getFeatures = () => {
+    if (currentModule === 'grants') {
+      const isDonor = user.userType === 'Donor';
+      return isDonor ? currentModuleConfig.donorFeatures : currentModuleConfig.ngoFeatures;
+    }
+    return currentModuleConfig.features;
+  };
+
+  const features = getFeatures();
 
   return (
     <div className="p-4 space-y-2 h-full overflow-y-auto">
-      {currentModuleConfig.features.map((feature) => {
+      {features?.map((feature) => {
         const isActive = location.pathname.includes(`/${currentModule}/${feature.id}`);
         
         return (

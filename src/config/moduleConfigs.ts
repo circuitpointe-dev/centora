@@ -1,3 +1,4 @@
+
 import { 
   Heart, 
   Target, 
@@ -48,6 +49,20 @@ export const moduleConfigs = {
       { id: 'grants-archive', name: 'Grants Archive', icon: Archive },
       { id: 'grantee-submissions', name: 'Grantee Submissions', icon: FileCheck },
       { id: 'settings', name: 'Settings/Admin', icon: Settings },
+    ],
+    ngoFeatures: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'assigned-grants', name: 'Assigned Grants', icon: Award },
+      { id: 'reports', name: 'Reports', icon: FileText },
+      { id: 'templates-docs', name: 'Templates & Docs', icon: File },
+      { id: 'settings', name: 'Settings', icon: Settings },
+    ],
+    donorFeatures: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'active-grants', name: 'Active Grants', icon: CheckCircle },
+      { id: 'grantee-submissions', name: 'Grantee Submissions', icon: FileCheck },
+      { id: 'grants-archive', name: 'Grants Archive', icon: Archive },
+      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   documents: {
