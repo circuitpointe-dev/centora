@@ -5,6 +5,9 @@ interface User {
   id: string;
   email: string;
   name: string;
+  organization: string;
+  userType: 'NGO' | 'Donor';
+  subscribedModules: string[];
 }
 
 interface AuthContextType {
@@ -14,6 +17,34 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
 }
+
+// Hardcoded users for demonstration
+const DEMO_USERS: User[] = [
+  {
+    id: "1",
+    email: "chioma@cp.com",
+    name: "Chioma Ike",
+    organization: "CircuitPointe",
+    userType: "NGO",
+    subscribedModules: ["fundraising", "grants", "documents", "programme", "procurement", "inventory", "finance", "learning", "hr", "users"]
+  },
+  {
+    id: "2",
+    email: "richard@fehd.com",
+    name: "Richard Nwamadi",
+    organization: "FEHD Foundation",
+    userType: "NGO",
+    subscribedModules: ["fundraising", "grants", "documents"]
+  },
+  {
+    id: "3",
+    email: "millicent@amplify.com",
+    name: "Millicent Ogbu",
+    organization: "AmplifyChange",
+    userType: "Donor",
+    subscribedModules: ["grants"]
+  }
+];
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -28,13 +59,13 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Initialize user state from localStorage
   const [user, setUser] = useState<User | null>(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    if (isAuthenticated) {
-      return {
-        id: "1",
-        email: "chioma.ike@ngo.org",
-        name: "Chioma Ike"
-      };
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser);
+      } catch {
+        localStorage.removeItem('currentUser');
+      }
     }
     return null;
   });
@@ -42,8 +73,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Sync localStorage whenever user state changes
   useEffect(() => {
     if (user) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
       localStorage.setItem('isAuthenticated', 'true');
     } else {
+      localStorage.removeItem('currentUser');
       localStorage.removeItem('isAuthenticated');
     }
   }, [user]);
@@ -52,14 +85,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Mock validation - in real app, this would call your backend
-    if (email && password.length >= 6) {
-      const newUser = {
-        id: "1",
-        email,
-        name: "Chioma Ike", // For demo purposes, always use this name
-      };
-      setUser(newUser);
+    // Find user by email
+    const foundUser = DEMO_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
+    
+    if (foundUser && password.length >= 6) {
+      setUser(foundUser);
       return true;
     }
     return false;
@@ -73,12 +103,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Mock validation
+    // For demo purposes, registration creates a new NGO user with basic modules
     if (email && password.length >= 6 && name) {
-      const newUser = {
-        id: "1",
+      const newUser: User = {
+        id: Date.now().toString(),
         email,
         name,
+        organization: "Demo Organization",
+        userType: "NGO",
+        subscribedModules: ["fundraising", "grants", "documents"]
       };
       setUser(newUser);
       return true;
@@ -88,7 +121,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
-    // localStorage will be cleared by the useEffect
   };
 
   const value = {

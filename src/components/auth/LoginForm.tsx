@@ -1,3 +1,4 @@
+
 // src/components/auth/LoginForm.tsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -40,12 +41,6 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
       const success = await login(email, password);
 
       if (success) {
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem(
-          "userModules",
-          JSON.stringify(["fundraising", "programme", "finance"])
-        );
-
         toast({
           title: "Login Successful",
           description: "Welcome to Orbit ERP!",
@@ -69,6 +64,17 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
     }
   };
 
+  const demoUsers = [
+    { email: "chioma@cp.com", name: "Chioma Ike", org: "CircuitPointe", type: "NGO (All Modules)" },
+    { email: "richard@fehd.com", name: "Richard Nwamadi", org: "FEHD Foundation", type: "NGO (3 Modules)" },
+    { email: "millicent@amplify.com", name: "Millicent Ogbu", org: "AmplifyChange", type: "Donor" }
+  ];
+
+  const handleDemoLogin = (demoEmail: string) => {
+    setEmail(demoEmail);
+    setPassword("password123");
+  };
+
   return (
     <div className="w-full lg:w-1/2 flex items-center lg:justify-start justify-center px-2 sm:px-12">
       <div className="w-full max-w-xs sm:max-w-sm p-8 rounded-lg shadow-sm">
@@ -80,6 +86,27 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           </div>
           <p className="text-gray-500 mt-1">
             Sign in to continue to your account
+          </p>
+        </div>
+
+        {/* Demo Users Section */}
+        <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+          <h3 className="text-sm font-medium text-blue-900 mb-3">Demo Users</h3>
+          <div className="space-y-2">
+            {demoUsers.map((user, index) => (
+              <button
+                key={index}
+                onClick={() => handleDemoLogin(user.email)}
+                className="w-full text-left p-2 bg-white rounded border hover:bg-blue-50 transition-colors"
+              >
+                <div className="text-xs font-medium text-gray-900">{user.name}</div>
+                <div className="text-xs text-gray-600">{user.email}</div>
+                <div className="text-xs text-blue-600">{user.type}</div>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-blue-700 mt-2">
+            Password: password123 (or any 6+ characters)
           </p>
         </div>
 
@@ -149,7 +176,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           </Button>
         </form>
 
-        {/* “Create an account” link */}
+        {/* "Create an account" link */}
         <p className="mt-6 text-center text-gray-500">
           New NGO?{" "}
           <button
@@ -161,7 +188,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
         </p>
 
         {/* ──────────────────────────────────────────────────────────────────── */}
-        {/* Add a “Back to Home” link at the very bottom of the form */}
+        {/* Add a "Back to Home" link at the very bottom of the form */}
         <div className="mt-4 text-center">
           <Link to="/">
             <Button
@@ -178,17 +205,6 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           <div className="mb-4">
             © {new Date().getFullYear()} Orbit ERP. All rights reserved.
           </div>
-          {/* <div className="flex justify-center space-x-4">
-            <a href="#" className="hover:text-violet-600">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-violet-600">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-violet-600">
-              Contact Us
-            </a>
-          </div> */}
         </div>
       </div>
 

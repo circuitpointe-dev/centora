@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { moduleConfigs } from "@/config/moduleConfigs";
 import SidebarHeader from "./SidebarHeader";
 import FeatureList from "./FeatureList";
 import ModuleSwitcher from "./ModuleSwitcher";
+import { useAuth } from "@/contexts/AuthContext";
 import black_logo from "@/assets/images/black_logo.png";
 
 interface SidebarProps {
@@ -21,6 +23,7 @@ const Sidebar = ({
   onToggleCollapse,
 }: SidebarProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showModuleSwitcher, setShowModuleSwitcher] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -46,7 +49,21 @@ const Sidebar = ({
     setShowModuleSwitcher(!showModuleSwitcher);
   };
 
-  if (!currentModuleConfig) return null;
+  if (!currentModuleConfig || !user) return null;
+
+  // Check if user has access to current module
+  const hasAccess = user.subscribedModules.includes(currentModule);
+  if (!hasAccess) {
+    // Redirect to first available module
+    const firstModule = user.subscribedModules[0];
+    if (firstModule) {
+      navigate(`/dashboard/${firstModule}/dashboard`);
+    }
+    return null;
+  }
+
+  const isDonor = user.userType === 'Donor';
+  const canSwitchModules = !isDonor && user.subscribedModules.length > 1;
 
   return (
     <>
@@ -173,52 +190,54 @@ const Sidebar = ({
         </div>
 
         {/* Module Switcher Toggle - Fixed to bottom */}
-        <div
-          className={cn(
-            "border-t border-gray-200 p-4 shrink-0",
-            isMobileOpen ? "block" : "hidden md:block"
-          )}
-        >
-          <Button
-            variant="ghost"
+        {canSwitchModules && (
+          <div
             className={cn(
-              "w-full justify-start text-left font-light",
-              isCollapsed && !isMobileOpen ? "px-2" : "px-3"
+              "border-t border-gray-200 p-4 shrink-0",
+              isMobileOpen ? "block" : "hidden md:block"
             )}
-            onClick={toggleModuleSwitcher}
           >
-            {showModuleSwitcher ? (
-              <>
-                <ChevronUp
-                  className={cn(
-                    "h-4 w-4",
-                    isCollapsed && !isMobileOpen ? "" : "mr-3"
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start text-left font-light",
+                isCollapsed && !isMobileOpen ? "px-2" : "px-3"
+              )}
+              onClick={toggleModuleSwitcher}
+            >
+              {showModuleSwitcher ? (
+                <>
+                  <ChevronUp
+                    className={cn(
+                      "h-4 w-4",
+                      isCollapsed && !isMobileOpen ? "" : "mr-3"
+                    )}
+                  />
+                  {(!isCollapsed || isMobileOpen) && (
+                    <span className="text-sm font-light">Back to Features</span>
                   )}
-                />
-                {(!isCollapsed || isMobileOpen) && (
-                  <span className="text-sm font-light">Back to Features</span>
-                )}
-              </>
-            ) : (
-              <>
-                <Grid3X3
-                  className={cn(
-                    "h-4 w-4",
-                    isCollapsed && !isMobileOpen ? "" : "mr-3"
+                </>
+              ) : (
+                <>
+                  <Grid3X3
+                    className={cn(
+                      "h-4 w-4",
+                      isCollapsed && !isMobileOpen ? "" : "mr-3"
+                    )}
+                  />
+                  {(!isCollapsed || isMobileOpen) && (
+                    <>
+                      <span className="text-sm font-light flex-1">
+                        Switch Module
+                      </span>
+                      <ArrowRight className="h-4 w-4" />
+                    </>
                   )}
-                />
-                {(!isCollapsed || isMobileOpen) && (
-                  <>
-                    <span className="text-sm font-light flex-1">
-                      Switch Module
-                    </span>
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </>
-            )}
-          </Button>
-        </div>
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,37 +1,55 @@
 
-import React, { useState } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from "react";
+import { Outlet, useParams, useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MainLayout = () => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { module = 'fundraising' } = useParams();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { module } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleToggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  useEffect(() => {
+    // Redirect if user doesn't have access to current module
+    if (user && module && !user.subscribedModules.includes(module)) {
+      const firstModule = user.subscribedModules[0];
+      if (firstModule) {
+        navigate(`/dashboard/${firstModule}/dashboard`);
+      }
+    }
+  }, [user, module, navigate]);
+
+  if (!user || !module) {
+    return null;
+  }
+
+  // Check if user has access to the current module
+  if (!user.subscribedModules.includes(module)) {
+    return null; // Will redirect in useEffect
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header 
-        sidebarCollapsed={sidebarCollapsed}
+    <div className="min-h-screen flex w-full">
+      <Sidebar
+        currentModule={module}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={handleToggleCollapse}
       />
-      <div className="flex flex-1 overflow-hidden pt-16">
-        <Sidebar 
-          currentModule={module} 
-          isCollapsed={sidebarCollapsed} 
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
-        <div className={cn(
-          "flex-1 flex flex-col overflow-hidden transition-all duration-300",
-          // Responsive margins: full width on mobile, respect sidebar on desktop
-          "ml-0",
-          "md:ml-16",
-          !sidebarCollapsed && "lg:ml-64"
-        )}>
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-auto px-6 py-2">
-            <Outlet />
-          </main>
-        </div>
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ${
+          isCollapsed ? "md:ml-16" : "md:ml-16 lg:ml-64"
+        }`}
+      >
+        <Header />
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
