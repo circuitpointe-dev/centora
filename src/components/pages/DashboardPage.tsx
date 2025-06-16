@@ -3,11 +3,15 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DocumentsDashboard from '@/components/documents/DocumentsDashboard';
 import FundraisingDashboard from '@/components/fundraising/FundraisingDashboard';
+import GrantsNGODashboard from '@/components/grants/GrantsNGODashboard';
+import GrantsDonorDashboard from '@/components/grants/GrantsDonorDashboard';
 import GenericDashboard from '@/components/dashboard/GenericDashboard';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DashboardPage = () => {
   const { module, feature } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const getModuleName = (moduleId: string) => {
     const moduleNames: { [key: string]: string } = {
@@ -25,13 +29,12 @@ const DashboardPage = () => {
     return moduleNames[moduleId] || moduleId;
   };
 
-  // Grants-specific content - redirect to grants-manager
+  // Grants-specific content based on user type
   if (module === 'grants') {
-    // If we're on the generic dashboard route for grants, redirect to grants-manager
-    if (feature === 'dashboard' || !feature) {
-      navigate('/dashboard/grants/grants-manager', { replace: true });
-      return null;
-    }
+    if (!user) return null;
+    
+    const isDonor = user.userType === 'Donor';
+    return isDonor ? <GrantsDonorDashboard /> : <GrantsNGODashboard />;
   }
 
   // Document Management specific content

@@ -53,6 +53,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
+              <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path=":feature" element={<GenericFeaturePage />} />
             </Route>

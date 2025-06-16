@@ -1,4 +1,3 @@
-
 import { 
   Heart, 
   Target, 
@@ -56,6 +55,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     icon: Award,
     color: 'text-orange-600',
     features: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
       { id: 'grants-manager', name: 'Grants Manager', icon: BarChart3 },
       { id: 'total-grants', name: 'Total Grants', icon: Award },
       { id: 'active-grants', name: 'Active Grants', icon: CheckCircle },
