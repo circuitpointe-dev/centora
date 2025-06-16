@@ -45,7 +45,14 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           title: "Login Successful",
           description: "Welcome to Orbit ERP!",
         });
-        navigate("/dashboard/fundraising/dashboard");
+        // Navigate to the first available module for the user
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (user && user.subscribedModules && user.subscribedModules.length > 0) {
+          const firstModule = user.subscribedModules[0];
+          navigate(`/dashboard/${firstModule}/dashboard`);
+        } else {
+          navigate("/dashboard/fundraising/dashboard");
+        }
       } else {
         toast({
           title: "Error",
@@ -64,17 +71,6 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
     }
   };
 
-  const demoUsers = [
-    { email: "chioma@cp.com", name: "Chioma Ike", org: "CircuitPointe", type: "NGO (All Modules)" },
-    { email: "richard@fehd.com", name: "Richard Nwamadi", org: "FEHD Foundation", type: "NGO (3 Modules)" },
-    { email: "millicent@amplify.com", name: "Millicent Ogbu", org: "AmplifyChange", type: "Donor" }
-  ];
-
-  const handleDemoLogin = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword("password123");
-  };
-
   return (
     <div className="w-full lg:w-1/2 flex items-center lg:justify-start justify-center px-2 sm:px-12">
       <div className="w-full max-w-xs sm:max-w-sm p-8 rounded-lg shadow-sm">
@@ -86,27 +82,6 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           </div>
           <p className="text-gray-500 mt-1">
             Sign in to continue to your account
-          </p>
-        </div>
-
-        {/* Demo Users Section */}
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-          <h3 className="text-sm font-medium text-blue-900 mb-3">Demo Users</h3>
-          <div className="space-y-2">
-            {demoUsers.map((user, index) => (
-              <button
-                key={index}
-                onClick={() => handleDemoLogin(user.email)}
-                className="w-full text-left p-2 bg-white rounded border hover:bg-blue-50 transition-colors"
-              >
-                <div className="text-xs font-medium text-gray-900">{user.name}</div>
-                <div className="text-xs text-gray-600">{user.email}</div>
-                <div className="text-xs text-blue-600">{user.type}</div>
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-blue-700 mt-2">
-            Password: password123 (or any 6+ characters)
           </p>
         </div>
 
@@ -187,8 +162,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           </button>
         </p>
 
-        {/* ──────────────────────────────────────────────────────────────────── */}
-        {/* Add a "Back to Home" link at the very bottom of the form */}
+        {/* "Back to Home" link */}
         <div className="mt-4 text-center">
           <Link to="/">
             <Button
@@ -199,7 +173,6 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
             </Button>
           </Link>
         </div>
-        {/* ──────────────────────────────────────────────────────────────────── */}
 
         <div className="mt-12 text-center text-xs text-gray-400">
           <div className="mb-4">

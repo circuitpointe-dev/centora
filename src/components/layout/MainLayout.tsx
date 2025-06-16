@@ -46,8 +46,8 @@ const MainLayout = () => {
           isCollapsed ? "md:ml-16" : "md:ml-16 lg:ml-64"
         }`}
       >
-        <Header />
-        <main className="flex-1 overflow-auto">
+        <Header sidebarCollapsed={isCollapsed} />
+        <main className="flex-1 overflow-auto p-6">
           <Outlet />
         </main>
       </div>
