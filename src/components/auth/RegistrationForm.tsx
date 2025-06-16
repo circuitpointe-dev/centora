@@ -13,6 +13,7 @@ export interface RegistrationData {
   // Basic Info
   organizationName: string;
   acronym: string;
+  organizationType: 'NGO' | 'Donor' | '';
   contactPersonName: string;
   contactEmail: string;
   contactPhone: string;
@@ -24,7 +25,6 @@ export interface RegistrationData {
   // Additional Info
   address: string;
   establishmentDate: string;
-  organizationType: string;
   focusAreas: string[];
   currency: string;
   annualBudget: string;
@@ -41,6 +41,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
   const [formData, setFormData] = useState<RegistrationData>({
     organizationName: "",
     acronym: "",
+    organizationType: "",
     contactPersonName: "",
     contactEmail: "",
     contactPhone: "",
@@ -48,7 +49,6 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
     selectedModules: [],
     address: "",
     establishmentDate: "",
-    organizationType: "",
     focusAreas: [],
     currency: "USD", // Default currency
     annualBudget: "",

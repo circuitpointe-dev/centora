@@ -1,6 +1,8 @@
+
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, EyeOff } from "lucide-react";
 import { RegistrationData } from "../RegistrationForm";
 
@@ -11,6 +13,27 @@ interface BasicInfoStepProps {
 
 const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
   const [showPassword, setShowPassword] = React.useState(false);
+
+  // Function to generate acronym from organization name
+  const generateAcronym = (name: string): string => {
+    return name
+      .split(' ')
+      .filter(word => word.length > 0)
+      .map(word => word.charAt(0).toUpperCase())
+      .join('')
+      .slice(0, 6); // Limit to 6 characters
+  };
+
+  // Handle organization name change and auto-generate acronym
+  const handleOrganizationNameChange = (value: string) => {
+    updateFormData({ organizationName: value });
+    
+    // Auto-generate acronym only if current acronym is empty or was auto-generated
+    const newAcronym = generateAcronym(value);
+    if (!formData.acronym || formData.acronym === generateAcronym(formData.organizationName)) {
+      updateFormData({ acronym: newAcronym });
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -24,7 +47,7 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="space-y-1">
+        <div className="space-y-1 md:col-span-2">
           <Label htmlFor="organizationName" className="text-xs">
             Official Organization Name *
           </Label>
@@ -33,9 +56,7 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
             type="text"
             placeholder="e.g., Hope for All Foundation"
             value={formData.organizationName}
-            onChange={(e) =>
-              updateFormData({ organizationName: e.target.value })
-            }
+            onChange={(e) => handleOrganizationNameChange(e.target.value)}
             className="h-10 text-sm"
           />
         </div>
@@ -52,6 +73,24 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
             onChange={(e) => updateFormData({ acronym: e.target.value })}
             className="h-10 text-sm"
           />
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="organizationType" className="text-xs">
+            Organization Type *
+          </Label>
+          <Select
+            value={formData.organizationType}
+            onValueChange={(value: 'NGO' | 'Donor') => updateFormData({ organizationType: value })}
+          >
+            <SelectTrigger className="h-10 text-sm">
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="NGO">NGO</SelectItem>
+              <SelectItem value="Donor">Donor</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-1">
