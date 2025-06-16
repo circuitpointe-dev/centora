@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Template, Download, Eye, FileText, Star, Clock } from 'lucide-react';
+import { FileTemplate, Download, Eye, FileText, Star, Clock } from 'lucide-react';
 
 const TemplatesPage = () => {
   return (
@@ -20,7 +19,7 @@ const TemplatesPage = () => {
         <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#f0f9ff' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Available Templates</CardTitle>
-            <Template className="h-4 w-4 text-muted-foreground" />
+            <FileTemplate className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">15</div>

@@ -1,3 +1,4 @@
+
 // src/components/auth/RegistrationModal.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; // ← import Link
@@ -7,6 +8,7 @@ import { Loader2, X } from "lucide-react";
 import BasicInfoStep from "./registration/BasicInfoStep";
 import ModuleSelectionStep from "./registration/ModuleSelectionStep";
 import AdditionalInfoStep from "./registration/AdditionalInfoStep";
+import UserTypeStep from "./registration/UserTypeStep";
 import RegistrationStepper from "./registration/RegistrationStepper";
 import CredentialsDialog from "./CredentialsDialog";
 import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
@@ -34,6 +36,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
     contactEmail: "",
     contactPhone: "",
     password: "",
+    userType: "NGO", // Add missing userType field
     selectedModules: [],
     address: "",
     establishmentDate: "",
@@ -60,7 +63,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
       }
     }
 
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       const validation = validateStep2(formData);
       if (!validation.isValid) {
         toast({
@@ -118,12 +121,16 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
         );
       case 2:
         return (
+          <UserTypeStep formData={formData} updateFormData={updateFormData} />
+        );
+      case 3:
+        return (
           <ModuleSelectionStep
             formData={formData}
             updateFormData={updateFormData}
           />
         );
-      case 3:
+      case 4:
         return (
           <AdditionalInfoStep
             formData={formData}
@@ -218,7 +225,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
 
                   {/* Right‐side actions (Skip / Next / Submit) */}
                   <div className="flex gap-2 ml-auto">
-                    {currentStep === 3 && (
+                    {currentStep === 4 && (
                       <Button
                         type="button"
                         variant="outline"
@@ -230,7 +237,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
                       </Button>
                     )}
 
-                    {currentStep < 3 ? (
+                    {currentStep < 4 ? (
                       <Button
                         type="button"
                         onClick={handleNext}

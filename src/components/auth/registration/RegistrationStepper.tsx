@@ -1,3 +1,4 @@
+
 import React from "react";
 
 interface RegistrationStepperProps {
@@ -7,8 +8,9 @@ interface RegistrationStepperProps {
 const RegistrationStepper = ({ currentStep }: RegistrationStepperProps) => {
   const steps = [
     { number: 1, title: "Basic Info" },
-    { number: 2, title: "Modules" },
-    { number: 3, title: "Additional" },
+    { number: 2, title: "User Type" },
+    { number: 3, title: "Modules" },
+    { number: 4, title: "Additional" },
   ];
 
   return (

@@ -19,7 +19,7 @@ import {
   FileSignature,
   Shield,
   File,
-  Template,
+  FileTemplate,
 } from 'lucide-react';
 
 export const moduleConfigs = {
@@ -61,7 +61,7 @@ export const moduleConfigs = {
       { id: 'documents', name: 'Documents', icon: FileText },
       { id: 'e-signature', name: 'E-Signature', icon: FileSignature },
       { id: 'compliance', name: 'Compliance', icon: Shield },
-      { id: 'templates', name: 'Templates', icon: File },
+      { id: 'templates', name: 'Templates', icon: FileTemplate },
       { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
