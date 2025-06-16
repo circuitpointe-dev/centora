@@ -19,6 +19,7 @@ import {
   FileSignature,
   Shield,
   File,
+  Template,
 } from 'lucide-react';
 
 export const moduleConfigs = {
@@ -40,6 +41,7 @@ export const moduleConfigs = {
     icon: Award,
     color: 'text-orange-600',
     features: [
+      // This will be dynamically populated based on user type
       { id: 'grants-manager', name: 'Grants Manager', icon: BarChart3 },
       { id: 'total-grants', name: 'Total Grants', icon: Award },
       { id: 'active-grants', name: 'Active Grants', icon: CheckCircle },
@@ -150,3 +152,18 @@ export const moduleConfigs = {
 };
 
 export const allModules = Object.keys(moduleConfigs);
+
+// New function to get role-based module configuration
+export const getRoleBasedModuleConfig = (moduleId: string, userType: 'NGO' | 'Donor') => {
+  const baseConfig = moduleConfigs[moduleId as keyof typeof moduleConfigs];
+  
+  if (moduleId === 'grants' && userType) {
+    const { getRoleBasedGrantsFeatures } = require('@/utils/roleBasedModules');
+    return {
+      ...baseConfig,
+      features: getRoleBasedGrantsFeatures(userType)
+    };
+  }
+  
+  return baseConfig;
+};

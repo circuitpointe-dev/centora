@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import DonorManagementPage from './DonorManagementPage';
@@ -12,6 +13,9 @@ import ClosedGrantsPage from './ClosedGrantsPage';
 import GrantsArchivePage from './GrantsArchivePage';
 import GranteeSubmissionsPage from './GranteeSubmissionsPage';
 import GrantsSettingsPage from './GrantsSettingsPage';
+import AssignedGrantsPage from './AssignedGrantsPage';
+import ReportsPage from './ReportsPage';
+import TemplatesPage from './TemplatesPage';
 import DocumentsFeaturePage from '@/components/documents/documents-feature/DocumentsFeaturePage';
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
@@ -73,15 +77,17 @@ const GenericFeaturePage = () => {
     return <GrantsSettingsPage />;
   }
 
-  if (module === 'fundraising' && feature === 'opportunity-tracking') {
-      return <OpportunityTrackingPage />;
+  // NGO-specific grants routes
+  if (module === 'grants' && feature === 'assigned-grants') {
+    return <AssignedGrantsPage />;
   }
-  
-  if (module === 'fundraising' && feature === 'proposal-management') {
-      return <ProposalManagementPage />;
+
+  if (module === 'grants' && feature === 'reports') {
+    return <ReportsPage />;
   }
-  if (module === 'fundraising' && feature === 'fundraising-analytics') {
-      return <FundraisingAnalyticsPage />;
+
+  if (module === 'grants' && feature === 'templates') {
+    return <TemplatesPage />;
   }
 
   return (

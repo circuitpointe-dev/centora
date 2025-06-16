@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import BasicInfoStep from "./registration/BasicInfoStep";
 import ModuleSelectionStep from "./registration/ModuleSelectionStep";
 import AdditionalInfoStep from "./registration/AdditionalInfoStep";
+import UserTypeStep from "./registration/UserTypeStep";
 import RegistrationStepper from "./registration/RegistrationStepper";
 import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
 import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
@@ -17,6 +18,9 @@ export interface RegistrationData {
   contactEmail: string;
   contactPhone: string;
   password: string;
+
+  // User Type
+  userType: 'NGO' | 'Donor';
 
   // Module Selection
   selectedModules: string[];
@@ -45,6 +49,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
     contactEmail: "",
     contactPhone: "",
     password: "",
+    userType: "NGO", // Default to NGO
     selectedModules: [],
     address: "",
     establishmentDate: "",
@@ -71,7 +76,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
       }
     }
 
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       const validation = validateStep2(formData);
       if (!validation.isValid) {
         toast({
@@ -123,12 +128,16 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
         );
       case 2:
         return (
+          <UserTypeStep formData={formData} updateFormData={updateFormData} />
+        );
+      case 3:
+        return (
           <ModuleSelectionStep
             formData={formData}
             updateFormData={updateFormData}
           />
         );
-      case 3:
+      case 4:
         return (
           <AdditionalInfoStep
             formData={formData}
@@ -175,7 +184,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
           )}
 
           <div className="flex gap-2 ml-auto">
-            {currentStep === 3 && (
+            {currentStep === 4 && (
               <Button
                 type="button"
                 variant="outline"
@@ -187,7 +196,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
               </Button>
             )}
 
-            {currentStep < 3 ? (
+            {currentStep < 4 ? (
               <Button
                 type="button"
                 onClick={handleNext}

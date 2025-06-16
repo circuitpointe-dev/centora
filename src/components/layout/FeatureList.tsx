@@ -3,7 +3,8 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { moduleConfigs } from '@/config/moduleConfigs';
+import { moduleConfigs, getRoleBasedModuleConfig } from '@/config/moduleConfigs';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface FeatureListProps {
   currentModule: string;
@@ -13,7 +14,12 @@ interface FeatureListProps {
 
 const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureListProps) => {
   const location = useLocation();
-  const currentModuleConfig = moduleConfigs[currentModule as keyof typeof moduleConfigs];
+  const { user } = useAuth();
+  
+  // Get role-based module configuration
+  const currentModuleConfig = user?.userType && currentModule === 'grants' 
+    ? getRoleBasedModuleConfig(currentModule, user.userType)
+    : moduleConfigs[currentModule as keyof typeof moduleConfigs];
 
   if (!currentModuleConfig) return null;
 
