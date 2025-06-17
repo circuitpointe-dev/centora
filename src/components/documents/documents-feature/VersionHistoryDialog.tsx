@@ -13,6 +13,7 @@ import { CheckCircle, Clock } from 'lucide-react';
 import { Document } from './data';
 import { useToast } from '@/components/ui/use-toast';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import RestoreVersionDialog from './RestoreVersionDialog';
 
 interface VersionHistoryDialogProps {
   open: boolean;
@@ -40,7 +41,7 @@ const historyData = [
 
 const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpenChange, document }) => {
   const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
-  const [isRestoreConfirmOpen, setIsRestoreConfirmOpen] = React.useState(false);
+  const [isRestoreDialogOpen, setIsRestoreDialogOpen] = React.useState(false);
   const [itemToRestore, setItemToRestore] = React.useState<(typeof historyData)[number] | null>(null);
   const { toast } = useToast();
 
@@ -59,27 +60,35 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
 
   const handleRestoreClick = (item: (typeof historyData)[number]) => {
     setItemToRestore(item);
-    setIsRestoreConfirmOpen(true);
+    setIsRestoreDialogOpen(true);
   };
 
-  const onRestoreConfirm = () => {
+  const handleRestoreAction = (action: 'overwrite' | 'saveAs', details?: { title: string; owner: any; department: any; tags: string[] }) => {
     if (itemToRestore) {
+      if (action === 'overwrite') {
         toast({
-            title: "Version Restored",
-            description: `The document "${document.fileName}" has been restored to the version from ${itemToRestore.date}.`,
+          title: "Version Restored",
+          description: `The document "${document.fileName}" has been restored to the version from ${itemToRestore.date}.`,
         });
+      } else {
+        toast({
+          title: "New Document Created",
+          description: `A new document "${details?.title}" has been created from the version dated ${itemToRestore.date}.`,
+        });
+      }
     }
-    setIsRestoreConfirmOpen(false);
+    setIsRestoreDialogOpen(false);
     setItemToRestore(null);
-  }
-
+  };
 
   return (
     <>
       <LargeSideDialog open={open} onOpenChange={onOpenChange}>
         <LargeSideDialogContent className="bg-gray-50 p-0">
           <LargeSideDialogHeader className="px-6 py-4 border-b bg-white">
-            <LargeSideDialogTitle className="font-normal">Version History / {document.fileName}</LargeSideDialogTitle>
+            <LargeSideDialogTitle className="font-normal">
+              <span className="font-bold">Version History</span> / {document.fileName}
+            </LargeSideDialogTitle>
           </LargeSideDialogHeader>
           <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-y-auto">
             {/* Previous Version */}
@@ -172,14 +181,11 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
         confirmText="Accept"
         variant="constructive"
       />
-      <ConfirmationDialog
-        open={isRestoreConfirmOpen}
-        onOpenChange={setIsRestoreConfirmOpen}
-        title="Restore Version"
-        description="Are you sure you want to restore this version? This will overwrite the current version."
-        onConfirm={onRestoreConfirm}
-        confirmText="Restore"
-        variant="destructive"
+      <RestoreVersionDialog
+        open={isRestoreDialogOpen}
+        onOpenChange={setIsRestoreDialogOpen}
+        versionData={itemToRestore}
+        onRestore={handleRestoreAction}
       />
     </>
   );
