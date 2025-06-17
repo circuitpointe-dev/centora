@@ -1,4 +1,3 @@
-
 import React from "react";
 import { format, differenceInDays } from "date-fns";
 import { Opportunity } from "@/types/opportunity";
