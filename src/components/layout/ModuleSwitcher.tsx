@@ -50,9 +50,11 @@ const ModuleSwitcher = ({ currentModule, isCollapsed, onModuleSwitch }: ModuleSw
               key={moduleId}
               variant={isCurrentModule ? "secondary" : "ghost"}
               className={cn(
-                "w-full justify-start text-left font-light",
+                "w-full justify-start text-left font-light transition-colors",
                 isCollapsed ? "px-2" : "px-3",
-                isCurrentModule && "bg-gray-100",
+                isCurrentModule 
+                  ? "bg-blue-600 text-white hover:bg-blue-700" 
+                  : "hover:bg-blue-100 hover:text-blue-900",
                 isDonor && !isCurrentModule && "opacity-50 cursor-not-allowed"
               )}
               onClick={() => {

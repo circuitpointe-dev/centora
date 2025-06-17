@@ -44,7 +44,7 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
               isCollapsed ? "px-2" : "px-3",
               isActive 
                 ? "bg-blue-600 text-white hover:bg-blue-700" 
-                : "hover:bg-blue-600 hover:text-white"
+                : "hover:bg-blue-100 hover:text-blue-900"
             )}
             onClick={() => onFeatureClick(feature.id)}
           >
