@@ -91,8 +91,7 @@ const GenerateReport: React.FC = () => {
             <CardTitle className="text-lg">Select Metrics</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {[
-              { id: "proposalsSubmitted", label: "Proposals Submitted" },
+            {[{ id: "proposalsSubmitted", label: "Proposals Submitted" },
               { id: "successRate", label: "Success Rate (%)" },
               { id: "totalFundsRaised", label: "Total Funds Raised" },
               { id: "averageGrantSize", label: "Average Grant Size" },
@@ -125,8 +124,7 @@ const GenerateReport: React.FC = () => {
             <CardTitle className="text-lg">Filter</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {[
-              { id: "donor", label: "Donor" },
+            {[{ id: "donor", label: "Donor" },
               { id: "team", label: "Team" },
               { id: "sector", label: "Sector" },
               { id: "proposalStatus", label: "Proposal status" },
