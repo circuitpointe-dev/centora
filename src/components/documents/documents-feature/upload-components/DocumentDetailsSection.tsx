@@ -71,7 +71,7 @@ const DocumentDetailsSection = ({
   return (
     <Card className="flex flex-col w-full gap-12 p-8 bg-white rounded-[5px] shadow-[0px_4px_16px_#eae2fd] h-fit">
       <div className="flex flex-col items-start gap-4 w-full">
-        <h3 className="text-[#383838] text-base font-medium">
+        <h3 className="text-[#383838] text-base font-bold">
           Document Details
         </h3>
 

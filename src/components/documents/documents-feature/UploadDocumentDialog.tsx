@@ -48,8 +48,8 @@ const UploadDocumentDialog = ({ open, onOpenChange }: UploadDocumentDialogProps)
   return (
     <LargeSideDialog open={open} onOpenChange={onOpenChange}>
       <LargeSideDialogContent>
-        <LargeSideDialogHeader className="border-b border-[#e6eff5]">
-          <LargeSideDialogTitle className="font-medium text-[#383839] text-lg">
+        <LargeSideDialogHeader className="border-b border-[#e6eff5] pb-4 pt-2">
+          <LargeSideDialogTitle className="font-bold text-[#383839] text-lg">
             Upload a New Document
           </LargeSideDialogTitle>
         </LargeSideDialogHeader>
@@ -64,7 +64,7 @@ const UploadDocumentDialog = ({ open, onOpenChange }: UploadDocumentDialogProps)
               selectedFileIndex={selectedFileIndex}
             />
           </div>
-          <div className="w-[34%]">
+          <div className="w-[34%] overflow-y-auto">
             <DocumentDetailsSection
               selectedFile={selectedFileIndex !== null ? selectedFiles[selectedFileIndex] : null}
               onUpload={handleUploadComplete}
