@@ -119,9 +119,13 @@ const UploadSection = ({
   const handleConfirmDelete = () => {
     if (fileToDelete !== null) {
       const fileToRemove = files[fileToDelete];
+      
+      // Remove from files with progress tracking
       setFilesWithProgress(prev => 
         prev.filter(f => f.name !== fileToRemove.name)
       );
+      
+      // Remove from main files array
       onFileRemove(fileToDelete);
       setFileToDelete(null);
     }
@@ -177,7 +181,7 @@ const UploadSection = ({
               )}
               onClick={() => onFileSelect(index)}
             >
-              <CardContent className="flex flex-col items-start gap-6 p-5">
+              <CardContent className="flex flex-col items-start gap-4 p-4">
                 <div className="flex justify-between w-full">
                   <div className="inline-flex items-center gap-2.5">
                     <FileText className="w-[26px] h-[26px]" />
@@ -217,9 +221,7 @@ const UploadSection = ({
 
                 <Progress
                   value={file.progress}
-                  className={`w-full h-1.5 ${
-                    file.progress < 100 ? "bg-[#dfd0fa]" : ""
-                  } rounded-[30px]`}
+                  className="w-full h-1.5 bg-gray-200 rounded-[30px]"
                 />
               </CardContent>
             </Card>
