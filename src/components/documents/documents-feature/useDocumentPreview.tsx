@@ -25,6 +25,7 @@ const getFileSize = () => `${(Math.random() * 5 + 1).toFixed(1)} MB`;
 
 export const useDocumentPreview = (document: Document) => {
     const [isVersionHistoryOpen, setIsVersionHistoryOpen] = React.useState(false);
+    const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
 
     const documentDetails = [
         { label: "Type", value: getFileType(document.fileName) },
@@ -61,13 +62,15 @@ export const useDocumentPreview = (document: Document) => {
         ],
         [
             { label: "Version History", icon: <RotateCw className="w-5 h-5" />, onClick: () => setIsVersionHistoryOpen(true) },
-            { label: "Share", icon: <Share2 className="w-[18px] h-[18px]" /> },
+            { label: "Share", icon: <Share2 className="w-[18px] h-[18px]" />, onClick: () => setIsShareDialogOpen(true) },
         ],
     ];
 
     return {
         isVersionHistoryOpen,
         setIsVersionHistoryOpen,
+        isShareDialogOpen,
+        setIsShareDialogOpen,
         documentDetails,
         permissions,
         actionRows,

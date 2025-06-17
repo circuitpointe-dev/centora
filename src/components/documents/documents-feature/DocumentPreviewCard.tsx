@@ -1,10 +1,10 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FileText, X } from "lucide-react";
 import { Document } from "./data";
 import VersionHistoryDialog from "./VersionHistoryDialog";
+import ShareDocumentDialog from "./ShareDocumentDialog";
 import { useDocumentPreview } from "./useDocumentPreview";
 import DocumentDetailsSection from "./preview-card-sections/DocumentDetailsSection";
 import DocumentTagsSection from "./preview-card-sections/DocumentTagsSection";
@@ -23,6 +23,8 @@ const DocumentPreviewCard = ({
   const {
     isVersionHistoryOpen,
     setIsVersionHistoryOpen,
+    isShareDialogOpen,
+    setIsShareDialogOpen,
     documentDetails,
     permissions,
     actionRows,
@@ -67,6 +69,11 @@ const DocumentPreviewCard = ({
                 <VersionHistoryDialog 
                   open={isVersionHistoryOpen}
                   onOpenChange={setIsVersionHistoryOpen}
+                  document={document}
+                />
+                <ShareDocumentDialog
+                  open={isShareDialogOpen}
+                  onOpenChange={setIsShareDialogOpen}
                   document={document}
                 />
               </div>
