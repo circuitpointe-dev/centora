@@ -40,13 +40,19 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
             key={feature.id}
             variant={isActive ? "secondary" : "ghost"}
             className={cn(
-              "w-full justify-start text-left font-light",
+              "w-full justify-start text-left font-light transition-colors",
               isCollapsed ? "px-2" : "px-3",
-              isActive && "bg-blue-50 text-blue-700 border border-blue-200"
+              isActive 
+                ? "bg-blue-600 text-white hover:bg-blue-700" 
+                : "hover:bg-blue-600 hover:text-white"
             )}
             onClick={() => onFeatureClick(feature.id)}
           >
-            <feature.icon className={cn("h-4 w-4", isCollapsed ? "" : "mr-3")} />
+            <feature.icon className={cn(
+              "h-4 w-4", 
+              isCollapsed ? "" : "mr-3",
+              isActive ? "text-white" : ""
+            )} />
             {!isCollapsed && <span className="text-sm font-light">{feature.name}</span>}
           </Button>
         );
