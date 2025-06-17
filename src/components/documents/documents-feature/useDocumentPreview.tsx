@@ -53,14 +53,14 @@ export const useDocumentPreview = (document: Document) => {
 
     const actionRows = [
         [
-            { label: "Version History", icon: <RotateCw className="w-5 h-5" />, onClick: () => setIsVersionHistoryOpen(true) },
             { label: "Edit", icon: <Edit className="w-[18px] h-[18px]" /> },
-        ],
-        [
             {
                 label: "Request Signature",
                 icon: <PenLine className="w-[18px] h-[18px]" />,
             },
+        ],
+        [
+            { label: "Version History", icon: <RotateCw className="w-5 h-5" />, onClick: () => setIsVersionHistoryOpen(true) },
             { label: "Share", icon: <Share2 className="w-[18px] h-[18px]" /> },
         ],
     ];
