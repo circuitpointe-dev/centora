@@ -78,15 +78,27 @@ const UploadSection = ({
 
   const handleConfirmDelete = () => {
     if (fileToDelete !== null) {
-      const fileToRemove = files[fileToDelete];
+      const fileToRemove = filesWithProgress[fileToDelete];
       
       // Remove from files with progress tracking
       setFilesWithProgress(prev => 
-        prev.filter(f => f.name !== fileToRemove.name)
+        prev.filter((_, index) => index !== fileToDelete)
       );
       
-      // Remove from main files array
-      onFileRemove(fileToDelete);
+      // Find the corresponding file in the main files array by name and remove it
+      const mainFileIndex = files.findIndex(f => f.name === fileToRemove.name);
+      if (mainFileIndex !== -1) {
+        onFileRemove(mainFileIndex);
+      }
+      
+      // Adjust selected file index if necessary
+      if (selectedFileIndex === fileToDelete) {
+        const newLength = filesWithProgress.length - 1;
+        onFileSelect(newLength > 0 ? 0 : -1);
+      } else if (selectedFileIndex !== null && selectedFileIndex > fileToDelete) {
+        onFileSelect(selectedFileIndex - 1);
+      }
+      
       setFileToDelete(null);
     }
     setDeleteConfirmOpen(false);
