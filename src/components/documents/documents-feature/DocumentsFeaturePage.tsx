@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import DocumentList from './DocumentList';
+import UploadDocumentDialog from './UploadDocumentDialog';
 
 const filterOptions = [
   { id: 'all', name: 'All Documents' },
@@ -34,6 +35,7 @@ const filterOptions = [
 const DocumentsFeaturePage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   const filteredDocuments = useMemo(
     () =>
@@ -120,7 +122,10 @@ const DocumentsFeaturePage = () => {
             </div>
           </TooltipProvider>
 
-          <Button className="h-[43px] w-48 gap-1.5 rounded-[5px] bg-violet-600 px-4 py-3 text-sm font-medium text-white hover:bg-violet-700">
+          <Button 
+            className="h-[43px] w-48 gap-1.5 rounded-[5px] bg-violet-600 px-4 py-3 text-sm font-medium text-white hover:bg-violet-700"
+            onClick={() => setUploadDialogOpen(true)}
+          >
             <Upload className="h-4 w-4" />
             <span>Upload Document</span>
           </Button>
@@ -174,6 +179,11 @@ const DocumentsFeaturePage = () => {
           )}
         </div>
       </div>
+
+      <UploadDocumentDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+      />
     </div>
   );
 };
