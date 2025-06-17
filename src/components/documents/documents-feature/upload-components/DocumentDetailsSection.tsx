@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,9 +8,9 @@ import {
   Building2,
   Calendar,
   Search as SearchIcon,
-  Tag as TagIcon,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import TagSelection from './TagSelection';
 
 interface DocumentDetailsSectionProps {
   selectedFile: File | null;
@@ -19,36 +18,21 @@ interface DocumentDetailsSectionProps {
   onCancel: () => void;
 }
 
+interface Tag {
+  name: string;
+  color: string;
+}
+
 const DocumentDetailsSection = ({
   selectedFile,
   onUpload,
   onCancel,
 }: DocumentDetailsSectionProps) => {
-  const [tags, setTags] = useState([
-    { name: "HR", color: "bg-[#f9e6fd] text-[#cb27f5]" },
-    { name: "Contract", color: "bg-[#e8fbef] text-[#17a34b]" },
-  ]);
-  const [newTag, setNewTag] = useState('');
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [documentOwner, setDocumentOwner] = useState('');
   const [department, setDepartment] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const { toast } = useToast();
-
-  const handleAddTag = () => {
-    if (newTag.trim()) {
-      const colors = [
-        "bg-[#f9e6fd] text-[#cb27f5]",
-        "bg-[#e8fbef] text-[#17a34b]",
-        "bg-[#fef3e2] text-[#f59e0b]",
-        "bg-[#eff6ff] text-[#3b82f6]",
-      ];
-      setTags([...tags, { 
-        name: newTag.trim(), 
-        color: colors[Math.floor(Math.random() * colors.length)]
-      }]);
-      setNewTag('');
-    }
-  };
 
   const handleUpload = () => {
     if (!selectedFile) {
@@ -83,43 +67,10 @@ const DocumentDetailsSection = ({
         )}
 
         <div className="flex flex-col items-start gap-8 w-full">
-          <div className="flex flex-col items-start gap-4 w-full">
-            <div className="flex flex-col items-start gap-2 w-full">
-              <Label className="font-medium text-[#383838e6] text-sm">
-                Tag
-              </Label>
-
-              <div className="flex items-center gap-2 w-full">
-                <Input
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  placeholder="Add tags..."
-                  className="flex-1 px-4 py-3 rounded-[5px] border border-[#d9d9d9]"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-                />
-                <Button
-                  onClick={handleAddTag}
-                  size="sm"
-                  className="bg-violet-600 hover:bg-violet-700"
-                >
-                  <TagIcon className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 flex-wrap">
-              {tags.map((tag, index) => (
-                <Badge
-                  key={index}
-                  className={`h-[25px] px-2.5 py-2 ${tag.color}`}
-                >
-                  <span className="font-medium text-xs">
-                    {tag.name}
-                  </span>
-                </Badge>
-              ))}
-            </div>
-          </div>
+          <TagSelection
+            selectedTags={selectedTags}
+            onTagsChange={setSelectedTags}
+          />
 
           <div className="flex flex-col items-start gap-2 w-full">
             <Label className="text-[#383838e6] text-sm font-medium">
