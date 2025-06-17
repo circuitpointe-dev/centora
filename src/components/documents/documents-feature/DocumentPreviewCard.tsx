@@ -63,18 +63,18 @@ const DocumentPreviewCard = ({
               <div className="flex flex-col items-start gap-8 w-full">
                 <DocumentDetailsSection details={documentDetails} />
                 <DocumentTagsSection tags={document.tags} />
-                <DocumentPermissionsSection permissions={permissions} /> <VersionHistoryDialog
-        open={isVersionHistoryOpen}
-        onOpenChange={setIsVersionHistoryOpen}
-        document={document}
-      />
+                <DocumentPermissionsSection permissions={permissions} />
               </div>
             </div>
             <DocumentActionsSection actionRows={actionRows} />
           </div>
         </div>
       </Card>
-     
+      <VersionHistoryDialog
+        open={isVersionHistoryOpen}
+        onOpenChange={setIsVersionHistoryOpen}
+        document={document}
+      />
     </>
   );
 };
