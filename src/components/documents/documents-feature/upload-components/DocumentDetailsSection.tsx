@@ -4,13 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Building2,
-  Calendar,
-  Search as SearchIcon,
-} from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import TagSelection from './TagSelection';
+import DocumentOwnerSelect from './DocumentOwnerSelect';
+import DepartmentSelect from './DepartmentSelect';
 
 interface DocumentDetailsSectionProps {
   selectedFile: File | null;
@@ -72,37 +70,15 @@ const DocumentDetailsSection = ({
             onTagsChange={setSelectedTags}
           />
 
-          <div className="flex flex-col items-start gap-2 w-full">
-            <Label className="text-[#383838e6] text-sm font-medium">
-              Document Owner
-            </Label>
+          <DocumentOwnerSelect
+            value={documentOwner}
+            onChange={setDocumentOwner}
+          />
 
-            <div className="relative w-full">
-              <Input
-                value={documentOwner}
-                onChange={(e) => setDocumentOwner(e.target.value)}
-                placeholder="Search people..."
-                className="px-4 py-3 pr-10 rounded-[5px] border border-[#d9d9d9]"
-              />
-              <SearchIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
-          </div>
-
-          <div className="flex flex-col items-start gap-2 w-full">
-            <Label className="font-medium text-[#383838e6] text-sm">
-              Department
-            </Label>
-
-            <div className="relative w-full">
-              <Input
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                placeholder="Search department..."
-                className="px-4 py-3 pr-10 rounded-[5px] border border-[#d9d9d9]"
-              />
-              <Building2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
-          </div>
+          <DepartmentSelect
+            value={department}
+            onChange={setDepartment}
+          />
 
           <div className="flex flex-col items-start gap-2 w-full">
             <Label className="font-medium text-[#383838e6] text-sm">
