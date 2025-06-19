@@ -26,30 +26,32 @@ const getFileSize = () => `${(Math.random() * 5 + 1).toFixed(1)} MB`;
 export const useDocumentPreview = (document: Document) => {
     const [isVersionHistoryOpen, setIsVersionHistoryOpen] = React.useState(false);
     const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
+    const [isEditPermissionsOpen, setIsEditPermissionsOpen] = React.useState(false);
+
+    const [permissions, setPermissions] = React.useState([
+        {
+            group: "HR Team",
+            permission: "Edit",
+            icon: (
+                <Avatar className="w-5 h-5">
+                    <AvatarImage src="https://github.com/shadcn.png" alt="HR Team" />
+                    <AvatarFallback>HR</AvatarFallback>
+                </Avatar>
+            ),
+            isDefault: true,
+        },
+        {
+            group: "Others",
+            permission: "View",
+            icon: <Lock className="w-5 h-5 text-gray-500" />,
+        },
+    ]);
 
     const documentDetails = [
         { label: "Type", value: getFileType(document.fileName) },
         { label: "Size", value: getFileSize() },
         { label: "Owner", value: document.owner.name },
         { label: "Modified", value: "Jun 15, 2025" },
-    ];
-
-    const permissions = [
-        {
-        group: "HR Team",
-        permission: "Edit",
-        icon: (
-            <Avatar className="w-5 h-5">
-            <AvatarImage src="https://github.com/shadcn.png" alt="HR Team" />
-            <AvatarFallback>HR</AvatarFallback>
-            </Avatar>
-        ),
-        },
-        {
-        group: "Others",
-        permission: "View",
-        icon: <Lock className="w-5 h-5 text-gray-500" />,
-        },
     ];
 
     const actionRows = [
@@ -71,8 +73,11 @@ export const useDocumentPreview = (document: Document) => {
         setIsVersionHistoryOpen,
         isShareDialogOpen,
         setIsShareDialogOpen,
+        isEditPermissionsOpen,
+        setIsEditPermissionsOpen,
         documentDetails,
         permissions,
+        setPermissions,
         actionRows,
     };
 }

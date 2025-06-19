@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -5,6 +6,7 @@ import { FileText, X } from "lucide-react";
 import { Document } from "./data";
 import VersionHistoryDialog from "./VersionHistoryDialog";
 import ShareDocumentDialog from "./ShareDocumentDialog";
+import EditPermissionsDialog from "./EditPermissionsDialog";
 import { useDocumentPreview } from "./useDocumentPreview";
 import DocumentDetailsSection from "./preview-card-sections/DocumentDetailsSection";
 import DocumentTagsSection from "./preview-card-sections/DocumentTagsSection";
@@ -25,10 +27,17 @@ const DocumentPreviewCard = ({
     setIsVersionHistoryOpen,
     isShareDialogOpen,
     setIsShareDialogOpen,
+    isEditPermissionsOpen,
+    setIsEditPermissionsOpen,
     documentDetails,
     permissions,
+    setPermissions,
     actionRows,
   } = useDocumentPreview(document);
+
+  const handleSavePermissions = (newPermissions: any[]) => {
+    setPermissions(newPermissions);
+  };
 
   return (
     <>
@@ -65,16 +74,9 @@ const DocumentPreviewCard = ({
               <div className="flex flex-col items-start gap-8 w-full">
                 <DocumentDetailsSection details={documentDetails} />
                 <DocumentTagsSection tags={document.tags} />
-                <DocumentPermissionsSection permissions={permissions} />
-                <VersionHistoryDialog 
-                  open={isVersionHistoryOpen}
-                  onOpenChange={setIsVersionHistoryOpen}
-                  document={document}
-                />
-                <ShareDocumentDialog
-                  open={isShareDialogOpen}
-                  onOpenChange={setIsShareDialogOpen}
-                  document={document}
+                <DocumentPermissionsSection 
+                  permissions={permissions} 
+                  onEditPermissions={() => setIsEditPermissionsOpen(true)}
                 />
               </div>
             </div>
@@ -83,6 +85,23 @@ const DocumentPreviewCard = ({
         </div>
       </Card>
 
+      <VersionHistoryDialog 
+        open={isVersionHistoryOpen}
+        onOpenChange={setIsVersionHistoryOpen}
+        document={document}
+      />
+      <ShareDocumentDialog
+        open={isShareDialogOpen}
+        onOpenChange={setIsShareDialogOpen}
+        document={document}
+      />
+      <EditPermissionsDialog
+        open={isEditPermissionsOpen}
+        onOpenChange={setIsEditPermissionsOpen}
+        document={document}
+        initialPermissions={permissions}
+        onSave={handleSavePermissions}
+      />
     </>
   );
 };

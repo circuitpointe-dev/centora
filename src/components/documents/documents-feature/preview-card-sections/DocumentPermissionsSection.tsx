@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Edit } from 'lucide-react';
 
 interface Permission {
     group: string;
@@ -10,13 +12,30 @@ interface Permission {
 
 interface DocumentPermissionsSectionProps {
     permissions: Permission[];
+    onEditPermissions?: () => void;
 }
 
-const DocumentPermissionsSection: React.FC<DocumentPermissionsSectionProps> = ({ permissions }) => {
+const DocumentPermissionsSection: React.FC<DocumentPermissionsSectionProps> = ({ 
+    permissions, 
+    onEditPermissions 
+}) => {
     return (
         <div className="flex flex-col items-start gap-4 w-full">
-            <div className="font-medium text-[#383838cc] text-base">
-                Permissions
+            <div className="flex items-center justify-between w-full">
+                <div className="font-medium text-[#383838cc] text-base">
+                    Permissions
+                </div>
+                {onEditPermissions && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onEditPermissions}
+                        className="h-7 px-2 text-violet-600 hover:text-violet-700 hover:bg-violet-50"
+                    >
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
+                    </Button>
+                )}
             </div>
             <div className="flex flex-col items-start gap-4 w-full">
                 {permissions.map((item) => (
