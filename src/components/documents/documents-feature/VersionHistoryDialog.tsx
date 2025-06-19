@@ -15,6 +15,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import RestoreVersionDialog from './RestoreVersionDialog';
 
+interface Tag {
+  name: string;
+  color: string;
+}
+
 interface VersionHistoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -63,7 +68,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
     setIsRestoreDialogOpen(true);
   };
 
-  const handleRestoreAction = (action: 'overwrite' | 'saveAs', details?: { title: string; owner: any; department: any; tags: string[] }) => {
+  const handleRestoreAction = (action: 'overwrite' | 'saveAs', details?: { title: string; owner: string; department: string; tags: Tag[] }) => {
     if (itemToRestore) {
       if (action === 'overwrite') {
         toast({
