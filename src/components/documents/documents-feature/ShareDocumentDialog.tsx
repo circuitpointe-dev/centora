@@ -90,7 +90,7 @@ const ShareDocumentDialog = ({ open, onOpenChange, document }: ShareDocumentDial
                   Cancel
                 </Button>
               </div>
-            </div>
+            </Tabs>
           </div>
         </div>
       </DialogContent>
