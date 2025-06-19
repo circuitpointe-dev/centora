@@ -98,14 +98,14 @@ const DocumentCard = ({ fileName, addedTime, owner, tags, onSelect, selected }: 
               {displayedTags.map((tag, index) => (
                 <Badge
                   key={index}
-                  className={`h-[25px] px-2.5 py-1 ${tag.bgColor} ${tag.textColor} font-medium text-xs rounded-[5px] border-0`}
+                  className={`h-[25px] px-2.5 py-1 ${tag.bgColor} ${tag.textColor} font-medium text-xs rounded-[5px] border-0 hover:${tag.bgColor} hover:${tag.textColor}`}
                 >
                   {tag.name}
                 </Badge>
               ))}
                {remainingTagsCount > 0 && (
                 <Badge
-                  className="h-[25px] px-2.5 py-1 bg-gray-200 text-gray-800 font-medium text-xs rounded-[5px] border-0"
+                  className="h-[25px] px-2.5 py-1 bg-gray-200 text-gray-800 font-medium text-xs rounded-[5px] border-0 hover:bg-gray-200 hover:text-gray-800"
                 >
                   +{remainingTagsCount}
                 </Badge>

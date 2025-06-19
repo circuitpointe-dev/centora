@@ -51,14 +51,14 @@ const DocumentList = ({ documents, selectedDocumentId, onSelectDocument }: Docum
                 {doc.tags.slice(0, displayedTagsCount).map((tag, index) => (
                   <Badge
                     key={index}
-                    className={`h-[25px] px-2.5 py-1 ${tag.bgColor} ${tag.textColor} font-medium text-xs rounded-[5px] border-0`}
+                    className={`h-[25px] px-2.5 py-1 ${tag.bgColor} ${tag.textColor} font-medium text-xs rounded-[5px] border-0 hover:${tag.bgColor} hover:${tag.textColor}`}
                   >
                     {tag.name}
                   </Badge>
                 ))}
                 {doc.tags.length > displayedTagsCount && (
                   <Badge
-                    className="h-[25px] px-2.5 py-1 bg-gray-200 text-gray-800 font-medium text-xs rounded-[5px] border-0"
+                    className="h-[25px] px-2.5 py-1 bg-gray-200 text-gray-800 font-medium text-xs rounded-[5px] border-0 hover:bg-gray-200 hover:text-gray-800"
                   >
                     +{doc.tags.length - displayedTagsCount}
                   </Badge>

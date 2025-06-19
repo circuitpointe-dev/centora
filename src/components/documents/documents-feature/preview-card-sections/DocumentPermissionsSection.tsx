@@ -49,7 +49,7 @@ const DocumentPermissionsSection: React.FC<DocumentPermissionsSectionProps> = ({
                                 {item.group}
                             </div>
                         </div>
-                        <Badge className="bg-[#f2f2f2] text-[#383839b2] h-[25px] px-2.5 py-1 rounded-[5px] font-medium text-xs border-0">
+                        <Badge className="bg-[#f2f2f2] text-[#383839b2] h-[25px] px-2.5 py-1 rounded-[5px] font-medium text-xs border-0 hover:bg-[#f2f2f2] hover:text-[#383839b2]">
                             {item.permission}
                         </Badge>
                     </div>

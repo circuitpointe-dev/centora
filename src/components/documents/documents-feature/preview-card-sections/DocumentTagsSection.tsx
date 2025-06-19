@@ -17,7 +17,7 @@ const DocumentTagsSection: React.FC<DocumentTagsSectionProps> = ({ tags }) => {
                 {tags.map((tag) => (
                     <Badge
                         key={tag.name}
-                        className={`${tag.bgColor} ${tag.textColor} h-[25px] px-2.5 py-1 rounded-[5px] font-medium text-xs border-0`}
+                        className={`${tag.bgColor} ${tag.textColor} h-[25px] px-2.5 py-1 rounded-[5px] font-medium text-xs border-0 hover:${tag.bgColor} hover:${tag.textColor}`}
                     >
                         {tag.name}
                     </Badge>

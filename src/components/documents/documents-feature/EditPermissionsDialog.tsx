@@ -131,10 +131,10 @@ const EditPermissionsDialog = ({
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-gray-200">
                     {permissionOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
+                      <SelectItem key={option.value} value={option.value} className="hover:bg-gray-50">
                         <div className="flex items-center gap-2">
                           {option.icon}
-                          <span>{option.label}</span>
+                          <span className="hover:text-gray-900">{option.label}</span>
                         </div>
                       </SelectItem>
                     ))}
