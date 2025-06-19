@@ -7,6 +7,7 @@ import { Document } from "./data";
 import VersionHistoryDialog from "./VersionHistoryDialog";
 import ShareDocumentDialog from "./ShareDocumentDialog";
 import EditPermissionsDialog from "./EditPermissionsDialog";
+import DocumentEditorDialog from "./DocumentEditorDialog";
 import { useDocumentPreview } from "./useDocumentPreview";
 import DocumentDetailsSection from "./preview-card-sections/DocumentDetailsSection";
 import DocumentTagsSection from "./preview-card-sections/DocumentTagsSection";
@@ -29,6 +30,8 @@ const DocumentPreviewCard = ({
     setIsShareDialogOpen,
     isEditPermissionsOpen,
     setIsEditPermissionsOpen,
+    isDocumentEditorOpen,
+    setIsDocumentEditorOpen,
     documentDetails,
     permissions,
     setPermissions,
@@ -38,6 +41,9 @@ const DocumentPreviewCard = ({
   const handleSavePermissions = (newPermissions: any[]) => {
     setPermissions(newPermissions);
   };
+
+  // Get user's current permission for the document
+  const userPermission = permissions.find(p => p.group === "HR Team")?.permission || "View";
 
   return (
     <>
@@ -101,6 +107,12 @@ const DocumentPreviewCard = ({
         document={document}
         initialPermissions={permissions}
         onSave={handleSavePermissions}
+      />
+      <DocumentEditorDialog
+        open={isDocumentEditorOpen}
+        onOpenChange={setIsDocumentEditorOpen}
+        document={document}
+        userPermissions={userPermission}
       />
     </>
   );

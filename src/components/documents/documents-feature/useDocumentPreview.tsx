@@ -27,6 +27,7 @@ export const useDocumentPreview = (document: Document) => {
     const [isVersionHistoryOpen, setIsVersionHistoryOpen] = React.useState(false);
     const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false);
     const [isEditPermissionsOpen, setIsEditPermissionsOpen] = React.useState(false);
+    const [isDocumentEditorOpen, setIsDocumentEditorOpen] = React.useState(false);
 
     const [permissions, setPermissions] = React.useState([
         {
@@ -56,7 +57,7 @@ export const useDocumentPreview = (document: Document) => {
 
     const actionRows = [
         [
-            { label: "Edit", icon: <Edit className="w-[18px] h-[18px]" /> },
+            { label: "Edit", icon: <Edit className="w-[18px] h-[18px]" />, onClick: () => setIsDocumentEditorOpen(true) },
             {
                 label: "Request Signature",
                 icon: <PenLine className="w-[18px] h-[18px]" />,
@@ -75,6 +76,8 @@ export const useDocumentPreview = (document: Document) => {
         setIsShareDialogOpen,
         isEditPermissionsOpen,
         setIsEditPermissionsOpen,
+        isDocumentEditorOpen,
+        setIsDocumentEditorOpen,
         documentDetails,
         permissions,
         setPermissions,
