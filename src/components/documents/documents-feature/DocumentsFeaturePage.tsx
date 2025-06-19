@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,8 +46,7 @@ const DocumentsFeaturePage = () => {
     // Apply search filter
     if (searchQuery.trim()) {
       filtered = filtered.filter((doc) =>
-        doc.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+        doc.fileName.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
