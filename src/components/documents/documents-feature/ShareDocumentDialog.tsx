@@ -26,7 +26,7 @@ const ShareDocumentDialog = ({ open, onOpenChange, document }: ShareDocumentDial
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-       <DialogContent className="max-w-xl h-[600px] bg-white border border-gray-200 p-0 flex flex-col">
+      <DialogContent className="max-w-xl h-[600px] bg-white border border-gray-200 p-0 flex flex-col">
   <DialogHeader className="border-b border-gray-100 p-6 pb-4">
     <DialogTitle className="text-lg font-semibold text-gray-900">
       Share Document
@@ -37,23 +37,35 @@ const ShareDocumentDialog = ({ open, onOpenChange, document }: ShareDocumentDial
   </DialogHeader>
 
   <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1 overflow-hidden">
-    <TabsList className="grid w-full grid-cols-3 bg-transparent border-b border-gray-200 mx-6 mt-4 mb-0 rounded-none p-0 h-auto">
-      {/* Tab Triggers */}
+    
+    {/* ✅ Keep TabsList always visible */}
+    <TabsList className="grid w-full grid-cols-3 bg-transparent border-b border-gray-200 mx-6 mt-4 mb-0 rounded-none p-0 h-auto shrink-0">
+      <TabsTrigger value="departments" className="flex items-center gap-1 text-xs py-3 px-2 border-b-2 data-[state=active]:border-violet-600 data-[state=active]:text-violet-600">
+        <Building2 className="w-3 h-3" />
+        Dept
+      </TabsTrigger>
+      <TabsTrigger value="staff" className="flex items-center gap-1 text-xs py-3 px-2 border-b-2 data-[state=active]:border-violet-600 data-[state=active]:text-violet-600">
+        <Users className="w-3 h-3" />
+        Staff
+      </TabsTrigger>
+      <TabsTrigger value="signature" className="flex items-center gap-1 text-xs py-3 px-2 border-b-2 data-[state=active]:border-violet-600 data-[state=active]:text-violet-600">
+        <FileSignature className="w-3 h-3" />
+        e-Sign
+      </TabsTrigger>
     </TabsList>
 
+    {/* ✅ Scrollable content area only */}
     <div className="flex-1 min-h-0 overflow-hidden">
       <TabsContent value="departments" className="h-full m-0 px-6">
         <ScrollArea className="h-full py-4">
           <InternalDepartmentShare document={document} />
         </ScrollArea>
       </TabsContent>
-
       <TabsContent value="staff" className="h-full m-0 px-6">
         <ScrollArea className="h-full py-4">
           <StaffShare document={document} />
         </ScrollArea>
       </TabsContent>
-
       <TabsContent value="signature" className="h-full m-0 px-6">
         <ScrollArea className="h-full py-4">
           <ExternalSignatureShare document={document} />
@@ -61,7 +73,8 @@ const ShareDocumentDialog = ({ open, onOpenChange, document }: ShareDocumentDial
       </TabsContent>
     </div>
 
-    <div className="flex justify-end gap-3 p-6 pt-4 border-t border-gray-100 bg-white">
+    {/* ✅ Footer always visible */}
+    <div className="flex justify-end gap-3 p-6 pt-4 border-t border-gray-100 bg-white shrink-0">
       <Button
         variant="outline"
         onClick={() => onOpenChange(false)}
@@ -72,7 +85,6 @@ const ShareDocumentDialog = ({ open, onOpenChange, document }: ShareDocumentDial
     </div>
   </Tabs>
 </DialogContent>
-
     </Dialog>
   );
 };
