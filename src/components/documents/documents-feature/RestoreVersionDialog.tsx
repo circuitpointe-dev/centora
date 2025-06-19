@@ -14,19 +14,24 @@ import DocumentOwnerSelect from './upload-components/DocumentOwnerSelect';
 import DepartmentSelect from './upload-components/DepartmentSelect';
 import TagSelection from './upload-components/TagSelection';
 
+interface Tag {
+  name: string;
+  color: string;
+}
+
 interface RestoreVersionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   versionData: { user: { name: string; avatar: string }; date: string; action: string } | null;
-  onRestore: (action: 'overwrite' | 'saveAs', details?: { title: string; owner: any; department: any; tags: string[] }) => void;
+  onRestore: (action: 'overwrite' | 'saveAs', details?: { title: string; owner: string; department: string; tags: Tag[] }) => void;
 }
 
 const RestoreVersionDialog = ({ open, onOpenChange, versionData, onRestore }: RestoreVersionDialogProps) => {
   const [showSaveAsForm, setShowSaveAsForm] = useState(false);
   const [title, setTitle] = useState('');
-  const [selectedOwner, setSelectedOwner] = useState<any>(null);
-  const [selectedDepartment, setSelectedDepartment] = useState<any>(null);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedOwner, setSelectedOwner] = useState<string>('');
+  const [selectedDepartment, setSelectedDepartment] = useState<string>('');
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 
   const handleOverwrite = () => {
     onRestore('overwrite');
@@ -46,8 +51,8 @@ const RestoreVersionDialog = ({ open, onOpenChange, versionData, onRestore }: Re
       setShowSaveAsForm(false);
       // Reset form
       setTitle('');
-      setSelectedOwner(null);
-      setSelectedDepartment(null);
+      setSelectedOwner('');
+      setSelectedDepartment('');
       setSelectedTags([]);
     }
   };
@@ -57,8 +62,8 @@ const RestoreVersionDialog = ({ open, onOpenChange, versionData, onRestore }: Re
     setShowSaveAsForm(false);
     // Reset form
     setTitle('');
-    setSelectedOwner(null);
-    setSelectedDepartment(null);
+    setSelectedOwner('');
+    setSelectedDepartment('');
     setSelectedTags([]);
   };
 
@@ -126,25 +131,15 @@ const RestoreVersionDialog = ({ open, onOpenChange, versionData, onRestore }: Re
               />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">
-                Document Owner
-              </Label>
-              <DocumentOwnerSelect
-                selectedOwner={selectedOwner}
-                onOwnerChange={setSelectedOwner}
-              />
-            </div>
+            <DocumentOwnerSelect
+              value={selectedOwner}
+              onChange={setSelectedOwner}
+            />
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">
-                Department
-              </Label>
-              <DepartmentSelect
-                selectedDepartment={selectedDepartment}
-                onDepartmentChange={setSelectedDepartment}
-              />
-            </div>
+            <DepartmentSelect
+              value={selectedDepartment}
+              onChange={setSelectedDepartment}
+            />
 
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">
