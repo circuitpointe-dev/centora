@@ -1,7 +1,8 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, List, Upload } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { LayoutGrid, List, Upload, Search } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -35,15 +36,24 @@ const filterOptions = [
 const DocumentsFeaturePage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
-  const filteredDocuments = useMemo(
-    () =>
-      activeFilter && activeFilter !== 'all'
-        ? documentsData.filter((doc) => doc.category === activeFilter)
-        : documentsData,
-    [activeFilter]
-  );
+  const filteredDocuments = useMemo(() => {
+    let filtered = activeFilter && activeFilter !== 'all'
+      ? documentsData.filter((doc) => doc.category === activeFilter)
+      : documentsData;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((doc) =>
+        doc.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }, [activeFilter, searchQuery]);
 
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
     null
@@ -94,6 +104,16 @@ const DocumentsFeaturePage = () => {
               ))}
             </SelectContent>
           </Select>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search documents..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 w-[250px] h-9"
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-[30px]">
@@ -159,7 +179,7 @@ const DocumentsFeaturePage = () => {
               )
             ) : (
               <div className="text-center text-gray-500 py-10 pr-6">
-                <p>No documents found in this category.</p>
+                <p>{searchQuery.trim() ? 'No documents found matching your search.' : 'No documents found in this category.'}</p>
               </div>
             )}
           </ScrollArea>
