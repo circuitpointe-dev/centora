@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import ModuleSwitcher from "./ModuleSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import black_logo from "@/assets/images/black_logo.png";
 import violet_logo from "@/assets/images/logo_violet.png";
-import white_logo from "@/assets/images/white_logo.png";
 
 interface SidebarProps {
   currentModule: string;
@@ -74,7 +72,7 @@ const Sidebar = ({
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -85,7 +83,7 @@ const Sidebar = ({
         size="sm"
         onClick={() => setIsMobileOpen(true)}
         className={cn(
-          "fixed top-4 left-4 z-30 h-8 w-8 p-0 lg:hidden",
+          "fixed top-4 left-4 z-30 h-8 w-8 p-0 md:hidden",
           isMobileOpen && "hidden"
         )}
       >
@@ -99,15 +97,15 @@ const Sidebar = ({
           // Mobile: hidden by default, full screen when open
           "fixed left-0 top-0 h-screen z-50",
           // Mobile behavior
-          "hidden lg:flex",
+          "hidden md:flex",
           isMobileOpen ? "flex w-full" : "",
           // Desktop behavior
-          !isCollapsed ? "lg:w-16 xl:w-64" : "lg:w-16"
+          !isCollapsed ? "md:w-16 lg:w-64" : "md:w-16"
         )}
       >
         {/* Mobile Close Button */}
         {isMobileOpen && (
-          <div className="lg:hidden p-4 border-b border-gray-200">
+          <div className="md:hidden p-4 border-b border-gray-200">
             <div className="flex justify-end">
               <Button
                 variant="ghost"
@@ -125,7 +123,7 @@ const Sidebar = ({
         <div
           className={cn(
             "p-4 border-b border-gray-200 shrink-0",
-            isMobileOpen ? "block" : "hidden lg:block"
+            isMobileOpen ? "block" : "hidden md:block"
           )}
         >
           <div className="flex items-center justify-between">
@@ -134,7 +132,7 @@ const Sidebar = ({
                 "flex items-center space-x-3",
                 isCollapsed &&
                   !isMobileOpen &&
-                  "justify-center lg:block xl:flex"
+                  "justify-center md:block lg:flex"
               )}
             >
               {(!isCollapsed || isMobileOpen) && (
@@ -150,7 +148,7 @@ const Sidebar = ({
                 </div>
               )}
             </div>
-            <div className="hidden lg:flex">
+            <div className="hidden md:flex">
               <Button
                 variant="ghost"
                 size="sm"
@@ -164,7 +162,7 @@ const Sidebar = ({
         </div>
 
         {/* Current Module Header */}
-        <div className={cn(isMobileOpen ? "block" : "hidden lg:block")}>
+        <div className={cn(isMobileOpen ? "block" : "hidden md:block")}>
           <SidebarHeader
             currentModule={currentModule}
             isCollapsed={isCollapsed && !isMobileOpen}
@@ -175,7 +173,7 @@ const Sidebar = ({
         <div
           className={cn(
             "flex-1 overflow-auto min-h-0",
-            isMobileOpen ? "block" : "hidden lg:block"
+            isMobileOpen ? "block" : "hidden md:block"
           )}
         >
           {!showModuleSwitcher ? (
@@ -198,7 +196,7 @@ const Sidebar = ({
           <div
             className={cn(
               "border-t border-gray-200 p-4 shrink-0",
-              isMobileOpen ? "block" : "hidden lg:block"
+              isMobileOpen ? "block" : "hidden md:block"
             )}
           >
             <Button
