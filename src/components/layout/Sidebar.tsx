@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import FeatureList from "./FeatureList";
 import ModuleSwitcher from "./ModuleSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import black_logo from "@/assets/images/black_logo.png";
+import violet_logo from "@/assets/images/logo_violet.png";
 
 interface SidebarProps {
   currentModule: string;
@@ -31,8 +31,10 @@ const Sidebar = ({
     moduleConfigs[currentModule as keyof typeof moduleConfigs];
 
   const handleFeatureClick = (featureId: string) => {
-    const [path, query] = featureId.split('?');
-    const url = `/dashboard/${currentModule}/${path}${query ? `?${query}` : ''}`;
+    const [path, query] = featureId.split("?");
+    const url = `/dashboard/${currentModule}/${path}${
+      query ? `?${query}` : ""
+    }`;
     navigate(url);
     // Close mobile sidebar after navigation
     setIsMobileOpen(false);
@@ -62,7 +64,7 @@ const Sidebar = ({
     return null;
   }
 
-  const isDonor = user.userType === 'Donor';
+  const isDonor = user.userType === "Donor";
   const canSwitchModules = !isDonor && user.subscribedModules.length > 1;
 
   return (
@@ -136,12 +138,12 @@ const Sidebar = ({
               {(!isCollapsed || isMobileOpen) && (
                 <div className="flex items-center space-x-3 animate-fade-in">
                   <img
-                    src={black_logo}
+                    src={violet_logo}
                     alt="Orbit ERP Logo"
                     className="h-8 w-auto transition-opacity duration-300"
                   />
-                  <h1 className="text-xl font-bold text-gray-900 transition-opacity duration-300">
-                    Orbit ERP
+                  <h1 className="text-lg font-bold text-gray-900 transition-opacity duration-300 bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                    Orbit
                   </h1>
                 </div>
               )}

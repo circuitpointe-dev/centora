@@ -1,9 +1,22 @@
-
 // src/components/pages/Index.tsx
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import black_logo from "@/assets/images/black_logo.png"; // Assuming you have a logo image
-import { ArrowRight, Heart, BarChart3, FileText, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import black_logo from "@/assets/images/black_logo.png";
+import violet_logo from "@/assets/images/logo_violet.png";
+import white_logo from "@/assets/images/white_logo.png";
+import {
+  ArrowRight,
+  Heart,
+  BarChart3,
+  FileText,
+  Mail,
+  Phone,
+  MapPin,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+} from "lucide-react";
 
 const Index = () => {
   return (
@@ -17,13 +30,13 @@ const Index = () => {
               <Link to="/" className="flex items-center space-x-2">
                 {/* Logo image (height = 2rem by default—h-8) */}
                 <img
-                  src={black_logo}
+                  src={violet_logo}
                   alt="Orbit ERP Logo"
                   className="h-8 w-auto"
                 />
                 {/* The "Orbit ERP" text only appears on sm and up */}
-                <span className="text-xl font-bold text-gray-900 hidden sm:inline-block">
-                  Orbit ERP
+                <span className="text-xl font-bold text-gray-900 hidden sm:inline-block bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                  Orbit
                 </span>
               </Link>
             </div>
@@ -174,7 +187,8 @@ const Index = () => {
                 <span className="text-xl font-bold">Orbit ERP</span>
               </div>
               <p className="text-gray-400 text-sm">
-                Empowering NGOs worldwide with comprehensive management solutions to maximize their impact and streamline operations.
+                Empowering NGOs worldwide with comprehensive management
+                solutions to maximize their impact and streamline operations.
               </p>
               <div className="flex space-x-4">
                 <Facebook className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
@@ -188,12 +202,36 @@ const Index = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Solutions</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Donor Management</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Fundraising Analytics</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Proposal Management</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Opportunity Tracking</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Financial Management</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Impact Reporting</a></li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Donor Management
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Fundraising Analytics
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Proposal Management
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Opportunity Tracking
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Financial Management
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Impact Reporting
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -201,12 +239,36 @@ const Index = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Support</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Training</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API Reference</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">System Status</a></li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Help Center
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Documentation
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Training
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Community
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    API Reference
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    System Status
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -225,8 +287,10 @@ const Index = () => {
                 <div className="flex items-start space-x-2">
                   <MapPin className="h-4 w-4 mt-1" />
                   <span className="text-sm">
-                    123 Innovation Drive<br />
-                    Tech Valley, CA 94025<br />
+                    123 Innovation Drive
+                    <br />
+                    Tech Valley, CA 94025
+                    <br />
                     United States
                   </span>
                 </div>
@@ -238,13 +302,28 @@ const Index = () => {
           <div className="border-t border-gray-800 mt-12 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-gray-400 text-sm">
-  © {new Date().getFullYear()} Orbit ERP. All rights reserved.
-</p>
+                © {new Date().getFullYear()} Orbit ERP. All rights reserved.
+              </p>
 
               <div className="flex space-x-6 mt-4 md:mt-0">
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Cookie Policy</a>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                >
+                  Privacy Policy
+                </a>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                >
+                  Terms of Service
+                </a>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                >
+                  Cookie Policy
+                </a>
               </div>
             </div>
           </div>
