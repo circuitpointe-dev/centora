@@ -53,8 +53,8 @@ const ModuleSwitcher = ({ currentModule, isCollapsed, onModuleSwitch }: ModuleSw
                 "w-full justify-start text-left font-light transition-colors",
                 isCollapsed ? "px-2" : "px-3",
                 isCurrentModule 
-                  ? "bg-blue-600 text-white hover:bg-blue-700" 
-                  : "hover:bg-blue-100 hover:text-blue-900",
+                  ? "bg-violet-700 text-white hover:bg-violet-800" 
+                  : "hover:bg-violet-100 hover:text-violet-900",
                 isDonor && !isCurrentModule && "opacity-50 cursor-not-allowed"
               )}
               onClick={() => {

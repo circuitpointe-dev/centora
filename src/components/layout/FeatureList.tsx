@@ -43,8 +43,8 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
               "w-full justify-start text-left font-light transition-colors",
               isCollapsed ? "px-2" : "px-3",
               isActive 
-                ? "bg-blue-600 text-white hover:bg-blue-700" 
-                : "hover:bg-blue-100 hover:text-blue-900"
+                ? "bg-violet-700 text-white hover:bg-violet-800" 
+                : "hover:bg-violet-100 hover:text-violet-900"
             )}
             onClick={() => onFeatureClick(feature.id)}
           >
