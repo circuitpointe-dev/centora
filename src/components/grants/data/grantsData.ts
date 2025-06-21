@@ -4,7 +4,7 @@ export const grantsData = [
     id: 1,
     grantName: "Education Access Initiative",
     organization: "Learn Together Foundation",
-    status: "Pending",
+    status: "Active",
     compliance: 95,
     disbursement: 75,
     reportingStatus: "All Submitted",
@@ -37,7 +37,7 @@ export const grantsData = [
     id: 4,
     grantName: "Youth Development Program",
     organization: "Future Leaders Org",
-    status: "Pending",
+    status: "Active",
     compliance: 92,
     disbursement: 80,
     reportingStatus: "No Reports",
@@ -59,7 +59,7 @@ export const grantsData = [
     id: 6,
     grantName: "Rural Education Support",
     organization: "Village Schools Network",
-    status: "Pending",
+    status: "Active",
     compliance: 87,
     disbursement: 60,
     reportingStatus: "1 Report Due",
@@ -76,5 +76,16 @@ export const grantsData = [
     reportingStatus: "No Reports",
     region: "Africa",
     year: "2024"
-  }
+  },
+  {
+    id: 8,
+    grantName: "Girl Child Fund",
+    organization: "World Health Organization",
+    status: "Active",
+    compliance: 60,
+    disbursement: 50,
+    reportingStatus: "No Reports",
+    region: "Europe",
+    year: "2025"
+  },
 ];
