@@ -53,7 +53,11 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route index element={<Navigate to="dashboard" replace />} />
+              {/* Grants module: redirect to dashboard by default */}
+              <Route 
+                index 
+                element={<Navigate to="dashboard" replace />} 
+              />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path=":feature" element={<GenericFeaturePage />} />
             </Route>
