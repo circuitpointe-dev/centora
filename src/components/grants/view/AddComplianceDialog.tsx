@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -31,17 +31,37 @@ interface AddComplianceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (requirement: Omit<ComplianceRequirement, 'id' | 'grantId'>) => void;
+  editingRequirement?: ComplianceRequirement | null;
 }
 
 export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
   open,
   onOpenChange,
   onSave,
+  editingRequirement,
 }) => {
   const [requirement, setRequirement] = useState("");
   const [dueDate, setDueDate] = useState<Date>();
   const [status, setStatus] = useState<'In Progress' | 'Completed'>('In Progress');
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
+
+  const isEditing = !!editingRequirement;
+
+  // Populate form when editing
+  useEffect(() => {
+    if (editingRequirement) {
+      setRequirement(editingRequirement.requirement);
+      setDueDate(new Date(editingRequirement.dueDate));
+      setStatus(editingRequirement.status);
+      setEvidenceFile(null); // Reset file input for editing
+    } else {
+      // Reset form for adding new
+      setRequirement("");
+      setDueDate(undefined);
+      setStatus('In Progress');
+      setEvidenceFile(null);
+    }
+  }, [editingRequirement, open]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -57,7 +77,7 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
       requirement,
       dueDate: format(dueDate, "yyyy-MM-dd"),
       status,
-      evidenceDocument: evidenceFile ? evidenceFile.name : undefined,
+      evidenceDocument: evidenceFile ? evidenceFile.name : editingRequirement?.evidenceDocument,
     });
 
     // Reset form
@@ -81,7 +101,7 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
       <DialogContent className="bg-white border-gray-200 max-w-md">
         <DialogHeader>
           <DialogTitle className="text-gray-900">
-            Add New Compliance Requirement
+            {isEditing ? "Edit Compliance Requirement" : "Add New Compliance Requirement"}
           </DialogTitle>
         </DialogHeader>
 
@@ -158,6 +178,11 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
                   Selected: {evidenceFile.name}
                 </p>
               )}
+              {isEditing && editingRequirement?.evidenceDocument && !evidenceFile && (
+                <p className="text-sm text-gray-600 mt-2">
+                  Current: {editingRequirement.evidenceDocument}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -175,7 +200,7 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
             disabled={!requirement || !dueDate}
             className="bg-purple-600 hover:bg-purple-700"
           >
-            Save
+            {isEditing ? "Update" : "Save"}
           </Button>
         </div>
       </DialogContent>

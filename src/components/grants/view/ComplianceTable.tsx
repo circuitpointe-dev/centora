@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Plus, MoreVertical, Eye, CheckCircle, Clock, Upload } from "lucide-react";
+import { Plus, MoreVertical, Eye, CheckCircle, Clock, Upload, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -16,6 +16,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { complianceData, ComplianceRequirement } from "../data/complianceData";
 import { AddComplianceDialog } from "./AddComplianceDialog";
 import { UploadEvidenceDialog } from "./UploadEvidenceDialog";
@@ -31,8 +40,24 @@ export const ComplianceTable = ({ grantId }: ComplianceTableProps) => {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedRequirement, setSelectedRequirement] = useState<ComplianceRequirement | null>(null);
+  const [editingRequirement, setEditingRequirement] = useState<ComplianceRequirement | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Calculate pagination
+  const totalItems = requirements.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentRequirements = requirements.slice(startIndex, endIndex);
 
   const handleAddNew = () => {
+    setEditingRequirement(null);
+    setAddDialogOpen(true);
+  };
+
+  const handleEdit = (requirement: ComplianceRequirement) => {
+    setEditingRequirement(requirement);
     setAddDialogOpen(true);
   };
 
@@ -47,12 +72,25 @@ export const ComplianceTable = ({ grantId }: ComplianceTableProps) => {
   };
 
   const handleSaveRequirement = (requirementData: Omit<ComplianceRequirement, 'id' | 'grantId'>) => {
-    const newRequirement: ComplianceRequirement = {
-      id: Math.max(...requirements.map(r => r.id), 0) + 1,
-      grantId,
-      ...requirementData,
-    };
-    setRequirements(prev => [...prev, newRequirement]);
+    if (editingRequirement) {
+      // Update existing requirement
+      setRequirements(prev =>
+        prev.map(r =>
+          r.id === editingRequirement.id
+            ? { ...r, ...requirementData }
+            : r
+        )
+      );
+    } else {
+      // Add new requirement
+      const newRequirement: ComplianceRequirement = {
+        id: Math.max(...requirements.map(r => r.id), 0) + 1,
+        grantId,
+        ...requirementData,
+      };
+      setRequirements(prev => [...prev, newRequirement]);
+    }
+    setEditingRequirement(null);
   };
 
   const handleUploadComplete = (fileName: string) => {
@@ -90,6 +128,10 @@ export const ComplianceTable = ({ grantId }: ComplianceTableProps) => {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -115,7 +157,7 @@ export const ComplianceTable = ({ grantId }: ComplianceTableProps) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {requirements.map((requirement) => (
+            {currentRequirements.map((requirement) => (
               <TableRow key={requirement.id} className="hover:bg-gray-50">
                 <TableCell className="font-medium text-black">
                   {requirement.requirement}
@@ -144,26 +186,45 @@ export const ComplianceTable = ({ grantId }: ComplianceTableProps) => {
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-center">
-                    {requirement.status === 'Completed' && requirement.evidenceDocument ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleViewDocument(requirement.evidenceDocument!)}
-                        className="h-8 w-8 p-0 hover:bg-gray-100"
-                      >
-                        <Eye className="h-4 w-4 text-gray-600" />
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleUploadEvidence(requirement)}
-                        className="text-xs px-3 py-1 h-7 border-gray-300"
-                      >
-                        <Upload className="h-3 w-3 mr-1" />
-                        Upload Evidence
-                      </Button>
-                    )}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 hover:bg-gray-100"
+                        >
+                          <MoreVertical className="h-4 w-4 text-gray-600" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-white border-gray-200 z-50">
+                        {requirement.status === 'Completed' && requirement.evidenceDocument ? (
+                          <DropdownMenuItem
+                            onClick={() => handleViewDocument(requirement.evidenceDocument!)}
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View Document
+                          </DropdownMenuItem>
+                        ) : (
+                          <>
+                            <DropdownMenuItem
+                              onClick={() => handleEdit(requirement)}
+                              className="flex items-center gap-2 cursor-pointer"
+                            >
+                              <Edit className="h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleUploadEvidence(requirement)}
+                              className="flex items-center gap-2 cursor-pointer"
+                            >
+                              <Upload className="h-4 w-4" />
+                              Upload Evidence
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </TableCell>
               </TableRow>
@@ -178,10 +239,45 @@ export const ComplianceTable = ({ grantId }: ComplianceTableProps) => {
         </div>
       )}
 
+      {totalPages > 1 && (
+        <div className="flex justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    onClick={() => handlePageChange(page)}
+                    isActive={currentPage === page}
+                    className="cursor-pointer"
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
+
       <AddComplianceDialog
         open={addDialogOpen}
         onOpenChange={setAddDialogOpen}
         onSave={handleSaveRequirement}
+        editingRequirement={editingRequirement}
       />
 
       <UploadEvidenceDialog
