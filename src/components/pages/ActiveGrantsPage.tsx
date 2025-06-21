@@ -11,19 +11,7 @@ const ActiveGrantsPage = () => {
   // Show donor-specific view for donors
   if (user?.userType === 'Donor') {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Active Grants
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Monitor and manage your active grant portfolio
-          </p>
-        </div>
-
-        {/* Active Grants Table Section */}
         <ActiveGrantsTable />
-      </div>
     );
   }
 
