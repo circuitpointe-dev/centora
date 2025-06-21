@@ -39,16 +39,16 @@ export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.El
   ];
 
   return (
-    <Card className="w-full rounded-sm overflow-hidden">
-      <CardContent className="p-6">
+    <Card className="w-full rounded-sm overflow-hidden h-[600px] flex flex-col">
+      <CardContent className="p-6 flex-1 flex flex-col">
         <h2 className="text-lg font-semibold text-black mb-6">
           Grant Details
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-4 flex-1 overflow-y-auto">
           {grantDetails.map((detail, index) => (
             <div key={index} className="flex">
-              <div className="w-[185px] text-sm text-gray-700">
+              <div className="w-[185px] text-sm font-semibold text-black">
                 {detail.label}
               </div>
               <div className="flex items-center gap-1">
@@ -76,7 +76,7 @@ export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.El
                     </SelectContent>
                   </Select>
                 ) : (
-                  <span className="text-sm text-gray-900">
+                  <span className="text-sm text-gray-600">
                     {detail.value}
                   </span>
                 )}
