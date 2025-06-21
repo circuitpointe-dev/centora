@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,7 @@ export const GrantsTable = () => {
     year: 'all'
   });
 
-  // Mock data for grants
+  // Mock data for grants with year and region included
   const grantsData = [
     {
       id: 1,
@@ -76,8 +76,58 @@ export const GrantsTable = () => {
       reportingStatus: "All Submitted",
       region: "South America",
       year: "2023"
+    },
+    {
+      id: 6,
+      grantName: "Rural Education Support",
+      organization: "Village Schools Network",
+      status: "Active",
+      compliance: 87,
+      disbursement: 60,
+      reportingStatus: "1 Report Due",
+      region: "Asia",
+      year: "2022"
+    },
+    {
+      id: 7,
+      grantName: "Medical Equipment Fund",
+      organization: "Health Access Coalition",
+      status: "Pending",
+      compliance: 0,
+      disbursement: 0,
+      reportingStatus: "No Reports",
+      region: "Africa",
+      year: "2024"
     }
   ];
+
+  // Filter the data based on current filters
+  const filteredData = useMemo(() => {
+    return grantsData.filter(grant => {
+      const matchesGrantName = filters.grantName === '' || 
+        grant.grantName.toLowerCase().includes(filters.grantName.toLowerCase());
+      
+      const matchesOrganization = filters.organization === '' || 
+        grant.organization.toLowerCase().includes(filters.organization.toLowerCase());
+      
+      const matchesStatus = filters.status === 'all' || 
+        grant.status.toLowerCase() === filters.status.toLowerCase();
+      
+      const matchesReportingStatus = filters.reportingStatus === 'all' || 
+        (filters.reportingStatus === 'submitted' && grant.reportingStatus === 'All Submitted') ||
+        (filters.reportingStatus === 'due' && grant.reportingStatus.includes('Due')) ||
+        (filters.reportingStatus === 'none' && grant.reportingStatus === 'No Reports');
+      
+      const matchesRegion = filters.region === 'all' || 
+        grant.region.toLowerCase().replace(' ', '-') === filters.region;
+      
+      const matchesYear = filters.year === 'all' || 
+        grant.year === filters.year;
+
+      return matchesGrantName && matchesOrganization && matchesStatus && 
+             matchesReportingStatus && matchesRegion && matchesYear;
+    });
+  }, [filters]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -96,17 +146,22 @@ export const GrantsTable = () => {
   };
 
   const itemsPerPage = 5;
-  const totalPages = Math.ceil(grantsData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = grantsData.slice(startIndex, endIndex);
+  const currentData = filteredData.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   return (
     <Card>
       <CardHeader>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <CardTitle>Grants Portfolio</CardTitle>
-          <Button className="bg-orange-600 hover:bg-orange-700 text-white">
+          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
             <Plus className="h-4 w-4 mr-2" />
             New Grant
           </Button>
@@ -202,7 +257,7 @@ export const GrantsTable = () => {
                   <TableCell className="font-medium">{grant.grantName}</TableCell>
                   <TableCell>{grant.organization}</TableCell>
                   <TableCell>
-                    <Badge className={getStatusColor(grant.status)}>
+                    <Badge className={`${getStatusColor(grant.status)} rounded-sm hover:${getStatusColor(grant.status)}`}>
                       {grant.status}
                     </Badge>
                   </TableCell>
@@ -229,7 +284,7 @@ export const GrantsTable = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={getReportingStatusColor(grant.reportingStatus)}>
+                    <Badge className={`${getReportingStatusColor(grant.reportingStatus)} rounded-sm hover:${getReportingStatusColor(grant.reportingStatus)}`}>
                       {grant.reportingStatus}
                     </Badge>
                   </TableCell>
