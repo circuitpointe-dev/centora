@@ -29,7 +29,7 @@ const DashboardPage = () => {
     return moduleNames[moduleId] || moduleId;
   };
 
-  // Grants-specific content based on user type
+  // Grants-specific content based on user type (both for main dashboard and dashboard feature)
   if (module === 'grants') {
     if (!user) return null;
     
