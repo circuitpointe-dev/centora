@@ -29,7 +29,7 @@ export const ActiveGrantsTable = () => {
   const hasData = filteredData.length > 0;
 
   return (
-    <Card>
+    <Card className="border-none">
       <CardHeader>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <CardTitle>Active Grants Portfolio</CardTitle>
