@@ -30,7 +30,7 @@ const DEMO_USERS: User[] = [
   },
   {
     id: "2",
-    email: "richard@fehd.com",
+    email: "user@ngo.com",
     name: "Richard Nwamadi",
     organization: "FEHD Foundation",
     userType: "NGO",
@@ -38,7 +38,7 @@ const DEMO_USERS: User[] = [
   },
   {
     id: "3",
-    email: "milli@ac.com",
+    email: "user@donor.com",
     name: "Millicent Ogbu",
     organization: "AmplifyChange",
     userType: "Donor",
