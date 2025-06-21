@@ -107,7 +107,7 @@ export const DisbursementsTable = ({ grantId }: DisbursementsTableProps) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Disbursement Schedule</h2>
+        <h2 className="text-lg font-medium text-gray-900">Disbursement Schedule</h2>
         <Button
           onClick={handleAddMilestone}
           className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2"
