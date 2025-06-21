@@ -135,7 +135,7 @@ export const ComplianceTable = ({ grantId }: ComplianceTableProps) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Checklist</h2>
+        <h2 className="text-lg font-medium text-gray-900">Checklist</h2>
         <Button
           onClick={handleAddNew}
           className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2"
