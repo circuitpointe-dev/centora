@@ -1,13 +1,15 @@
 
 import React, { useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft } from 'lucide-react';
 import { grantsData } from '../data/grantsData';
 import Overview from './Overview';
 
 const GrantViewPage = () => {
   const { grantId } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Find the grant by ID
@@ -17,6 +19,10 @@ const GrantViewPage = () => {
     return <Navigate to="/dashboard/grants/active-grants" replace />;
   }
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   const handleCloseGrant = () => {
     console.log('Closing grant:', grant.id);
     // TODO: Implement close grant logic
@@ -24,6 +30,18 @@ const GrantViewPage = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleBack}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">

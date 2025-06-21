@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronDown } from "lucide-react";
-import React from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React, { useState } from "react";
 import { getStatusColor } from "../utils/statusUtils";
 
 interface GrantDetailsSectionProps {
@@ -18,10 +18,20 @@ interface GrantDetailsSectionProps {
 }
 
 export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.Element => {
+  const [currentStatus, setCurrentStatus] = useState(grant.status);
+  
+  const statusOptions = ["Active", "Pending", "Closed", "On Hold", "Completed"];
+
+  const handleStatusChange = (newStatus: string) => {
+    setCurrentStatus(newStatus);
+    console.log(`Status updated to: ${newStatus}`);
+    // TODO: Implement actual status update logic
+  };
+
   const grantDetails = [
     { label: "Grant Name", value: grant.grantName },
     { label: "Grantee", value: grant.organization },
-    { label: "Status", value: grant.status, hasChevron: true, isColored: true },
+    { label: "Status", value: currentStatus, isSelectable: true },
     { label: "Compliance", value: `${grant.compliance}% Compliant` },
     { label: "Program Area", value: grant.programArea },
     { label: "Reporting Set Up", value: grant.nextReportDue },
@@ -42,16 +52,34 @@ export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.El
                 {detail.label}
               </div>
               <div className="flex items-center gap-1">
-                {detail.label === "Status" ? (
-                  <span className={`text-xs px-2 py-1 rounded-sm ${getStatusColor(detail.value)}`}>
-                    {detail.value}
-                  </span>
+                {detail.isSelectable ? (
+                  <Select value={currentStatus} onValueChange={handleStatusChange}>
+                    <SelectTrigger className="w-auto h-auto p-0 border-none bg-transparent">
+                      <SelectValue asChild>
+                        <span className={`text-xs px-2 py-1 rounded-sm ${getStatusColor(currentStatus)}`}>
+                          {currentStatus}
+                        </span>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-gray-200 rounded-sm">
+                      {statusOptions.map((status) => (
+                        <SelectItem 
+                          key={status} 
+                          value={status}
+                          className="hover:bg-gray-50"
+                        >
+                          <span className={`text-xs px-2 py-1 rounded-sm ${getStatusColor(status)}`}>
+                            {status}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 ) : (
                   <span className="text-sm text-gray-900">
                     {detail.value}
                   </span>
                 )}
-                {detail.hasChevron && <ChevronDown className="w-3 h-3" />}
               </div>
             </div>
           ))}
