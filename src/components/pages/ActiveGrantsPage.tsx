@@ -3,7 +3,6 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
-import { GrantsStatisticsCards } from '@/components/grants/GrantsStatisticsCards';
 import { ActiveGrantsTable } from '@/components/grants/ActiveGrantsTable';
 
 const ActiveGrantsPage = () => {
@@ -21,9 +20,6 @@ const ActiveGrantsPage = () => {
             Monitor and manage your active grant portfolio
           </p>
         </div>
-
-        {/* Statistics Cards Section */}
-        <GrantsStatisticsCards />
 
         {/* Active Grants Table Section */}
         <ActiveGrantsTable />
