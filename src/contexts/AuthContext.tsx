@@ -38,7 +38,7 @@ const DEMO_USERS: User[] = [
   },
   {
     id: "3",
-    email: "millicent@amplify.com",
+    email: "milli@ac.com",
     name: "Millicent Ogbu",
     organization: "AmplifyChange",
     userType: "Donor",
