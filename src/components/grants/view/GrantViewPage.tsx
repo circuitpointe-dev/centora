@@ -8,6 +8,7 @@ import { grantsData } from '../data/grantsData';
 import Overview from './Overview';
 import { ReportsTable } from './ReportsTable';
 import { DisbursementsTable } from './DisbursementsTable';
+import { ComplianceTable } from './ComplianceTable';
 
 const GrantViewPage = () => {
   const { grantId } = useParams();
@@ -105,9 +106,7 @@ const GrantViewPage = () => {
         </TabsContent>
 
         <TabsContent value="compliance" className="mt-6">
-          <div className="text-center py-8">
-            <p className="text-gray-500">Compliance tab content coming soon...</p>
-          </div>
+          <ComplianceTable grantId={grant.id} />
         </TabsContent>
       </Tabs>
     </div>
