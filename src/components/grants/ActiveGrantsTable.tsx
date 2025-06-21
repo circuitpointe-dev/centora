@@ -15,7 +15,7 @@ export const ActiveGrantsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { filters, setFilters, filteredData } = useActiveGrantsFilters();
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 7;
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
