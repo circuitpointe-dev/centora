@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { grantsData } from '../data/grantsData';
 import Overview from './Overview';
 import { ReportsTable } from './ReportsTable';
+import { DisbursementsTable } from './DisbursementsTable';
 
 const GrantViewPage = () => {
   const { grantId } = useParams();
@@ -100,9 +101,7 @@ const GrantViewPage = () => {
         </TabsContent>
 
         <TabsContent value="disbursements" className="mt-6">
-          <div className="text-center py-8">
-            <p className="text-gray-500">Disbursements tab content coming soon...</p>
-          </div>
+          <DisbursementsTable grantId={grant.id} />
         </TabsContent>
 
         <TabsContent value="compliance" className="mt-6">
