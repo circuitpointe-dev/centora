@@ -4,6 +4,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye, Edit } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { getReportingStatusColor } from '../utils/statusUtils';
 
 interface Grant {
@@ -23,6 +24,12 @@ interface ActiveGrantsTableRowProps {
 }
 
 export const ActiveGrantsTableRow = ({ grant }: ActiveGrantsTableRowProps) => {
+  const navigate = useNavigate();
+
+  const handleView = () => {
+    navigate(`/dashboard/grants/view/${grant.id}`);
+  };
+
   return (
     <TableRow>
       <TableCell className="font-medium">{grant.grantName}</TableCell>
@@ -56,7 +63,7 @@ export const ActiveGrantsTableRow = ({ grant }: ActiveGrantsTableRowProps) => {
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={handleView}>
             <Eye className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="sm">

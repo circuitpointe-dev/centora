@@ -9,7 +9,10 @@ export const grantsData = [
     disbursement: 75,
     reportingStatus: "All Submitted",
     region: "North America",
-    year: "2024"
+    year: "2024",
+    amount: "$45,000",
+    programArea: "North East",
+    nextReportDue: "Next report due July 15, 2024"
   },
   {
     id: 2,
@@ -20,7 +23,10 @@ export const grantsData = [
     disbursement: 0,
     reportingStatus: "2 Reports Due",
     region: "Africa",
-    year: "2024"
+    year: "2024",
+    amount: "$62,500",
+    programArea: "Central Africa",
+    nextReportDue: "Next report due August 20, 2024"
   },
   {
     id: 3,
@@ -31,7 +37,10 @@ export const grantsData = [
     disbursement: 45,
     reportingStatus: "1 Report Due",
     region: "Asia",
-    year: "2023"
+    year: "2023",
+    amount: "$30,000",
+    programArea: "South East",
+    nextReportDue: "Next report due June 30, 2024"
   },
   {
     id: 4,
@@ -42,7 +51,10 @@ export const grantsData = [
     disbursement: 80,
     reportingStatus: "No Reports",
     region: "Europe",
-    year: "2024"
+    year: "2024",
+    amount: "$55,000",
+    programArea: "Western Europe",
+    nextReportDue: "Next report due September 10, 2024"
   },
   {
     id: 5,
@@ -53,7 +65,10 @@ export const grantsData = [
     disbursement: 100,
     reportingStatus: "All Submitted",
     region: "South America",
-    year: "2023"
+    year: "2023",
+    amount: "$75,000",
+    programArea: "Amazon Basin",
+    nextReportDue: "Final report submitted"
   },
   {
     id: 6,
@@ -64,7 +79,10 @@ export const grantsData = [
     disbursement: 60,
     reportingStatus: "1 Report Due",
     region: "Asia",
-    year: "2022"
+    year: "2022",
+    amount: "$40,000",
+    programArea: "Rural Asia",
+    nextReportDue: "Next report due October 5, 2024"
   },
   {
     id: 7,
@@ -75,7 +93,10 @@ export const grantsData = [
     disbursement: 0,
     reportingStatus: "No Reports",
     region: "Africa",
-    year: "2024"
+    year: "2024",
+    amount: "$85,000",
+    programArea: "Sub-Saharan Africa",
+    nextReportDue: "Awaiting approval"
   },
   {
     id: 8,
@@ -86,6 +107,9 @@ export const grantsData = [
     disbursement: 50,
     reportingStatus: "No Reports",
     region: "Europe",
-    year: "2025"
+    year: "2025",
+    amount: "$50,000",
+    programArea: "Eastern Europe",
+    nextReportDue: "Next report due November 12, 2024"
   },
 ];
