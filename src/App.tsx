@@ -1,4 +1,3 @@
-
 // src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -45,16 +44,6 @@ const App = () => (
               }
             />
 
-            {/* Protected: Grant View */}
-            <Route
-              path="/dashboard/grants/view/:grantId"
-              element={
-                <ProtectedRoute>
-                  <GrantViewPage />
-                </ProtectedRoute>
-              }
-            />
-
             {/* Protected: Dashboard + Features */}
             <Route
               path="/dashboard/:module"
@@ -64,12 +53,13 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              {/* Grants module: redirect to dashboard by default */}
-              <Route 
-                index 
-                element={<Navigate to="dashboard" replace />} 
-              />
+              {/* Dashboard page - no longer redirect by default */}
               <Route path="dashboard" element={<DashboardPage />} />
+              
+              {/* Grant View - nested within dashboard structure */}
+              <Route path="view/:grantId" element={<GrantViewPage />} />
+              
+              {/* Other features */}
               <Route path=":feature" element={<GenericFeaturePage />} />
             </Route>
 

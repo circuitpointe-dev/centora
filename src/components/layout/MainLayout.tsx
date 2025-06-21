@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Outlet, useParams, useNavigate } from "react-router-dom";
+import { Outlet, useParams, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,6 +10,7 @@ const MainLayout = () => {
   const { module } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleToggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -24,6 +25,13 @@ const MainLayout = () => {
       }
     }
   }, [user, module, navigate]);
+
+  useEffect(() => {
+    // If we're on a module root (like /dashboard/grants), redirect to dashboard
+    if (location.pathname === `/dashboard/${module}`) {
+      navigate(`/dashboard/${module}/dashboard`, { replace: true });
+    }
+  }, [location.pathname, module, navigate]);
 
   if (!user || !module) {
     return null;
