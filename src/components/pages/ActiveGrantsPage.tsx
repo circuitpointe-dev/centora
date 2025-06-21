@@ -1,10 +1,34 @@
-
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CheckCircle, Calendar, DollarSign, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { GrantsStatisticsCards } from '@/components/grants/GrantsStatisticsCards';
+import { ActiveGrantsTable } from '@/components/grants/ActiveGrantsTable';
 
 const ActiveGrantsPage = () => {
+  const { user } = useAuth();
+
+  // Show donor-specific view for donors
+  if (user?.userType === 'Donor') {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Active Grants
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Monitor and manage your active grant portfolio
+          </p>
+        </div>
+
+        {/* Statistics Cards Section */}
+        <GrantsStatisticsCards />
+
+        {/* Active Grants Table Section */}
+        <ActiveGrantsTable />
+      </div>
+    );
+  }
+
+  // Default view for NGOs (keep existing content)
   return (
     <div className="space-y-6">
       <div>

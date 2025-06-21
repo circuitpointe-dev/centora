@@ -7,25 +7,24 @@ import { Search } from 'lucide-react';
 interface FiltersState {
   grantName: string;
   organization: string;
-  status: string;
   reportingStatus: string;
   region: string;
   year: string;
 }
 
-interface GrantsTableFiltersProps {
+interface ActiveGrantsTableFiltersProps {
   filters: FiltersState;
   onFiltersChange: (filters: FiltersState) => void;
   disabled?: boolean;
 }
 
-export const GrantsTableFilters = ({ filters, onFiltersChange, disabled }: GrantsTableFiltersProps) => {
+export const ActiveGrantsTableFilters = ({ filters, onFiltersChange, disabled }: ActiveGrantsTableFiltersProps) => {
   const updateFilter = (key: keyof FiltersState, value: string) => {
     onFiltersChange({ ...filters, [key]: value });
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
@@ -46,18 +45,6 @@ export const GrantsTableFilters = ({ filters, onFiltersChange, disabled }: Grant
           disabled={disabled}
         />
       </div>
-      <Select value={filters.status} onValueChange={(value) => updateFilter('status', value)} disabled={disabled}>
-        <SelectTrigger>
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Status</SelectItem>
-          <SelectItem value="active">Active</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="overdue">Overdue</SelectItem>
-          <SelectItem value="closed">Closed</SelectItem>
-        </SelectContent>
-      </Select>
       <Select value={filters.reportingStatus} onValueChange={(value) => updateFilter('reportingStatus', value)} disabled={disabled}>
         <SelectTrigger>
           <SelectValue placeholder="Reporting Status" />

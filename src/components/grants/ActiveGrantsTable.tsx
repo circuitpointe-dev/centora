@@ -4,16 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Plus } from 'lucide-react';
-import { GrantsTableFilters } from './components/GrantsTableFilters';
-import { GrantsTableRow } from './components/GrantsTableRow';
+import { Plus, Download } from 'lucide-react';
+import { ActiveGrantsTableFilters } from './components/ActiveGrantsTableFilters';
+import { ActiveGrantsTableRow } from './components/ActiveGrantsTableRow';
 import { ExportDropdown } from './components/ExportDropdown';
 import { EmptyGrantsState } from './components/EmptyGrantsState';
-import { useGrantsFilters } from './hooks/useGrantsFilters';
+import { useActiveGrantsFilters } from './hooks/useActiveGrantsFilters';
 
-export const GrantsTable = () => {
+export const ActiveGrantsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { filters, setFilters, filteredData } = useGrantsFilters();
+  const { filters, setFilters, filteredData } = useActiveGrantsFilters();
 
   const itemsPerPage = 5;
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -32,7 +32,7 @@ export const GrantsTable = () => {
     <Card>
       <CardHeader>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <CardTitle>Grants Portfolio</CardTitle>
+          <CardTitle>Active Grants Portfolio</CardTitle>
           <div className="flex gap-2">
             <ExportDropdown data={filteredData} />
             <Button className="bg-purple-600 hover:bg-purple-700 text-white">
@@ -43,7 +43,7 @@ export const GrantsTable = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <GrantsTableFilters 
+        <ActiveGrantsTableFilters 
           filters={filters} 
           onFiltersChange={setFilters}
           disabled={!hasData}
@@ -60,7 +60,6 @@ export const GrantsTable = () => {
                   <TableRow>
                     <TableHead>Grant Name</TableHead>
                     <TableHead>Organization</TableHead>
-                    <TableHead>Status</TableHead>
                     <TableHead>Compliance</TableHead>
                     <TableHead>Disbursement</TableHead>
                     <TableHead>Reporting Status</TableHead>
@@ -69,7 +68,7 @@ export const GrantsTable = () => {
                 </TableHeader>
                 <TableBody>
                   {currentData.map((grant) => (
-                    <GrantsTableRow key={grant.id} grant={grant} />
+                    <ActiveGrantsTableRow key={grant.id} grant={grant} />
                   ))}
                 </TableBody>
               </Table>
