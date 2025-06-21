@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft } from 'lucide-react';
 import { grantsData } from '../data/grantsData';
 import Overview from './Overview';
+import { ReportsTable } from './ReportsTable';
 
 const GrantViewPage = () => {
   const { grantId } = useParams();
@@ -95,9 +96,7 @@ const GrantViewPage = () => {
         </TabsContent>
 
         <TabsContent value="reports" className="mt-6">
-          <div className="text-center py-8">
-            <p className="text-gray-500">Reports tab content coming soon...</p>
-          </div>
+          <ReportsTable grantId={grant.id} />
         </TabsContent>
 
         <TabsContent value="disbursements" className="mt-6">
