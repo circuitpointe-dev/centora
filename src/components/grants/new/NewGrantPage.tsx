@@ -169,7 +169,8 @@ const NewGrantPage = () => {
           <p className="text-sm text-gray-600">Create a new grant with all required details</p>
         </CardHeader>
         <CardContent className="p-6">
-          <TabsList className="
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="
   flex flex-wrap items-start overflow-x-auto space-x-4 mb-8 p-1
   border-b border-gray-200
 ">
