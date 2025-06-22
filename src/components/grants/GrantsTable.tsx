@@ -36,7 +36,7 @@ export const GrantsTable = () => {
           <CardTitle>Grants Portfolio</CardTitle>
           <div className="flex gap-2">
             <ExportDropdown data={filteredData} />
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+            <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
               <Link to="/dashboard/grants/new">
               <Plus className="h-4 w-4 mr-1" />
               New Grant
