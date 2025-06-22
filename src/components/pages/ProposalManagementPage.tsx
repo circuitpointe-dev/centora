@@ -45,9 +45,6 @@ const ProposalManagementPage: React.FC = () => {
         <h1 className="text-xl font-medium text-gray-900 mb-2">
           Proposal Management
         </h1>
-        <p className="text-gray-600">
-          Create, manage, and track your funding proposals
-        </p>
       </div>
 
       <div className="w-full max-w-6xl mx-auto">
