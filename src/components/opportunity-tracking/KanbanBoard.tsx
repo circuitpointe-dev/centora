@@ -20,10 +20,19 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     "Declined",
   ];
 
-  // Updated to use only gray color for all headers
-  const getColumnHeaderColor = (status: OpportunityStatus) => {
-    return "bg-[#b2b2b2]";
-  };
+  // Define your status‐to‐color lookup
+const STATUS_COLORS: Record<string, string> = {
+  Review:      'bg-[#dce2ee]',
+  'In Progress':'bg-[#fff6ee]',
+  Submitted:   'bg-[#f6f3ff]',
+  Awarded:     'bg-[#f1fef5]',
+  Decline:     'bg-[#fff3f3]',
+};
+
+  // Set column Headers
+  const getColumnHeaderColor = (status: string) => {
+  return STATUS_COLORS[status] ?? 'bg-gray-200';
+};
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
