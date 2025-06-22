@@ -77,12 +77,12 @@ const DocumentsFeaturePage = () => {
     <div className="space-y-6 p-6">
     <div className="flex flex-col h-full gap-6 pb-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+      <div className="mb-2">
+        <h1 className="text-2xl font-semibold text-gray-900">
           Document Manager
         </h1>
       </div>
-      {/* Page Header */}
+      {/* Filters and Buttons */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Select value={activeFilter} onValueChange={handleFilterChange}>
