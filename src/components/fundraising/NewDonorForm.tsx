@@ -229,7 +229,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
               </SideDialogContent>
             </SideDialog>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="flex flex-wrap items-start gap-2">
   {focusAreasData.map(area => {
     const isSelected = selectedFocusAreas.includes(area.name)
     return (
@@ -238,7 +238,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
         onClick={() => toggleFocusArea(area.name)}
         className={`
           inline-block
-          w-max
+          w
           text-center
           transition-colors 
           ${ isSelected ? 'bg-blue-50' : 'hover:bg-gray-50' }
