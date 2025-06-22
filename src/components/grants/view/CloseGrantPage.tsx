@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shield, Banknote, TrendingDown, ArrowLeft } from 'lucide-react';
@@ -168,7 +167,7 @@ const CloseGrantPage = () => {
   };
 
   return (
-    <div className="space-y-6 p-10">
+    <div className="space-y-6 px-6 py-6">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -182,8 +181,8 @@ const CloseGrantPage = () => {
       </div>
 
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Close Grant Review</h1>
-        <p className="text-lg text-gray-500 mt-1">{grant.grantName}</p>
+        <h1 className="text-2xl font-bold text-gray-900">Close Grant Review</h1>
+        <p className="text-lg text-gray-500">{grant.grantName}</p>
       </div>
 
       {/* Statistics Cards */}
