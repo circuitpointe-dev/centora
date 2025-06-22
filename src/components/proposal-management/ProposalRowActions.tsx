@@ -1,5 +1,4 @@
-
-import React, { useRef } from "react";
+import React from "react";
 import { Edit, Delete } from "lucide-react";
 
 type Props = {
@@ -8,53 +7,27 @@ type Props = {
 };
 
 const ProposalRowActions: React.FC<Props> = ({ onEdit, onDelete }) => {
-  const [open, setOpen] = React.useState(false);
-  const actionRef = useRef<HTMLDivElement>(null);
-
-  // Close the menu if clicked outside
-  React.useEffect(() => {
-    if (!open) return;
-    const handleClick = (e: MouseEvent) => {
-      if (actionRef.current && !actionRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
-
   return (
-    <div className="relative" ref={actionRef}>
+    <div className="flex items-center space-x-2">
+      {/* Edit button */}
       <button
-        className="hover:bg-gray-100 rounded-full p-2"
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Actions"
+        onClick={onEdit}
+        aria-label="Edit"
+        className="p-2 rounded hover:bg-gray-100 transition"
         type="button"
       >
-        <svg className="w-6 h-6" fill="none" stroke="#8a8a91" strokeWidth={2} viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        <Edit className="w-5 h-5 text-gray-600 hover:text-gray-900" />
       </button>
-      {open && (
-        <div className="absolute z-20 right-0 mt-2 w-32 bg-white border border-gray-100 rounded shadow-md py-1 animate-fade-in">
-          <button
-            className="flex items-center px-4 py-2 w-full text-sm text-violet-700 hover:bg-violet-50"
-            onClick={() => {
-              onEdit();
-              setOpen(false);
-            }}
-          >
-            <Edit className="mr-2 w-4 h-4" /> Edit
-          </button>
-          <button
-            className="flex items-center px-4 py-2 w-full text-sm text-rose-700 hover:bg-rose-50"
-            onClick={() => {
-              onDelete();
-              setOpen(false);
-            }}
-          >
-            <Delete className="mr-2 w-4 h-4" /> Delete
-          </button>
-        </div>
-      )}
+
+      {/* Delete button */}
+      <button
+        onClick={onDelete}
+        aria-label="Delete"
+        className="p-2 rounded hover:bg-gray-100 transition"
+        type="button"
+      >
+        <Delete className="w-5 h-5 text-rose-600 hover:text-rose-800" />
+      </button>
     </div>
   );
 };
