@@ -5,7 +5,6 @@ const tabs = [
   { label: "Overview", icon: Menu },
   { label: "Past Proposal Library", icon: FileText },
   { label: "Browse Templates", icon: FileText },
-  { label: "Calendar", icon: Calendar },
 ];
 
 type Props = {
