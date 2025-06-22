@@ -74,13 +74,17 @@ const DocumentsFeaturePage = () => {
   };
 
   return (
+    <div className="space-y-6 p-6">
     <div className="flex flex-col h-full gap-6 pb-6">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+          Document Manager
+        </h1>
+      </div>
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h1 className="font-medium text-base text-[#383839]">
-            Documents Manager
-          </h1>
           <Select value={activeFilter} onValueChange={handleFilterChange}>
             <SelectTrigger className="w-[180px] h-9">
               <SelectValue placeholder="Filter by category" />
@@ -187,6 +191,7 @@ const DocumentsFeaturePage = () => {
         open={uploadDialogOpen}
         onOpenChange={setUploadDialogOpen}
       />
+    </div>
     </div>
   );
 };
