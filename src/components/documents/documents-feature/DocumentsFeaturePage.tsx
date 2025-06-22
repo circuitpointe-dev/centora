@@ -75,16 +75,13 @@ const DocumentsFeaturePage = () => {
 
   return (
     <div className="space-y-6 p-6">
+    <div className="flex flex-col h-full gap-6 pb-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-          Documents Manager
+      <div>
+        <h1 className="text-xl font-medium text-gray-900">
+          Document Manager
         </h1>
-        <p className="text-gray-600">
-          Manage and organize your organization's documents
-        </p>
       </div>
-
       {/* Filters and Buttons */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -194,6 +191,7 @@ const DocumentsFeaturePage = () => {
         open={uploadDialogOpen}
         onOpenChange={setUploadDialogOpen}
       />
+    </div>
     </div>
   );
 };
