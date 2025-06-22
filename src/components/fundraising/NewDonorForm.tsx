@@ -9,6 +9,10 @@ import { Plus, Upload, X } from "lucide-react";
 import { ContactPersonForm, ContactPerson } from "./ContactPersonForm";
 import { focusAreasData, getFocusAreaColor } from "@/data/focusAreaData";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from "@/components/ui/side-dialog";
+import { FocusAreaForm } from "./FocusAreaForm";
+import { FocusArea } from "@/types/donor";
+import { useToast } from "@/hooks/use-toast";
 
 interface NewDonorFormProps {
   onSubmit: (donorData: any) => void;
@@ -35,6 +39,8 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
     show: false,
     contactId: ""
   });
+  const [focusAreaOpen, setFocusAreaOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -73,6 +79,15 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
         ? prev.filter(area => area !== areaName)
         : [...prev, areaName]
     );
+  };
+
+  const handleFocusAreaSave = (focusAreaData: Omit<FocusArea, 'id'>) => {
+    console.log("New focus area data:", focusAreaData);
+    setFocusAreaOpen(false);
+    toast({
+      title: "Focus Area Created",
+      description: `${focusAreaData.name} has been successfully created.`,
+    });
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -187,16 +202,42 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
 
         {/* Focus Areas */}
         <div className="space-y-4">
-          <h3 className="font-medium text-gray-900">Focus Areas</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="font-medium text-gray-900">Focus Areas</h3>
+            <SideDialog open={focusAreaOpen} onOpenChange={setFocusAreaOpen}>
+              <SideDialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Focus Area
+                </Button>
+              </SideDialogTrigger>
+              <SideDialogContent className="overflow-hidden">
+                <SideDialogHeader>
+                  <SideDialogTitle>Create Focus Area</SideDialogTitle>
+                </SideDialogHeader>
+                <div className="flex-1 overflow-y-auto p-6">
+                  <FocusAreaForm
+                    onSave={handleFocusAreaSave}
+                    onCancel={() => setFocusAreaOpen(false)}
+                  />
+                </div>
+              </SideDialogContent>
+            </SideDialog>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {focusAreasData.map((area) => (
               <div
                 key={area.id}
                 onClick={() => toggleFocusArea(area.name)}
-                className={`cursor-pointer border rounded-lg p-3 text-center transition-colors ${
+                className={`cursor-pointer p-3 text-center transition-colors ${
                   selectedFocusAreas.includes(area.name)
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'bg-blue-50'
+                    : 'hover:bg-gray-50'
                 }`}
               >
                 <Badge className={`${getFocusAreaColor(area.name)} text-xs rounded-sm`}>
