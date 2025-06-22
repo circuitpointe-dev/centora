@@ -77,7 +77,7 @@ const DocumentsFeaturePage = () => {
     <div className="space-y-6 p-6">
     <div className="flex flex-col h-full gap-6 pb-6">
       {/* Header */}
-      <div className="mb-2">
+      <div>
         <h1 className="text-2xl font-semibold text-gray-900">
           Document Manager
         </h1>
