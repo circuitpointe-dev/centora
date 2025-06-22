@@ -169,20 +169,21 @@ const NewGrantPage = () => {
           <p className="text-sm text-gray-600">Create a new grant with all required details</p>
         </CardHeader>
         <CardContent className="p-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="flex flex-wrap items-start space-x-4 mb-8 p-1 bg-transparent border-b overflow-x-auto">
+          <TabsList className="
+  flex flex-wrap items-start overflow-x-auto space-x-4 mb-8 p-1
+  border-b border-gray-200
+">
   {tabs.map(tab => (
     <TabsTrigger
       key={tab.id}
       value={tab.id}
       className="
-        text-sm 
-        data-[state=active]:border-b-2 
-        data-[state=active]:border-purple-600 
-        data-[state=active]:text-purple-600 
-        pb-3 
-        font-medium
-        whitespace-nowrap
+        flex-shrink-0
+        text-sm whitespace-nowrap pb-3 font-medium
+        border-b-2 border-transparent
+        data-[state=active]:border-purple-600
+        data-[state=active]:text-purple-600
+        data-[state=active]:font-semibold
       "
     >
       {tab.label}
