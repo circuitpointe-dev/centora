@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,18 +10,21 @@ const ActiveGrantsPage = () => {
   // Show donor-specific view for donors
   if (user?.userType === 'Donor') {
     return (
+      <div className="space-y-6 p-6">
         <ActiveGrantsTable />
+      </div>
     );
   }
 
   // Default view for NGOs (keep existing content)
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Active Grants
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-600">
           Manage currently active grants and their progress
         </p>
       </div>

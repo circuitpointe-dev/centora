@@ -19,12 +19,14 @@ const ManualProposalCreationPage = () => {
   };
 
   return (
-    <ManualProposalCreationDialog 
-      open={isOpen} 
-      onOpenChange={handleClose}
-      proposalTitle="New Proposal"
-      opportunityName="Selected Opportunity"
-    />
+    <div className="space-y-6 p-6">
+      <ManualProposalCreationDialog 
+        open={isOpen} 
+        onOpenChange={handleClose}
+        proposalTitle="New Proposal"
+        opportunityName="Selected Opportunity"
+      />
+    </div>
   );
 };
 

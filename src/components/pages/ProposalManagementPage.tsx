@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import ProposalTabs from "@/components/proposal-management/ProposalTabs";
@@ -40,8 +39,18 @@ const ProposalManagementPage: React.FC = () => {
   const creationContext = location.state?.creationContext;
 
   return (
-    <div className="bg-[#f4f6f9] min-h-screen p-6 flex flex-col items-center">
-      <div className="w-full max-w-6xl">
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+          Proposal Management
+        </h1>
+        <p className="text-gray-600">
+          Create, manage, and track your funding proposals
+        </p>
+      </div>
+
+      <div className="w-full max-w-6xl mx-auto">
         <ProposalTabs activeTab={activeTab} setActiveTab={setActiveTab} onOpenCreate={() => setShowCreate(true)} />
         <div className="mt-6" />
         {activeTab === 0 && (

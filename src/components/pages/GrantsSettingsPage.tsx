@@ -5,12 +5,13 @@ import { Settings, Users, Shield, Bell } from 'lucide-react';
 
 const GrantsSettingsPage = () => {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Settings & Admin
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-600">
           Configure grants management system settings and permissions
         </p>
       </div>

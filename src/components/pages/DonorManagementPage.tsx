@@ -35,9 +35,17 @@ const DonorManagementPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-medium text-gray-900">Donor Management</h1>
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            Donor Management
+          </h1>
+          <p className="text-gray-600">
+            Manage donor relationships and funding opportunities
+          </p>
+        </div>
         
         {/* Quick Actions at top right */}
         <div className="flex items-center gap-2">
