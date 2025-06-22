@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -35,9 +36,11 @@ export const ActiveGrantsTable = () => {
           <CardTitle>Active Grants Portfolio</CardTitle>
           <div className="flex gap-2">
             <ExportDropdown data={filteredData} />
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              New Grant
+            <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Link to="/dashboard/grants/new">
+                <Plus className="h-4 w-4 mr-2" />
+                New Grant
+              </Link>
             </Button>
           </div>
         </div>

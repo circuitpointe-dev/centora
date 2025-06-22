@@ -1,4 +1,3 @@
-
 // src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -57,16 +56,6 @@ const App = () => (
               }
             />
 
-            {/* Protected: New Grant Page */}
-            <Route
-              path="/dashboard/grants/new"
-              element={
-                <ProtectedRoute>
-                  <NewGrantPage />
-                </ProtectedRoute>
-              }
-            />
-
             {/* Protected: Dashboard + Features */}
             <Route
               path="/dashboard/:module"
@@ -81,6 +70,9 @@ const App = () => (
               
               {/* Grant View - nested within dashboard structure */}
               <Route path="view/:grantId" element={<GrantViewPage />} />
+              
+              {/* New Grant - nested within dashboard structure */}
+              <Route path="new" element={<NewGrantPage />} />
               
               {/* Other features */}
               <Route path=":feature" element={<GenericFeaturePage />} />
