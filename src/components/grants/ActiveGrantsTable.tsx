@@ -38,7 +38,7 @@ export const ActiveGrantsTable = () => {
             <ExportDropdown data={filteredData} />
             <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
               <Link to="/dashboard/grants/new">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4 mr-1" />
                 New Grant
               </Link>
             </Button>
