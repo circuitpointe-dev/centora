@@ -16,6 +16,7 @@ import GenericFeaturePage from "./components/pages/GenericFeaturePage";
 import ManualProposalCreationPage from "./components/pages/ManualProposalCreationPage";
 import GrantViewPage from "./components/grants/view/GrantViewPage";
 import CloseGrantPage from "./components/grants/view/CloseGrantPage";
+import NewGrantPage from "./components/grants/new/NewGrantPage";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,16 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CloseGrantPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected: New Grant Page */}
+            <Route
+              path="/dashboard/grants/new"
+              element={
+                <ProtectedRoute>
+                  <NewGrantPage />
                 </ProtectedRoute>
               }
             />
