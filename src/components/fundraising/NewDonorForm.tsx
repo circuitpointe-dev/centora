@@ -237,9 +237,9 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
         key={area.id}
         onClick={() => toggleFocusArea(area.name)}
         className={`
-          cursor-pointer
-          text-center 
-          block 
+          inline-block
+          w-max
+          text-center
           transition-colors 
           ${ isSelected ? 'bg-blue-50' : 'hover:bg-gray-50' }
           ${ getFocusAreaColor(area.name) } 
