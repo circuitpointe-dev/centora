@@ -168,7 +168,7 @@ const CloseGrantPage = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-6 py-8">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
