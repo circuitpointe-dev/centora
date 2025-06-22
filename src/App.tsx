@@ -1,3 +1,4 @@
+
 // src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -14,6 +15,7 @@ import DashboardPage from "./components/pages/DashboardPage";
 import GenericFeaturePage from "./components/pages/GenericFeaturePage";
 import ManualProposalCreationPage from "./components/pages/ManualProposalCreationPage";
 import GrantViewPage from "./components/grants/view/GrantViewPage";
+import CloseGrantPage from "./components/grants/view/CloseGrantPage";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,16 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ManualProposalCreationPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected: Close Grant Page */}
+            <Route
+              path="/dashboard/grants/close/:grantId"
+              element={
+                <ProtectedRoute>
+                  <CloseGrantPage />
                 </ProtectedRoute>
               }
             />

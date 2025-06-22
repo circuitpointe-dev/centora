@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -27,8 +26,7 @@ const GrantViewPage = () => {
   };
 
   const handleCloseGrant = () => {
-    console.log('Closing grant:', grant.id);
-    // TODO: Implement close grant logic
+    navigate(`/dashboard/grants/close/${grant.id}`);
   };
 
   return (
