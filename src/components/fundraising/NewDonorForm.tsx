@@ -230,22 +230,29 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
             </SideDialog>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {focusAreasData.map((area) => (
-              <div
-                key={area.id}
-                onClick={() => toggleFocusArea(area.name)}
-                className={`cursor-pointer p-3 text-center transition-colors ${
-                  selectedFocusAreas.includes(area.name)
-                    ? 'bg-blue-50'
-                    : 'hover:bg-gray-50'
-                }`}
-              >
-                <Badge className={`${getFocusAreaColor(area.name)} text-xs rounded-sm`}>
-                  {area.name}
-                </Badge>
-              </div>
-            ))}
-          </div>
+  {focusAreasData.map(area => {
+    const isSelected = selectedFocusAreas.includes(area.name)
+    return (
+      <Badge
+        key={area.id}
+        onClick={() => toggleFocusArea(area.name)}
+        className={`
+          cursor-pointer
+          text-center 
+          block 
+          transition-colors 
+          ${ isSelected ? 'bg-blue-50' : 'hover:bg-gray-50' }
+          ${ getFocusAreaColor(area.name) } 
+          text-xs 
+          rounded-sm
+        `}
+      >
+        {area.name}
+      </Badge>
+    )
+  })}
+</div>
+
         </div>
 
         {/* Funding Dates */}
