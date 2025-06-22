@@ -44,7 +44,7 @@ export const QuickLinksSection = (): JSX.Element => {
   ];
 
   return (
-    <Card className="border border-gray-200 shadow-sm rounded-lg">
+    <Card className="shadow-sm rounded-lg border-0">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-semibold text-gray-900">
           Quick Links
