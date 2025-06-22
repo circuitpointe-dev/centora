@@ -150,7 +150,7 @@ const NewGrantPage = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-8 space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -163,7 +163,7 @@ const NewGrantPage = () => {
         </Button>
       </div>
 
-      <Card className="max-w-4xl mx-auto">
+      <Card className="w-full">
         <CardHeader className="border-b">
           <CardTitle className="text-xl font-semibold">New Grant</CardTitle>
           <p className="text-sm text-gray-600">Create a new grant with all required details</p>
