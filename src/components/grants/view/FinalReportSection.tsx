@@ -22,14 +22,14 @@ const FinalReportSection = (): JSX.Element => {
 
   return (
     <>
-      <Card className="flex flex-col rounded-sm h-[600px]">
-        <CardHeader className="p-6 pb-0">
+      <Card className="flex flex-col rounded-sm h-fit">
+        <CardHeader className="p-6 pb-4">
           <CardTitle className="text-lg font-semibold text-black">
-            Final Report
+            Reviewer's Report
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 pt-6 flex-1 overflow-y-auto">
-          <div className="space-y-6">
+        <CardContent className="p-6 pt-2">
+          <div className="space-y-4">
             {reportItems.map((item, index) => (
               <div
                 key={`report-item-${index}`}

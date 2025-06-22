@@ -2,6 +2,7 @@
 import React from "react";
 import FinalReportSection from "./FinalReportSection";
 import { GrantDetailsSection } from "./GrantDetailsSection";
+import { ContactsSection } from "./ContactsSection";
 
 interface OverviewProps {
   grant: {
@@ -18,11 +19,15 @@ interface OverviewProps {
 
 export default function Overview({ grant }: OverviewProps): JSX.Element {
   return (
-    <div className="flex w-full items-stretch gap-[22px] px-12 py-4">
-      <div className="flex-1 h-full">
+    <div className="space-y-6 px-12 py-4">
+      {/* First row - Grant Details and Contacts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <GrantDetailsSection grant={grant} />
+        <ContactsSection />
       </div>
-      <div className="flex-1 h-full">
+      
+      {/* Second row - Reviewer's Report */}
+      <div className="grid grid-cols-1">
         <FinalReportSection />
       </div>
     </div>

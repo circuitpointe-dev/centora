@@ -39,13 +39,13 @@ export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.El
   ];
 
   return (
-    <Card className="w-full rounded-sm overflow-hidden h-[600px] flex flex-col">
+    <Card className="w-full rounded-sm overflow-hidden h-fit flex flex-col">
       <CardContent className="p-6 flex-1 flex flex-col">
         <h2 className="text-lg font-semibold text-black mb-6">
           Grant Details
         </h2>
 
-        <div className="space-y-4 flex-1 overflow-y-auto">
+        <div className="space-y-4">
           {grantDetails.map((detail, index) => (
             <div key={index} className="flex">
               <div className="w-[185px] text-sm font-semibold text-black">
