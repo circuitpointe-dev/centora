@@ -126,7 +126,7 @@ const FundraisingAnalyticsPage: React.FC = () => {
       : "Select Period");
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="space-y-6 p-6">
       {/* Tabs */}
       <div className="flex gap-3 mb-6">
         {tabDefs.map((tab) => (
