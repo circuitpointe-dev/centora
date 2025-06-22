@@ -55,7 +55,7 @@ const MainLayout = () => {
         }`}
       >
         <Header sidebarCollapsed={isCollapsed} />
-        <main className="flex-1 overflow-auto pt-20">
+        <main className="flex-1 overflow-auto p-6 pt-20">
           <Outlet />
         </main>
       </div>
