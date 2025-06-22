@@ -127,6 +127,8 @@ const FundraisingAnalyticsPage: React.FC = () => {
 
   return (
     <div className="space-y-6 p-6">
+      {/* Title  */}
+       <h1 className="text-xl font-medium text-gray-900">Analytics</h1>
       {/* Tabs */}
       <div className="flex gap-3 mb-6">
         {tabDefs.map((tab) => (
