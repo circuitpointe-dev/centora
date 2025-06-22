@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -71,7 +70,7 @@ export const ReportingScheduleTab: React.FC<ReportingScheduleTabProps> = ({ data
           </Label>
           <Select value={data.frequency} onValueChange={(value) => handleInputChange('frequency', value)}>
             <SelectTrigger className="rounded-sm">
-              <Select value placeholder="Select frequency" />
+              <SelectValue placeholder="Select frequency" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="monthly">Monthly</SelectItem>
