@@ -47,7 +47,7 @@ const ProposalManagementPage: React.FC = () => {
         </h1>
       </div>
 
-      <div className="w-full max-w-6xl mx-auto">
+      <div className="w-full">
         <ProposalTabs activeTab={activeTab} setActiveTab={setActiveTab} onOpenCreate={() => setShowCreate(true)} />
         <div className="mt-6" />
         {activeTab === 0 && (
