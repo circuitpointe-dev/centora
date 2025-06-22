@@ -65,8 +65,10 @@ const FundingCycles: React.FC = () => {
             </div>
 
             {/* Right side for funding cycle bars */}
-            <div className="flex-1 overflow-hidden pl-4">
-              <div className="flex justify-between mb-2 px-2">
+            <div className="flex-1 overflow-hidden pl-4 relative">
+              {/* Make this header sticky */}
+              <div className="flex justify-between mb-2 px-2 sticky top-0 bg-white z-10" 
+    style={{ marginLeft: '-0.25rem', marginRight: '-0.25rem' }}>
                 {months.map((month) => (
                   <div key={month} className="text-sm text-gray-500 font-medium">
                     {month}
