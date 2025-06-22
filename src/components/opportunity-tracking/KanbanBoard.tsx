@@ -56,7 +56,7 @@ const STATUS_COLORS: Record<string, string> = {
                 >
                   {count}
                 </span>
-                <span className="font-medium text-base text-white">
+                <span className="font-medium text-base text-black">
                   {status}
                 </span>
               </div>
