@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { OverviewTab } from './tabs/OverviewTab';
@@ -150,7 +150,7 @@ const NewGrantPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-8 space-y-6">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -163,64 +163,65 @@ const NewGrantPage = () => {
         </Button>
       </div>
 
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">New Grant</h1>
-        <p className="text-gray-600">Create a new grant with all required details</p>
-      </div>
-
-      <Card className="rounded-sm">
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader className="border-b">
+          <CardTitle className="text-xl font-semibold">New Grant</CardTitle>
+          <p className="text-sm text-gray-600">Create a new grant with all required details</p>
+        </CardHeader>
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-6">
+            <TabsList className="grid w-full grid-cols-5 mb-8 h-auto p-1 bg-transparent border-b rounded-none">
               {tabs.map((tab) => (
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  className="text-xs sm:text-sm"
+                  className="text-xs sm:text-sm data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:text-purple-600 rounded-none pb-3 font-medium"
                 >
                   {tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-6">
-              <OverviewTab
-                data={formData.overview}
-                onUpdate={(data) => updateFormData('overview', data)}
-              />
-            </TabsContent>
+            <div className="max-w-2xl mx-auto">
+              <TabsContent value="overview" className="space-y-6 mt-6">
+                <OverviewTab
+                  data={formData.overview}
+                  onUpdate={(data) => updateFormData('overview', data)}
+                />
+              </TabsContent>
 
-            <TabsContent value="grantee-details" className="space-y-6">
-              <GranteeDetailsTab
-                data={formData.granteeDetails}
-                onUpdate={(data) => updateFormData('granteeDetails', data)}
-              />
-            </TabsContent>
+              <TabsContent value="grantee-details" className="space-y-6 mt-6">
+                <GranteeDetailsTab
+                  data={formData.granteeDetails}
+                  onUpdate={(data) => updateFormData('granteeDetails', data)}
+                />
+              </TabsContent>
 
-            <TabsContent value="grantee-submission" className="space-y-6">
-              <GranteeSubmissionTab
-                data={formData.granteeSubmission}
-                onUpdate={(data) => updateFormData('granteeSubmission', data)}
-              />
-            </TabsContent>
+              <TabsContent value="grantee-submission" className="space-y-6 mt-6">
+                <GranteeSubmissionTab
+                  data={formData.granteeSubmission}
+                  onUpdate={(data) => updateFormData('granteeSubmission', data)}
+                />
+              </TabsContent>
 
-            <TabsContent value="reporting-schedule" className="space-y-6">
-              <ReportingScheduleTab
-                data={formData.reportingSchedule}
-                onUpdate={(data) => updateFormData('reportingSchedule', data)}
-              />
-            </TabsContent>
+              <TabsContent value="reporting-schedule" className="space-y-6 mt-6">
+                <ReportingScheduleTab
+                  data={formData.reportingSchedule}
+                  onUpdate={(data) => updateFormData('reportingSchedule', data)}
+                />
+              </TabsContent>
 
-            <TabsContent value="compliance-disbursement" className="space-y-6">
-              <ComplianceDisbursementTab
-                data={formData.complianceDisbursement}
-                onUpdate={(data) => updateFormData('complianceDisbursement', data)}
-              />
-            </TabsContent>
+              <TabsContent value="compliance-disbursement" className="space-y-6 mt-6">
+                <ComplianceDisbursementTab
+                  data={formData.complianceDisbursement}
+                  onUpdate={(data) => updateFormData('complianceDisbursement', data)}
+                />
+              </TabsContent>
+            </div>
           </Tabs>
 
           {/* Tab Navigation Footer */}
-          <div className="flex justify-between items-center pt-6 mt-6 border-t border-gray-200">
+          <div className="flex justify-between items-center pt-6 mt-8 border-t border-gray-200 max-w-2xl mx-auto">
             <div className="flex gap-3">
               <Button
                 variant="outline"
@@ -239,11 +240,17 @@ const NewGrantPage = () => {
             
             <div className="flex gap-3">
               {isLastTab ? (
-                <Button onClick={handleSave}>
+                <Button 
+                  onClick={handleSave}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
                   Save
                 </Button>
               ) : (
-                <Button onClick={handleNext}>
+                <Button 
+                  onClick={handleNext}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
                   Next
                 </Button>
               )}
