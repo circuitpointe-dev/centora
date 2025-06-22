@@ -69,14 +69,6 @@ const OpportunityTracking: React.FC = () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-xl font-medium text-gray-900">Opportunity Tracking</h1>
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={() => setShowPipelineDialog(true)}
-          >
-            <PanelTop className="h-4 w-4" />
-            View Pipeline
-          </Button>
           <OpportunityFilter
             onFilterChange={handleFilterChange}
             donors={donors}
