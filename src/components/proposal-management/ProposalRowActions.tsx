@@ -16,7 +16,7 @@ const ProposalRowActions: React.FC<Props> = ({ onEdit, onDelete }) => {
         className="p-2 rounded hover:bg-gray-100 transition"
         type="button"
       >
-        <Edit className="w-5 h-5 text-gray-600 hover:text-gray-900" />
+        <Edit className="w-3 h-3 text-gray-600 hover:text-gray-900" />
       </button>
 
       {/* Delete button */}
@@ -26,7 +26,7 @@ const ProposalRowActions: React.FC<Props> = ({ onEdit, onDelete }) => {
         className="p-2 rounded hover:bg-gray-100 transition"
         type="button"
       >
-        <Delete className="w-5 h-5 text-rose-600 hover:text-rose-800" />
+        <Delete className="w-3 h-3 text-rose-600 hover:text-rose-800" />
       </button>
     </div>
   );
