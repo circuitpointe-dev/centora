@@ -93,7 +93,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             </div>
 
             <div
-              className={`${deadlineBgColorClass} p-2 rounded-md flex items-center mt-2`}
+              className="bg-gray-100 text-black p-2 rounded-md flex items-center mt-2"
             >
               <div
                 className={`w-3 h-3 rounded-full mr-2 ${
