@@ -33,7 +33,10 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
   return (
     <div className="p-4 space-y-2 h-full overflow-y-auto">
       {features?.map((feature) => {
-        const isActive = location.pathname.includes(`/${currentModule}/${feature.id}`);
+        // Check if current route matches this feature
+        const isActive = feature.id === 'dashboard' 
+          ? location.pathname === `/dashboard/${currentModule}/dashboard`
+          : location.pathname.includes(`/${currentModule}/${feature.id}`);
         
         return (
           <Button
