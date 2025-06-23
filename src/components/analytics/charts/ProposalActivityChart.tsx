@@ -18,11 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { proposalActivityData } from "../data/analyticsData";
+import { proposalActivityData, availableYears } from "../data/analyticsData";
 import { CustomLegend } from "./CustomLegend";
-
-// Add 2025 to available years
-const availableYears = [2022, 2023, 2024, 2025];
 
 export function ProposalActivityChart() {
   const [proposalActivityFilter, setProposalActivityFilter] = useState("Donor");
@@ -38,7 +35,7 @@ export function ProposalActivityChart() {
   const getProposalActivityData = () => {
     const yearData = proposalActivityData[selectedYear];
     if (
-      selectedYear === "2024" &&
+      (selectedYear === "2024" || selectedYear === "2025") &&
       typeof yearData === "object" &&
       !Array.isArray(yearData)
     ) {

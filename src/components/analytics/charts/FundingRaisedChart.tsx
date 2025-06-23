@@ -38,8 +38,16 @@ export function FundingRaisedChart() {
             <CartesianGrid strokeDasharray="2 2" />
             <XAxis dataKey="category" />
             <YAxis tickFormatter={(value) => `$${value / 1000}K`} />
-            <Bar dataKey="value" fill="#22C55E" barSize={30} radius={[8, 8, 0, 0]} />
-            <RechartsTooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]} />
+            <Bar 
+              dataKey="value" 
+              fill="#22C55E" 
+              barSize={30} 
+              radius={[8, 8, 0, 0]}
+            />
+            <RechartsTooltip 
+              formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]} 
+              cursor={false}
+            />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
