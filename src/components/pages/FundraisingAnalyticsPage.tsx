@@ -1,52 +1,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { AnalyticsStatCards } from "@/components/analytics/AnalyticsStatCards";
-import { AnalyticsCharts } from "@/components/analytics/AnalyticsCharts";
 import GenerateReport from "@/components/analytics/GenerateReport";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Filter,
-  Download,
-  Calendar as CalendarIcon,
-  FileText,
-  BarChart,
-  Loader2,
-} from "lucide-react";
+import { AnalyticsTabNavigation } from "@/components/analytics/AnalyticsTabNavigation";
+import { PeriodSelector } from "@/components/analytics/PeriodSelector";
+import { CustomPeriodDialog } from "@/components/analytics/CustomPeriodDialog";
+import { AnalyticsContent } from "@/components/analytics/AnalyticsContent";
+import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-
-const tabDefs = [
-  {
-    label: "Analytics",
-    value: "analytics",
-    icon: <BarChart size={16} />,
-  },
-  {
-    label: "Generate Report",
-    value: "generate-report",
-    icon: <FileText size={16} />,
-  },
-];
 
 const periodOptions = [
   { label: "This Month", value: "this-month" },
@@ -132,84 +94,34 @@ const FundraisingAnalyticsPage: React.FC = () => {
       <h1 className="text-xl font-medium text-gray-900">Analytics</h1>
       
       {/* Tabs */}
-      <div className="flex gap-3 mb-6">
-        {tabDefs.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() =>
-              setActiveTab(tab.value as "generate-report" | "analytics")
-            }
-            className={`text-base font-medium px-3 py-2 rounded transition flex items-center gap-2 ${
-              activeTab === tab.value
-                ? "text-violet-700 border-b-2 border-violet-700 bg-white"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <AnalyticsTabNavigation
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
       {/* Top bar with period selector and actions (only for analytics) */}
       {activeTab === "analytics" && (
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-6">
-          {/* Period selector with loading state */}
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded border-b-2 border-violet-700">
-            <CalendarIcon size={16} className="text-violet-700" />
-            {isLoading ? (
-              <div className="flex items-center gap-2 w-40">
-                <Loader2 className="h-4 w-4 animate-spin text-violet-700" />
-                <span className="text-sm">Loading...</span>
-              </div>
-            ) : (
-              <>
-                <Select
-                  value={selectedPeriod}
-                  onValueChange={handlePeriodChange}
-                >
-                  <SelectTrigger className="w-40 border-0 p-0 h-auto shadow-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {periodOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {/* Current period indicator badge */}
-                <span className="ml-2 text-xs bg-violet-100 text-violet-800 px-2 py-1 rounded-small">
-                  {currentPeriodText}
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex gap-2 ml-auto">
-            <Popover open={filterOpen} onOpenChange={setFilterOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Filter size={18} /> Filter
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-72">
-                {/* Filter content */}
-              </PopoverContent>
-            </Popover>
-            <Button variant="default" className="gap-2" onClick={handleExport}>
-              <Download size={18} /> Export
-            </Button>
-          </div>
-        </div>
+        <PeriodSelector
+          selectedPeriod={selectedPeriod}
+          onPeriodChange={handlePeriodChange}
+          currentPeriodText={currentPeriodText}
+          isLoading={isLoading}
+          filterOpen={filterOpen}
+          onFilterOpenChange={setFilterOpen}
+          onExport={handleExport}
+        />
       )}
 
       {/* Custom Period Dialog */}
-      <Dialog open={customPeriodOpen} onOpenChange={setCustomPeriodOpen}>
-        {/* Dialog content */}
-      </Dialog>
+      <CustomPeriodDialog
+        open={customPeriodOpen}
+        onOpenChange={setCustomPeriodOpen}
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+        onApply={handleCustomPeriodApply}
+      />
 
       {/* Loading overlay */}
       {isLoading && (
@@ -222,30 +134,7 @@ const FundraisingAnalyticsPage: React.FC = () => {
       {activeTab === "generate-report" ? (
         <GenerateReport />
       ) : (
-        <div className="space-y-6">
-          {/* Fundraising Overview Cards */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Fundraising Overview</h2>
-            <AnalyticsStatCards
-              variant="this-month"
-              selectedPeriod={selectedPeriod}
-              group="fundraising"
-            />
-          </div>
-
-          {/* Analytics charts - includes Funding Raised chart first */}
-          <AnalyticsCharts selectedPeriod={selectedPeriod} />
-
-          {/* Proposal Stats Cards */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Proposal Stats</h2>
-            <AnalyticsStatCards
-              variant="this-month"
-              selectedPeriod={selectedPeriod}
-              group="proposals"
-            />
-          </div>
-        </div>
+        <AnalyticsContent selectedPeriod={selectedPeriod} />
       )}
     </div>
   );
