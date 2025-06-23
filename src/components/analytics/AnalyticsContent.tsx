@@ -1,8 +1,8 @@
+
 import React from "react";
 import { AnalyticsStatCards } from "@/components/analytics/AnalyticsStatCards";
 import { FundingRaisedChart } from "@/components/analytics/charts/FundingRaisedChart";
 import { ProposalActivityChart } from "@/components/analytics/charts/ProposalActivityChart";
-import { TurnaroundTimeChart } from "@/components/analytics/charts/TurnaroundTimeChart";
 import { DonorSegmentationChart } from "@/components/analytics/charts/DonorSegmentationChart";
 import { DonorSnapshotSection } from "@/components/analytics/DonorSnapshotSection";
 
@@ -47,11 +47,6 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
 
       {/* Donor Snapshot Section */}
       <DonorSnapshotSection />
-
-      {/* Other charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <TurnaroundTimeChart />
-      </div>
     </div>
   );
 };
