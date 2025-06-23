@@ -195,7 +195,7 @@ const CloseGrantPage = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Compliance</p>
-                <p className="text-2xl font-semibold text-gray-900">{complianceRate}%</p>
+                <p className="text-xl font-medium text-gray-900">{complianceRate}%</p>
               </div>
             </div>
           </CardContent>
@@ -209,7 +209,7 @@ const CloseGrantPage = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Disbursement Rate</p>
-                <p className="text-2xl font-semibold text-gray-900">{disbursementRate}%</p>
+                <p className="text-xl font-medium text-gray-900">{disbursementRate}%</p>
               </div>
             </div>
           </CardContent>
@@ -223,7 +223,7 @@ const CloseGrantPage = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Burn Rate</p>
-                <p className="text-2xl font-semibold text-gray-900">{burnRate}%</p>
+                <p className="text-xl font-medium text-gray-900">{burnRate}%</p>
               </div>
             </div>
           </CardContent>
