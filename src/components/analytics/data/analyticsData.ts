@@ -1,3 +1,4 @@
+
 // Updated data for Proposals Turnaround Time
 export const turnaroundData = [
   { stage: "Drafting", days: 12 },
@@ -58,18 +59,39 @@ export const fundingRaisedData = {
   ],
 };
 
-// Updated data for Proposal Activity - full year data, now including 2025
+// Updated data for Proposal Activity - full year data
 export const proposalActivityData: Record<string, any> = {
   2025: {
     Donor: [
-      { month: "Jan", total: 102, submitted: 68, drafted: 50, approved: 30 },
-      { month: "Feb", total:  ninety? }, // placeholder error
+      { month: "Jan", total: 100, submitted: 65, drafted: 50, approved: 30 },
+      { month: "Feb", total:  95, submitted: 60, drafted: 45, approved: 28 },
+      { month: "Mar", total:  98, submitted: 62, drafted: 48, approved: 29 },
+      { month: "Apr", total: 101, submitted: 64, drafted: 49, approved: 31 },
+      { month: "May", total: 105, submitted: 70, drafted: 55, approved: 35 },
+      { month: "Jun", total: 110, submitted: 75, drafted: 60, approved: 38 },
+      { month: "Jul", total: 108, submitted: 72, drafted: 58, approved: 37 },
+      { month: "Aug", total: 112, submitted: 78, drafted: 64, approved: 40 },
+      { month: "Sep", total: 115, submitted: 80, drafted: 65, approved: 42 },
+      { month: "Oct", total: 118, submitted: 82, drafted: 68, approved: 45 },
+      { month: "Nov", total: 110, submitted: 75, drafted: 60, approved: 36 },
+      { month: "Dec", total: 120, submitted: 85, drafted: 70, approved: 50 },
     ],
     Sector: [
-      { month: "Jan", total:  90, submitted: 60, drafted: 45, approved: 28 },
-
-    ]
+      { month: "Jan", total:  90, submitted: 55, drafted: 40, approved: 25 },
+      { month: "Feb", total:  92, submitted: 58, drafted: 43, approved: 27 },
+      { month: "Mar", total:  95, submitted: 60, drafted: 45, approved: 28 },
+      { month: "Apr", total:  98, submitted: 62, drafted: 48, approved: 30 },
+      { month: "May", total: 100, submitted: 65, drafted: 50, approved: 32 },
+      { month: "Jun", total: 105, submitted: 68, drafted: 53, approved: 35 },
+      { month: "Jul", total: 102, submitted: 66, drafted: 52, approved: 33 },
+      { month: "Aug", total: 108, submitted: 72, drafted: 58, approved: 38 },
+      { month: "Sep", total: 110, submitted: 75, drafted: 60, approved: 40 },
+      { month: "Oct", total: 112, submitted: 78, drafted: 62, approved: 42 },
+      { month: "Nov", total: 106, submitted: 70, drafted: 55, approved: 36 },
+      { month: "Dec", total: 115, submitted: 80, drafted: 65, approved: 45 },
+    ],
   },
+    
   2024: {
     Donor: [
       { month: "Jan", total: 95, submitted: 60, drafted: 45, approved: 28 },
@@ -131,6 +153,5 @@ export const proposalActivityData: Record<string, any> = {
 };
 
 // Get available years (current year and previous years)
-const currentYear = 2025;
+const currentYear = new Date().getFullYear();
 export const availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
-// => [2025, 2024, 2023, 2022, 2021]
