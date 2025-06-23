@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Re-import Card components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { OverviewTab } from './tabs/OverviewTab';
@@ -148,8 +149,8 @@ const NewGrantPage = () => {
   };
 
   return (
-    <div className="w-full p-6"> {/* Adjusted padding after removing Card */}
-      <div className="flex items-center gap-4 mb-6"> {/* Removed CardHeader and added margin-bottom */}
+    <div className="w-full p-6">
+      <div className="flex items-center gap-4 mb-6">
         <Button
           variant="ghost"
           size="sm"
@@ -159,22 +160,23 @@ const NewGrantPage = () => {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-xl font-semibold">Create New Grant</h1> {/* Replaced CardTitle with h1 */}
+          <h1 className="text-xl font-semibold">Create New Grant</h1>
           <p className="text-sm text-gray-600 mt-1">Create a new grant with all required details</p>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* Updated TabsList styling */}
         <TabsList className="
-          flex flex-wrap items-start overflow-x-auto space-x-4 mb-8 p-1
-          border-b border-gray-200
+          flex justify-between flex-nowrap overflow-x-auto w-full mb-8 p-1
+          border-b border-gray-200 bg-transparent rounded-none
         ">
           {tabs.map(tab => (
             <TabsTrigger
               key={tab.id}
               value={tab.id}
               className="
-                flex-shrink-0
+                flex-grow
                 text-sm whitespace-nowrap pb-3 font-medium
                 border-b-2 border-transparent
                 data-[state=active]:border-purple-600
@@ -188,39 +190,79 @@ const NewGrantPage = () => {
         </TabsList>
 
         <div className="max-w-2xl mx-auto">
+          {/* Overview Tab wrapped in Card */}
           <TabsContent value="overview" className="space-y-6 mt-6">
-            <OverviewTab
-              data={formData.overview}
-              onUpdate={(data) => updateFormData('overview', data)}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle>Grant Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <OverviewTab
+                  data={formData.overview}
+                  onUpdate={(data) => updateFormData('overview', data)}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
+          {/* Grantee Details Tab wrapped in Card */}
           <TabsContent value="grantee-details" className="space-y-6 mt-6">
-            <GranteeDetailsTab
-              data={formData.granteeDetails}
-              onUpdate={(data) => updateFormData('granteeDetails', data)}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle>Grantee Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <GranteeDetailsTab
+                  data={formData.granteeDetails}
+                  onUpdate={(data) => updateFormData('granteeDetails', data)}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
+          {/* Grantee Submission Tab wrapped in Card */}
           <TabsContent value="grantee-submission" className="space-y-6 mt-6">
-            <GranteeSubmissionTab
-              data={formData.granteeSubmission}
-              onUpdate={(data) => updateFormData('granteeSubmission', data)}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle>Grantee Submission</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <GranteeSubmissionTab
+                  data={formData.granteeSubmission}
+                  onUpdate={(data) => updateFormData('granteeSubmission', data)}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
+          {/* Reporting Schedule Tab wrapped in Card */}
           <TabsContent value="reporting-schedule" className="space-y-6 mt-6">
-            <ReportingScheduleTab
-              data={formData.reportingSchedule}
-              onUpdate={(data) => updateFormData('reportingSchedule', data)}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle>Reporting Schedule</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ReportingScheduleTab
+                  data={formData.reportingSchedule}
+                  onUpdate={(data) => updateFormData('reportingSchedule', data)}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
+          {/* Compliance Checklist Tab wrapped in Card */}
           <TabsContent value="compliance-checklist" className="space-y-6 mt-6">
-            <ComplianceDisbursementTab
-              data={formData.complianceDisbursement}
-              onUpdate={(data) => updateFormData('complianceDisbursement', data)}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle>Compliance & Disbursement</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ComplianceDisbursementTab
+                  data={formData.complianceDisbursement}
+                  onUpdate={(data) => updateFormData('complianceDisbursement', data)}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
         </div>
       </Tabs>
