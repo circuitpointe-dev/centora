@@ -1,4 +1,3 @@
-
 // Updated data for Proposals Turnaround Time
 export const turnaroundData = [
   { stage: "Drafting", days: 12 },
@@ -59,8 +58,18 @@ export const fundingRaisedData = {
   ],
 };
 
-// Updated data for Proposal Activity - full year data
+// Updated data for Proposal Activity - full year data, now including 2025
 export const proposalActivityData: Record<string, any> = {
+  2025: {
+    Donor: [
+      { month: "Jan", total: 102, submitted: 68, drafted: 50, approved: 30 },
+      { month: "Feb", total:  ninety? }, // placeholder error
+    ],
+    Sector: [
+      { month: "Jan", total:  90, submitted: 60, drafted: 45, approved: 28 },
+
+    ]
+  },
   2024: {
     Donor: [
       { month: "Jan", total: 95, submitted: 60, drafted: 45, approved: 28 },
@@ -122,5 +131,6 @@ export const proposalActivityData: Record<string, any> = {
 };
 
 // Get available years (current year and previous years)
-const currentYear = new Date().getFullYear();
+const currentYear = 2025;
 export const availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
+// => [2025, 2024, 2023, 2022, 2021]
