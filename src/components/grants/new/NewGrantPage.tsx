@@ -151,7 +151,7 @@ const NewGrantPage = () => {
   return (
     <div className="w-full">
       <Card className="w-full">
-        <CardHeader className="border-b">
+        <CardHeader>
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
