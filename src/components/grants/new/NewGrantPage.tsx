@@ -263,7 +263,7 @@ const NewGrantPage = () => {
         </div>
       </Tabs>
 
-      <div className="flex justify-between items-center pt-6 mt-8 border-t border-gray-200 max-w-2xl mx-auto">
+      <div className="flex justify-between items-center pt-6 mt-8 max-w-2xl mx-auto">
         <div className="flex gap-3">
           <Button
             variant="outline"
