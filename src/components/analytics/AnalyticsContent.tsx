@@ -1,7 +1,10 @@
-
 import React from "react";
 import { AnalyticsStatCards } from "@/components/analytics/AnalyticsStatCards";
-import { AnalyticsCharts } from "@/components/analytics/AnalyticsCharts";
+import { FundingRaisedChart } from "@/components/analytics/charts/FundingRaisedChart";
+import { ProposalActivityChart } from "@/components/analytics/charts/ProposalActivityChart";
+import { TurnaroundTimeChart } from "@/components/analytics/charts/TurnaroundTimeChart";
+import { DonorSegmentationChart } from "@/components/analytics/charts/DonorSegmentationChart";
+import { DonorSnapshotSection } from "@/components/analytics/DonorSnapshotSection";
 
 interface AnalyticsContentProps {
   selectedPeriod: string;
@@ -22,8 +25,10 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
         />
       </div>
 
-      {/* Analytics charts - includes Funding Raised chart first */}
-      <AnalyticsCharts selectedPeriod={selectedPeriod} />
+      {/* Funding Raised Chart */}
+      <div className="w-full">
+        <FundingRaisedChart />
+      </div>
 
       {/* Proposal Stats Cards */}
       <div>
@@ -33,6 +38,19 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
           selectedPeriod={selectedPeriod}
           group="proposals"
         />
+      </div>
+
+      {/* Proposal Activity Trend Chart */}
+      <div className="w-full">
+        <ProposalActivityChart />
+      </div>
+
+      {/* Donor Snapshot Section */}
+      <DonorSnapshotSection />
+
+      {/* Other charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <TurnaroundTimeChart />
       </div>
     </div>
   );

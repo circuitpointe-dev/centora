@@ -18,8 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { proposalActivityData, availableYears } from "../data/analyticsData";
+import { proposalActivityData } from "../data/analyticsData";
 import { CustomLegend } from "./CustomLegend";
+
+// Add 2025 to available years
+const availableYears = [2022, 2023, 2024, 2025];
 
 export function ProposalActivityChart() {
   const [proposalActivityFilter, setProposalActivityFilter] = useState("Donor");
@@ -64,7 +67,7 @@ export function ProposalActivityChart() {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-[16px] font-semibold">
-            Proposal Activity
+            Proposal Activity Trend
           </CardTitle>
           <div className="flex gap-2">
             <Select value={selectedYear} onValueChange={setSelectedYear}>
