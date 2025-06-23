@@ -150,7 +150,7 @@ const NewGrantPage = () => {
   };
 
   return (
-    <div className="p-8 space-y-6 w-full mx-auto">
+    <div className="w-full">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
