@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+// Card components are no longer needed, so they are removed from the import
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
@@ -30,22 +30,21 @@ export const ActiveGrantsTable = () => {
   const hasData = filteredData.length > 0;
 
   return (
-    <Card className="border-none">
-      <CardHeader>
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <CardTitle>Active Grants Portfolio</CardTitle>
-          <div className="flex gap-2">
-            <ExportDropdown data={filteredData} />
-            <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
-              <Link to="/dashboard/grants/new">
-                <Plus className="h-4 w-4 mr-1" />
-                New Grant
-              </Link>
-            </Button>
-          </div>
+    <div className="w-full"> {/* Replaced Card with a simple div */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"> {/* Replaced CardHeader with a div and added margin */}
+        <h2 className="text-xl font-semibold">Active Grants Portfolio</h2> {/* Replaced CardTitle with h2 */}
+        <div className="flex gap-2">
+          <ExportDropdown data={filteredData} />
+          <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
+            <Link to="/dashboard/grants/new">
+              <Plus className="h-4 w-4 mr-1" />
+              New Grant
+            </Link>
+          </Button>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+
+      <div className="p-0"> {/* Replaced CardContent with a div; 'p-0' if no padding is desired */}
         <ActiveGrantsTableFilters 
           filters={filters} 
           onFiltersChange={setFilters}
@@ -57,7 +56,7 @@ export const ActiveGrantsTable = () => {
         ) : (
           <>
             {/* Table */}
-            <div className="rounded-md border">
+            <div className="rounded-md border mt-4"> {/* Added margin-top to separate from filters */}
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -109,7 +108,7 @@ export const ActiveGrantsTable = () => {
             </div>
           </>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
