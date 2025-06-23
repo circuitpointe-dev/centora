@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Re-import Card components
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { OverviewTab } from './tabs/OverviewTab';
@@ -166,10 +166,11 @@ const NewGrantPage = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Updated TabsList styling */}
         <TabsList className="
-          flex justify-between flex-nowrap overflow-x-auto w-full mb-8 p-1
+          flex justify-between flex-nowrap w-full mb-8 p-1
           border-b border-gray-200 bg-transparent rounded-none
+          overflow-x-hidden {/* Added to hide horizontal scrollbar */}
+          overflow-y-hidden {/* Added to explicitly hide vertical scrollbar */}
         ">
           {tabs.map(tab => (
             <TabsTrigger
@@ -190,7 +191,6 @@ const NewGrantPage = () => {
         </TabsList>
 
         <div className="max-w-2xl mx-auto">
-          {/* Overview Tab wrapped in Card */}
           <TabsContent value="overview" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
@@ -205,7 +205,6 @@ const NewGrantPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Grantee Details Tab wrapped in Card */}
           <TabsContent value="grantee-details" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
@@ -220,7 +219,6 @@ const NewGrantPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Grantee Submission Tab wrapped in Card */}
           <TabsContent value="grantee-submission" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
@@ -235,7 +233,6 @@ const NewGrantPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Reporting Schedule Tab wrapped in Card */}
           <TabsContent value="reporting-schedule" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
@@ -250,7 +247,6 @@ const NewGrantPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Compliance Checklist Tab wrapped in Card */}
           <TabsContent value="compliance-checklist" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
@@ -267,7 +263,6 @@ const NewGrantPage = () => {
         </div>
       </Tabs>
 
-      {/* Tab Navigation Footer */}
       <div className="flex justify-between items-center pt-6 mt-8 border-t border-gray-200 max-w-2xl mx-auto">
         <div className="flex gap-3">
           <Button
