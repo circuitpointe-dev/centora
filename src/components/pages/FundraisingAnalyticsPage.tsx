@@ -177,7 +177,7 @@ const FundraisingAnalyticsPage: React.FC = () => {
                   </SelectContent>
                 </Select>
                 {/* Current period indicator badge */}
-                <span className="ml-2 text-xs bg-violet-100 text-violet-800 px-2 py-1 rounded-full">
+                <span className="ml-2 text-xs bg-violet-100 text-violet-800 px-2 py-1 rounded-small">
                   {currentPeriodText}
                 </span>
               </>
