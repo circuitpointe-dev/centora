@@ -30,8 +30,8 @@ export const GrantsTable = () => {
   const hasData = filteredData.length > 0;
 
   return (
-    <div className="w-full mt-5"> {/* Replaced Card with a simple div */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"> {/* Replaced CardHeader with a div and added margin */}
+    <div className="w-full"> {/* Replaced Card with a simple div */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 mt-6"> {/* Replaced CardHeader with a div and added margin */}
         <h2 className="text-xl font-medium">Grants Portfolio</h2> {/* Replaced CardTitle with h2, maintaining style */}
         <div className="flex gap-2">
           <ExportDropdown data={filteredData} />
