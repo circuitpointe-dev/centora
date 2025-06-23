@@ -32,7 +32,7 @@ export const ActiveGrantsTable = () => {
   return (
     <div className="w-full"> {/* Replaced Card with a simple div */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"> {/* Replaced CardHeader with a div and added margin */}
-        <h2 className="text-xl font-semibold">Active Grants Portfolio</h2> {/* Replaced CardTitle with h2 */}
+        <h2 className="text-xl font-medium">Active Grants Portfolio</h2> {/* Replaced CardTitle with h2 */}
         <div className="flex gap-2">
           <ExportDropdown data={filteredData} />
           <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
