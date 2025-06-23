@@ -21,7 +21,10 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
           group="fundraising"
         />
       </div>
-      
+
+      {/* Analytics charts - includes Funding Raised chart first */}
+      <AnalyticsCharts selectedPeriod={selectedPeriod} />
+
       {/* Proposal Stats Cards */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Proposal Stats</h2>
@@ -31,11 +34,6 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
           group="proposals"
         />
       </div>
-
-      {/* Analytics charts - includes Funding Raised chart first */}
-      <AnalyticsCharts selectedPeriod={selectedPeriod} />
-
-      
     </div>
   );
 };
