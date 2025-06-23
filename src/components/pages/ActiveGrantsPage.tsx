@@ -10,9 +10,7 @@ const ActiveGrantsPage = () => {
   // Show donor-specific view for donors
   if (user?.userType === 'Donor') {
     return (
-      <div className="space-y-6 p-6">
         <ActiveGrantsTable />
-      </div>
     );
   }
 
