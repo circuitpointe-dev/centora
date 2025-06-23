@@ -50,20 +50,6 @@ const getUrgencyText = (deadline: string): string => {
   }
 };
 
-// Helper to determine background color based on urgency
-const getDeadlineBackgroundColorClass = (urgency: string): string => {
-  switch (urgency) {
-    case "passed":
-      return "bg-gray-100 text-black";
-    case "urgent":
-      return "bg-red-300 text-black";
-    case "dueSoon":
-      return "bg-green-300 text-black";
-    default:
-      return "bg-gray-100 text-black";
-  }
-};
-
 const OpportunityCard: React.FC<OpportunityCardProps> = ({
   opportunity,
   onClick,
@@ -71,7 +57,6 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
   const deadlineDate = new Date(opportunity.deadline);
   const formattedDeadline = format(deadlineDate, "MMM dd, yyyy"); // Included year
   const deadlineUrgency = getDeadlineUrgency(opportunity.deadline);
-  const deadlineBgColorClass = getDeadlineBackgroundColorClass(deadlineUrgency);
 
   const tooltipText = `Click to view details. ${getUrgencyText(
     opportunity.deadline
@@ -95,12 +80,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             <div
               className="bg-gray-100 text-black p-2 rounded-md flex items-center mt-2"
             >
-              <div
-                className={`w-3 h-3 rounded-full mr-2 ${
-                  deadlineBgColorClass.split(" ")[0]
-                }`}
-              ></div>
-              <span className="text-md font-medium">{formattedDeadline}</span>
+              <span className="text-md font-bold">{formattedDeadline}</span>
             </div>
 
             <div className="flex items-center mt-4 pt-3 border-t border-gray-300">
