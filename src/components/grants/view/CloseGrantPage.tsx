@@ -167,7 +167,7 @@ const CloseGrantPage = () => {
   };
 
   return (
-    <div className="space-y-6 p-10">
+    <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -181,7 +181,7 @@ const CloseGrantPage = () => {
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Close Grant Review</h1>
+        <h1 className="text-xl font-medium text-gray-900">Close Grant Review</h1>
         <p className="text-lg text-gray-500">{grant.grantName}</p>
       </div>
 
