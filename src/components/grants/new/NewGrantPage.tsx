@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -105,7 +104,7 @@ const NewGrantPage = () => {
     { id: 'grantee-details', label: 'Grantee Details' },
     { id: 'grantee-submission', label: 'Grantee Submission' },
     { id: 'reporting-schedule', label: 'Reporting Schedule' },
-    { id: 'compliance-disbursement', label: 'Compliance & Disbursement Schedule' },
+    { id: 'compliance-checklist', label: 'Compliance Checklist' },
   ];
 
   const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
@@ -151,22 +150,22 @@ const NewGrantPage = () => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Button>
-      </div>
-
       <Card className="w-full">
         <CardHeader className="border-b">
-          <CardTitle className="text-xl font-semibold">New Grant</CardTitle>
-          <p className="text-sm text-gray-600">Create a new grant with all required details</p>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 p-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <CardTitle className="text-xl font-semibold">Create New Grant</CardTitle>
+              <p className="text-sm text-gray-600 mt-1">Create a new grant with all required details</p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -191,7 +190,6 @@ const NewGrantPage = () => {
     </TabsTrigger>
   ))}
 </TabsList>
-
 
             <div className="max-w-2xl mx-auto">
               <TabsContent value="overview" className="space-y-6 mt-6">
@@ -222,7 +220,7 @@ const NewGrantPage = () => {
                 />
               </TabsContent>
 
-              <TabsContent value="compliance-disbursement" className="space-y-6 mt-6">
+              <TabsContent value="compliance-checklist" className="space-y-6 mt-6">
                 <ComplianceDisbursementTab
                   data={formData.complianceDisbursement}
                   onUpdate={(data) => updateFormData('complianceDisbursement', data)}
