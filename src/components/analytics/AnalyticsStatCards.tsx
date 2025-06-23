@@ -31,7 +31,8 @@ const statsData = {
 export const AnalyticsStatCards: React.FC<{ 
   variant: "this-month" | "generate-report";
   selectedPeriod?: string;
-}> = ({ variant, selectedPeriod = "this-month" }) => {
+  group?: "fundraising" | "proposals";
+}> = ({ variant, selectedPeriod = "this-month", group }) => {
   // For generate-report tab, use this-month data with slight variations
   let stats = variant === "generate-report" 
     ? statsData["this-month"].map((stat, i) => ({
@@ -40,8 +41,19 @@ export const AnalyticsStatCards: React.FC<{
       }))
     : statsData[selectedPeriod as keyof typeof statsData] || statsData["this-month"];
 
+  // Filter stats based on group
+  if (group === "fundraising") {
+    stats = stats.filter(stat => 
+      stat.label === "Total Funds Raised" || stat.label === "Average Grant Size"
+    );
+  } else if (group === "proposals") {
+    stats = stats.filter(stat => 
+      stat.label === "Proposals Submitted" || stat.label === "Success Rate"
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {stats.map((stat, idx) => (
         <div
           key={stat.label}

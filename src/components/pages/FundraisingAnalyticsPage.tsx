@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AnalyticsStatCards } from "@/components/analytics/AnalyticsStatCards";
 import { AnalyticsCharts } from "@/components/analytics/AnalyticsCharts";
-import GenerateReport from "@/components/analytics/GenerateReport"; // Import the GenerateReport component
+import GenerateReport from "@/components/analytics/GenerateReport";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -28,7 +29,7 @@ import {
   Download,
   Calendar as CalendarIcon,
   FileText,
-  BarChart, // Using BarChart as a placeholder icon for Analytics
+  BarChart,
   Loader2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -38,7 +39,7 @@ const tabDefs = [
   {
     label: "Analytics",
     value: "analytics",
-    icon: <BarChart size={16} />, // Placeholder icon
+    icon: <BarChart size={16} />,
   },
   {
     label: "Generate Report",
@@ -127,8 +128,9 @@ const FundraisingAnalyticsPage: React.FC = () => {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Title  */}
-       <h1 className="text-xl font-medium text-gray-900">Analytics</h1>
+      {/* Title */}
+      <h1 className="text-xl font-medium text-gray-900">Analytics</h1>
+      
       {/* Tabs */}
       <div className="flex gap-3 mb-6">
         {tabDefs.map((tab) => (
@@ -148,6 +150,7 @@ const FundraisingAnalyticsPage: React.FC = () => {
           </button>
         ))}
       </div>
+
       {/* Top bar with period selector and actions (only for analytics) */}
       {activeTab === "analytics" && (
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-6">
@@ -203,7 +206,7 @@ const FundraisingAnalyticsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Custom Period Dialog (still available when on Analytics tab) */}
+      {/* Custom Period Dialog */}
       <Dialog open={customPeriodOpen} onOpenChange={setCustomPeriodOpen}>
         {/* Dialog content */}
       </Dialog>
@@ -219,18 +222,30 @@ const FundraisingAnalyticsPage: React.FC = () => {
       {activeTab === "generate-report" ? (
         <GenerateReport />
       ) : (
-        <>
-          {/* Stat cards */}
-          <AnalyticsStatCards
-            variant="this-month"
-            selectedPeriod={selectedPeriod}
-          />
-
-          {/* Analytics charts */}
-          <div className="mt-4">
-            <AnalyticsCharts selectedPeriod={selectedPeriod} />
+        <div className="space-y-6">
+          {/* Fundraising Overview Cards */}
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Fundraising Overview</h2>
+            <AnalyticsStatCards
+              variant="this-month"
+              selectedPeriod={selectedPeriod}
+              group="fundraising"
+            />
           </div>
-        </>
+
+          {/* Analytics charts - includes Funding Raised chart first */}
+          <AnalyticsCharts selectedPeriod={selectedPeriod} />
+
+          {/* Proposal Stats Cards */}
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Proposal Stats</h2>
+            <AnalyticsStatCards
+              variant="this-month"
+              selectedPeriod={selectedPeriod}
+              group="proposals"
+            />
+          </div>
+        </div>
       )}
     </div>
   );

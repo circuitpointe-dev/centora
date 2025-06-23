@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   LineChart,
@@ -26,9 +27,7 @@ export function ProposalActivityChart() {
     new Date().getFullYear().toString()
   );
   const [visibleLines, setVisibleLines] = useState({
-    total: true,
     submitted: true,
-    drafted: true,
     approved: true,
   });
 
@@ -54,11 +53,9 @@ export function ProposalActivityChart() {
     }));
   };
 
-  // Define the line configurations
+  // Define the line configurations (removed total and drafted)
   const lineConfigs = [
-    { key: "total", name: "Total Proposals", color: "#2563EB" },
     { key: "submitted", name: "Proposals Submitted", color: "#818CF8" },
-    { key: "drafted", name: "Proposals Drafted", color: "#F59E42" },
     { key: "approved", name: "Approved Proposals", color: "#22C55E" },
   ];
 
@@ -135,7 +132,3 @@ export function ProposalActivityChart() {
     </Card>
   );
 }
-// This component renders a line chart showing proposal activity over time.
-// It allows users to filter by year and activity type (Donor or Sector).
-// The chart includes options to toggle visibility of different activity lines.
-// The data is dynamically fetched based on the selected year and filter type.
