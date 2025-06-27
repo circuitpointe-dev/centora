@@ -9,14 +9,16 @@ export const DonorSnapshotSection: React.FC = () => {
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Donor Snapshot</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column: Donor Stats and Segmentation */}
-        <div className="space-y-4">
-          <DonorSnapshotCards />
-          <DonorSegmentationChart />
+        {/* Donor Snapshot Card */}
+        <div className="bg-white shadow rounded-lg border border-gray-100 p-6">
+          <div className="space-y-4">
+            <DonorSnapshotCards />
+            <DonorSegmentationChart />
+          </div>
         </div>
         
-        {/* Right Column: Opportunity Pipeline */}
-        <div>
+        {/* Opportunity Pipeline Card */}
+        <div className="bg-white shadow rounded-lg border border-gray-100 p-6">
           <OpportunityPipelineChart />
         </div>
       </div>

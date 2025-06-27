@@ -1,8 +1,7 @@
 
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Users } from "lucide-react";
+import { TrendingUp, DollarSign } from "lucide-react";
 
 const opportunityData = [
   { name: "Identified", value: 40, color: "#8B5CF6" },
@@ -14,48 +13,45 @@ const opportunityData = [
 const summaryStats = [
   { 
     label: "New Opportunities", 
-    value: 10, 
-    icon: TrendingUp,
-    iconColor: "#7C3AED", // Deep purple
-    backgroundColor: "#F3E8FF", // Light purple background
+    value: "10", 
+    change: "+8%", 
+    positive: true
   },
   { 
-    label: "Qualified Opportunities", 
-    value: 5, 
-    icon: Users,
-    iconColor: "#059669", // Deep green
-    backgroundColor: "#ECFDF5", // Light green background
+    label: "Forecast Revenue", 
+    value: "$2.4M", 
+    change: "+15%", 
+    positive: true
   },
 ];
 
 export const OpportunityPipelineChart: React.FC = () => {
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-[16px] font-semibold">Opportunity Pipeline</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="h-full">
+      <h3 className="text-[16px] font-semibold mb-4">Opportunity Pipeline</h3>
+      <div className="space-y-4">
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          {summaryStats.map((stat) => {
-            const IconComponent = stat.icon;
-            return (
-              <div
-                key={stat.label}
-                className="rounded-lg px-3 py-2 flex items-center gap-2"
-                style={{ backgroundColor: stat.backgroundColor }}
-              >
-                <IconComponent 
-                  size={16} 
-                  style={{ color: stat.iconColor }}
-                />
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{stat.value}</div>
-                  <div className="text-xs text-gray-600">{stat.label}</div>
-                </div>
+        <div className="grid grid-cols-2 gap-4">
+          {summaryStats.map((stat) => (
+            <div
+              key={stat.label}
+              className="bg-white shadow rounded-lg px-4 py-4 flex flex-col border border-gray-100"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xl font-semibold text-gray-800">{stat.value}</span>
+                <span
+                  className={`text-xs font-semibold ${
+                    stat.positive && stat.change.includes("+") 
+                      ? "text-green-500" 
+                      : "text-red-500"
+                  }`}
+                >
+                  {stat.change}
+                </span>
               </div>
-            );
-          })}
+              <span className="text-gray-600 text-sm">{stat.label}</span>
+            </div>
+          ))}
         </div>
 
         {/* Opportunity by Stage Chart */}
@@ -97,7 +93,7 @@ export const OpportunityPipelineChart: React.FC = () => {
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
