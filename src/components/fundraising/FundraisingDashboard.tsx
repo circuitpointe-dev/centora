@@ -35,7 +35,7 @@ const FundraisingDashboard = () => {
       {/* Header with Title and Quick Actions */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <h1 className="text-xl font-medium text-gray-900">
-          Fundraising Dashboard
+          Fundraising
         </h1>
         
         {/* Quick Actions as Components - Responsive Grid */}
