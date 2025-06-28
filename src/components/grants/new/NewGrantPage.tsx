@@ -3,107 +3,19 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { OverviewTab } from './tabs/OverviewTab';
-import { GranteeDetailsTab } from './tabs/GranteeDetailsTab';
-import { GranteeSubmissionTab } from './tabs/GranteeSubmissionTab';
-import { ReportingScheduleTab } from './tabs/ReportingScheduleTab';
-import { ComplianceChecklistTab } from './tabs/ComplianceChecklistTab';
-import { DisbursementScheduleTab } from './tabs/DisbursementScheduleTab';
+import { useGrantFormData } from './hooks/useGrantFormData';
+import { GrantFormTabNavigation } from './components/GrantFormTabNavigation';
+import { GrantFormTabContent } from './components/GrantFormTabContent';
+import { GrantFormActions } from './components/GrantFormActions';
 import { SuccessDialog } from './SuccessDialog';
-
-export interface GrantFormData {
-  overview: {
-    grantName: string;
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-    grantManagers: string[];
-    fiduciaryOfficer: string;
-    grantAdministrator: string;
-  };
-  granteeDetails: {
-    granteeName: string;
-    granteeRefId: string;
-    contactPerson: string;
-    email: string;
-    phoneNumber: string;
-  };
-  granteeSubmission: {
-    narrativeReports: Array<{ title: string; status: string }>;
-    financialReports: Array<{ title: string; status: string }>;
-    meReports: Array<{ title: string; status: string }>;
-    customReportTypes: Array<{
-      name: string;
-      reports: Array<{ title: string; status: string }>;
-    }>;
-  };
-  reportingSchedule: {
-    frequency: string;
-    periodStart: Date | undefined;
-    periodEnd: Date | undefined;
-    reportingPeriods: Array<{
-      label: string;
-      submissionType: string;
-      dueDate: Date | undefined;
-      assignedReviewer: string;
-    }>;
-  };
-  complianceChecklist: {
-    complianceRequirements: Array<{
-      name: string;
-      dueDate: Date | undefined;
-      status: string;
-    }>;
-  };
-  disbursementSchedule: {
-    disbursements: Array<{
-      amount: number;
-      disbursementDate: Date | undefined;
-    }>;
-  };
-}
 
 const NewGrantPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [formData, setFormData] = useState<GrantFormData>({
-    overview: {
-      grantName: '',
-      startDate: undefined,
-      endDate: undefined,
-      grantManagers: [],
-      fiduciaryOfficer: '',
-      grantAdministrator: '',
-    },
-    granteeDetails: {
-      granteeName: '',
-      granteeRefId: 'GR-0001',
-      contactPerson: '',
-      email: '',
-      phoneNumber: '',
-    },
-    granteeSubmission: {
-      narrativeReports: [],
-      financialReports: [],
-      meReports: [],
-      customReportTypes: [],
-    },
-    reportingSchedule: {
-      frequency: '',
-      periodStart: undefined,
-      periodEnd: undefined,
-      reportingPeriods: [],
-    },
-    complianceChecklist: {
-      complianceRequirements: [],
-    },
-    disbursementSchedule: {
-      disbursements: [],
-    },
-  });
+  const { formData, updateFormData } = useGrantFormData();
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -148,13 +60,6 @@ const NewGrantPage = () => {
     navigate('/dashboard/grants/active-grants');
   };
 
-  const updateFormData = (section: keyof GrantFormData, data: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [section]: { ...prev[section], ...data },
-    }));
-  };
-
   return (
     <div className="w-full p-6">
       <div className="flex items-center gap-4 mb-6">
@@ -173,152 +78,18 @@ const NewGrantPage = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="
-          flex justify-between flex-nowrap w-full mb-8 p-1
-          border-b border-gray-200 bg-transparent rounded-none
-          overflow-x-hidden
-          overflow-y-hidden
-        ">
-          {tabs.map(tab => (
-            <TabsTrigger
-              key={tab.id}
-              value={tab.id}
-              className="
-                flex-grow
-                text-sm whitespace-nowrap pb-3 font-medium
-                border-b-2 border-transparent
-                data-[state=active]:border-purple-600
-                data-[state=active]:text-purple-600
-                data-[state=active]:font-semibold
-              "
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <div className="max-w-2xl mx-auto">
-          <TabsContent value="overview" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Grant Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <OverviewTab
-                  data={formData.overview}
-                  onUpdate={(data) => updateFormData('overview', data)}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="grantee-details" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Grantee Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <GranteeDetailsTab
-                  data={formData.granteeDetails}
-                  onUpdate={(data) => updateFormData('granteeDetails', data)}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="grantee-submission" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Grantee Submission</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <GranteeSubmissionTab
-                  data={formData.granteeSubmission}
-                  onUpdate={(data) => updateFormData('granteeSubmission', data)}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="reporting-schedule" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Reporting Schedule</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ReportingScheduleTab
-                  data={formData.reportingSchedule}
-                  onUpdate={(data) => updateFormData('reportingSchedule', data)}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="compliance-checklist" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Compliance Checklist</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ComplianceChecklistTab
-                  data={formData.complianceChecklist}
-                  onUpdate={(data) => updateFormData('complianceChecklist', data)}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="disbursement-schedule" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Disbursement Schedule</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DisbursementScheduleTab
-                  data={formData.disbursementSchedule}
-                  onUpdate={(data) => updateFormData('disbursementSchedule', data)}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </div>
+        <GrantFormTabNavigation tabs={tabs} />
+        <GrantFormTabContent formData={formData} updateFormData={updateFormData} />
       </Tabs>
 
-      <div className="flex justify-between items-center pt-6 mt-8 max-w-2xl mx-auto">
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={handleBack}
-            disabled={isFirstTab}
-          >
-            Back
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleSaveDraft}
-          >
-            Save Draft
-          </Button>
-        </div>
-        
-        <div className="flex gap-3">
-          {isLastTab ? (
-            <Button 
-              onClick={handleSave}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              Save
-            </Button>
-          ) : (
-            <Button 
-              onClick={handleNext}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              Next
-            </Button>
-          )}
-        </div>
-      </div>
+      <GrantFormActions
+        isFirstTab={isFirstTab}
+        isLastTab={isLastTab}
+        onBack={handleBack}
+        onNext={handleNext}
+        onSaveDraft={handleSaveDraft}
+        onSave={handleSave}
+      />
 
       <SuccessDialog
         open={showSuccessDialog}
