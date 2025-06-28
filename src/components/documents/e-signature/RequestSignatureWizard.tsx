@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { FileText, Upload, ChevronRight, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -101,6 +100,10 @@ export const RequestSignatureWizard = () => {
   const handleSendForSignature = () => {
     console.log("Sending document for signature");
     // Handle sending logic here
+  };
+
+  const handleMessageCheckboxChange = (checked: boolean | "indeterminate") => {
+    setShowMessageSection(checked === true);
   };
 
   if (currentStep === 3) {
@@ -221,7 +224,7 @@ export const RequestSignatureWizard = () => {
             <Checkbox
               id="send-message"
               checked={showMessageSection}
-              onCheckedChange={setShowMessageSection}
+              onCheckedChange={handleMessageCheckboxChange}
               className="data-[state=checked]:bg-violet-600 data-[state=checked]:border-violet-600"
             />
             <label
