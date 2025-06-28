@@ -51,7 +51,7 @@ const DocumentSelectionDialog = ({
       id: doc.id,
       fileName: doc.fileName,
       category: doc.category,
-      fileSize: doc.fileSize || '0 KB', // Add default if missing
+      fileSize: '2.5 MB', // Default file size since it's not in the original data
       addedTime: doc.addedTime,
       owner: doc.owner,
       tags: doc.tags
