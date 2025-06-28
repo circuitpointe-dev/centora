@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { RequestSignatureWizard } from './RequestSignatureWizard';
 import { SignatureTracking } from './SignatureTracking';
+import { DocumentExpiryMonitor } from './DocumentExpiryMonitor';
 
 const ESignaturePage = () => {
   const navigationTabs = [
@@ -45,9 +46,7 @@ const ESignaturePage = () => {
         </TabsContent>
 
         <TabsContent value="expiry" className="mt-6">
-          <div className="flex items-center justify-center h-64">
-            <p className="text-gray-500">Document Expiry Monitor content coming soon...</p>
-          </div>
+          <DocumentExpiryMonitor />
         </TabsContent>
 
         <TabsContent value="certificate" className="mt-6">
