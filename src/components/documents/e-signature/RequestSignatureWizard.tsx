@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ProgressIndicator } from './ProgressIndicator';
+import { RecipientsStep } from './RecipientsStep';
 import DocumentSelectionDialog from './DocumentSelectionDialog';
 import FileUploadArea from './FileUploadArea';
 
@@ -45,12 +46,12 @@ export const RequestSignatureWizard = () => {
 
   const handleDocumentSelect = (document: Document) => {
     setSelectedDocument(document);
-    setUploadedFile(null); // Clear uploaded file if document is selected
+    setUploadedFile(null);
   };
 
   const handleFileSelect = (file: UploadedFile) => {
     setUploadedFile(file);
-    setSelectedDocument(null); // Clear selected document if file is uploaded
+    setSelectedDocument(null);
   };
 
   const handleRemoveDocument = () => {
@@ -63,25 +64,37 @@ export const RequestSignatureWizard = () => {
 
   const canProceed = selectedDocument || uploadedFile;
 
-  const handleProceed = () => {
+  const handleProceedToStep2 = () => {
     if (canProceed) {
       setCurrentStep(2);
-      // Here you would typically navigate to the next step or update the state
-      console.log('Proceeding to Recipients step with:', {
-        selectedDocument,
-        uploadedFile,
-        message
-      });
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  const handleBackToStep1 = () => {
+    setCurrentStep(1);
   };
+
+  const handleProceedToStep3 = () => {
+    setCurrentStep(3);
+    console.log('Proceeding to Review step');
+  };
+
+  if (currentStep === 2) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Progress Indicator */}
+        <div className="flex justify-center">
+          <ProgressIndicator steps={progressSteps} />
+        </div>
+
+        {/* Recipients Step */}
+        <RecipientsStep 
+          onBack={handleBackToStep1}
+          onProceed={handleProceedToStep3}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -175,7 +188,7 @@ export const RequestSignatureWizard = () => {
       {/* Proceed Button */}
       <div className="flex justify-center">
         <Button 
-          onClick={handleProceed}
+          onClick={handleProceedToStep2}
           disabled={!canProceed}
           className={`rounded-md px-6 py-3 h-auto ${
             canProceed 

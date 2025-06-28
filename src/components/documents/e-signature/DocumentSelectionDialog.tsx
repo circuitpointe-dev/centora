@@ -47,7 +47,15 @@ const DocumentSelectionDialog = ({
   const [tempSelectedDoc, setTempSelectedDoc] = useState<Document | null>(selectedDocument || null);
 
   const filteredDocuments = useMemo(() => {
-    let filtered = documentsData;
+    let filtered = documentsData.map(doc => ({
+      id: doc.id,
+      fileName: doc.fileName,
+      category: doc.category,
+      fileSize: doc.fileSize || '0 KB', // Add default if missing
+      addedTime: doc.addedTime,
+      owner: doc.owner,
+      tags: doc.tags
+    }));
 
     if (searchQuery.trim()) {
       filtered = filtered.filter((doc) =>
