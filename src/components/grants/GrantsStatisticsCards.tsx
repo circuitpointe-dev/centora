@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, CheckCircle, Archive, TrendingUp, FileCheck, AlertCircle } from 'lucide-react';
+import { Award, CheckCircle, Archive, DollarSign, FileCheck, AlertCircle } from 'lucide-react';
 import { GrantsProgressCard } from './GrantsProgressCard';
 
 export const GrantsStatisticsCards = () => {
@@ -50,13 +50,13 @@ export const GrantsStatisticsCards = () => {
 
         <Card className="hover:shadow-lg transition-shadow border border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Disbursement Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-blue-600" />
+            <CardTitle className="text-sm font-medium">Disbursement</CardTitle>
+            <DollarSign className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">87%</div>
+            <div className="text-2xl font-bold text-blue-600">$2.4M</div>
             <p className="text-xs text-muted-foreground">
-              Average across portfolio
+              Total disbursed amount
             </p>
           </CardContent>
         </Card>
