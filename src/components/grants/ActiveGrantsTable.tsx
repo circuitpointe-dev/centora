@@ -1,7 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-// Card components are no longer needed, so they are removed from the import
-// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
@@ -30,9 +29,9 @@ export const ActiveGrantsTable = () => {
   const hasData = filteredData.length > 0;
 
   return (
-    <div className="w-full"> {/* Replaced Card with a simple div */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"> {/* Replaced CardHeader with a div and added margin */}
-        <h2 className="text-xl font-medium">Active Grants Portfolio</h2> {/* Replaced CardTitle with h2 */}
+    <div className="w-full">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        <h2 className="text-xl font-medium">Active Grants Portfolio</h2>
         <div className="flex gap-2">
           <ExportDropdown data={filteredData} />
           <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
@@ -44,11 +43,10 @@ export const ActiveGrantsTable = () => {
         </div>
       </div>
 
-      <div className="p-0"> {/* Replaced CardContent with a div; 'p-0' if no padding is desired */}
+      <div className="p-0">
         <ActiveGrantsTableFilters 
           filters={filters} 
           onFiltersChange={setFilters}
-          disabled={!hasData}
         />
 
         {!hasData ? (
@@ -56,7 +54,7 @@ export const ActiveGrantsTable = () => {
         ) : (
           <>
             {/* Table */}
-            <div className="rounded-md border mt-4"> {/* Added margin-top to separate from filters */}
+            <div className="rounded-md border mt-4">
               <Table>
                 <TableHeader>
                   <TableRow>

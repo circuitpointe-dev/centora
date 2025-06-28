@@ -15,10 +15,9 @@ interface FiltersState {
 interface ActiveGrantsTableFiltersProps {
   filters: FiltersState;
   onFiltersChange: (filters: FiltersState) => void;
-  disabled?: boolean;
 }
 
-export const ActiveGrantsTableFilters = ({ filters, onFiltersChange, disabled }: ActiveGrantsTableFiltersProps) => {
+export const ActiveGrantsTableFilters = ({ filters, onFiltersChange }: ActiveGrantsTableFiltersProps) => {
   const updateFilter = (key: keyof FiltersState, value: string) => {
     onFiltersChange({ ...filters, [key]: value });
   };
@@ -32,7 +31,6 @@ export const ActiveGrantsTableFilters = ({ filters, onFiltersChange, disabled }:
           value={filters.grantName}
           onChange={(e) => updateFilter('grantName', e.target.value)}
           className="pl-10"
-          disabled={disabled}
         />
       </div>
       <div className="relative">
@@ -42,10 +40,9 @@ export const ActiveGrantsTableFilters = ({ filters, onFiltersChange, disabled }:
           value={filters.organization}
           onChange={(e) => updateFilter('organization', e.target.value)}
           className="pl-10"
-          disabled={disabled}
         />
       </div>
-      <Select value={filters.reportingStatus} onValueChange={(value) => updateFilter('reportingStatus', value)} disabled={disabled}>
+      <Select value={filters.reportingStatus} onValueChange={(value) => updateFilter('reportingStatus', value)}>
         <SelectTrigger>
           <SelectValue placeholder="Reporting Status" />
         </SelectTrigger>
@@ -56,7 +53,7 @@ export const ActiveGrantsTableFilters = ({ filters, onFiltersChange, disabled }:
           <SelectItem value="none">No Reports</SelectItem>
         </SelectContent>
       </Select>
-      <Select value={filters.region} onValueChange={(value) => updateFilter('region', value)} disabled={disabled}>
+      <Select value={filters.region} onValueChange={(value) => updateFilter('region', value)}>
         <SelectTrigger>
           <SelectValue placeholder="Region" />
         </SelectTrigger>
@@ -69,7 +66,7 @@ export const ActiveGrantsTableFilters = ({ filters, onFiltersChange, disabled }:
           <SelectItem value="south-america">South America</SelectItem>
         </SelectContent>
       </Select>
-      <Select value={filters.year} onValueChange={(value) => updateFilter('year', value)} disabled={disabled}>
+      <Select value={filters.year} onValueChange={(value) => updateFilter('year', value)}>
         <SelectTrigger>
           <SelectValue placeholder="Year" />
         </SelectTrigger>
