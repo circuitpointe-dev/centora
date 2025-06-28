@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,12 @@ interface RecipientsStepProps {
   onRecipientsChange: (recipients: Recipient[]) => void;
 }
 
-export const RecipientsStep = ({ onBack, onProceed, recipients, onRecipientsChange }: RecipientsStepProps) => {
+export const RecipientsStep = ({
+  onBack,
+  onProceed,
+  recipients,
+  onRecipientsChange,
+}: RecipientsStepProps) => {
   const [sequentialSigning, setSequentialSigning] = useState(true);
 
   const addRecipient = () => {
@@ -55,14 +59,14 @@ export const RecipientsStep = ({ onBack, onProceed, recipients, onRecipientsChan
   const canProceed = recipients.every((r) => r.name.trim() && r.email.trim());
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-[600px] mx-auto">
+    <div className="flex flex-col items-center gap-6 w-full max-w-[600px] mx-auto">
       <Card className="w-full shadow-[0px_4px_16px_#eae2fd] rounded-[5px]">
-        <CardContent className="p-4">
+        <CardContent className="p-6">
           <div className="flex flex-col items-start gap-6">
             <div className="flex flex-col items-start gap-3 w-full">
               {/* Header Section */}
               <div className="flex flex-col items-start gap-2 w-full">
-                <div className="flex flex-col items-start gap-1 w-full max-w-[447px]">
+                <div className="flex flex-col items-start gap-2 w-full max-w-[447px]">
                   <h2 className="text-sm font-medium text-gray-900 leading-tight">
                     Assign Recipients & Define Signing Order
                   </h2>
@@ -72,7 +76,7 @@ export const RecipientsStep = ({ onBack, onProceed, recipients, onRecipientsChan
                   </p>
                 </div>
 
-                <div className="flex items-end justify-between w-full mt-1">
+                <div className="flex items-end justify-between w-full mt-2">
                   <div className="text-xs font-normal leading-relaxed">
                     <span className="text-gray-900">Recipients </span>
                     <span className="text-red-600">(Required)</span>
@@ -104,7 +108,7 @@ export const RecipientsStep = ({ onBack, onProceed, recipients, onRecipientsChan
                     </div>
 
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="flex items-center w-[200px] h-8 relative">
+                      <div className="flex items-center w-[230px] h-8 relative">
                         <User className="absolute left-2 w-3 h-3 text-gray-500" />
                         <Input
                           value={recipient.name}
@@ -120,7 +124,7 @@ export const RecipientsStep = ({ onBack, onProceed, recipients, onRecipientsChan
                         />
                       </div>
 
-                      <div className="flex items-center w-[200px] h-8 relative">
+                      <div className="flex items-center w-[230px] h-8 relative">
                         <Mail className="absolute left-2 w-3 h-3 text-gray-500" />
                         <Input
                           value={recipient.email}
