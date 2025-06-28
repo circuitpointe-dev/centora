@@ -52,7 +52,7 @@ export const RecipientsStep = ({ onBack, onProceed }: RecipientsStepProps) => {
   const canProceed = recipients.every(r => r.name.trim() && r.email.trim());
 
   return (
-    <div className="flex flex-col items-center gap-6 w-full max-w-[700px] mx-auto">
+    <div className="flex flex-col items-center gap-6 w-full max-w-[500px] mx-auto">
       <Card className="w-full shadow-[0px_4px_16px_#eae2fd] rounded-[5px]">
         <CardContent className="p-6">
           <div className="flex flex-col items-start gap-8">
