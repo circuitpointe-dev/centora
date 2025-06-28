@@ -13,14 +13,14 @@ interface ProgressIndicatorProps {
 export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ steps }) => {
   return (
     <div className="w-[828px] h-[68px] relative mx-auto">
-      {/* Connecting lines between steps */}
+      {/* Shortened connecting lines between steps */}
       <div
-        className="absolute top-[19px] left-[67px] h-px bg-[#e6e6e6]"
-        style={{ width: '336px' }}
+        className="absolute top-[19px] left-[90px] h-px bg-[#e6e6e6]"
+        style={{ width: '300px' }}
       />
       <div
-        className="absolute top-[19px] left-[440px] h-px bg-[#e6e6e6]"
-        style={{ width: '320px' /* or Tailwind w-80 */ }}
+        className="absolute top-[19px] left-[438px] h-px bg-[#e6e6e6]"
+        style={{ width: '300px' }}
       />
 
       {/* Progress steps */}
