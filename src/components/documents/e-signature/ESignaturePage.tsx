@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { RequestSignatureWizard } from './RequestSignatureWizard';
 import { SignatureTracking } from './SignatureTracking';
 import { DocumentExpiryMonitor } from './DocumentExpiryMonitor';
+import { CertificateOfCompletion } from './CertificateOfCompletion';
 
 const ESignaturePage = () => {
   const navigationTabs = [
@@ -50,9 +51,7 @@ const ESignaturePage = () => {
         </TabsContent>
 
         <TabsContent value="certificate" className="mt-6">
-          <div className="flex items-center justify-center h-64">
-            <p className="text-gray-500">Certificate of Completion content coming soon...</p>
-          </div>
+          <CertificateOfCompletion />
         </TabsContent>
 
         <TabsContent value="history" className="mt-6">
