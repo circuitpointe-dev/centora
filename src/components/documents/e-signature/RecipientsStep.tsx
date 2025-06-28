@@ -183,27 +183,27 @@ export const RecipientsStep = ({ onBack, onProceed, recipients, onRecipientsChan
       </Card>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
         <Button
           variant="outline"
           onClick={onBack}
-          className="gap-1 px-3 py-1 h-auto border border-gray-300 rounded-[5px] text-xs font-medium text-gray-600 hover:bg-gray-50"
+          className="gap-2 px-4 py-2 h-auto border border-gray-300 rounded-[5px] text-sm font-medium text-gray-600 hover:bg-gray-50"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-5 h-5" />
           Back
         </Button>
 
         <Button
           onClick={onProceed}
           disabled={!canProceed}
-          className={`gap-1 px-4 py-1 h-auto rounded-[5px] text-xs font-medium ${
+          className={`gap-2 px-6 py-2 h-auto rounded-[5px] text-sm font-medium ${
             canProceed
               ? "bg-violet-600 hover:bg-violet-700 text-white"
               : "bg-gray-300 cursor-not-allowed text-gray-500"
           }`}
         >
           Proceed to Review
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-5 h-5" />
         </Button>
       </div>
     </div>
