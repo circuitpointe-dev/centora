@@ -26,7 +26,7 @@ const STATUS_COLORS: Record<string, string> = {
   'In Progress':'bg-[#fce3f0]',
   Submitted:   'bg-[#dce3ef]',
   Awarded:     'bg-[#dcfce7]',
-  Declined:     'bg-[#dc2626]',
+  Declined:     'bg-[#ea580c]',
 };
 
   // Set column Headers
