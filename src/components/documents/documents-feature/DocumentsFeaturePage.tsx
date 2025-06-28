@@ -56,12 +56,15 @@ const DocumentsFeaturePage = () => {
 
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
 
+  // Set default selected document to the first one
+  useEffect(() => {
+    if (filteredDocuments.length > 0 && !selectedDocumentId) {
+      setSelectedDocumentId(filteredDocuments[0].id);
+    }
+  }, [filteredDocuments, selectedDocumentId]);
+
   const handleSelectDocument = (id: string) => {
     setSelectedDocumentId(id);
-  };
-
-  const handleClosePreview = () => {
-    setSelectedDocumentId(null);
   };
 
   const selectedDocument = useMemo(
@@ -146,8 +149,8 @@ const DocumentsFeaturePage = () => {
       </div>
 
       {/* Page Content */}
-      <div className={`grid gap-8 flex-1 min-h-0 ${selectedDocumentId ? 'grid-cols-12' : 'grid-cols-1'}`}>
-        <div className={selectedDocumentId ? 'col-span-12 lg:col-span-9' : 'col-span-12'}>
+      <div className="grid gap-8 flex-1 min-h-0 grid-cols-12">
+        <div className="col-span-12 lg:col-span-8">
           <ScrollArea className="h-full">
             {filteredDocuments.length > 0 ? (
               viewMode === 'grid' ? (
@@ -177,14 +180,20 @@ const DocumentsFeaturePage = () => {
             )}
           </ScrollArea>
         </div>
-        {selectedDocumentId && selectedDocument && (
-          <div className="hidden lg:block lg:col-span-3">
+        <div className="col-span-12 lg:col-span-4">
+          {selectedDocument ? (
             <DocumentPreviewCard
               document={selectedDocument}
-              onClose={handleClosePreview}
+              onClose={() => {}}
             />
-          </div>
-        )}
+          ) : (
+            <Card className="h-full flex items-center justify-center border-2 border-dashed border-gray-300 bg-gray-50">
+              <div className="text-center text-gray-500">
+                <p>Select a document to preview</p>
+              </div>
+            </Card>
+          )}
+        </div>
       </div>
 
       <UploadDocumentDialog
