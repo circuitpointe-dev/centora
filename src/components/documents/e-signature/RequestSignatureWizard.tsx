@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { FileText, Upload, ChevronRight, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { RecipientsStep } from "./RecipientsStep";
+import { ReviewAndSendStep } from "./ReviewAndSendStep";
 import DocumentSelectionDialog from "./DocumentSelectionDialog";
 import FileUploadArea from "./FileUploadArea";
 
@@ -79,6 +81,32 @@ export const RequestSignatureWizard = () => {
     setCurrentStep(3);
     console.log("Proceeding to Review step");
   };
+
+  const handleBackToStep2 = () => {
+    setCurrentStep(2);
+  };
+
+  const handleSendForSignature = () => {
+    console.log("Sending document for signature");
+    // Handle sending logic here
+  };
+
+  if (currentStep === 3) {
+    return (
+      <div className="max-w-full mx-auto space-y-8">
+        {/* Progress Indicator */}
+        <div className="flex justify-center">
+          <ProgressIndicator steps={progressSteps} />
+        </div>
+
+        {/* Review and Send Step */}
+        <ReviewAndSendStep
+          onBack={handleBackToStep2}
+          onSend={handleSendForSignature}
+        />
+      </div>
+    );
+  }
 
   if (currentStep === 2) {
     return (
