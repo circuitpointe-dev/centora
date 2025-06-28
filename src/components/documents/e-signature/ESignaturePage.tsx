@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { RequestSignatureWizard } from './RequestSignatureWizard';
+import { SignatureTracking } from './SignatureTracking';
 
 const ESignaturePage = () => {
   const navigationTabs = [
@@ -40,9 +41,7 @@ const ESignaturePage = () => {
         </TabsContent>
 
         <TabsContent value="tracking" className="mt-6">
-          <div className="flex items-center justify-center h-64">
-            <p className="text-gray-500">Signature Tracking content coming soon...</p>
-          </div>
+          <SignatureTracking />
         </TabsContent>
 
         <TabsContent value="expiry" className="mt-6">
