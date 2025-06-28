@@ -52,69 +52,67 @@ export const RecipientsStep = ({ onBack, onProceed }: RecipientsStepProps) => {
   const canProceed = recipients.every(r => r.name.trim() && r.email.trim());
 
   return (
-    <div className="flex flex-col items-center gap-10 w-full max-w-[946px] mx-auto">
+    <div className="flex flex-col items-center gap-6 w-full max-w-[946px] mx-auto">
       <Card className="w-full shadow-[0px_4px_16px_#eae2fd] rounded-[5px]">
-        <CardContent className="p-6 pt-6 pb-12">
-          <div className="flex flex-col items-start gap-14">
-            <div className="flex flex-col items-start gap-8 w-full">
+        <CardContent className="p-6">
+          <div className="flex flex-col items-start gap-8">
+            <div className="flex flex-col items-start gap-6 w-full">
               {/* Header Section */}
-              <div className="flex flex-col items-start gap-1 w-full">
+              <div className="flex flex-col items-start gap-3 w-full">
                 <div className="flex flex-col items-start gap-2 w-full max-w-[447px]">
-                  <h2 className="text-lg font-medium text-[#383838] leading-[22.5px] [font-family:'Inter-Medium',Helvetica]">
+                  <h2 className="text-lg font-medium text-gray-900 leading-tight">
                     Assign Recipients & Define Signing Order
                   </h2>
-                  <p className="text-sm font-normal text-[#38383880] leading-[17.5px] [font-family:'Inter-Regular',Helvetica]">
+                  <p className="text-sm font-normal text-gray-600 leading-relaxed">
                     Add signers and set the order in which they'll receive the document
                   </p>
                 </div>
 
-                <div className="flex items-end justify-between w-full mt-2">
-                  <div className="text-sm font-normal leading-[17.5px] [font-family:'Inter-Regular',Helvetica]">
-                    <span className="text-[#383838]">Recipients </span>
-                    <span className="text-[#f42929]">(Required)</span>
+                <div className="flex items-end justify-between w-full mt-1">
+                  <div className="text-sm font-normal leading-relaxed">
+                    <span className="text-gray-900">Recipients </span>
+                    <span className="text-red-600">(Required)</span>
                   </div>
 
                   <Button
                     variant="outline"
                     onClick={addRecipient}
-                    className="gap-2 px-4 py-3 h-auto border border-solid border-[#d9d9d9] rounded-[5px]"
+                    className="gap-2 px-4 py-2 h-auto border border-gray-300 rounded-[5px] text-sm font-medium text-gray-600 hover:bg-gray-50"
                   >
-                    <Plus className="w-5 h-5" />
-                    <span className="font-medium text-sm text-[#38383899] [font-family:'Inter-Medium',Helvetica]">
-                      Add Recipients
-                    </span>
+                    <Plus className="w-4 h-4" />
+                    Add Recipients
                   </Button>
                 </div>
               </div>
 
               {/* Recipients Forms */}
-              <div className="flex flex-col gap-4 w-full">
+              <div className="flex flex-col gap-3 w-full">
                 {recipients.map((recipient) => (
-                  <div key={recipient.id} className="flex items-center gap-6 px-4 py-6 w-full bg-gray-50 rounded-[5px]">
-                    <div className="flex w-[42px] items-center gap-2">
-                      <Grid className="w-4 h-4" />
-                      <span className="font-medium text-lg text-[#38383899] [font-family:'Inter-Medium',Helvetica]">
+                  <div key={recipient.id} className="flex items-center gap-4 px-4 py-4 w-full bg-gray-50 rounded-[5px]">
+                    <div className="flex w-8 items-center gap-2">
+                      <Grid className="w-4 h-4 text-gray-500" />
+                      <span className="font-medium text-base text-gray-600">
                         {recipient.order}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-[34px] flex-1">
-                      <div className="flex items-center w-[300px] h-[46px] relative">
-                        <User className="absolute left-4 w-5 h-5 text-[#38383899]" />
+                    <div className="flex items-center gap-6 flex-1">
+                      <div className="flex items-center w-[280px] h-10 relative">
+                        <User className="absolute left-3 w-4 h-4 text-gray-500" />
                         <Input
                           value={recipient.name}
                           onChange={(e) => updateRecipient(recipient.id, 'name', e.target.value)}
-                          className="h-[46px] pl-10 [font-family:'Inter-Regular',Helvetica] text-sm text-[#38383899] border-[#d9d9d9]"
+                          className="h-10 pl-9 text-sm text-gray-700 border-gray-300 rounded-md"
                           placeholder="Recipient Name"
                         />
                       </div>
 
-                      <div className="flex items-center w-[300px] h-[46px] relative">
-                        <Mail className="absolute left-4 w-5 h-5 text-[#38383899]" />
+                      <div className="flex items-center w-[280px] h-10 relative">
+                        <Mail className="absolute left-3 w-4 h-4 text-gray-500" />
                         <Input
                           value={recipient.email}
                           onChange={(e) => updateRecipient(recipient.id, 'email', e.target.value)}
-                          className="h-[46px] pl-10 [font-family:'Inter-Regular',Helvetica] text-sm text-[#38383899] border-[#d9d9d9]"
+                          className="h-10 pl-9 text-sm text-gray-700 border-gray-300 rounded-md"
                           placeholder="Email Address"
                           type="email"
                         />
@@ -126,7 +124,7 @@ export const RecipientsStep = ({ onBack, onProceed }: RecipientsStepProps) => {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeRecipient(recipient.id)}
-                        className="h-8 w-8 text-gray-500 hover:text-red-600"
+                        className="h-8 w-8 text-gray-500 hover:text-red-600 hover:bg-red-50"
                       >
                         <X className="w-4 h-4" />
                       </Button>
@@ -137,25 +135,25 @@ export const RecipientsStep = ({ onBack, onProceed }: RecipientsStepProps) => {
             </div>
 
             {/* Signing Order Section */}
-            <div className="flex flex-col items-start gap-2 w-full">
+            <div className="flex flex-col items-start gap-3 w-full">
               <div className="flex items-center justify-between w-full">
-                <h3 className="font-medium text-lg text-[#383838] leading-[22.5px] [font-family:'Inter-Medium',Helvetica]">
+                <h3 className="font-medium text-lg text-gray-900 leading-tight">
                   Signing Order
                 </h3>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <Switch
                     checked={sequentialSigning}
                     onCheckedChange={setSequentialSigning}
                     className="bg-violet-600 data-[state=checked]:bg-violet-600"
                   />
-                  <span className="font-normal text-sm text-[#38383899] leading-[17.5px] [font-family:'Inter-Regular',Helvetica]">
+                  <span className="font-normal text-sm text-gray-600 leading-relaxed">
                     Sequential Signing
                   </span>
                 </div>
               </div>
 
-              <p className="font-normal text-sm text-[#38383899] leading-[17.5px] [font-family:'Inter-Regular',Helvetica]">
+              <p className="font-normal text-sm text-gray-600 leading-relaxed">
                 {sequentialSigning 
                   ? "Recipients will sign in the order specified above"
                   : "Recipients can sign in any order"
@@ -167,31 +165,27 @@ export const RecipientsStep = ({ onBack, onProceed }: RecipientsStepProps) => {
       </Card>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center gap-[30px]">
+      <div className="flex items-center gap-6">
         <Button
           variant="outline"
           onClick={onBack}
-          className="w-[114px] gap-1 pl-3 pr-6 py-3 h-auto border border-solid border-[#d9d9d9] rounded-[5px]"
+          className="gap-2 px-4 py-2 h-auto border border-gray-300 rounded-[5px] text-sm font-medium text-gray-600 hover:bg-gray-50"
         >
-          <ArrowLeft className="w-6 h-6" />
-          <span className="font-medium text-sm text-[#38383899] leading-[21px] [font-family:'Inter-Medium',Helvetica]">
-            Back
-          </span>
+          <ArrowLeft className="w-5 h-5" />
+          Back
         </Button>
 
         <Button 
           onClick={onProceed}
           disabled={!canProceed}
-          className={`gap-2.5 px-6 py-3 h-auto rounded-[5px] ${
+          className={`gap-2 px-6 py-2 h-auto rounded-[5px] text-sm font-medium ${
             canProceed 
-              ? 'bg-violet-600 hover:bg-violet-700' 
-              : 'bg-gray-300 cursor-not-allowed'
+              ? 'bg-violet-600 hover:bg-violet-700 text-white' 
+              : 'bg-gray-300 cursor-not-allowed text-gray-500'
           }`}
         >
-          <span className="font-medium text-sm text-white leading-[21px] [font-family:'Inter-Medium',Helvetica]">
-            Proceed to Review
-          </span>
-          <ArrowRight className="w-6 h-6" />
+          Proceed to Review
+          <ArrowRight className="w-5 h-5" />
         </Button>
       </div>
     </div>
