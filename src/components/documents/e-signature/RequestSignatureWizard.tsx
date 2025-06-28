@@ -4,6 +4,7 @@ import { FileText, Upload, ChevronRight, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { RecipientsStep } from "./RecipientsStep";
 import { ReviewAndSendStep } from "./ReviewAndSendStep";
@@ -32,6 +33,13 @@ interface UploadedFile {
   id: string;
 }
 
+interface Recipient {
+  id: string;
+  name: string;
+  email: string;
+  order: number;
+}
+
 export const RequestSignatureWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showDocumentDialog, setShowDocumentDialog] = useState(false);
@@ -40,6 +48,10 @@ export const RequestSignatureWizard = () => {
   );
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [message, setMessage] = useState("");
+  const [showMessageSection, setShowMessageSection] = useState(false);
+  const [recipients, setRecipients] = useState<Recipient[]>([
+    { id: "1", name: "", email: "", order: 1 },
+  ]);
 
   const progressSteps = [
     { id: 1, label: "Select Document", active: currentStep >= 1 },
@@ -93,7 +105,7 @@ export const RequestSignatureWizard = () => {
 
   if (currentStep === 3) {
     return (
-      <div className="max-w-full mx-auto space-y-8">
+      <div className="max-w-full mx-auto space-y-6">
         {/* Progress Indicator */}
         <div className="flex justify-center">
           <ProgressIndicator steps={progressSteps} />
@@ -110,7 +122,7 @@ export const RequestSignatureWizard = () => {
 
   if (currentStep === 2) {
     return (
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Progress Indicator */}
         <div className="flex justify-center">
           <ProgressIndicator steps={progressSteps} />
@@ -120,23 +132,25 @@ export const RequestSignatureWizard = () => {
         <RecipientsStep
           onBack={handleBackToStep1}
           onProceed={handleProceedToStep3}
+          recipients={recipients}
+          onRecipientsChange={setRecipients}
         />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Progress Indicator */}
       <div className="flex justify-center">
         <ProgressIndicator steps={progressSteps} />
       </div>
 
       {/* Document Selection Cards */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Select Document Card */}
-          <Card className="h-[250px] bg-white rounded-lg shadow-md border">
+          <Card className="h-[250px] bg-white rounded-[5px] shadow-sm border">
             <CardContent className="flex flex-col items-center justify-center gap-6 h-full p-6">
               {selectedDocument ? (
                 <>
@@ -168,7 +182,7 @@ export const RequestSignatureWizard = () => {
                     <Button
                       onClick={() => setShowDocumentDialog(true)}
                       variant="outline"
-                      className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                      className="border-gray-300 text-gray-600 hover:bg-gray-50 rounded-[5px]"
                     >
                       Change Document
                     </Button>
@@ -183,7 +197,7 @@ export const RequestSignatureWizard = () => {
                     </p>
                     <Button
                       onClick={() => setShowDocumentDialog(true)}
-                      className="bg-violet-600 hover:bg-violet-700 text-white rounded-md px-4 py-2"
+                      className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] px-4 py-2"
                     >
                       Select Document
                     </Button>
@@ -201,17 +215,31 @@ export const RequestSignatureWizard = () => {
           />
         </div>
 
-        {/* Message to Recipients */}
+        {/* Message to Recipients Section */}
         <div className="space-y-3">
-          <label className="font-medium text-gray-900 text-sm">
-            Message to Recipients
-          </label>
-          <Textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="min-h-[100px] bg-white rounded-md shadow-sm border resize-none"
-            placeholder="Add a message for your recipients..."
-          />
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="send-message"
+              checked={showMessageSection}
+              onCheckedChange={setShowMessageSection}
+              className="data-[state=checked]:bg-violet-600 data-[state=checked]:border-violet-600"
+            />
+            <label
+              htmlFor="send-message"
+              className="text-sm font-medium text-gray-900 cursor-pointer"
+            >
+              Send message to recipients
+            </label>
+          </div>
+          
+          {showMessageSection && (
+            <Textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="min-h-[80px] bg-white rounded-[5px] shadow-sm border resize-none"
+              placeholder="Add a message for your recipients..."
+            />
+          )}
         </div>
       </div>
 
@@ -220,14 +248,14 @@ export const RequestSignatureWizard = () => {
         <Button
           onClick={handleProceedToStep2}
           disabled={!canProceed}
-          className={`rounded-md px-6 py-3 h-auto ${
+          className={`rounded-[5px] px-6 py-2 h-auto text-sm font-medium ${
             canProceed
               ? "bg-violet-600 hover:bg-violet-700 text-white"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
           Proceed to Recipients
-          <ChevronRight className="w-5 h-5 ml-2" />
+          <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
 
