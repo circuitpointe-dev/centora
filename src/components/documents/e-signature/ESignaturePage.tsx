@@ -19,7 +19,7 @@ const ESignaturePage = () => {
       <div className="bg-[#f4f6f9] w-[1120px] relative">
         {/* Header */}
         <header className="flex w-full h-[75px] items-center justify-between px-8 py-0 bg-white border-b border-[#e6eff5]">
-          <h1 className="font-medium text-[#383839] text-2xl">E-Signature</h1>
+          <h1 className="font-medium text-[#383839] text-xl">E-Signature</h1>
 
           <div className="inline-flex h-[30px] items-center gap-4 px-4 py-2 relative rounded-[20px] border border-solid border-[#e0e0e0]">
             <Input
