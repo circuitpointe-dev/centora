@@ -107,7 +107,7 @@ export const RequestSignatureWizard = () => {
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Select Document Card */}
-          <Card className="h-[280px] bg-white rounded-lg shadow-md border">
+          <Card className="h-[200px] bg-white rounded-lg shadow-md border">
             <CardContent className="flex flex-col items-center justify-center gap-6 h-full p-6">
               {selectedDocument ? (
                 <>
