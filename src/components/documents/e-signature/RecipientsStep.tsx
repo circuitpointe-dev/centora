@@ -90,11 +90,11 @@ export const RecipientsStep = ({ onBack, onProceed }: RecipientsStepProps) => {
               </div>
 
               {/* Recipients Forms */}
-              <div className="flex flex-col gap-3 w-full">
+              <div className="flex flex-col gap-1 w-full">
                 {recipients.map((recipient) => (
                   <div
                     key={recipient.id}
-                    className="flex items-center gap-4 px-0 py-4 w-full"
+                    className="flex items-center gap-3 px-0 py-4 w-full"
                   >
                     <div className="flex w-8 items-center gap-1">
                       <Grid className="w-4 h-4 text-gray-500" />
