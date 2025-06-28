@@ -15,6 +15,7 @@ import GrantsArchivePage from './GrantsArchivePage';
 import GranteeSubmissionsPage from './GranteeSubmissionsPage';
 import GrantsSettingsPage from './GrantsSettingsPage';
 import DocumentsFeaturePage from '@/components/documents/documents-feature/DocumentsFeaturePage';
+import ESignaturePage from '@/components/documents/e-signature/ESignaturePage';
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
@@ -42,6 +43,10 @@ const GenericFeaturePage = () => {
 
   if (module === 'documents' && feature === 'documents') {
     return <DocumentsFeaturePage />;
+  }
+
+  if (module === 'documents' && feature === 'e-signature') {
+    return <ESignaturePage />;
   }
 
   // Render specific page components for grants routes
