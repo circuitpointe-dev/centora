@@ -17,7 +17,7 @@ const ESignaturePage = () => {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-2">
         <h1 className="text-xl font-medium text-gray-900">E-Signature</h1>
 
         <div className="inline-flex h-[30px] items-center gap-4 px-4 py-2 relative rounded-[20px] border border-solid border-[#e0e0e0]">
