@@ -1,13 +1,12 @@
-
-import React, { useState } from 'react';
-import { FileText, Upload, ChevronRight, Check, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { ProgressIndicator } from './ProgressIndicator';
-import { RecipientsStep } from './RecipientsStep';
-import DocumentSelectionDialog from './DocumentSelectionDialog';
-import FileUploadArea from './FileUploadArea';
+import React, { useState } from "react";
+import { FileText, Upload, ChevronRight, Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { ProgressIndicator } from "./ProgressIndicator";
+import { RecipientsStep } from "./RecipientsStep";
+import DocumentSelectionDialog from "./DocumentSelectionDialog";
+import FileUploadArea from "./FileUploadArea";
 
 interface Document {
   id: string;
@@ -34,9 +33,11 @@ interface UploadedFile {
 export const RequestSignatureWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showDocumentDialog, setShowDocumentDialog] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(
+    null
+  );
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const progressSteps = [
     { id: 1, label: "Select Document", active: currentStep >= 1 },
@@ -76,7 +77,7 @@ export const RequestSignatureWizard = () => {
 
   const handleProceedToStep3 = () => {
     setCurrentStep(3);
-    console.log('Proceeding to Review step');
+    console.log("Proceeding to Review step");
   };
 
   if (currentStep === 2) {
@@ -88,7 +89,7 @@ export const RequestSignatureWizard = () => {
         </div>
 
         {/* Recipients Step */}
-        <RecipientsStep 
+        <RecipientsStep
           onBack={handleBackToStep1}
           onProceed={handleProceedToStep3}
         />
@@ -107,7 +108,7 @@ export const RequestSignatureWizard = () => {
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Select Document Card */}
-          <Card className="h-[200px] bg-white rounded-lg shadow-md border">
+          <Card className="h-[250px] bg-white rounded-lg shadow-md border">
             <CardContent className="flex flex-col items-center justify-center gap-6 h-full p-6">
               {selectedDocument ? (
                 <>
@@ -118,7 +119,8 @@ export const RequestSignatureWizard = () => {
                         {selectedDocument.fileName}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {selectedDocument.fileSize} • {selectedDocument.addedTime}
+                        {selectedDocument.fileSize} •{" "}
+                        {selectedDocument.addedTime}
                       </p>
                     </div>
                     <Button
@@ -151,7 +153,7 @@ export const RequestSignatureWizard = () => {
                     <p className="text-gray-500 text-sm text-center">
                       Select a document from Document Folder
                     </p>
-                    <Button 
+                    <Button
                       onClick={() => setShowDocumentDialog(true)}
                       className="bg-violet-600 hover:bg-violet-700 text-white rounded-md px-4 py-2"
                     >
@@ -187,13 +189,13 @@ export const RequestSignatureWizard = () => {
 
       {/* Proceed Button */}
       <div className="flex justify-center">
-        <Button 
+        <Button
           onClick={handleProceedToStep2}
           disabled={!canProceed}
           className={`rounded-md px-6 py-3 h-auto ${
-            canProceed 
-              ? 'bg-violet-600 hover:bg-violet-700 text-white' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            canProceed
+              ? "bg-violet-600 hover:bg-violet-700 text-white"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
           Proceed to Recipients

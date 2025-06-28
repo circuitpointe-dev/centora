@@ -1,9 +1,8 @@
-
-import React, { useCallback, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Upload, FileText, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Upload, FileText, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface UploadedFile {
   file: File;
@@ -16,7 +15,11 @@ interface FileUploadAreaProps {
   onFileRemove: () => void;
 }
 
-const FileUploadArea = ({ onFileSelect, selectedFile, onFileRemove }: FileUploadAreaProps) => {
+const FileUploadArea = ({
+  onFileSelect,
+  selectedFile,
+  onFileRemove,
+}: FileUploadAreaProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -29,26 +32,29 @@ const FileUploadArea = ({ onFileSelect, selectedFile, onFileRemove }: FileUpload
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    if (droppedFiles.length > 0) {
-      const file = droppedFiles[0];
-      if (file.type === 'application/pdf' && file.size <= 25 * 1024 * 1024) {
-        onFileSelect({
-          file,
-          id: Math.random().toString(36).substr(2, 9),
-        });
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      if (droppedFiles.length > 0) {
+        const file = droppedFiles[0];
+        if (file.type === "application/pdf" && file.size <= 25 * 1024 * 1024) {
+          onFileSelect({
+            file,
+            id: Math.random().toString(36).substr(2, 9),
+          });
+        }
       }
-    }
-  }, [onFileSelect]);
+    },
+    [onFileSelect]
+  );
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     if (selectedFiles.length > 0) {
       const file = selectedFiles[0];
-      if (file.type === 'application/pdf' && file.size <= 25 * 1024 * 1024) {
+      if (file.type === "application/pdf" && file.size <= 25 * 1024 * 1024) {
         onFileSelect({
           file,
           id: Math.random().toString(36).substr(2, 9),
@@ -58,11 +64,11 @@ const FileUploadArea = ({ onFileSelect, selectedFile, onFileRemove }: FileUpload
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
   if (selectedFile) {
@@ -113,7 +119,7 @@ const FileUploadArea = ({ onFileSelect, selectedFile, onFileRemove }: FileUpload
   }
 
   return (
-    <Card className="h-[280px] bg-white rounded-lg shadow-md border">
+    <Card className="h-[250px] bg-white rounded-lg shadow-md border">
       <CardContent
         className={cn(
           "flex flex-col items-center justify-center gap-6 h-full p-6 transition-colors",
@@ -123,7 +129,7 @@ const FileUploadArea = ({ onFileSelect, selectedFile, onFileRemove }: FileUpload
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <Upload className="w-10 h-10 text-gray-600" />
+        <Upload className="w-5 h-5 text-gray-600" />
         <div className="flex flex-col items-center gap-6 w-full">
           <div className="text-center space-y-2">
             <p className="text-gray-500 text-sm">
