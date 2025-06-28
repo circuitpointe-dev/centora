@@ -59,7 +59,7 @@ export const RecipientsStep = ({ onBack, onProceed }: RecipientsStepProps) => {
       <Card className="w-full shadow-[0px_4px_16px_#eae2fd] rounded-[5px]">
         <CardContent className="p-6">
           <div className="flex flex-col items-start gap-8">
-            <div className="flex flex-col items-start gap-1 w-full">
+            <div className="flex flex-col items-start gap-3 w-full">
               {/* Header Section */}
               <div className="flex flex-col items-start gap-3 w-full">
                 <div className="flex flex-col items-start gap-2 w-full max-w-[447px]">
