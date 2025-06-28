@@ -55,9 +55,6 @@ export const DocumentDetailsDialog = ({ document, onClose }: DocumentDetailsDial
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b flex-shrink-0">
         <h2 className="font-medium text-[#383838] text-xl">Document Details</h2>
-        <Button variant="ghost" size="icon" className="p-0 h-6 w-6" onClick={onClose}>
-          <X className="h-6 w-6" />
-        </Button>
       </div>
 
       {/* Content */}
