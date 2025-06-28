@@ -22,11 +22,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   // Define your status‐to‐color lookup
 const STATUS_COLORS: Record<string, string> = {
-  Review:      'bg-[#dce2ee]',
-  'In Progress':'bg-[#fff6ee]',
-  Submitted:   'bg-[#f6f3ff]',
-  Awarded:     'bg-[#f1fef5]',
-  Decline:     'bg-[#fff3f3]',
+  Review:      'bg-[#efe8fd]',
+  'In Progress':'bg-[#fce3f0]',
+  Submitted:   'bg-[#dce3ef]',
+  Awarded:     'bg-[#dcfce7]',
+  Decline:     'bg-[#dc2626]',
 };
 
   // Set column Headers
