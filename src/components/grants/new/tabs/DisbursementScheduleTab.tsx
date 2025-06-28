@@ -1,13 +1,9 @@
 
 import React from 'react';
-import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DisbursementRow } from '../components/DisbursementRow';
 
 interface DisbursementScheduleTabProps {
   data: {
@@ -61,55 +57,13 @@ export const DisbursementScheduleTab: React.FC<DisbursementScheduleTabProps> = (
         </TableHeader>
         <TableBody>
           {data.disbursements.map((disbursement, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                  <Input
-                    type="number"
-                    value={disbursement.amount || ''}
-                    onChange={(e) => updateDisbursement(index, 'amount', parseFloat(e.target.value) || 0)}
-                    placeholder="0.00"
-                    className="pl-8 rounded-sm"
-                  />
-                </div>
-              </TableCell>
-              <TableCell>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal rounded-sm",
-                        !disbursement.disbursementDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {disbursement.disbursementDate ? format(disbursement.disbursementDate, "PPP") : "Pick date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={disbursement.disbursementDate}
-                      onSelect={(date) => updateDisbursement(index, 'disbursementDate', date)}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </TableCell>
-              <TableCell>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeDisbursement(index)}
-                  className="text-red-600 hover:text-red-800"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </TableCell>
-            </TableRow>
+            <DisbursementRow
+              key={index}
+              disbursement={disbursement}
+              index={index}
+              onUpdate={updateDisbursement}
+              onRemove={removeDisbursement}
+            />
           ))}
         </TableBody>
       </Table>
