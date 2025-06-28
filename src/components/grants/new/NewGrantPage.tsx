@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -9,7 +10,8 @@ import { OverviewTab } from './tabs/OverviewTab';
 import { GranteeDetailsTab } from './tabs/GranteeDetailsTab';
 import { GranteeSubmissionTab } from './tabs/GranteeSubmissionTab';
 import { ReportingScheduleTab } from './tabs/ReportingScheduleTab';
-import { ComplianceDisbursementTab } from './tabs/ComplianceDisbursementTab';
+import { ComplianceChecklistTab } from './tabs/ComplianceChecklistTab';
+import { DisbursementScheduleTab } from './tabs/DisbursementScheduleTab';
 import { SuccessDialog } from './SuccessDialog';
 
 export interface GrantFormData {
@@ -48,12 +50,14 @@ export interface GrantFormData {
       assignedReviewer: string;
     }>;
   };
-  complianceDisbursement: {
+  complianceChecklist: {
     complianceRequirements: Array<{
       name: string;
       dueDate: Date | undefined;
       status: string;
     }>;
+  };
+  disbursementSchedule: {
     disbursements: Array<{
       amount: number;
       disbursementDate: Date | undefined;
@@ -93,8 +97,10 @@ const NewGrantPage = () => {
       periodEnd: undefined,
       reportingPeriods: [],
     },
-    complianceDisbursement: {
+    complianceChecklist: {
       complianceRequirements: [],
+    },
+    disbursementSchedule: {
       disbursements: [],
     },
   });
@@ -105,6 +111,7 @@ const NewGrantPage = () => {
     { id: 'grantee-submission', label: 'Grantee Submission' },
     { id: 'reporting-schedule', label: 'Reporting Schedule' },
     { id: 'compliance-checklist', label: 'Compliance Checklist' },
+    { id: 'disbursement-schedule', label: 'Disbursement Schedule' },
   ];
 
   const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
@@ -169,8 +176,8 @@ const NewGrantPage = () => {
         <TabsList className="
           flex justify-between flex-nowrap w-full mb-8 p-1
           border-b border-gray-200 bg-transparent rounded-none
-          overflow-x-hidden {/* Added to hide horizontal scrollbar */}
-          overflow-y-hidden {/* Added to explicitly hide vertical scrollbar */}
+          overflow-x-hidden
+          overflow-y-hidden
         ">
           {tabs.map(tab => (
             <TabsTrigger
@@ -250,12 +257,26 @@ const NewGrantPage = () => {
           <TabsContent value="compliance-checklist" className="space-y-6 mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Compliance & Disbursement</CardTitle>
+                <CardTitle>Compliance Checklist</CardTitle>
               </CardHeader>
               <CardContent>
-                <ComplianceDisbursementTab
-                  data={formData.complianceDisbursement}
-                  onUpdate={(data) => updateFormData('complianceDisbursement', data)}
+                <ComplianceChecklistTab
+                  data={formData.complianceChecklist}
+                  onUpdate={(data) => updateFormData('complianceChecklist', data)}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="disbursement-schedule" className="space-y-6 mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Disbursement Schedule</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DisbursementScheduleTab
+                  data={formData.disbursementSchedule}
+                  onUpdate={(data) => updateFormData('disbursementSchedule', data)}
                 />
               </CardContent>
             </Card>
