@@ -25,6 +25,10 @@ const EditDonorDialog: React.FC<EditDonorDialogProps> = ({ donor, trigger }) => 
     });
   };
 
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
   const defaultTrigger = (
     <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
       <Edit className="h-4 w-4" />
@@ -36,12 +40,13 @@ const EditDonorDialog: React.FC<EditDonorDialogProps> = ({ donor, trigger }) => 
       <DialogTrigger asChild>
         {trigger || defaultTrigger}
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto bg-white">
         <DialogHeader>
-          <DialogTitle>Edit Donor</DialogTitle>
+          <DialogTitle className="text-black">Edit Donor</DialogTitle>
         </DialogHeader>
         <NewDonorForm 
           onSubmit={handleEditSubmit}
+          onCancel={handleCancel}
           initialData={donor}
           isEditing={true}
         />
