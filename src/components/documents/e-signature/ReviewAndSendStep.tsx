@@ -72,7 +72,7 @@ export const ReviewAndSendStep = ({
           {/* Three Column Layout - Adjusted widths */}
           <div className="grid grid-cols-12 gap-3 h-[500px] mb-4">
             {/* Selection Column - Reduced from 3 to 2 */}
-            <div className="col-span-2">
+            <div className="col-span-3">
               <FieldSelectionCard
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
@@ -83,12 +83,12 @@ export const ReviewAndSendStep = ({
             </div>
 
             {/* Signing Column (Canvas) - Increased from 6 to 8 */}
-            <div className="col-span-8">
+            <div className="col-span-6">
               <DocumentCanvas />
             </div>
 
             {/* Properties Column - Reduced from 3 to 2 */}
-            <div className="col-span-2">
+            <div className="col-span-3">
               <PropertyCard selectedField={selectedField} />
             </div>
           </div>
