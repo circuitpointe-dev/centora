@@ -1,6 +1,11 @@
-
 import React, { useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { User, Edit, Trash2 } from "lucide-react";
@@ -24,7 +29,10 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
   const [fieldName, setFieldName] = useState(selectedField.name);
   const [hasSignature, setHasSignature] = useState(false);
 
-  const handleSignatureSave = (signatureData: { type: string; data: string }) => {
+  const handleSignatureSave = (signatureData: {
+    type: string;
+    data: string;
+  }) => {
     setHasSignature(true);
     console.log("Signature saved:", signatureData);
   };
@@ -41,20 +49,22 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Edit className="w-4 h-4 text-gray-600" />
-              <span className="text-sm font-medium text-gray-900">Signature</span>
+              <span className="text-sm font-medium text-gray-900">
+                Signature
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="h-6 w-6 text-gray-500 hover:text-violet-600"
                 onClick={() => setShowSignatureDialog(true)}
               >
                 <Edit className="w-3 h-3" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="h-6 w-6 text-gray-500 hover:text-red-600"
                 onClick={() => setShowDeleteDialog(true)}
               >
@@ -85,7 +95,7 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
               <label className="text-xs font-medium text-gray-900 block mb-1">
                 Required
               </label>
-              <Select defaultValue="yes">
+              <Select defaultValue="yes" disabled>
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -100,8 +110,8 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
               <label className="text-xs font-medium text-gray-900 block mb-1">
                 Field Name
               </label>
-              <Input 
-                className="h-8 text-xs" 
+              <Input
+                className="h-8 text-xs"
                 value={fieldName}
                 onChange={(e) => setFieldName(e.target.value)}
               />
@@ -136,11 +146,13 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {selectedField.icon}
-            <span className="text-sm font-medium text-gray-900">{selectedField.name}</span>
+            <span className="text-sm font-medium text-gray-900">
+              {selectedField.name}
+            </span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-6 w-6 text-gray-500 hover:text-red-600"
             onClick={() => setShowDeleteDialog(true)}
           >
@@ -170,7 +182,7 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
             <label className="text-xs font-medium text-gray-900 block mb-1">
               Required
             </label>
-            <Select defaultValue="yes">
+            <Select defaultValue="yes" disabled>
               <SelectTrigger className="h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
@@ -201,8 +213,8 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
             <label className="text-xs font-medium text-gray-900 block mb-1">
               Field Name
             </label>
-            <Input 
-              className="h-8 text-xs" 
+            <Input
+              className="h-8 text-xs"
               value={fieldName}
               onChange={(e) => setFieldName(e.target.value)}
             />
