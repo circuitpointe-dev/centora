@@ -69,13 +69,13 @@ export const FieldSelectionCard = ({
             <TabsList className="flex bg-transparent p-0 h-auto w-full justify-start">
               <TabsTrigger
                 value="fields"
-                className="inline-flex items-center justify-center p-2.5 border-b border-[#383838b2] data-[state=active]:border-b data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none font-['Inter'] font-medium text-sm leading-[21px] bg-transparent shadow-none"
+                className="inline-flex items-center justify-center p-2.5 border-b border-[#383838b2] data-[state=active]:border-b data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none font-medium text-sm leading-[21px] bg-transparent shadow-none"
               >
                 Fields
               </TabsTrigger>
               <TabsTrigger
                 value="documents"
-                className="inline-flex items-center justify-center p-2.5 data-[state=active]:border-b data-[state=active]:border-[#383838b2] data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none font-['Inter'] font-medium text-sm leading-[21px] bg-transparent shadow-none"
+                className="inline-flex items-center justify-center p-2.5 data-[state=active]:border-b data-[state=active]:border-[#383838b2] data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none font-medium text-sm leading-[21px] bg-transparent shadow-none"
               >
                 Documents
               </TabsTrigger>
@@ -91,7 +91,7 @@ export const FieldSelectionCard = ({
                 <div className="flex flex-col gap-7">
                   {/* Signer Section */}
                   <div className="flex flex-col items-start gap-2 w-full">
-                    <div className="font-['Inter'] font-medium text-[#383838] text-sm leading-[21px]">
+                    <div className="font-medium text-[#383838] text-sm leading-[21px]">
                       Signer
                     </div>
                     <Select>
@@ -104,7 +104,7 @@ export const FieldSelectionCard = ({
                           </Avatar>
                           <SelectValue
                             placeholder="Chioma Ike"
-                            className="font-['Inter'] font-normal text-[#383838b2] text-sm leading-[21px]"
+                            className="font-normal text-[#383838b2] text-sm leading-[21px]"
                           />
                         </div>
                       </SelectTrigger>
@@ -113,7 +113,7 @@ export const FieldSelectionCard = ({
 
                   {/* Signature Field Section */}
                   <div className="flex flex-col items-start gap-3 w-full">
-                    <div className="font-['Inter'] font-medium text-[#383838] text-sm leading-[21px]">
+                    <div className="font-medium text-[#383838] text-sm leading-[21px]">
                       Signature field
                     </div>
                     <div 
@@ -125,7 +125,7 @@ export const FieldSelectionCard = ({
                       onDragStart={(e) => handleDragStart(e, "signature")}
                     >
                       <Edit className="w-5 h-5 text-[#38383899]" />
-                      <div className="font-['Inter'] font-medium text-[#38383899] text-sm leading-[21px]">
+                      <div className="font-medium text-[#38383899] text-sm leading-[21px]">
                         Signature
                       </div>
                     </div>
@@ -133,7 +133,7 @@ export const FieldSelectionCard = ({
 
                   {/* Auto-fill Fields Section */}
                   <div className="flex flex-col items-start gap-3 w-full">
-                    <div className="font-['Inter'] font-medium text-[#383838] text-sm leading-[21px]">
+                    <div className="font-medium text-[#383838] text-sm leading-[21px]">
                       Auto-fill fields
                     </div>
                     <div className="flex flex-col items-start gap-4 w-full">
@@ -148,7 +148,7 @@ export const FieldSelectionCard = ({
                           onDragStart={(e) => handleDragStart(e, field.type)}
                         >
                           {field.icon}
-                          <div className="font-['Inter'] font-medium text-[#38383899] text-sm leading-[21px]">
+                          <div className="font-medium text-[#38383899] text-sm leading-[21px]">
                             {field.label}
                           </div>
                         </div>
