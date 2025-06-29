@@ -56,6 +56,11 @@ export const FieldSelectionCard = ({
     }
   };
 
+  const handleDragStart = (e: React.DragEvent, fieldType: string) => {
+    e.dataTransfer.setData("application/json", JSON.stringify({ fieldType }));
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
   return (
     <div className="col-span-3">
       <Card className="flex flex-col w-full h-[500px] items-center gap-5 bg-white rounded-[5px] border">
@@ -64,19 +69,15 @@ export const FieldSelectionCard = ({
             <TabsList className="flex bg-transparent p-0 h-auto">
               <TabsTrigger
                 value="fields"
-                className="inline-flex items-center justify-center p-2.5 border-b border-[#383838b2] data-[state=active]:border-b data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none"
+                className="inline-flex items-center justify-center p-2.5 border-b border-[#383838b2] data-[state=active]:border-b data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none font-['Inter'] font-medium text-sm leading-[21px]"
               >
-                <span className="[font-family:'Inter-Medium',Helvetica] font-medium text-sm leading-[21px]">
-                  Fields
-                </span>
+                Fields
               </TabsTrigger>
               <TabsTrigger
                 value="documents"
-                className="inline-flex items-center justify-center p-2.5 data-[state=active]:border-b data-[state=active]:border-[#383838b2] data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none"
+                className="inline-flex items-center justify-center p-2.5 data-[state=active]:border-b data-[state=active]:border-[#383838b2] data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none font-['Inter'] font-medium text-sm leading-[21px]"
               >
-                <span className="[font-family:'Inter-Medium',Helvetica] font-medium text-sm leading-[21px]">
-                  Documents
-                </span>
+                Documents
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -88,20 +89,20 @@ export const FieldSelectionCard = ({
             <CardContent className="flex flex-col items-start gap-7 p-0">
               {/* Signer Section */}
               <div className="flex flex-col items-start gap-2 self-stretch w-full">
-                <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#383838] text-sm leading-[21px]">
+                <div className="font-['Inter'] font-medium text-[#383838] text-sm leading-[21px]">
                   Signer
                 </div>
                 <Select>
                   <SelectTrigger className="flex items-center gap-5 p-2.5 w-full rounded-[5px] border border-solid border-[#ebebeb]">
                     <div className="inline-flex items-center justify-center gap-1.5">
                       <Avatar className="w-[22px] h-[22px] bg-[#e8eefd] rounded-[49.83px]">
-                        <AvatarFallback className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#1451ea] text-[10.2px] leading-[15.3px]">
+                        <AvatarFallback className="font-['Inter'] font-medium text-[#1451ea] text-[10.2px] leading-[15.3px]">
                           CI
                         </AvatarFallback>
                       </Avatar>
                       <SelectValue
                         placeholder="Chioma Ike"
-                        className="[font-family:'Inter-Regular',Helvetica] font-normal text-[#383838b2] text-sm leading-[21px]"
+                        className="font-['Inter'] font-normal text-[#383838b2] text-sm leading-[21px]"
                       />
                     </div>
                     <ChevronDown className="w-6 h-6 mr-[-5.00px]" />
@@ -111,17 +112,19 @@ export const FieldSelectionCard = ({
 
               {/* Signature Field Section */}
               <div className="flex flex-col items-start gap-3 self-stretch w-full">
-                <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#383838] text-sm leading-[21px]">
+                <div className="font-['Inter'] font-medium text-[#383838] text-sm leading-[21px]">
                   Signature field
                 </div>
                 <div 
-                  className={`flex items-center gap-3.5 px-2.5 py-1.5 self-stretch w-full cursor-pointer hover:bg-gray-50 rounded-[5px] ${
-                    selectedField?.type === "signature" ? "bg-blue-50 border border-blue-200" : ""
+                  className={`flex items-center gap-3.5 px-2.5 py-1.5 self-stretch w-full cursor-pointer rounded-[5px] ${
+                    selectedField?.type === "signature" ? "bg-violet-100 border border-violet-300" : "hover:bg-gray-50"
                   }`}
                   onClick={() => handleFieldClick("signature")}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, "signature")}
                 >
                   <Edit className="w-5 h-5 text-[#38383899]" />
-                  <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#38383899] text-sm leading-[21px]">
+                  <div className="font-['Inter'] font-medium text-[#38383899] text-sm leading-[21px]">
                     Signature
                   </div>
                 </div>
@@ -129,20 +132,22 @@ export const FieldSelectionCard = ({
 
               {/* Auto-fill Fields Section */}
               <div className="flex flex-col items-start gap-3 self-stretch w-full">
-                <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#383838] text-sm leading-[21px]">
+                <div className="font-['Inter'] font-medium text-[#383838] text-sm leading-[21px]">
                   Auto-fill fields
                 </div>
                 <div className="flex flex-col items-start gap-4 self-stretch w-full">
                   {autoFillFields.map((field, index) => (
                     <div
                       key={index}
-                      className={`flex items-center gap-3.5 px-2.5 py-1.5 self-stretch w-full cursor-pointer hover:bg-gray-50 rounded-[5px] ${
-                        selectedField?.type === field.type ? "bg-blue-50 border border-blue-200" : ""
+                      className={`flex items-center gap-3.5 px-2.5 py-1.5 self-stretch w-full cursor-pointer rounded-[5px] ${
+                        selectedField?.type === field.type ? "bg-blue-50 border border-blue-200" : "hover:bg-gray-50"
                       }`}
                       onClick={() => handleFieldClick(field.type)}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, field.type)}
                     >
                       {field.icon}
-                      <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#38383899] text-sm leading-[21px]">
+                      <div className="font-['Inter'] font-medium text-[#38383899] text-sm leading-[21px]">
                         {field.label}
                       </div>
                     </div>
