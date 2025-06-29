@@ -3,7 +3,7 @@ import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { User, Edit, Trash2, ChevronDown } from "lucide-react";
+import { User, Edit, Trash2 } from "lucide-react";
 
 interface Field {
   id: string;
@@ -60,7 +60,6 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
             <Select defaultValue="yes">
               <SelectTrigger className="h-8 text-xs">
                 <SelectValue />
-                <ChevronDown className="w-3 h-3" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="yes">Yes</SelectItem>
@@ -76,7 +75,6 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
             <Select>
               <SelectTrigger className="h-8 text-xs">
                 <SelectValue />
-                <ChevronDown className="w-3 h-3" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="signature">Signature</SelectItem>
@@ -126,7 +124,6 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
           <Select defaultValue="yes">
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
-              <ChevronDown className="w-3 h-3" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="yes">Yes</SelectItem>
@@ -142,7 +139,6 @@ export const PropertyForm = ({ selectedField }: PropertyFormProps) => {
           <Select>
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
-              <ChevronDown className="w-3 h-3" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="default">Default</SelectItem>

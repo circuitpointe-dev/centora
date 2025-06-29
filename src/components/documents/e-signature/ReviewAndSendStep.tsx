@@ -69,28 +69,34 @@ export const ReviewAndSendStep = ({
     <div className="max-w-full mx-auto space-y-4">
       <Card className="rounded-[5px] shadow-none border-none">
         <CardContent className="p-4">
-          {/* Three Column Layout */}
+          {/* Three Column Layout - Adjusted widths */}
           <div className="grid grid-cols-12 gap-3 h-[500px] mb-4">
-            {/* Selection Column */}
-            <FieldSelectionCard
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              fieldTypes={fieldTypes}
-              selectedField={selectedField}
-              onFieldSelect={setSelectedField}
-            />
+            {/* Selection Column - Reduced from 3 to 2 */}
+            <div className="col-span-2">
+              <FieldSelectionCard
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                fieldTypes={fieldTypes}
+                selectedField={selectedField}
+                onFieldSelect={setSelectedField}
+              />
+            </div>
 
-            {/* Signing Column (Canvas) */}
-            <DocumentCanvas />
+            {/* Signing Column (Canvas) - Increased from 6 to 8 */}
+            <div className="col-span-8">
+              <DocumentCanvas />
+            </div>
 
-            {/* Properties Column */}
-            <PropertyCard selectedField={selectedField} />
+            {/* Properties Column - Reduced from 3 to 2 */}
+            <div className="col-span-2">
+              <PropertyCard selectedField={selectedField} />
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Navigation Buttons - Moved outside the cards */}
-    <div className="flex items-center justify-center gap-6">
+      <div className="flex items-center justify-center gap-6">
         <Button
           variant="outline"
           onClick={onBack}
