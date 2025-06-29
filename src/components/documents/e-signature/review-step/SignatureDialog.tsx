@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Pen, Type, Upload, X } from "lucide-react";
+import { Pen, Type, Upload } from "lucide-react";
 
 interface SignatureDialogProps {
   open: boolean;
@@ -23,24 +23,150 @@ export const SignatureDialog = ({ open, onOpenChange, onSave }: SignatureDialogP
   const [activeTab, setActiveTab] = useState("draw");
   const [typedSignature, setTypedSignature] = useState("");
   const [isDrawing, setIsDrawing] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [lastPoint, setLastPoint] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set up canvas
+    canvas.width = canvas.offsetWidth;
+    canvas.height = 180;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
+  }, [open]);
+
+  const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  };
+
+  const getTouchPos = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+  };
+
+  const startDrawing = (point: { x: number; y: number }) => {
+    setIsDrawing(true);
+    setLastPoint(point);
+  };
+
+  const draw = (currentPoint: { x: number; y: number }) => {
+    if (!isDrawing || !lastPoint || !canvasRef.current) return;
+
+    const ctx = canvasRef.current.getContext('2d');
+    if (!ctx) return;
+
+    ctx.beginPath();
+    ctx.moveTo(lastPoint.x, lastPoint.y);
+    ctx.lineTo(currentPoint.x, currentPoint.y);
+    ctx.stroke();
+    
+    setLastPoint(currentPoint);
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    setLastPoint(null);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const point = getMousePos(e);
+    startDrawing(point);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    if (isDrawing) {
+      const point = getMousePos(e);
+      draw(point);
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    stopDrawing();
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const point = getTouchPos(e);
+    startDrawing(point);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    if (isDrawing) {
+      const point = getTouchPos(e);
+      draw(point);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    stopDrawing();
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+      setUploadedFile(file);
+    }
+  };
 
   const handleSave = () => {
     if (activeTab === "type" && typedSignature) {
       onSave({ type: "typed", data: typedSignature });
-    } else if (activeTab === "draw") {
-      onSave({ type: "drawn", data: "signature_drawn" });
-    } else if (activeTab === "upload") {
-      onSave({ type: "uploaded", data: "signature_uploaded" });
+    } else if (activeTab === "draw" && canvasRef.current) {
+      const dataURL = canvasRef.current.toDataURL();
+      onSave({ type: "drawn", data: dataURL });
+    } else if (activeTab === "upload" && uploadedFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        onSave({ type: "uploaded", data: reader.result as string });
+      };
+      reader.readAsDataURL(uploadedFile);
+      return;
     }
     onOpenChange(false);
   };
 
-  const handleCanvasMouseDown = () => {
-    setIsDrawing(true);
-  };
-
-  const handleCanvasMouseUp = () => {
-    setIsDrawing(false);
+  const canSave = () => {
+    if (activeTab === "type") return typedSignature.trim() !== "";
+    if (activeTab === "draw") return true; // Allow saving even empty canvas
+    if (activeTab === "upload") return uploadedFile !== null;
+    return false;
   };
 
   return (
@@ -51,38 +177,55 @@ export const SignatureDialog = ({ open, onOpenChange, onSave }: SignatureDialogP
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-100">
-            <TabsTrigger value="draw" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-3 bg-transparent p-0 h-auto border-b border-gray-200">
+            <TabsTrigger 
+              value="draw" 
+              className="flex items-center gap-2 border-b-2 border-transparent data-[state=active]:border-violet-600 data-[state=active]:text-violet-600 rounded-none bg-transparent shadow-none px-4 py-3"
+            >
               <Pen className="w-4 h-4" />
               Draw
             </TabsTrigger>
-            <TabsTrigger value="type" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="type" 
+              className="flex items-center gap-2 border-b-2 border-transparent data-[state=active]:border-violet-600 data-[state=active]:text-violet-600 rounded-none bg-transparent shadow-none px-4 py-3"
+            >
               <Type className="w-4 h-4" />
               Type
             </TabsTrigger>
-            <TabsTrigger value="upload" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="upload" 
+              className="flex items-center gap-2 border-b-2 border-transparent data-[state=active]:border-violet-600 data-[state=active]:text-violet-600 rounded-none bg-transparent shadow-none px-4 py-3"
+            >
               <Upload className="w-4 h-4" />
-              Upload Signature
-            </TabsTrigger>
-            <TabsTrigger value="saved" className="text-gray-500">
-              Saved
+              Upload
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="draw" className="space-y-4">
+          <TabsContent value="draw" className="space-y-4 mt-6">
             <div className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50 min-h-[200px] relative">
               <canvas
-                className="w-full h-[180px] bg-white border border-gray-300 rounded cursor-crosshair"
-                onMouseDown={handleCanvasMouseDown}
-                onMouseUp={handleCanvasMouseUp}
+                ref={canvasRef}
+                className="w-full h-[180px] bg-white border border-gray-300 rounded cursor-crosshair touch-none"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
               />
-              <div className="absolute bottom-2 left-2 text-xs text-gray-500">
-                X
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute bottom-2 right-2 h-6 px-2 text-xs text-gray-500 hover:text-gray-700"
+                onClick={clearCanvas}
+              >
+                Clear
+              </Button>
             </div>
           </TabsContent>
 
-          <TabsContent value="type" className="space-y-4">
+          <TabsContent value="type" className="space-y-4 mt-6">
             <div className="space-y-2">
               <Label htmlFor="signature-text">Type your signature</Label>
               <Input
@@ -103,22 +246,30 @@ export const SignatureDialog = ({ open, onOpenChange, onSave }: SignatureDialogP
             )}
           </TabsContent>
 
-          <TabsContent value="upload" className="space-y-4">
+          <TabsContent value="upload" className="space-y-4 mt-6">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm text-gray-600">
-                Click to upload or drag and drop your signature image
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                PNG, JPG up to 10MB
-              </p>
+              <input
+                type="file"
+                accept="image/png,image/jpeg"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="signature-upload"
+              />
+              <label htmlFor="signature-upload" className="cursor-pointer">
+                <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                <p className="text-sm text-gray-600">
+                  Click to upload your signature image
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  PNG, JPG up to 10MB
+                </p>
+              </label>
             </div>
-          </TabsContent>
-
-          <TabsContent value="saved" className="space-y-4">
-            <div className="text-center py-8 text-gray-500">
-              No saved signatures
-            </div>
+            {uploadedFile && (
+              <div className="text-sm text-gray-600">
+                Selected: {uploadedFile.name}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
@@ -136,10 +287,10 @@ export const SignatureDialog = ({ open, onOpenChange, onSave }: SignatureDialogP
           </Button>
           <Button
             onClick={handleSave}
-            className="bg-gray-600 text-white hover:bg-gray-700"
-            disabled={activeTab === "type" && !typedSignature}
+            className="bg-violet-600 text-white hover:bg-violet-700"
+            disabled={!canSave()}
           >
-            Insert
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>
