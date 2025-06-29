@@ -26,45 +26,6 @@ export const ReviewAndSendStep = ({
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [activeTab, setActiveTab] = useState("fields");
 
-  const fieldTypes: Field[] = [
-    {
-      id: "signer",
-      name: "Signer",
-      type: "signer",
-      icon: <User className="w-4 h-4" />,
-    },
-    {
-      id: "signature",
-      name: "Signature",
-      type: "signature",
-      icon: <Edit className="w-4 h-4" />,
-    },
-    {
-      id: "name",
-      name: "Full Name",
-      type: "name",
-      icon: <User className="w-4 h-4" />,
-    },
-    {
-      id: "date",
-      name: "Date Signed",
-      type: "date",
-      icon: <Calendar className="w-4 h-4" />,
-    },
-    {
-      id: "email",
-      name: "Email",
-      type: "email",
-      icon: <Mail className="w-4 h-4" />,
-    },
-    {
-      id: "text",
-      name: "Text",
-      type: "text",
-      icon: <Type className="w-4 h-4" />,
-    },
-  ];
-
   return (
     <div className="max-w-full mx-auto space-y-4">
       <Card className="rounded-[5px] shadow-none border-none">
