@@ -167,6 +167,8 @@ const ProposalTable: React.FC<{
                 </td>
                 <td className="py-3 pr-2 w-14">
                   <ProposalRowActions
+                    proposalId={row.id}
+                    proposalName={row.name}
                     onEdit={() => handleEdit(row.id)}
                     onDelete={() => handleDelete(row.id)}
                   />

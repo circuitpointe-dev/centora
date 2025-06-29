@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,17 +10,24 @@ import { focusAreasData, getFocusAreaColor } from "@/data/focusAreaData";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from "@/components/ui/side-dialog";
 import { FocusAreaForm } from "./FocusAreaForm";
-import { FocusArea } from "@/types/donor";
+import { FocusArea, Donor } from "@/types/donor";
 import { useToast } from "@/hooks/use-toast";
 
 interface NewDonorFormProps {
   onSubmit: (donorData: any) => void;
   onCancel: () => void;
+  initialData?: Donor;
+  isEditing?: boolean;
 }
 
-export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }) => {
+export const NewDonorForm: React.FC<NewDonorFormProps> = ({ 
+  onSubmit, 
+  onCancel, 
+  initialData,
+  isEditing = false 
+}) => {
   const [formData, setFormData] = useState({
-    organization: "",
+    organization: initialData?.name || "",
     affiliation: "",
     organizationUrl: "",
     fundingStartDate: "",
@@ -29,11 +35,19 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
     note: "",
   });
 
-  const [contacts, setContacts] = useState<ContactPerson[]>([
-    { id: "1", fullName: "", email: "", phone: "" }
-  ]);
+  const [contacts, setContacts] = useState<ContactPerson[]>(
+    initialData ? [{
+      id: "1",
+      fullName: "",
+      email: initialData.contactInfo.email || "",
+      phone: initialData.contactInfo.phone || ""
+    }] : [{ id: "1", fullName: "", email: "", phone: "" }]
+  );
 
-  const [selectedFocusAreas, setSelectedFocusAreas] = useState<string[]>([]);
+  const [selectedFocusAreas, setSelectedFocusAreas] = useState<string[]>(
+    initialData?.interestTags || []
+  );
+
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; contactId: string }>({
     show: false,
@@ -230,29 +244,28 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
             </SideDialog>
           </div>
           <div className="flex flex-wrap items-start gap-2">
-  {focusAreasData.map(area => {
-    const isSelected = selectedFocusAreas.includes(area.name)
-    return (
-      <Badge
-        key={area.id}
-        onClick={() => toggleFocusArea(area.name)}
-        className={`
-          inline-block
-          w
-          text-center
-          transition-colors 
-          ${ isSelected ? 'bg-blue-50' : 'hover:bg-gray-50' }
-          ${ getFocusAreaColor(area.name) } 
-          text-xs 
-          rounded-sm
-        `}
-      >
-        {area.name}
-      </Badge>
-    )
-  })}
-</div>
-
+            {focusAreasData.map(area => {
+              const isSelected = selectedFocusAreas.includes(area.name)
+              return (
+                <Badge
+                  key={area.id}
+                  onClick={() => toggleFocusArea(area.name)}
+                  className={`
+                    inline-block
+                    w
+                    text-center
+                    transition-colors 
+                    ${ isSelected ? 'bg-blue-50' : 'hover:bg-gray-50' }
+                    ${ getFocusAreaColor(area.name) } 
+                    text-xs 
+                    rounded-sm
+                  `}
+                >
+                  {area.name}
+                </Badge>
+              )
+            })}
+          </div>
         </div>
 
         {/* Funding Dates */}
@@ -343,7 +356,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({ onSubmit, onCancel }
             Cancel
           </Button>
           <Button type="submit">
-            Create Donor
+            {isEditing ? 'Update Donor' : 'Create Donor'}
           </Button>
         </div>
       </form>
