@@ -90,7 +90,7 @@ export const ReviewAndSendStep = ({
       </Card>
 
       {/* Navigation Buttons - Moved outside the cards */}
-      <div className="flex items-center justify-center gap-4 pt-2 border-t">
+      <div className="flex items-center justify-center gap-4 pt-2">
         <Button
           variant="outline"
           onClick={onBack}
