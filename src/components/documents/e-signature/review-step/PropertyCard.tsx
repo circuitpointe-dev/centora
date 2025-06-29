@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText } from "lucide-react";
+import { Settings } from "lucide-react";
 import { PropertyForm } from "./PropertyForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -20,13 +20,13 @@ export const PropertyCard = ({ selectedField }: PropertyCardProps) => {
   const renderContent = () => {
     if (!selectedField) {
       return (
-        <div className="text-center py-8">
-          <FileText className="w-8 h-8 text-gray-400 mx-auto mb-3" />
-          <h4 className="text-xs font-medium text-gray-600 mb-1">
-            Nothing Selected
+        <div className="flex flex-col items-center justify-center h-full text-center py-8">
+          <Settings className="w-12 h-12 text-gray-300 mb-4" />
+          <h4 className="text-sm font-medium text-gray-600 mb-2">
+            Properties Panel
           </h4>
-          <p className="text-xs text-gray-500">
-            Select a field to make changes
+          <p className="text-xs text-gray-500 max-w-[200px]">
+            Select a field from the left panel to configure its properties and settings
           </p>
         </div>
       );
@@ -37,8 +37,8 @@ export const PropertyCard = ({ selectedField }: PropertyCardProps) => {
 
   return (
     <div className="col-span-3">
-      <Card className="h-[500px] rounded-[5px] shadow-sm border">
-        <CardContent className="p-3 h-full">
+      <Card className="h-[500px] rounded-[5px] shadow-sm border bg-white">
+        <CardContent className="p-4 h-full">
           <ScrollArea className="h-full">
             {renderContent()}
           </ScrollArea>

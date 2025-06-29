@@ -7,10 +7,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export const DocumentCanvas = () => {
   return (
     <div className="col-span-6">
-      <Card className="h-[500px] rounded-[5px] shadow-sm border">
+      <Card className="h-[500px] rounded-[5px] shadow-sm border bg-white">
         <CardContent className="p-4 h-full">
           <ScrollArea className="h-full">
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+            <div className="flex flex-col items-center justify-center h-full min-h-[400px] bg-gray-50 rounded border-2 border-dashed border-gray-300">
               <FileText className="w-16 h-16 text-gray-300 mb-4" />
               <h3 className="text-lg font-medium text-gray-600 mb-2">
                 Document Canvas
@@ -19,6 +19,9 @@ export const DocumentCanvas = () => {
                 Your document will appear here. You can drag and drop signature fields, 
                 text fields, and other elements onto the document.
               </p>
+              <div className="mt-4 text-xs text-gray-400">
+                Drop fields here from the left panel
+              </div>
             </div>
           </ScrollArea>
         </CardContent>
