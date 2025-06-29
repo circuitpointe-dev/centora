@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Settings } from "lucide-react";
@@ -25,8 +24,9 @@ export const PropertyCard = ({ selectedField }: PropertyCardProps) => {
           <h4 className="text-sm font-medium text-gray-600 mb-2">
             Properties Panel
           </h4>
-          <p className="text-xs text-gray-500 max-w-[200px]">
-            Select a field from the left panel to configure its properties and settings
+          <p className="text-sm text-gray-500 max-w-[200px] leading-[21px]">
+            Select a field from the left panel to configure its properties and
+            settings
           </p>
         </div>
       );
@@ -37,12 +37,10 @@ export const PropertyCard = ({ selectedField }: PropertyCardProps) => {
 
   return (
     <div className="col-span-3">
-      <Card className="h-[500px] rounded-[5px] shadow-sm border bg-white">
-        <CardContent className="p-4 h-full">
-          <ScrollArea className="h-full">
-            {renderContent()}
-          </ScrollArea>
-        </CardContent>
+      <Card className="h-[500px] bg-white rounded-[5px] border">
+        <div className="flex flex-col h-full p-4">
+          <ScrollArea className="h-full">{renderContent()}</ScrollArea>
+        </div>
       </Card>
     </div>
   );
