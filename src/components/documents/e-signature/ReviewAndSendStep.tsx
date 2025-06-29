@@ -90,11 +90,11 @@ export const ReviewAndSendStep = ({
       </Card>
 
       {/* Navigation Buttons - Moved outside the cards */}
-      <div className="flex items-center justify-center gap-4">
+    <div className="flex items-center gap-6">
         <Button
           variant="outline"
           onClick={onBack}
-          className="gap-2 px-4 py-2 h-auto border border-gray-300 rounded-[5px] text-xs font-medium text-gray-600 hover:bg-gray-50"
+          className="gap-2 px-4 py-2 h-auto border border-gray-300 rounded-[5px] text-sm font-medium text-gray-600 hover:bg-gray-50"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
@@ -102,7 +102,7 @@ export const ReviewAndSendStep = ({
 
         <Button
           onClick={onSend}
-          className="gap-2 px-6 py-2 h-auto rounded-[5px] text-xs font-medium bg-violet-600 hover:bg-violet-700 text-white"
+          className="gap-2 px-6 py-2 h-auto rounded-[5px] text-sm font-medium bg-violet-600 hover:bg-violet-700 text-white"
         >
           Send For Signature
         </Button>
