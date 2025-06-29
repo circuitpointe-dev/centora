@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Search, FileText, Upload, Mail } from 'lucide-react';
+import { Search, FileText, Upload, Mail, MoreHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { SendExpiryReminderDialog } from './expiry-monitor/SendExpiryReminderDialog';
 import { ExpiryConfirmationDialog } from './expiry-monitor/ExpiryConfirmationDialog';
@@ -157,6 +157,11 @@ export const DocumentExpiryMonitor = () => {
     setShowReminderDialog(true);
   };
 
+  const handleUploadDocument = (documentId: string) => {
+    // Handle upload logic
+    console.log('Upload document for:', documentId);
+  };
+
   const handleReminderSent = () => {
     setShowReminderDialog(false);
     setShowConfirmationDialog(true);
@@ -246,23 +251,37 @@ export const DocumentExpiryMonitor = () => {
                     <TableCell className="text-gray-600">{document.expiryDate}</TableCell>
                     <TableCell>{getStatusBadge(document.status)}</TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-gray-500 hover:text-gray-700 p-1 h-auto"
-                          onClick={() => handleSendReminder(document)}
-                        >
-                          <Mail className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-gray-500 hover:text-gray-700 p-1 h-auto"
-                        >
-                          <Upload className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-500 hover:text-gray-700 p-1 h-auto"
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56 bg-white">
+                          <DropdownMenuItem
+                            onClick={() => handleSendReminder(document)}
+                            className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-gray-100"
+                          >
+                            <Mail className="w-4 h-4" />
+                            <span className="text-[#38383899] text-sm font-normal">
+                              Send Email
+                            </span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleUploadDocument(document.id)}
+                            className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-gray-100"
+                          >
+                            <Upload className="w-4 h-4" />
+                            <span className="text-[#38383899] text-sm font-normal">
+                              Upload
+                            </span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}

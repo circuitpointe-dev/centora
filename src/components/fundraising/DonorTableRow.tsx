@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Donor } from "@/types/donor";
 import { getFocusAreaColor } from "@/data/focusAreaData";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
@@ -82,16 +83,37 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
           </div>
         </TableCell>
         <TableCell className="text-right">
-          <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-            <EditDonorDialog donor={donor} />
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-red-600 hover:text-red-700"
-              onClick={handleDeleteClick}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+          <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-gray-500 hover:text-gray-700 p-1 h-auto"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-white">
+                <EditDonorDialog donor={donor} trigger={
+                  <DropdownMenuItem className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-gray-100">
+                    <Edit className="w-4 h-4" />
+                    <span className="text-[#38383899] text-sm font-normal">
+                      Edit
+                    </span>
+                  </DropdownMenuItem>
+                } />
+                <DropdownMenuItem
+                  onClick={handleDeleteClick}
+                  className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-gray-100"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span className="text-[#38383899] text-sm font-normal">
+                    Delete
+                  </span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </TableCell>
       </TableRow>
