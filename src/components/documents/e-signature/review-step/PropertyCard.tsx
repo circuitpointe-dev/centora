@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import { PropertyForm } from "./PropertyForm";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Field {
   id: string;
@@ -36,9 +37,11 @@ export const PropertyCard = ({ selectedField }: PropertyCardProps) => {
 
   return (
     <div className="col-span-3">
-      <Card className="h-full rounded-[5px] shadow-sm border">
-        <CardContent className="p-3">
-          {renderContent()}
+      <Card className="h-[500px] rounded-[5px] shadow-sm border">
+        <CardContent className="p-3 h-full">
+          <ScrollArea className="h-full">
+            {renderContent()}
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>

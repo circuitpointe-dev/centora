@@ -2,8 +2,11 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { User, ChevronDown } from "lucide-react";
-import { FieldItem } from "./FieldItem";
+import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { User, Calendar, Mail, ChevronDown, Edit, Type } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Field {
   id: string;
@@ -27,82 +30,136 @@ export const FieldSelectionCard = ({
   selectedField,
   onFieldSelect,
 }: FieldSelectionCardProps) => {
+  const autoFillFields = [
+    { icon: <User className="w-5 h-5 text-[#38383899]" />, label: "Full Name", type: "name" },
+    {
+      icon: <Calendar className="w-4 h-4 text-[#38383899]" />,
+      label: "Date Signed",
+      type: "date"
+    },
+    {
+      icon: <Mail className="w-[18px] h-[18px] text-[#38383899]" />,
+      label: "Email",
+      type: "email"
+    },
+    {
+      icon: <Type className="w-5 h-5 text-[#38383899]" />,
+      label: "Text",
+      type: "text"
+    },
+  ];
+
+  const handleFieldClick = (fieldType: string) => {
+    const field = fieldTypes.find(f => f.type === fieldType);
+    if (field) {
+      onFieldSelect(field);
+    }
+  };
+
   return (
     <div className="col-span-3">
-      <Card className="h-full rounded-[5px] shadow-sm border">
-        <CardContent className="p-3">
-          <Tabs
-            value={activeTab}
-            onValueChange={onTabChange}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-2 mb-3 h-8 bg-transparent border border-gray-300 rounded-[5px] p-0">
-              <TabsTrigger 
-                value="fields" 
-                className="text-xs data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-gray-300 data-[state=active]:rounded-[4px] data-[state=active]:mx-[1px] data-[state=active]:my-[1px] text-gray-600"
+      <Card className="flex flex-col w-full h-[500px] items-center gap-5 bg-white rounded-[5px] border">
+        <div className="flex flex-col items-start gap-px px-2 py-0 relative self-stretch w-full">
+          <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
+            <TabsList className="flex bg-transparent p-0 h-auto">
+              <TabsTrigger
+                value="fields"
+                className="inline-flex items-center justify-center p-2.5 border-b border-[#383838b2] data-[state=active]:border-b data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none"
               >
-                Fields
+                <span className="[font-family:'Inter-Medium',Helvetica] font-medium text-sm leading-[21px]">
+                  Fields
+                </span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="documents" 
-                className="text-xs data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-none data-[state=active]:border data-[state=active]:border-gray-300 data-[state=active]:rounded-[4px] data-[state=active]:mx-[1px] data-[state=active]:my-[1px] text-gray-600"
+              <TabsTrigger
+                value="documents"
+                className="inline-flex items-center justify-center p-2.5 data-[state=active]:border-b data-[state=active]:border-[#383838b2] data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none"
               >
-                Documents
+                <span className="[font-family:'Inter-Medium',Helvetica] font-medium text-sm leading-[21px]">
+                  Documents
+                </span>
               </TabsTrigger>
             </TabsList>
+          </Tabs>
+          <Separator className="w-full h-px" />
+        </div>
 
-            <TabsContent value="fields" className="space-y-3 mt-0">
+        <TabsContent value="fields" className="flex-1 w-full px-4">
+          <ScrollArea className="h-full">
+            <CardContent className="flex flex-col items-start gap-7 p-0">
               {/* Signer Section */}
-              <div className="space-y-1">
-                <h4 className="text-xs font-semibold text-gray-900">
+              <div className="flex flex-col items-start gap-2 self-stretch w-full">
+                <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#383838] text-sm leading-[21px]">
                   Signer
-                </h4>
-                <div className="flex items-center gap-2 p-2 rounded-[5px] cursor-pointer hover:bg-gray-50">
-                  <User className="w-3 h-3 text-blue-600" />
-                  <span className="text-xs text-gray-700">
-                    Chioma Ike
-                  </span>
-                  <ChevronDown className="w-3 h-3 text-gray-400 ml-auto" />
                 </div>
+                <Select>
+                  <SelectTrigger className="flex items-center gap-5 p-2.5 w-full rounded-[5px] border border-solid border-[#ebebeb]">
+                    <div className="inline-flex items-center justify-center gap-1.5">
+                      <Avatar className="w-[22px] h-[22px] bg-[#e8eefd] rounded-[49.83px]">
+                        <AvatarFallback className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#1451ea] text-[10.2px] leading-[15.3px]">
+                          CI
+                        </AvatarFallback>
+                      </Avatar>
+                      <SelectValue
+                        placeholder="Chioma Ike"
+                        className="[font-family:'Inter-Regular',Helvetica] font-normal text-[#383838b2] text-sm leading-[21px]"
+                      />
+                    </div>
+                    <ChevronDown className="w-6 h-6 mr-[-5.00px]" />
+                  </SelectTrigger>
+                </Select>
               </div>
 
               {/* Signature Field Section */}
-              <div className="space-y-1">
-                <h4 className="text-xs font-semibold text-gray-900">
+              <div className="flex flex-col items-start gap-3 self-stretch w-full">
+                <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#383838] text-sm leading-[21px]">
                   Signature field
-                </h4>
-                <FieldItem
-                  field={fieldTypes[1]}
-                  isSelected={selectedField?.type === "signature"}
-                  onClick={() => onFieldSelect(fieldTypes[1])}
-                />
+                </div>
+                <div 
+                  className={`flex items-center gap-3.5 px-2.5 py-1.5 self-stretch w-full cursor-pointer hover:bg-gray-50 rounded-[5px] ${
+                    selectedField?.type === "signature" ? "bg-blue-50 border border-blue-200" : ""
+                  }`}
+                  onClick={() => handleFieldClick("signature")}
+                >
+                  <Edit className="w-5 h-5 text-[#38383899]" />
+                  <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#38383899] text-sm leading-[21px]">
+                    Signature
+                  </div>
+                </div>
               </div>
 
               {/* Auto-fill Fields Section */}
-              <div className="space-y-1">
-                <h4 className="text-xs font-semibold text-gray-900">
+              <div className="flex flex-col items-start gap-3 self-stretch w-full">
+                <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#383838] text-sm leading-[21px]">
                   Auto-fill fields
-                </h4>
-                <div className="space-y-1">
-                  {fieldTypes.slice(2).map((field) => (
-                    <FieldItem
-                      key={field.id}
-                      field={field}
-                      isSelected={selectedField?.id === field.id}
-                      onClick={() => onFieldSelect(field)}
-                    />
+                </div>
+                <div className="flex flex-col items-start gap-4 self-stretch w-full">
+                  {autoFillFields.map((field, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center gap-3.5 px-2.5 py-1.5 self-stretch w-full cursor-pointer hover:bg-gray-50 rounded-[5px] ${
+                        selectedField?.type === field.type ? "bg-blue-50 border border-blue-200" : ""
+                      }`}
+                      onClick={() => handleFieldClick(field.type)}
+                    >
+                      {field.icon}
+                      <div className="[font-family:'Inter-Medium',Helvetica] font-medium text-[#38383899] text-sm leading-[21px]">
+                        {field.label}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
-            </TabsContent>
+            </CardContent>
+          </ScrollArea>
+        </TabsContent>
 
-            <TabsContent value="documents" className="mt-0">
-              <div className="text-center text-gray-500 text-xs py-8">
-                Document preview will appear here
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
+        <TabsContent value="documents" className="flex-1 w-full px-4">
+          <ScrollArea className="h-full">
+            <div className="text-center text-gray-500 text-xs py-8">
+              Document preview will appear here
+            </div>
+          </ScrollArea>
+        </TabsContent>
       </Card>
     </div>
   );
