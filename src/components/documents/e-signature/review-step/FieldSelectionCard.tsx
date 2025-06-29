@@ -94,7 +94,7 @@ export const FieldSelectionCard = ({
                     <div className="font-medium text-[#383838] text-sm leading-[21px]">
                       Signer
                     </div>
-                    <Select>
+                    <Select disabled>
                       <SelectTrigger className="flex items-center gap-2 p-2.5 w-full rounded-[5px] border border-solid border-[#ebebeb]">
                         <div className="inline-flex items-center justify-center gap-1.5">
                           <Avatar className="w-[22px] h-[22px] bg-[#e8eefd] rounded-[49.83px]">
