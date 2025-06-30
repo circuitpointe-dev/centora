@@ -6,16 +6,8 @@ import { Upload, FileText, X } from "lucide-react";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Multiple worker fallback options for better reliability
-try {
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.mjs',
-    import.meta.url,
-  ).toString();
-} catch (e) {
-  // Fallback to CDN worker
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-}
+// Set the worker source to match the installed version
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
 
 interface DocumentCanvasProps {
   fileUrl?: string;
@@ -83,6 +75,7 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl }) => {
     });
     setError(null);
     setLoading(true);
+    setPageNumber(1);
     
     // Reset the file input
     event.target.value = '';
@@ -99,7 +92,7 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl }) => {
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     console.log("PDF loaded successfully with", numPages, "pages");
-    console.log("File URL used:", currentFileUrl);
+    console.log("PDF.js version:", pdfjs.version);
     setNumPages(numPages);
     setPageNumber(1);
     setLoading(false);
@@ -108,8 +101,7 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl }) => {
 
   function onDocumentLoadError(error: Error) {
     console.error("PDF load error:", error);
-    console.error("File URL that failed:", currentFileUrl);
-    console.error("Error details:", error.message, error.stack);
+    console.error("PDF.js version:", pdfjs.version);
     
     let errorMessage = "Failed to load PDF file.";
     
@@ -119,6 +111,8 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl }) => {
       errorMessage = "No PDF file was provided or the file is empty.";
     } else if (error.message.includes('UnexpectedResponseException')) {
       errorMessage = "Unable to load the PDF file. Please try a different file.";
+    } else if (error.message.includes('version')) {
+      errorMessage = "PDF library version conflict. Please refresh the page and try again.";
     }
     
     setError(errorMessage);
@@ -210,7 +204,7 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl }) => {
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-green-600" />
             <span className="text-sm font-medium text-green-800">{uploadedFile.name}</span>
-            <span className="text-xs text-green-600">• Loaded successfully</span>
+            <span className="text-xs text-green-600">• PDF loaded successfully</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
