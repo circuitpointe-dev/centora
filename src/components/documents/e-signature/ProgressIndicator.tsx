@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface ProgressStep {
@@ -13,7 +12,7 @@ interface ProgressIndicatorProps {
 
 export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ steps }) => {
   return (
-    <div className="w-[600px] h-[68px] relative mx-auto">
+    <div className="w-[828px] h-[68px] relative mx-auto">
       {/* Progress steps without connecting lines */}
       <div className="flex justify-between items-center h-full">
         {steps.map((step) => (
