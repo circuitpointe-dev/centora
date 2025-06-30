@@ -47,6 +47,12 @@ export const RequestSignatureWizard = () => {
     setShowSendDialog(true);
   };
 
+  const handleDocumentSelect = (document: Document) => {
+    setSelectedDocument(document);
+    // Clear uploaded file when selecting from documents
+    setUploadedFile(null);
+  };
+
   const handleSendToRecipients = (recipients: Recipient[], message: string) => {
     console.log("Sending document for signature", {
       recipients,
@@ -75,6 +81,7 @@ export const RequestSignatureWizard = () => {
         onSendForSignature={handleSendForSignature}
         selectedDocument={selectedDocument}
         uploadedFile={uploadedFile}
+        onDocumentSelect={handleDocumentSelect}
       />
 
       {/* Send To Recipients Dialog */}
