@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User, Calendar, Mail, Edit, Type } from "lucide-react";
@@ -13,21 +14,69 @@ interface Field {
   icon: React.ReactNode;
 }
 
+interface Document {
+  id: string;
+  fileName: string;
+  category: string;
+  fileSize: string;
+  addedTime: string;
+  owner: {
+    name: string;
+    avatar: string;
+  };
+  tags: Array<{
+    name: string;
+    bgColor: string;
+    textColor: string;
+  }>;
+}
+
+interface UploadedFile {
+  file: File;
+  id: string;
+}
+
 interface ReviewAndSendStepProps {
   onBack: () => void;
   onSend: () => void;
+  selectedDocument?: Document | null;
+  uploadedFile?: UploadedFile | null;
 }
-
-// TODO: Replace this with the actual File or Blob you want to preview
-const myFile = new Blob([], { type: "application/pdf" }); // Placeholder, replace with your file
-const blobUrl = URL.createObjectURL(myFile);
 
 export const ReviewAndSendStep = ({
   onBack,
   onSend,
+  selectedDocument,
+  uploadedFile,
 }: ReviewAndSendStepProps) => {
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [activeTab, setActiveTab] = useState("fields");
+
+  // Create blob URL for the document
+  const documentUrl = useMemo(() => {
+    if (uploadedFile) {
+      // For uploaded files, create a blob URL from the actual file
+      return URL.createObjectURL(uploadedFile.file);
+    } else if (selectedDocument) {
+      // For selected documents, we would need the actual file data
+      // For now, creating a placeholder - in a real app, you'd fetch the document content
+      console.log("Selected document:", selectedDocument.fileName);
+      // Create a minimal PDF for demonstration
+      const pdfContent = "%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>\nendobj\nxref\n0 4\n0000000000 65535 f \n0000000010 00000 n \n0000000079 00000 n \n0000000173 00000 n \ntrailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n229\n%%EOF";
+      const blob = new Blob([pdfContent], { type: "application/pdf" });
+      return URL.createObjectURL(blob);
+    }
+    return null;
+  }, [uploadedFile, selectedDocument]);
+
+  // Clean up blob URL when component unmounts
+  React.useEffect(() => {
+    return () => {
+      if (documentUrl) {
+        URL.revokeObjectURL(documentUrl);
+      }
+    };
+  }, [documentUrl]);
 
   const fieldTypes: Field[] = [
     {
@@ -68,6 +117,31 @@ export const ReviewAndSendStep = ({
     },
   ];
 
+  if (!documentUrl) {
+    return (
+      <div className="max-w-full mx-auto space-y-4">
+        <Card className="rounded-[5px] shadow-none border-none">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-center h-[500px]">
+              <p className="text-gray-500">No document selected for review</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <div className="flex items-center justify-center gap-6">
+          <Button
+            variant="outline"
+            onClick={onBack}
+            className="gap-2 px-4 py-2 h-auto border border-gray-300 rounded-[5px] text-sm font-medium text-gray-600 hover:bg-gray-50"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-full mx-auto space-y-4">
       <Card className="rounded-[5px] shadow-none border-none">
@@ -87,7 +161,7 @@ export const ReviewAndSendStep = ({
 
             {/* Signing Column (Canvas) - Increased from 6 to 8 */}
             <div className="col-span-6">
-              <DocumentCanvas fileUrl={blobUrl} />
+              <DocumentCanvas fileUrl={documentUrl} />
             </div>
 
             {/* Properties Column - Reduced from 3 to 2 */}

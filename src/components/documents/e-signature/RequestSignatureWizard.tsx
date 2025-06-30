@@ -118,6 +118,8 @@ export const RequestSignatureWizard = () => {
         <ReviewAndSendStep
           onBack={handleBackToStep2}
           onSend={handleSendForSignature}
+          selectedDocument={selectedDocument}
+          uploadedFile={uploadedFile}
         />
       </div>
     );
