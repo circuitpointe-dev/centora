@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,10 @@ interface ReviewAndSendStepProps {
   onBack: () => void;
   onSend: () => void;
 }
+
+// TODO: Replace this with the actual File or Blob you want to preview
+const myFile = new Blob([], { type: "application/pdf" }); // Placeholder, replace with your file
+const blobUrl = URL.createObjectURL(myFile);
 
 export const ReviewAndSendStep = ({
   onBack,
@@ -84,7 +87,7 @@ export const ReviewAndSendStep = ({
 
             {/* Signing Column (Canvas) - Increased from 6 to 8 */}
             <div className="col-span-6">
-              <DocumentCanvas />
+              <DocumentCanvas fileUrl={blobUrl} />
             </div>
 
             {/* Properties Column - Reduced from 3 to 2 */}

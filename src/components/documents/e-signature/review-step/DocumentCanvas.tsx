@@ -1,31 +1,72 @@
+import React, { useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
 
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { FileText } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+// PDF.js worker (adjust path as needed)
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-export const DocumentCanvas = () => {
+interface DocumentCanvasProps {
+  fileUrl: string; // a blob URL or remote URL
+}
+
+export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl }) => {
+  const [numPages, setNumPages] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [scale, setScale] = useState<number>(1.0);
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
+    setNumPages(numPages);
+    setPageNumber(1);
+  }
+
   return (
-    <div className="col-span-6">
-      <Card className="h-[500px] rounded-[5px] shadow-sm border bg-white">
-        <CardContent className="p-4 h-full">
-          <ScrollArea className="h-full">
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px] bg-gray-50 rounded border-2 border-dashed border-gray-300">
-              <FileText className="w-16 h-16 text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">
-                Document Canvas
-              </h3>
-              <p className="text-sm text-gray-500 text-center max-w-md">
-                Your document will appear here. You can drag and drop signature fields, 
-                text fields, and other elements onto the document.
-              </p>
-              <div className="mt-4 text-xs text-gray-400">
-                Drop fields here from the left panel
-              </div>
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+    <div className="flex flex-col">
+      {/* — Toolbar */}
+      <div className="flex justify-between items-center mb-2">
+        {/* Pagination */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
+            className="px-2 py-1 border rounded"
+            disabled={pageNumber <= 1}
+          >
+            ◀
+          </button>
+          <span className="text-sm">
+            {pageNumber} / {numPages}
+          </span>
+          <button
+            onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}
+            className="px-2 py-1 border rounded"
+            disabled={pageNumber >= numPages}
+          >
+            ▶
+          </button>
+        </div>
+
+        {/* Zoom */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setScale((s) => Math.max(0.5, s - 0.25))}
+            className="px-2 py-1 border rounded"
+          >
+            –
+          </button>
+          <span className="text-sm">{Math.round(scale * 100)}%</span>
+          <button
+            onClick={() => setScale((s) => s + 0.25)}
+            className="px-2 py-1 border rounded"
+          >
+            +
+          </button>
+        </div>
+      </div>
+
+      {/* — PDF Render */}
+      <div className="overflow-auto border rounded flex justify-center">
+        <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
+          <Page pageNumber={pageNumber} scale={scale} />
+        </Document>
+      </div>
     </div>
   );
 };
