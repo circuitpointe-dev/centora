@@ -56,15 +56,14 @@ export const ReviewAndSendStep = ({
   const documentUrl = useMemo(() => {
     if (uploadedFile) {
       // For uploaded files, create a blob URL from the actual file
+      console.log("Creating blob URL for uploaded file:", uploadedFile.file.name);
       return URL.createObjectURL(uploadedFile.file);
     } else if (selectedDocument) {
       // For selected documents, we would need the actual file data
       // For now, creating a placeholder - in a real app, you'd fetch the document content
       console.log("Selected document:", selectedDocument.fileName);
-      // Create a minimal PDF for demonstration
-      const pdfContent = "%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>\nendobj\nxref\n0 4\n0000000000 65535 f \n0000000010 00000 n \n0000000079 00000 n \n0000000173 00000 n \ntrailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n229\n%%EOF";
-      const blob = new Blob([pdfContent], { type: "application/pdf" });
-      return URL.createObjectURL(blob);
+      // Return null to let DocumentCanvas handle its own upload
+      return null;
     }
     return null;
   }, [uploadedFile, selectedDocument]);
@@ -72,11 +71,11 @@ export const ReviewAndSendStep = ({
   // Clean up blob URL when component unmounts
   React.useEffect(() => {
     return () => {
-      if (documentUrl) {
+      if (documentUrl && uploadedFile) {
         URL.revokeObjectURL(documentUrl);
       }
     };
-  }, [documentUrl]);
+  }, [documentUrl, uploadedFile]);
 
   const fieldTypes: Field[] = [
     {
@@ -117,31 +116,6 @@ export const ReviewAndSendStep = ({
     },
   ];
 
-  if (!documentUrl) {
-    return (
-      <div className="max-w-full mx-auto space-y-4">
-        <Card className="rounded-[5px] shadow-none border-none">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-center h-[500px]">
-              <p className="text-gray-500">No document selected for review</p>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <div className="flex items-center justify-center gap-6">
-          <Button
-            variant="outline"
-            onClick={onBack}
-            className="gap-2 px-4 py-2 h-auto border border-gray-300 rounded-[5px] text-sm font-medium text-gray-600 hover:bg-gray-50"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-full mx-auto space-y-4">
       <Card className="rounded-[5px] shadow-none border-none">
@@ -161,7 +135,7 @@ export const ReviewAndSendStep = ({
 
             {/* Signing Column (Canvas) - Increased from 6 to 8 */}
             <div className="col-span-6">
-              <DocumentCanvas fileUrl={documentUrl} />
+              <DocumentCanvas fileUrl={documentUrl || undefined} />
             </div>
 
             {/* Properties Column - Reduced from 3 to 2 */}
