@@ -110,32 +110,32 @@ export const RequestSignatureWizardPage = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           {/* Central Upload Area */}
-          <div className="text-center mb-12">
-            <h2 className="text-xl font-medium text-gray-900 mb-2">
+          <div className="text-center mb-8">
+            <h2 className="text-lg font-medium text-gray-900 mb-1">
               Select Document to Send for Signature
             </h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-sm text-gray-600 mb-6">
               Choose a document from your library or upload a new file to get started
             </p>
 
             {/* File Drop Zone */}
             <Card 
               className={cn(
-                "w-full max-w-2xl mx-auto mb-6 transition-all duration-200",
+                "w-full mx-auto mb-4 transition-all duration-200",
                 isDragOver && "border-violet-300 border-2 border-dashed bg-violet-50"
               )}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
-              <CardContent className="flex flex-col items-center justify-center p-12">
-                <Upload className="w-16 h-16 text-violet-600 mb-6" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <CardContent className="flex flex-col items-center justify-center p-8">
+                <Upload className="w-12 h-12 text-violet-600 mb-4" />
+                <h3 className="text-base font-medium text-gray-900 mb-2">
                   Drag and drop files here
                 </h3>
-                <p className="text-gray-600 mb-6">or</p>
+                <p className="text-gray-600 mb-4">or</p>
                 <div className="relative">
                   <input
                     type="file"
@@ -144,27 +144,27 @@ export const RequestSignatureWizardPage = () => {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx"
                   />
-                  <Button className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] px-8 py-3">
-                    Browse Files
+                  <Button className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] px-6 py-2">
+                    Select PDF file
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500 mt-4">
-                  Supported formats: PDF, DOC, DOCX, TXT, XLSX, PPTX
+                <p className="text-xs text-gray-500 mt-3">
+                  or drop PDF here
                 </p>
               </CardContent>
             </Card>
 
             {/* Alternative Option */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-3 mb-4">
               <div className="flex-1 h-px bg-gray-200"></div>
-              <span className="text-sm text-gray-500">or</span>
+              <span className="text-xs text-gray-500">or</span>
               <div className="flex-1 h-px bg-gray-200"></div>
             </div>
 
             <Button
               variant="outline"
               onClick={() => setShowDocumentDialog(true)}
-              className="border-violet-600 text-violet-600 hover:bg-violet-50 rounded-[5px] px-8 py-3 gap-2"
+              className="border-violet-600 text-violet-600 hover:bg-violet-50 rounded-[5px] px-6 py-2 gap-2"
             >
               <FileText className="w-4 h-4" />
               Select from Document Library
