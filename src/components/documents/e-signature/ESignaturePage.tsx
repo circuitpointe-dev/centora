@@ -1,32 +1,44 @@
 
 import React from 'react';
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { RequestSignatureWizard } from './RequestSignatureWizard';
 import { SignatureTracking } from './SignatureTracking';
 import { DocumentExpiryMonitor } from './DocumentExpiryMonitor';
 import { CertificateOfCompletion } from './CertificateOfCompletion';
 import { SignedDocumentHistory } from './SignedDocumentHistory';
 
 const ESignaturePage = () => {
+  const navigate = useNavigate();
+  
   const navigationTabs = [
-    { id: "request", label: "Request Signature Wizard" },
     { id: "tracking", label: "Signature Tracking" },
     { id: "expiry", label: "Document Expiry Monitor" },
     { id: "certificate", label: "Certificate of Completion" },
     { id: "history", label: "Signed Document History" },
   ];
 
+  const handleRequestSignature = () => {
+    navigate('/dashboard/documents/request-signature');
+  };
+
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-xl font-medium text-gray-900">E-Signature</h1>
+        <Button 
+          onClick={handleRequestSignature}
+          className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Request for Signature
+        </Button>
       </div>
 
       {/* Navigation Tabs */}
-      <Tabs defaultValue="request" className="w-full">
+      <Tabs defaultValue="tracking" className="w-full">
         <TabsList className="bg-transparent h-auto p-0 gap-8 border-b w-full justify-start">
           {navigationTabs.map((tab) => (
             <TabsTrigger
@@ -38,10 +50,6 @@ const ESignaturePage = () => {
             </TabsTrigger>
           ))}
         </TabsList>
-
-        <TabsContent value="request" className="mt-6">
-          <RequestSignatureWizard />
-        </TabsContent>
 
         <TabsContent value="tracking" className="mt-6">
           <SignatureTracking />

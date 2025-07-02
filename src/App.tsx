@@ -16,6 +16,7 @@ import ManualProposalCreationPage from "./components/pages/ManualProposalCreatio
 import GrantViewPage from "./components/grants/view/GrantViewPage";
 import CloseGrantPage from "./components/grants/view/CloseGrantPage";
 import NewGrantPage from "./components/grants/new/NewGrantPage";
+import { RequestSignatureWizardPage } from "./components/documents/e-signature/RequestSignatureWizardPage";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,16 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CloseGrantPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected: Request Signature Wizard */}
+            <Route
+              path="/dashboard/documents/request-signature"
+              element={
+                <ProtectedRoute>
+                  <RequestSignatureWizardPage />
                 </ProtectedRoute>
               }
             />
