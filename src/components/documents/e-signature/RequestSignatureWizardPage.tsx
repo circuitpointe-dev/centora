@@ -171,7 +171,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
                   <X className="w-3 h-3 text-red-500" />
                 </Button>
               </div>
-            ))}
+            )}
           </section>
         )}
 
