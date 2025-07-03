@@ -136,13 +136,11 @@ export const DocumentEditorPage: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-4">
-        <div className="grid grid-cols-12 gap-4 h-[calc(100vh-200px)]">
+      <main className="flex-1 p-4 h-[calc(100vh-120px)]">
+        <div className="grid grid-cols-12 gap-4 h-full">
           {/* Left Column - Field Selection */}
-          <div className="col-span-2">
+          <div className="col-span-2 h-full">
             <FieldSelectionCard
-              activeTab={activeFieldTab}
-              onTabChange={setActiveFieldTab}
               fieldTypes={fieldTypes}
               selectedField={selectedField}
               onFieldSelect={handleFieldSelect}
@@ -150,7 +148,7 @@ export const DocumentEditorPage: React.FC = () => {
           </div>
 
           {/* Center Column - Document Canvas */}
-          <div className="col-span-7">
+          <div className="col-span-7 h-full">
             <div className="bg-white rounded-[5px] border h-full flex flex-col">
               {/* Document Tabs (if multiple documents) */}
               {allDocuments.length > 1 && (
@@ -174,36 +172,21 @@ export const DocumentEditorPage: React.FC = () => {
               )}
 
               {/* Canvas Content */}
-              <div className="flex-1 p-4 overflow-hidden">
+              <div className="flex-1 p-4 overflow-auto">
                 <DocumentCanvas fileUrl={currentFileUrl} />
               </div>
             </div>
           </div>
 
           {/* Right Column - Property Panel */}
-          <PropertyCard selectedField={selectedField} />
+          <PropertyCard 
+            selectedField={selectedField} 
+            onBack={handleBack}
+            onContinue={() => console.log("Continue to recipients")}
+            documentCount={allDocuments.length}
+          />
         </div>
       </main>
-
-      {/* Action Bar */}
-      <div className="border-t bg-white p-4">
-        <div className="flex justify-between items-center">
-          <div className="text-sm text-gray-600">
-            {allDocuments.length} document{allDocuments.length !== 1 ? 's' : ''} loaded
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleBack} className="rounded-[5px]">
-              Back
-            </Button>
-            <Button 
-              className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px]"
-              onClick={() => console.log("Continue to recipients")}
-            >
-              Continue to Recipients
-            </Button>
-          </div>
-        </div>
-      </div>
 
       {/* Exit Confirmation Dialog */}
       <ConfirmationDialog

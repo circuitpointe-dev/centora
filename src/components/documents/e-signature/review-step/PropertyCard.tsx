@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { PropertyForm } from "./PropertyForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,9 +14,12 @@ interface Field {
 
 interface PropertyCardProps {
   selectedField: Field | null;
+  onBack: () => void;
+  onContinue: () => void;
+  documentCount: number;
 }
 
-export const PropertyCard = ({ selectedField }: PropertyCardProps) => {
+export const PropertyCard = ({ selectedField, onBack, onContinue, documentCount }: PropertyCardProps) => {
   const renderContent = () => {
     if (!selectedField) {
       return (
@@ -36,10 +40,30 @@ export const PropertyCard = ({ selectedField }: PropertyCardProps) => {
   };
 
   return (
-    <div className="col-span-3">
-      <Card className="h-full bg-white rounded-[5px] border">
-        <div className="flex flex-col h-full p-4">
+    <div className="col-span-3 h-full">
+      <Card className="h-full bg-white rounded-[5px] border flex flex-col">
+        <div className="flex-1 p-4 overflow-auto">
           <ScrollArea className="h-full">{renderContent()}</ScrollArea>
+        </div>
+        
+        {/* Fixed Action Bar */}
+        <div className="border-t bg-white p-4">
+          <div className="flex flex-col gap-3">
+            <div className="text-xs text-gray-600 text-center">
+              {documentCount} document{documentCount !== 1 ? 's' : ''} loaded
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button variant="outline" onClick={onBack} className="rounded-[5px] w-full">
+                Back
+              </Button>
+              <Button 
+                className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] w-full"
+                onClick={onContinue}
+              >
+                Continue to Recipients
+              </Button>
+            </div>
+          </div>
         </div>
       </Card>
     </div>

@@ -15,16 +15,12 @@ interface Field {
 }
 
 interface FieldSelectionCardProps {
-  activeTab: string;
-  onTabChange: (value: string) => void;
   fieldTypes: Field[];
   selectedField: Field | null;
   onFieldSelect: (field: Field) => void;
 }
 
 export const FieldSelectionCard = ({
-  activeTab,
-  onTabChange,
   fieldTypes,
   selectedField,
   onFieldSelect,
@@ -63,110 +59,83 @@ export const FieldSelectionCard = ({
   return (
     <Card className="h-full bg-white rounded-[5px] border">
       <div className="flex flex-col h-full">
-        {/* Tab Header */}
-        <div className="flex flex-col items-start gap-px px-2 py-0 w-full border-b">
-          <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-            <TabsList className="flex bg-transparent p-0 h-auto w-full justify-start">
-              <TabsTrigger
-                value="fields"
-                className="inline-flex items-center justify-center p-2.5 border-b border-[#383838b2] data-[state=active]:border-b data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none font-medium text-sm leading-[21px] bg-transparent shadow-none"
-              >
-                Fields
-              </TabsTrigger>
-              <TabsTrigger
-                value="documents"
-                className="inline-flex items-center justify-center p-2.5 data-[state=active]:border-b data-[state=active]:border-[#383838b2] data-[state=inactive]:border-b-transparent data-[state=active]:text-black data-[state=inactive]:text-[#38383866] rounded-none font-medium text-sm leading-[21px] bg-transparent shadow-none"
-              >
-                Documents
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        {/* Header */}
+        <div className="flex flex-col items-start gap-px px-4 py-3 w-full border-b">
+          <h3 className="font-medium text-[#383838] text-sm leading-[21px]">
+            Fields
+          </h3>
         </div>
 
-        {/* Tab Content */}
-        <div className="flex-1 overflow-hidden">
-          <Tabs value={activeTab} onValueChange={onTabChange} className="h-full">
-            <TabsContent value="fields" className="h-full mt-0 p-4">
-              <ScrollArea className="h-full">
-                <div className="flex flex-col gap-7">
-                  {/* Signer Section */}
-                  <div className="flex flex-col items-start gap-2 w-full">
-                    <div className="font-medium text-[#383838] text-sm leading-[21px]">
-                      Signer
-                    </div>
-                    <Select disabled>
-                      <SelectTrigger className="flex items-center gap-2 p-2.5 w-full rounded-[5px] border border-solid border-[#ebebeb]">
-                        <div className="inline-flex items-center justify-center gap-1.5">
-                          <Avatar className="w-[22px] h-[22px] bg-[#e8eefd] rounded-[49.83px]">
-                            <AvatarFallback className="font-['Inter'] font-medium text-[#1451ea] text-[10.2px] leading-[15.3px]">
-                              CI
-                            </AvatarFallback>
-                          </Avatar>
-                          <SelectValue
-                            placeholder="Chioma Ike"
-                            className="font-normal text-[#383838b2] text-sm leading-[21px]"
-                          />
-                        </div>
-                      </SelectTrigger>
-                    </Select>
+        {/* Content */}
+        <div className="flex-1 overflow-auto p-4">
+          <div className="flex flex-col gap-6">
+            {/* Signer Section */}
+            <div className="flex flex-col items-start gap-2 w-full">
+              <div className="font-medium text-[#383838] text-sm leading-[21px]">
+                Signer
+              </div>
+              <Select disabled>
+                <SelectTrigger className="flex items-center gap-2 p-2.5 w-full rounded-[5px] border border-solid border-[#ebebeb]">
+                  <div className="inline-flex items-center justify-center gap-1.5">
+                    <Avatar className="w-[22px] h-[22px] bg-[#e8eefd] rounded-[49.83px]">
+                      <AvatarFallback className="font-['Inter'] font-medium text-[#1451ea] text-[10.2px] leading-[15.3px]">
+                        CI
+                      </AvatarFallback>
+                    </Avatar>
+                    <SelectValue
+                      placeholder="Chioma Ike"
+                      className="font-normal text-[#383838b2] text-sm leading-[21px]"
+                    />
                   </div>
+                </SelectTrigger>
+              </Select>
+            </div>
 
-                  {/* Signature Field Section */}
-                  <div className="flex flex-col items-start gap-3 w-full">
-                    <div className="font-medium text-[#383838] text-sm leading-[21px]">
-                      Signature field
-                    </div>
-                    <div 
-                      className={`flex items-center gap-3.5 px-2.5 py-1.5 w-full cursor-pointer rounded-[5px] ${
-                        selectedField?.type === "signature" ? "bg-violet-100 border border-violet-300" : "hover:bg-gray-50"
-                      }`}
-                      onClick={() => handleFieldClick("signature")}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, "signature")}
-                    >
-                      <Edit className="w-5 h-5 text-[#38383899]" />
-                      <div className="font-medium text-[#38383899] text-sm leading-[21px]">
-                        Signature
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Auto-fill Fields Section */}
-                  <div className="flex flex-col items-start gap-3 w-full">
-                    <div className="font-medium text-[#383838] text-sm leading-[21px]">
-                      Auto-fill fields
-                    </div>
-                    <div className="flex flex-col items-start gap-4 w-full">
-                      {autoFillFields.map((field, index) => (
-                        <div
-                          key={index}
-                          className={`flex items-center gap-3.5 px-2.5 py-1.5 w-full cursor-pointer rounded-[5px] ${
-                            selectedField?.type === field.type ? "bg-violet-100 border border-violet-300" : "hover:bg-gray-50"
-                          }`}
-                          onClick={() => handleFieldClick(field.type)}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, field.type)}
-                        >
-                          {field.icon}
-                          <div className="font-medium text-[#38383899] text-sm leading-[21px]">
-                            {field.label}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+            {/* Signature Field Section */}
+            <div className="flex flex-col items-start gap-3 w-full">
+              <div className="font-medium text-[#383838] text-sm leading-[21px]">
+                Signature field
+              </div>
+              <div 
+                className={`flex items-center gap-3.5 px-2.5 py-1.5 w-full cursor-pointer rounded-[5px] ${
+                  selectedField?.type === "signature" ? "bg-violet-100 border border-violet-300" : "hover:bg-gray-50"
+                }`}
+                onClick={() => handleFieldClick("signature")}
+                draggable
+                onDragStart={(e) => handleDragStart(e, "signature")}
+              >
+                <Edit className="w-5 h-5 text-[#38383899]" />
+                <div className="font-medium text-[#38383899] text-sm leading-[21px]">
+                  Signature
                 </div>
-              </ScrollArea>
-            </TabsContent>
+              </div>
+            </div>
 
-            <TabsContent value="documents" className="h-full mt-0 p-4">
-              <ScrollArea className="h-full">
-                <div className="text-center text-gray-500 text-xs py-8">
-                  Document preview will appear here
-                </div>
-              </ScrollArea>
-            </TabsContent>
-          </Tabs>
+            {/* Auto-fill Fields Section */}
+            <div className="flex flex-col items-start gap-3 w-full">
+              <div className="font-medium text-[#383838] text-sm leading-[21px]">
+                Auto-fill fields
+              </div>
+              <div className="flex flex-col items-start gap-4 w-full">
+                {autoFillFields.map((field, index) => (
+                  <div
+                    key={index}
+                    className={`flex items-center gap-3.5 px-2.5 py-1.5 w-full cursor-pointer rounded-[5px] ${
+                      selectedField?.type === field.type ? "bg-violet-100 border border-violet-300" : "hover:bg-gray-50"
+                    }`}
+                    onClick={() => handleFieldClick(field.type)}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, field.type)}
+                  >
+                    {field.icon}
+                    <div className="font-medium text-[#38383899] text-sm leading-[21px]">
+                      {field.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Card>

@@ -125,8 +125,6 @@ export const ReviewAndSendStep = ({
             {/* Selection Column - Reduced from 3 to 2 */}
             <div className="col-span-3">
               <FieldSelectionCard
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
                 fieldTypes={fieldTypes}
                 selectedField={selectedField}
                 onFieldSelect={setSelectedField}
@@ -140,7 +138,12 @@ export const ReviewAndSendStep = ({
 
             {/* Properties Column - Reduced from 3 to 2 */}
             <div className="col-span-3">
-              <PropertyCard selectedField={selectedField} />
+              <PropertyCard 
+                selectedField={selectedField}
+                onBack={onBack}
+                onContinue={onSend}
+                documentCount={1}
+              />
             </div>
           </div>
         </CardContent>
