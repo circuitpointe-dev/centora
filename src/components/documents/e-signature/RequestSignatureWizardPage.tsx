@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { X, Upload, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import DocumentSelectionDialog from "./DocumentSelectionDialog";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,8 @@ export const RequestSignatureWizardPage: React.FC = () => {
       ? setConfirmExit(true)
       : navigate("/dashboard/documents/e-signature");
 
-  const confirmAndLeave = () => navigate("/dashboard/documents/e-signature");
+  const confirmAndLeave = () =>
+    navigate("/dashboard/documents/e-signature");
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -49,7 +50,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
     e.preventDefault();
     setIsDragOver(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/pdf') {
+    if (file && file.type === "application/pdf") {
       setSelectedFiles([file]);
       setSelectedDoc(null);
     }
@@ -98,7 +99,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
           onDrop={onDrop}
         >
           <Upload className="w-8 h-8 text-violet-600 mb-2" />
-          <p className="text-sm font-medium">Drag &amp; drop files here</p>
+          <p className="text-sm font-medium">Drag &amp; Drop File Here</p>
           <p className="text-xs text-gray-500 my-1">or</p>
           <div className="relative w-full flex justify-center">
             <input
@@ -108,7 +109,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             <Button className="text-sm px-4 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-md text-white">
-              Select Files
+              Select File
             </Button>
           </div>
         </Card>
@@ -149,11 +150,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => removeFile(i)}
-                >
+                <Button size="icon" variant="ghost" onClick={() => removeFile(i)}>
                   <X className="w-3 h-3 text-red-500" />
                 </Button>
               </div>
@@ -174,7 +171,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
                   <X className="w-3 h-3 text-red-500" />
                 </Button>
               </div>
-            )}
+            ))}
           </section>
         )}
 
@@ -184,7 +181,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
             <Button
               onClick={() =>
                 navigate("/dashboard/documents/document-editor", {
-                  state: { selectedFiles, selectedDoc }
+                  state: { selectedFiles, selectedDoc },
                 })
               }
               className="text-sm px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-md"
