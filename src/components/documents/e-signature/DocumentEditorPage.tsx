@@ -167,7 +167,12 @@ export const DocumentEditorPage: React.FC = () => {
 
               {/* Canvas Content */}
               <div className="flex-1 p-4 overflow-auto">
-                <DocumentCanvas fileUrl={currentFileUrl} />
+                <DocumentCanvas 
+                  fileUrl={currentFileUrl} 
+                  onFieldAdded={(field, position) => {
+                    console.log("Field added to canvas:", field, position);
+                  }}
+                />
               </div>
             </div>
           </div>
