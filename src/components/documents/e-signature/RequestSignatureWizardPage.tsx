@@ -178,7 +178,9 @@ export const RequestSignatureWizardPage: React.FC = () => {
           <div className="flex justify-center">
             <Button
               onClick={() =>
-                console.log("Continue with:", { selectedFiles, selectedDoc })
+                navigate("/dashboard/documents/document-editor", {
+                  state: { selectedFiles, selectedDoc }
+                })
               }
               className="text-sm px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-md"
             >
