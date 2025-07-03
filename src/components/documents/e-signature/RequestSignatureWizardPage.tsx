@@ -121,7 +121,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
             className="text-sm px-4 py-1.5 border-violet-600 text-violet-600 hover:bg-violet-50 rounded-md"
           >
             <FileText className="w-4 h-4 mr-1" />
-            From Library
+            Choose from Document Library
           </Button>
         </div>
 
