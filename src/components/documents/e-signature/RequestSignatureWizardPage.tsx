@@ -92,7 +92,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
           onDrop={onDrop}
         >
           <Upload className="w-8 h-8 text-violet-600 mb-2" />
-          <p className="text-sm font-medium">Drag &amp; drop file here</p>
+          <p className="text-sm font-medium">Drag &amp; drop files here</p>
           <p className="text-xs text-gray-500 my-1">or</p>
           <div className="relative w-full flex justify-center">
             <input
@@ -103,7 +103,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             <Button className="text-sm px-4 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-md text-white">
-              Select Files
+              Select File
             </Button>
           </div>
         </Card>
