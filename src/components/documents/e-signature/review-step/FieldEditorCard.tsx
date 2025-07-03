@@ -1,27 +1,28 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Calendar, Mail, Edit, Type, Eye, Settings, Plus } from "lucide-react";
+import { User, CalendarIcon, Mail, Edit, Type, Eye } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SignatureDialog } from "./SignatureDialog";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+interface SignatureData {
+  type: string;
+  data: string;
+}
 
 interface FieldData {
   id: string;
   type: "signature" | "name" | "date" | "email" | "text";
   label: string;
-  value?: string;
+  value?: string | Date | SignatureData;
   isConfigured: boolean;
-  properties?: {
-    required?: boolean;
-    width?: number;
-    height?: number;
-    fontSize?: number;
-    placeholder?: string;
-  };
 }
 
 interface FieldEditorCardProps {
@@ -34,21 +35,21 @@ export const FieldEditorCard = ({ onPreview, onContinue, documentCount }: FieldE
   const [fields, setFields] = useState<FieldData[]>([
     { id: "signature", type: "signature", label: "Signature", isConfigured: false },
     { id: "name", type: "name", label: "Full Name", isConfigured: false },
-    { id: "date", type: "date", label: "Date Signed", isConfigured: false },
+    { id: "date", type: "date", label: "Date", isConfigured: false },
     { id: "email", type: "email", label: "Email", isConfigured: false },
     { id: "text", type: "text", label: "Text", isConfigured: false }
   ]);
   
-  const [editingField, setEditingField] = useState<FieldData | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showSignatureDialog, setShowSignatureDialog] = useState(false);
+  const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
 
   const getFieldIcon = (type: string) => {
     switch (type) {
-      case "signature": return <Edit className="w-5 h-5 text-[#38383899]" />;
-      case "name": return <User className="w-5 h-5 text-[#38383899]" />;
-      case "date": return <Calendar className="w-4 h-4 text-[#38383899]" />;
-      case "email": return <Mail className="w-[18px] h-[18px] text-[#38383899]" />;
-      case "text": return <Type className="w-5 h-5 text-[#38383899]" />;
+      case "signature": return <Edit className="w-5 h-5 text-gray-600" />;
+      case "name": return <User className="w-5 h-5 text-gray-600" />;
+      case "date": return <CalendarIcon className="w-4 h-4 text-gray-600" />;
+      case "email": return <Mail className="w-[18px] h-[18px] text-gray-600" />;
+      case "text": return <Type className="w-5 h-5 text-gray-600" />;
       default: return null;
     }
   };
@@ -62,164 +63,168 @@ export const FieldEditorCard = ({ onPreview, onContinue, documentCount }: FieldE
     e.dataTransfer.effectAllowed = "copy";
   };
 
-  const handleEditField = (field: FieldData) => {
-    setEditingField(field);
-    setIsDialogOpen(true);
-  };
-
-  const handleSaveField = () => {
-    if (!editingField) return;
-    
+  const handleFieldChange = (fieldId: string, value: any) => {
     setFields(prev => prev.map(field => 
-      field.id === editingField.id 
-        ? { ...editingField, isConfigured: true }
+      field.id === fieldId 
+        ? { ...field, value, isConfigured: true }
         : field
     ));
-    setIsDialogOpen(false);
-    setEditingField(null);
   };
 
-  const handleFieldPropertyChange = (property: string, value: any) => {
-    if (!editingField) return;
+  const handleSignatureCreate = (signatureData: SignatureData) => {
+    if (editingFieldId) {
+      handleFieldChange(editingFieldId, signatureData);
+      setEditingFieldId(null);
+    }
+    setShowSignatureDialog(false);
+  };
+
+  const openSignatureDialog = (fieldId: string) => {
+    setEditingFieldId(fieldId);
+    setShowSignatureDialog(true);
+  };
+
+  const renderFieldInput = (field: FieldData) => {
+    const commonClasses = "w-full rounded-[5px] border border-gray-200 p-2 text-sm";
     
-    setEditingField(prev => prev ? {
-      ...prev,
-      properties: {
-        ...prev.properties,
-        [property]: value
-      }
-    } : null);
+    switch (field.type) {
+      case "signature":
+        return (
+          <Button
+            variant="outline"
+            onClick={() => openSignatureDialog(field.id)}
+            className={cn(commonClasses, "h-auto min-h-[40px] justify-start")}
+          >
+            {field.value ? (
+              <span className="text-green-600">Signature created</span>
+            ) : (
+              <span className="text-gray-500">Click to create signature</span>
+            )}
+          </Button>
+        );
+
+      case "name":
+        return (
+          <Input
+            value={field.value as string || ""}
+            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+            placeholder="Enter full name"
+            className={commonClasses}
+          />
+        );
+
+      case "email":
+        return (
+          <Input
+            type="email"
+            value={field.value as string || ""}
+            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+            placeholder="Enter email address"
+            className={commonClasses}
+          />
+        );
+
+      case "date":
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  commonClasses,
+                  "justify-start text-left font-normal h-auto",
+                  !field.value && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {field.value ? format(field.value as Date, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={field.value as Date}
+                onSelect={(date) => date && handleFieldChange(field.id, date)}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        );
+
+      case "text":
+        return (
+          <Input
+            value={field.value as string || ""}
+            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+            placeholder="Enter text"
+            className={commonClasses}
+          />
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (
     <div className="col-span-3 h-full">
       <Card className="h-full bg-white rounded-[5px] border flex flex-col">
         {/* Header */}
-        <div className="flex flex-col items-start gap-px px-4 py-3 w-full border-b">
-          <h3 className="font-medium text-[#383838] text-sm leading-[21px]">
-            Field Editor
+        <div className="flex flex-col items-start gap-px px-4 py-4 w-full border-b">
+          <h3 className="font-bold text-gray-900 text-lg leading-6">
+            Signing Options
           </h3>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-auto p-4">
-          <ScrollArea className="h-full">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full px-4 py-4">
             <div className="flex flex-col gap-6">
               {/* Signer Section */}
               <div className="flex flex-col items-start gap-2 w-full">
-                <div className="font-medium text-[#383838] text-sm leading-[21px]">
+                <div className="font-medium text-gray-800 text-sm leading-[21px]">
                   Signer
                 </div>
-                <Select disabled>
-                  <SelectTrigger className="flex items-center gap-2 p-2.5 w-full rounded-[5px] border border-solid border-[#ebebeb]">
-                    <div className="inline-flex items-center justify-center gap-1.5">
-                      <Avatar className="w-[22px] h-[22px] bg-[#e8eefd] rounded-[49.83px]">
-                        <AvatarFallback className="font-['Inter'] font-medium text-[#1451ea] text-[10.2px] leading-[15.3px]">
-                          CI
-                        </AvatarFallback>
-                      </Avatar>
-                      <SelectValue
-                        placeholder="Chioma Ike"
-                        className="font-normal text-[#383838b2] text-sm leading-[21px]"
-                      />
-                    </div>
-                  </SelectTrigger>
-                </Select>
+                <div className="flex items-center gap-2 p-2.5 w-full rounded-[5px] border border-gray-200 bg-gray-50">
+                  <Avatar className="w-[22px] h-[22px] bg-blue-100 rounded-full">
+                    <AvatarFallback className="font-medium text-blue-600 text-xs">
+                      CI
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-normal text-gray-700 text-sm">
+                    Chioma Ike
+                  </span>
+                </div>
               </div>
 
               {/* Field Components */}
-              <div className="flex flex-col items-start gap-3 w-full">
-                <div className="font-medium text-[#383838] text-sm leading-[21px]">
-                  Signature Fields
+              <div className="flex flex-col items-start gap-4 w-full">
+                <div className="font-medium text-gray-800 text-sm leading-[21px]">
+                  Fields
                 </div>
                 <div className="flex flex-col items-start gap-4 w-full">
                   {fields.map((field) => (
-                    <div
-                      key={field.id}
-                      className={`flex items-center justify-between px-2.5 py-1.5 w-full rounded-[5px] border ${
-                        field.isConfigured 
-                          ? "border-green-200 bg-green-50 cursor-grab" 
-                          : "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
-                      } hover:border-violet-300`}
-                      draggable={field.isConfigured}
-                      onDragStart={(e) => handleDragStart(e, field)}
-                    >
-                      <div className="flex items-center gap-3.5">
+                    <div key={field.id} className="w-full space-y-2">
+                      <div className="flex items-center gap-2">
                         {getFieldIcon(field.type)}
-                        <div className="font-medium text-[#38383899] text-sm leading-[21px]">
+                        <Label className="font-medium text-gray-700 text-sm">
                           {field.label}
-                        </div>
+                        </Label>
                       </div>
-                      <Dialog open={isDialogOpen && editingField?.id === field.id} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => handleEditField(field)}
-                          >
-                            {field.isConfigured ? <Settings className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Configure {field.label} Field</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div>
-                              <Label htmlFor="label">Field Label</Label>
-                              <Input
-                                id="label"
-                                value={editingField?.label || ""}
-                                onChange={(e) => setEditingField(prev => prev ? { ...prev, label: e.target.value } : null)}
-                                placeholder="Enter field label"
-                              />
-                            </div>
-                            
-                            {field.type === "text" && (
-                              <div>
-                                <Label htmlFor="placeholder">Placeholder Text</Label>
-                                <Input
-                                  id="placeholder"
-                                  value={editingField?.properties?.placeholder || ""}
-                                  onChange={(e) => handleFieldPropertyChange("placeholder", e.target.value)}
-                                  placeholder="Enter placeholder text"
-                                />
-                              </div>
-                            )}
-
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <Label htmlFor="width">Width (px)</Label>
-                                <Input
-                                  id="width"
-                                  type="number"
-                                  value={editingField?.properties?.width || 150}
-                                  onChange={(e) => handleFieldPropertyChange("width", parseInt(e.target.value))}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="height">Height (px)</Label>
-                                <Input
-                                  id="height"
-                                  type="number"
-                                  value={editingField?.properties?.height || 30}
-                                  onChange={(e) => handleFieldPropertyChange("height", parseInt(e.target.value))}
-                                />
-                              </div>
-                            </div>
-
-                            <div className="flex justify-end gap-2">
-                              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                                Cancel
-                              </Button>
-                              <Button onClick={handleSaveField} className="bg-violet-600 hover:bg-violet-700">
-                                Save Field
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      
+                      <div
+                        className={cn(
+                          "border rounded-[5px] p-2",
+                          field.isConfigured 
+                            ? "border-green-200 bg-green-50 cursor-grab" 
+                            : "border-gray-200 bg-white"
+                        )}
+                        draggable={field.isConfigured}
+                        onDragStart={(e) => handleDragStart(e, field)}
+                      >
+                        {renderFieldInput(field)}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -249,6 +254,13 @@ export const FieldEditorCard = ({ onPreview, onContinue, documentCount }: FieldE
           </div>
         </div>
       </Card>
+
+      {/* Signature Dialog */}
+      <SignatureDialog
+        open={showSignatureDialog}
+        onOpenChange={setShowSignatureDialog}
+        onSave={handleSignatureCreate}
+      />
     </div>
   );
 };
