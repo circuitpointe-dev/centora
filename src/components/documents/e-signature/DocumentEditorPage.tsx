@@ -4,9 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { FieldSelectionCard } from "./review-step/FieldSelectionCard";
 import { DocumentCanvas } from "./review-step/DocumentCanvas";
-import { PropertyCard } from "./review-step/PropertyCard";
+import { FieldEditorCard } from "./review-step/FieldEditorCard";
 import { User, Calendar, Mail, Edit, Type } from "lucide-react";
 
 interface Document {
@@ -30,8 +29,7 @@ export const DocumentEditorPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [confirmExit, setConfirmExit] = useState(false);
-  const [activeFieldTab, setActiveFieldTab] = useState("fields");
-  const [selectedField, setSelectedField] = useState<Field | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const [activeDocumentIndex, setActiveDocumentIndex] = useState(0);
 
   // Get data from navigation state
@@ -94,15 +92,20 @@ export const DocumentEditorPage: React.FC = () => {
     }
   ];
 
-  const hasChanges = selectedField !== null;
+  const hasChanges = showPreview;
 
   const handleClose = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/request-signature");
   const handleBack = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/request-signature");
   const confirmAndLeave = () => navigate("/dashboard/documents/request-signature");
 
-  const handleFieldSelect = useCallback((field: Field) => {
-    setSelectedField(field);
-  }, []);
+  const handlePreview = () => {
+    setShowPreview(true);
+    console.log("Preview document with current fields");
+  };
+
+  const handleContinue = () => {
+    console.log("Continue to recipients");
+  };
 
   const handleDocumentTabChange = (value: string) => {
     const index = parseInt(value);
@@ -138,17 +141,8 @@ export const DocumentEditorPage: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 p-4 h-[calc(100vh-120px)]">
         <div className="grid grid-cols-12 gap-4 h-full">
-          {/* Left Column - Field Selection */}
-          <div className="col-span-2 h-full">
-            <FieldSelectionCard
-              fieldTypes={fieldTypes}
-              selectedField={selectedField}
-              onFieldSelect={handleFieldSelect}
-            />
-          </div>
-
-          {/* Center Column - Document Canvas */}
-          <div className="col-span-7 h-full">
+          {/* Left Column - Document Canvas (Now Wider) */}
+          <div className="col-span-9 h-full">
             <div className="bg-white rounded-[5px] border h-full flex flex-col">
               {/* Document Tabs (if multiple documents) */}
               {allDocuments.length > 1 && (
@@ -178,11 +172,10 @@ export const DocumentEditorPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column - Property Panel */}
-          <PropertyCard 
-            selectedField={selectedField} 
-            onBack={handleBack}
-            onContinue={() => console.log("Continue to recipients")}
+          {/* Right Column - Field Editor */}
+          <FieldEditorCard 
+            onPreview={handlePreview}
+            onContinue={handleContinue}
             documentCount={allDocuments.length}
           />
         </div>
