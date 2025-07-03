@@ -100,7 +100,9 @@ export const DocumentEditorPage: React.FC = () => {
 
   const handlePreview = () => {
     setShowPreview(true);
-    console.log("Preview document with current fields");
+    // Get canvas state and create preview
+    const canvasData = document.querySelector('canvas')?.getContext('2d');
+    console.log("Preview document with current fields", canvasData);
   };
 
   const handleContinue = () => {

@@ -59,6 +59,7 @@ export const FieldEditorCard = ({ onPreview, onContinue, documentCount }: FieldE
       e.preventDefault();
       return;
     }
+    console.log("Dragging field:", field);
     e.dataTransfer.setData("application/json", JSON.stringify({ fieldType: field.type, fieldData: field }));
     e.dataTransfer.effectAllowed = "copy";
   };

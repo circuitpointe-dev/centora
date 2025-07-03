@@ -59,21 +59,22 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
 
   // Initialize Fabric Canvas
   useEffect(() => {
-    if (!canvasRef.current || !currentFileUrl) return;
+    if (!canvasRef.current) return;
 
     const canvas = new FabricCanvas(canvasRef.current, {
       width: 800,
-      height: 600,
+      height: 1000,
       backgroundColor: "transparent",
       selection: true,
     });
 
+    console.log("Fabric canvas initialized:", canvas);
     setFabricCanvas(canvas);
 
     return () => {
       canvas.dispose();
     };
-  }, [currentFileUrl]);
+  }, []);
 
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -116,14 +117,17 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
+    console.log("Drop event triggered");
     
     try {
       const fieldData = JSON.parse(e.dataTransfer.getData("application/json"));
+      console.log("Dropped field data:", fieldData);
       if (fieldData.fieldType && fieldData.fieldData) {
         const rect = containerRef.current?.getBoundingClientRect();
         if (rect) {
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
+          console.log("Drop position:", { x, y });
           
           addFieldToCanvas(fieldData.fieldData, { x, y });
           onFieldAdded?.(fieldData.fieldData, { x, y });
@@ -135,7 +139,11 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
   };
 
   const addFieldToCanvas = (field: FieldData, position: { x: number; y: number }) => {
-    if (!fabricCanvas) return;
+    console.log("Adding field to canvas:", field, position);
+    if (!fabricCanvas) {
+      console.log("No fabric canvas available");
+      return;
+    }
 
     let fieldObject: any = null;
 
@@ -153,6 +161,8 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
     const colors = getFieldColor(field.type);
     const width = field.type === "signature" ? 150 : field.type === "date" ? 100 : 120;
     const height = field.type === "signature" ? 50 : 30;
+
+    console.log("Creating rect with dimensions:", { width, height, colors });
 
     fieldObject = new Rect({
       left: position.x,
@@ -188,9 +198,11 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
       fieldObject.set('fieldType', field.type);
       fieldObject.set('fieldData', field);
       
+      console.log("Adding objects to canvas");
       fabricCanvas.add(fieldObject);
       fabricCanvas.add(label);
       fabricCanvas.renderAll();
+      console.log("Canvas rendered, objects count:", fabricCanvas.getObjects().length);
       
       // Update state
       setDroppedFields(prev => [...prev, { field, position }]);
@@ -434,13 +446,13 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
           </Document>
           
           {/* Interactive Canvas Overlay */}
-          {!loading && !error && fabricCanvas && (
+          {!loading && !error && (
             <canvas
               ref={canvasRef}
               className="absolute top-0 left-0 pointer-events-auto"
               style={{ 
                 width: `${800 * scale}px`, 
-                height: `${600 * scale}px`,
+                height: `${1000 * scale}px`,
                 zIndex: 10 
               }}
             />
