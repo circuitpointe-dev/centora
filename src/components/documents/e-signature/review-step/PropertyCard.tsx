@@ -37,7 +37,7 @@ export const PropertyCard = ({ selectedField }: PropertyCardProps) => {
 
   return (
     <div className="col-span-3">
-      <Card className="h-[500px] bg-white rounded-[5px] border">
+      <Card className="h-full bg-white rounded-[5px] border">
         <div className="flex flex-col h-full p-4">
           <ScrollArea className="h-full">{renderContent()}</ScrollArea>
         </div>

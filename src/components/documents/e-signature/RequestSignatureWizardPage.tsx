@@ -48,13 +48,19 @@ export const RequestSignatureWizardPage: React.FC = () => {
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    setSelectedFiles((f) => [...f, ...Array.from(e.dataTransfer.files)]);
-    setSelectedDoc(null);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+      setSelectedFiles([file]);
+      setSelectedDoc(null);
+    }
   }, []);
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFiles((f) => [...f, ...Array.from(e.target.files || [])]);
-    setSelectedDoc(null);
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFiles([file]);
+      setSelectedDoc(null);
+    }
   };
 
   const removeFile = (i: number) =>
@@ -97,8 +103,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
           <div className="relative w-full flex justify-center">
             <input
               type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx"
+              accept=".pdf"
               onChange={onFileSelect}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />

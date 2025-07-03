@@ -137,9 +137,9 @@ export const DocumentEditorPage: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-4">
-        <div className="grid grid-cols-12 gap-4 h-full">
+        <div className="grid grid-cols-12 gap-4 h-[calc(100vh-200px)]">
           {/* Left Column - Field Selection */}
-          <div className="col-span-3">
+          <div className="col-span-2">
             <FieldSelectionCard
               activeTab={activeFieldTab}
               onTabChange={setActiveFieldTab}
@@ -150,7 +150,7 @@ export const DocumentEditorPage: React.FC = () => {
           </div>
 
           {/* Center Column - Document Canvas */}
-          <div className="col-span-6">
+          <div className="col-span-7">
             <div className="bg-white rounded-[5px] border h-full flex flex-col">
               {/* Document Tabs (if multiple documents) */}
               {allDocuments.length > 1 && (

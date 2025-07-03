@@ -61,7 +61,7 @@ export const FieldSelectionCard = ({
   };
 
   return (
-    <Card className="h-[500px] bg-white rounded-[5px] border">
+    <Card className="h-full bg-white rounded-[5px] border">
       <div className="flex flex-col h-full">
         {/* Tab Header */}
         <div className="flex flex-col items-start gap-px px-2 py-0 w-full border-b">
