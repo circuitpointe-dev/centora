@@ -100,9 +100,29 @@ export const DocumentEditorPage: React.FC = () => {
 
   const handlePreview = () => {
     setShowPreview(true);
-    // Get canvas state and create preview
-    const canvasData = document.querySelector('canvas')?.getContext('2d');
-    console.log("Preview document with current fields", canvasData);
+    
+    // Get canvas data from the DocumentCanvas component
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+    if (canvas) {
+      const dataURL = canvas.toDataURL('image/png');
+      console.log("Canvas data URL generated:", dataURL);
+      
+      // Create a preview window with the canvas overlay
+      const previewWindow = window.open('', '_blank');
+      if (previewWindow) {
+        previewWindow.document.write(`
+          <html>
+            <head><title>Document Preview</title></head>
+            <body style="margin: 0; padding: 20px;">
+              <h3>Document Preview with Fields</h3>
+              <img src="${dataURL}" style="max-width: 100%; border: 1px solid #ccc;" />
+            </body>
+          </html>
+        `);
+      }
+    } else {
+      console.log("No canvas found for preview");
+    }
   };
 
   const handleContinue = () => {
