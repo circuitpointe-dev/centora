@@ -48,13 +48,19 @@ export const RequestSignatureWizardPage: React.FC = () => {
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    setSelectedFiles((f) => [...f, ...Array.from(e.dataTransfer.files)]);
-    setSelectedDoc(null);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+      setSelectedFiles([file]);
+      setSelectedDoc(null);
+    }
   }, []);
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFiles((f) => [...f, ...Array.from(e.target.files || [])]);
-    setSelectedDoc(null);
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFiles([file]);
+      setSelectedDoc(null);
+    }
   };
 
   const removeFile = (i: number) =>
@@ -97,13 +103,12 @@ export const RequestSignatureWizardPage: React.FC = () => {
           <div className="relative w-full flex justify-center">
             <input
               type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx"
+              accept=".pdf"
               onChange={onFileSelect}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             <Button className="text-sm px-4 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-md text-white">
-              Select File
+              Select Files
             </Button>
           </div>
         </Card>
@@ -178,7 +183,9 @@ export const RequestSignatureWizardPage: React.FC = () => {
           <div className="flex justify-center">
             <Button
               onClick={() =>
-                console.log("Continue with:", { selectedFiles, selectedDoc })
+                navigate("/dashboard/documents/document-editor", {
+                  state: { selectedFiles, selectedDoc }
+                })
               }
               className="text-sm px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-md"
             >
