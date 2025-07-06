@@ -47,12 +47,11 @@ export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
     };
   }, [onCanvasReady]);
 
-  // Update canvas size when scale changes
+  // Update canvas zoom when scale changes
   useEffect(() => {
     if (!fabricCanvas) return;
     
-    fabricCanvas.setWidth(800 * scale);
-    fabricCanvas.setHeight(1000 * scale);
+    fabricCanvas.setZoom(scale);
     fabricCanvas.renderAll();
   }, [fabricCanvas, scale]);
 
