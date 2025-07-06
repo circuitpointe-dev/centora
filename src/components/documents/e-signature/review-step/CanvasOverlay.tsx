@@ -32,8 +32,8 @@ export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
     if (!canvasRef.current) return;
 
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 800 * scale,
-      height: 1000 * scale,
+      width: 800,
+      height: 1000,
       backgroundColor: "transparent",
       selection: true,
     });
@@ -45,16 +45,14 @@ export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
     return () => {
       canvas.dispose();
     };
-  }, [scale, onCanvasReady]);
+  }, [onCanvasReady]);
 
   // Update canvas size when scale changes
   useEffect(() => {
     if (!fabricCanvas) return;
     
-    fabricCanvas.setDimensions({
-      width: 800 * scale,
-      height: 1000 * scale
-    });
+    fabricCanvas.setWidth(800 * scale);
+    fabricCanvas.setHeight(1000 * scale);
     fabricCanvas.renderAll();
   }, [fabricCanvas, scale]);
 
