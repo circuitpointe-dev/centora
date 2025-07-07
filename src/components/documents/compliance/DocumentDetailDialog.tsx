@@ -63,7 +63,7 @@ export const DocumentDetailDialog: React.FC<DocumentDetailDialogProps> = ({
             </SideDialogTitle>
             <Button
               size="sm" 
-              className="gap-2 border-violet-600 text-violet-600 m-r-4 hover:bg-violet-50 bg-white"
+              className="gap-2 border-violet-600 text-violet-600 mr-5 hover:bg-violet-50 bg-white"
             >
               <Download className="h-4 w-4" />
               Download PDF
