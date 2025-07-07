@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { ComplianceDocumentCard } from './ComplianceDocumentCard';
 import { complianceDocumentsData } from './data/complianceDocumentsData';
@@ -14,16 +16,27 @@ export const ComplianceDocuments = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
 
-  const filteredDocuments = complianceDocumentsData.filter(doc =>
-    doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    doc.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredDocuments = complianceDocumentsData.filter(doc => {
+    const matchesSearch = doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.department.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
+    const matchesDepartment = departmentFilter === 'all' || doc.department === departmentFilter;
+    
+    return matchesSearch && matchesStatus && matchesDepartment;
+  });
 
   const handleViewDocument = (document: any) => {
     setSelectedDocument(document);
     setIsDialogOpen(true);
   };
+
+  const departments = Array.from(new Set(complianceDocumentsData.map(doc => doc.department)));
+  const [filterOpen, setFilterOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -70,10 +83,46 @@ export const ComplianceDocuments = () => {
           </div>
 
           {/* Filter Button */}
-          <Button variant="outline" size="sm" className="gap-2">
-            <Filter className="h-4 w-4" />
-            Filter
-          </Button>
+          <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="h-4 w-4" />
+                Filter
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Status</label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Pending">Pending</SelectItem>
+                      <SelectItem value="Retired">Retired</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Department</label>
+                  <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All departments" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Departments</SelectItem>
+                      {departments.map(dept => (
+                        <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -93,22 +142,19 @@ export const ComplianceDocuments = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Document Name</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Effective Date</TableHead>
-                <TableHead>Expiry Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="font-semibold">Document Name</TableHead>
+                <TableHead className="font-semibold">Department</TableHead>
+                <TableHead className="font-semibold">Effective Date</TableHead>
+                <TableHead className="font-semibold">Expiry Date</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
+                <TableHead className="font-semibold">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredDocuments.map((document) => (
                 <TableRow key={document.id}>
                   <TableCell>
-                    <div>
-                      <div className="font-medium text-gray-900">{document.title}</div>
-                      <div className="text-sm text-gray-500">{document.description}</div>
-                    </div>
+                    <div className="font-medium text-gray-900">{document.title}</div>
                   </TableCell>
                   <TableCell className="text-gray-600">{document.department}</TableCell>
                   <TableCell className="text-gray-600">
@@ -135,15 +181,13 @@ export const ComplianceDocuments = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="gap-2 border-violet-600 text-violet-600 hover:bg-violet-50"
+                    <button 
+                      className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 hover:underline font-medium"
                       onClick={() => handleViewDocument(document)}
                     >
                       <Eye className="h-4 w-4" />
                       View Document
-                    </Button>
+                    </button>
                   </TableCell>
                 </TableRow>
               ))}
