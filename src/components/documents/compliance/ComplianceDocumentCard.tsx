@@ -1,0 +1,91 @@
+import React from 'react';
+import { FileText, Calendar, Eye } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+interface ComplianceDocument {
+  id: string;
+  title: string;
+  description: string;
+  effectiveDate: string;
+  expiresDate: string;
+  status: 'Active' | 'Pending' | 'Retired';
+}
+
+interface ComplianceDocumentCardProps {
+  document: ComplianceDocument;
+}
+
+export const ComplianceDocumentCard: React.FC<ComplianceDocumentCardProps> = ({ document }) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Active':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'Pending':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Retired':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  return (
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="p-6">
+        {/* Header with Title and Icon */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <h3 className="font-medium text-gray-900 mb-1 leading-tight">
+              {document.title}
+            </h3>
+            <p className="text-sm text-gray-600 line-clamp-2">
+              {document.description}
+            </p>
+          </div>
+          <FileText className="h-5 w-5 text-gray-400 ml-3 flex-shrink-0" />
+        </div>
+
+        {/* Dates */}
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center text-sm text-gray-600">
+            <Calendar className="h-4 w-4 mr-2" />
+            <span className="font-medium">Effective:</span>
+            <span className="ml-1">{formatDate(document.effectiveDate)}</span>
+          </div>
+          <div className="flex items-center text-sm text-gray-600">
+            <Calendar className="h-4 w-4 mr-2" />
+            <span className="font-medium">Expires:</span>
+            <span className="ml-1">{formatDate(document.expiresDate)}</span>
+            <Badge 
+              variant="secondary" 
+              className={cn("ml-2 text-xs", getStatusColor(document.status))}
+            >
+              {document.status}
+            </Badge>
+          </div>
+        </div>
+
+        {/* View Document Button */}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full gap-2 hover:bg-violet-50 hover:border-violet-200 hover:text-violet-700"
+        >
+          <Eye className="h-4 w-4" />
+          View Document
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
