@@ -175,54 +175,61 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
 
   return (
     <div className="flex flex-col h-full">
-      <FileUploadArea
-        uploadedFile={uploadedFile}
-        onFileUpload={handleFileUpload}
-        onRemoveFile={handleRemoveFile}
-        error={error}
-      />
+      {/* Only show file upload if no file is provided */}
+      {!currentFileUrl && (
+        <FileUploadArea
+          uploadedFile={uploadedFile}
+          onFileUpload={handleFileUpload}
+          onRemoveFile={handleRemoveFile}
+          error={error}
+        />
+      )}
 
-      <PDFControls
-        pageNumber={pageNumber}
-        numPages={numPages}
-        scale={scale}
-        loading={loading}
-        onPageChange={setPageNumber}
-        onScaleChange={setScale}
-      />
-
-      <div 
-        className="relative flex-1 overflow-auto border rounded bg-gray-50 min-h-[400px]"
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-      >
-        {loading && (
-          <div className="flex items-center justify-center h-[400px]">
-            <p className="text-gray-500">Loading PDF...</p>
-          </div>
-        )}
-        
-        <div className="relative">
-          <PDFViewer
-            fileUrl={currentFileUrl}
+      {currentFileUrl && (
+        <>
+          <PDFControls
             pageNumber={pageNumber}
+            numPages={numPages}
             scale={scale}
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={onDocumentLoadError}
             loading={loading}
-            error={error}
+            onPageChange={setPageNumber}
+            onScaleChange={setScale}
           />
-          
-          {!loading && !error && (
-            <CanvasOverlay
-              ref={canvasRef}
-              scale={scale}
-              onFieldAdded={onFieldAdded}
-              onCanvasReady={handleCanvasReady}
-            />
-          )}
-        </div>
-      </div>
+
+          <div 
+            className="relative flex-1 overflow-auto border rounded bg-gray-50 min-h-[400px]"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+          >
+            {loading && (
+              <div className="flex items-center justify-center h-[400px]">
+                <p className="text-gray-500">Loading PDF...</p>
+              </div>
+            )}
+            
+            <div className="relative">
+              <PDFViewer
+                fileUrl={currentFileUrl}
+                pageNumber={pageNumber}
+                scale={scale}
+                onLoadSuccess={onDocumentLoadSuccess}
+                onLoadError={onDocumentLoadError}
+                loading={loading}
+                error={error}
+              />
+              
+              {!loading && !error && (
+                <CanvasOverlay
+                  ref={canvasRef}
+                  scale={scale}
+                  onFieldAdded={onFieldAdded}
+                  onCanvasReady={handleCanvasReady}
+                />
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
