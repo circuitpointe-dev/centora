@@ -202,7 +202,7 @@ const Sidebar = ({
             <Button
               variant="ghost"
               className={cn(
-                "w-full justify-start text-left font-light",
+                "w-full justify-start text-left font-light bg-violet-700 text-white hover:bg-violet-800",
                 isCollapsed && !isMobileOpen ? "px-2" : "px-3"
               )}
               onClick={toggleModuleSwitcher}
