@@ -56,7 +56,7 @@ export const DocumentDetailDialog: React.FC<DocumentDetailDialogProps> = ({
   return (
     <SideDialog open={open} onOpenChange={onOpenChange}>
       <SideDialogContent className="sm:w-[600px]">
-        <SideDialogHeader className="border-b border-gray-200">
+        <SideDialogHeader className="border-b border-gray-200 mt-5">
           <div className="flex items-center gap-4">
             <SideDialogTitle className="text-xl font-semibold text-gray-900 flex-1">
               {document.title}
