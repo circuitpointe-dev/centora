@@ -58,7 +58,7 @@ export const ComplianceReports = () => {
       </div>
 
       {/* Empty State for Custom Reports */}
-      <Card className="">
+      <Card className="bg-transparent">
         <CardContent className="p-12">
           <div className="text-center">
             {/* Document with magnifying glass icon */}
