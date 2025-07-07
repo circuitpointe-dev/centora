@@ -15,7 +15,7 @@ const CompliancePage = () => {
   ];
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-xl font-medium text-gray-900">Compliance</h1>
@@ -23,7 +23,7 @@ const CompliancePage = () => {
 
       {/* Navigation Tabs */}
       <Tabs defaultValue="documents" className="w-full">
-        <TabsList className="bg-transparent h-auto p-0 gap-8 border-b w-full justify-start">
+        <TabsList className="bg-transparent h-auto p-0 border-b w-full justify-start grid grid-cols-4">
           {navigationTabs.map((tab) => (
             <TabsTrigger
               key={tab.id}

@@ -5,15 +5,23 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { ComplianceDocumentCard } from './ComplianceDocumentCard';
 import { complianceDocumentsData } from './data/complianceDocumentsData';
+import { DocumentDetailDialog } from './DocumentDetailDialog';
 
 export const ComplianceDocuments = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDocument, setSelectedDocument] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const filteredDocuments = complianceDocumentsData.filter(doc =>
     doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     doc.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleViewDocument = (document: any) => {
+    setSelectedDocument(document);
+    setIsDialogOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -73,6 +81,7 @@ export const ComplianceDocuments = () => {
           <ComplianceDocumentCard
             key={document.id}
             document={document}
+            onViewDocument={handleViewDocument}
           />
         ))}
       </div>
@@ -85,6 +94,13 @@ export const ComplianceDocuments = () => {
           </p>
         </div>
       )}
+
+      {/* Document Detail Dialog */}
+      <DocumentDetailDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        document={selectedDocument}
+      />
     </div>
   );
 };
