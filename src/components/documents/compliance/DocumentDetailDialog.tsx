@@ -14,6 +14,7 @@ interface ComplianceDocument {
   id: string;
   title: string;
   description: string;
+  department: string;
   effectiveDate: string;
   expiresDate: string;
   status: 'Active' | 'Pending' | 'Retired';

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Search, Grid2X2, List, Filter } from 'lucide-react';
+import { Search, Grid2X2, List, Filter, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { ComplianceDocumentCard } from './ComplianceDocumentCard';
 import { complianceDocumentsData } from './data/complianceDocumentsData';
@@ -75,16 +77,80 @@ export const ComplianceDocuments = () => {
         </div>
       </div>
 
-      {/* Document Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredDocuments.map((document) => (
-          <ComplianceDocumentCard
-            key={document.id}
-            document={document}
-            onViewDocument={handleViewDocument}
-          />
-        ))}
-      </div>
+      {/* Document Display */}
+      {viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDocuments.map((document) => (
+            <ComplianceDocumentCard
+              key={document.id}
+              document={document}
+              onViewDocument={handleViewDocument}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Document Name</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>Effective Date</TableHead>
+                <TableHead>Expiry Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredDocuments.map((document) => (
+                <TableRow key={document.id}>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium text-gray-900">{document.title}</div>
+                      <div className="text-sm text-gray-500">{document.description}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-gray-600">{document.department}</TableCell>
+                  <TableCell className="text-gray-600">
+                    {new Date(document.effectiveDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </TableCell>
+                  <TableCell className="text-gray-600">
+                    {new Date(document.expiresDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={cn(
+                      document.status === 'Active' && 'bg-green-100 text-green-800 border-green-200',
+                      document.status === 'Pending' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                      document.status === 'Retired' && 'bg-gray-100 text-gray-800 border-gray-200'
+                    )}>
+                      {document.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2 border-violet-600 text-violet-600 hover:bg-violet-50"
+                      onClick={() => handleViewDocument(document)}
+                    >
+                      <Eye className="h-4 w-4" />
+                      View Document
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Empty State */}
       {filteredDocuments.length === 0 && (

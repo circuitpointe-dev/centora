@@ -23,12 +23,12 @@ const CompliancePage = () => {
 
       {/* Navigation Tabs */}
       <Tabs defaultValue="documents" className="w-full">
-        <TabsList className="bg-transparent h-auto p-0 border-b w-full justify-start grid grid-cols-4">
+        <TabsList className="bg-white h-auto p-0 border-b w-full justify-start grid grid-cols-4">
           {navigationTabs.map((tab) => (
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="inline-flex items-center justify-center gap-2.5 p-2.5 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:text-violet-600 data-[state=inactive]:text-[#38383880] data-[state=inactive]:border-b-0 bg-transparent shadow-none"
+              className="inline-flex items-center justify-center gap-2.5 p-2.5 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:text-violet-600 data-[state=inactive]:text-[#38383880] data-[state=inactive]:border-b-0 bg-white shadow-none"
             >
               <span className="font-normal text-sm">{tab.label}</span>
             </TabsTrigger>
