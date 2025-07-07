@@ -36,13 +36,13 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
         // Simplified route matching logic
         const isActive = (() => {
           if (feature.id === 'dashboard') {
-            // For dashboard, check if we're on the main module dashboard route or just the module route
-            return location.pathname === `/dashboard/${currentModule}` || 
-                   location.pathname === `/dashboard/${currentModule}/dashboard` ||
-                   location.pathname.endsWith(`/dashboard/${currentModule}`);
+            // For dashboard, check if we're on any dashboard route for this module
+            return location.pathname.includes(`/dashboard/${currentModule}`) && 
+                   (location.pathname.endsWith('/dashboard') || location.pathname === `/dashboard/${currentModule}`);
           } else {
             // For other features, check if the route includes the feature id
-            return location.pathname.includes(`/${currentModule}/${feature.id}`);
+            return location.pathname.includes(`/${currentModule}/${feature.id}`) && 
+                   !location.pathname.includes('/dashboard');
           }
         })();
         
