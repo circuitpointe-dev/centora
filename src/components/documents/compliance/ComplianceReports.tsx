@@ -42,16 +42,14 @@ export const ComplianceReports = () => {
         {statCards.map((card, index) => {
           const Icon = card.icon;
           return (
-            <Card key={index} className="bg-white">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">{card.title}</p>
-                    <p className="text-2xl font-semibold text-gray-900">{card.value}</p>
-                  </div>
-                  <div className={`p-3 rounded-lg ${card.iconBgColor}`}>
+            <Card key={index} className="bg-white h-40">
+              <CardContent className="p-6 h-full">
+                <div className="flex flex-col items-center justify-center text-center h-full space-y-3">
+                  <div className={`p-3 rounded-full ${card.iconBgColor}`}>
                     <Icon className={`h-6 w-6 ${card.iconColor}`} />
                   </div>
+                  <p className="text-2xl font-semibold text-gray-900">{card.value}</p>
+                  <p className="text-sm text-gray-600">{card.title}</p>
                 </div>
               </CardContent>
             </Card>
@@ -64,7 +62,7 @@ export const ComplianceReports = () => {
         <CardContent className="p-12">
           <div className="text-center">
             {/* Document with magnifying glass icon */}
-            <div className="mx-auto mb-6 w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+            <div className="mx-auto mb-6 w-16 h-16 rounded-lg flex items-center justify-center">
               <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 <circle cx="18" cy="18" r="3" fill="none" stroke="currentColor" strokeWidth={1.5} />
