@@ -57,14 +57,14 @@ export const DocumentDetailDialog: React.FC<DocumentDetailDialogProps> = ({
     <SideDialog open={open} onOpenChange={onOpenChange}>
       <SideDialogContent className="sm:w-[600px]">
         <SideDialogHeader className="border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <SideDialogTitle className="text-xl font-semibold text-gray-900">
+          <div className="flex items-center gap-4">
+            <SideDialogTitle className="text-xl font-semibold text-gray-900 flex-1">
               {document.title}
             </SideDialogTitle>
             <Button 
               variant="outline" 
               size="sm" 
-              className="gap-2 border-violet-600 text-violet-600 hover:bg-violet-50"
+              className="gap-2 border-violet-600 text-violet-600 hover:bg-violet-50 bg-white"
             >
               <Download className="h-4 w-4" />
               Download PDF
