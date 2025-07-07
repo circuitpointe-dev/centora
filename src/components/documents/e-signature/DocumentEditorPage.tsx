@@ -1,9 +1,10 @@
 
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { DocumentEditorHeader } from "./review-step/DocumentEditorHeader";
-import { DocumentEditorMainContent } from "./review-step/DocumentEditorMainContent";
+import { DocumentCanvas } from "./review-step/DocumentCanvas";
+import { FieldEditorCard } from "./review-step/FieldEditorCard";
 
 interface FieldData {
   id: string;
@@ -18,28 +19,15 @@ export const DocumentEditorPage: React.FC = () => {
   const location = useLocation();
   const [confirmExit, setConfirmExit] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [activeDocumentIndex, setActiveDocumentIndex] = useState(0);
 
   // Get data from navigation state
   const { selectedFiles = [], selectedDoc = null } = location.state || {};
   
-  // Combine files and documents for consistent handling
-  const allDocuments = [
-    ...selectedFiles.map((file: File, index: number) => ({
-      id: `file-${index}`,
-      fileName: file.name,
-      fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      type: 'file',
-      data: file
-    })),
-    ...(selectedDoc ? [{
-      id: selectedDoc.id,
-      fileName: selectedDoc.fileName,
-      fileSize: selectedDoc.fileSize,
-      type: 'document',
-      data: selectedDoc
-    }] : [])
-  ];
+  // Get the first document/file for display
+  const currentDocument = selectedFiles[0] || selectedDoc;
+  const currentFileUrl = currentDocument 
+    ? (selectedFiles[0] ? URL.createObjectURL(selectedFiles[0]) : selectedDoc?.data?.fileUrl)
+    : null;
 
   const hasChanges = showPreview;
 
@@ -78,11 +66,6 @@ export const DocumentEditorPage: React.FC = () => {
     console.log("Continue to recipients");
   };
 
-  const handleDocumentTabChange = (value: string) => {
-    const index = parseInt(value);
-    setActiveDocumentIndex(index);
-  };
-
   const handleFieldAdded = (field: FieldData, position: { x: number; y: number }) => {
     console.log("Field added to canvas:", field, position);
   };
@@ -94,14 +77,29 @@ export const DocumentEditorPage: React.FC = () => {
         onClose={handleClose}
       />
 
-      <DocumentEditorMainContent
-        allDocuments={allDocuments}
-        activeDocumentIndex={activeDocumentIndex}
-        onDocumentTabChange={handleDocumentTabChange}
-        onFieldAdded={handleFieldAdded}
-        onPreview={handlePreview}
-        onContinue={handleContinue}
-      />
+      {/* Main Content - Two Column Layout */}
+      <main className="flex-1 p-4">
+        <div className="grid grid-cols-12 gap-4 h-[calc(100vh-120px)]">
+          {/* Left Column - Document Canvas */}
+          <div className="col-span-9 h-full">
+            <div className="bg-white rounded-[5px] border h-full flex flex-col">
+              <div className="flex-1 p-4">
+                <DocumentCanvas 
+                  fileUrl={currentFileUrl} 
+                  onFieldAdded={handleFieldAdded}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Field Editor */}
+          <FieldEditorCard 
+            onPreview={handlePreview}
+            onContinue={handleContinue}
+            documentCount={selectedFiles.length + (selectedDoc ? 1 : 0)}
+          />
+        </div>
+      </main>
 
       {/* Exit Confirmation Dialog */}
       <ConfirmationDialog
