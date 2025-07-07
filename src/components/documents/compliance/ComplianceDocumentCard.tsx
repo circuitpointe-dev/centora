@@ -42,8 +42,8 @@ export const ComplianceDocumentCard: React.FC<ComplianceDocumentCardProps> = ({ 
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
+    <Card className="hover:shadow-md transition-shadow h-full">
+      <CardContent className="p-6 flex flex-col h-full">
         {/* Header with Title and Icon */}
         <div className="flex items-start gap-3 mb-3">
           <div className="p-2 bg-violet-100 rounded-lg flex-shrink-0">
@@ -80,15 +80,17 @@ export const ComplianceDocumentCard: React.FC<ComplianceDocumentCardProps> = ({ 
         </div>
 
         {/* View Document Button */}
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-full gap-2 border-violet-600 text-violet-600 hover:bg-violet-50"
-          onClick={() => onViewDocument(document)}
-        >
-          <Eye className="h-4 w-4" />
-          View Document
-        </Button>
+        <div className="mt-auto">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full gap-2 border-violet-600 text-violet-600 hover:bg-violet-50"
+            onClick={() => onViewDocument(document)}
+          >
+            <Eye className="h-4 w-4" />
+            View Document
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
