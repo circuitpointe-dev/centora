@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { User, Check, Clock, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CustomReportDialog } from "./CustomReportDialog";
 
 export const ComplianceReports = () => {
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  
   const statCards = [
     {
       title: "Total Policies Assigned",
@@ -118,11 +121,19 @@ export const ComplianceReports = () => {
             reviews.
           </p>
 
-          <Button className="bg-violet-600 hover:bg-violet-700 text-white">
+          <Button 
+            className="bg-violet-600 hover:bg-violet-700 text-white"
+            onClick={() => setShowReportDialog(true)}
+          >
             Generate Custom Report
           </Button>
         </div>
       </div>
+
+      <CustomReportDialog 
+        open={showReportDialog} 
+        onOpenChange={setShowReportDialog} 
+      />
     </div>
   );
 };
