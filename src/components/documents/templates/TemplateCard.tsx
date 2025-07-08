@@ -10,6 +10,7 @@ interface TemplateCardProps {
   department: string;
   lastUpdated: string;
   image?: string;
+  viewMode?: 'grid' | 'list';
   onUseTemplate?: (id: string) => void;
   onView?: (id: string) => void;
   onDownload?: (id: string) => void;
@@ -23,11 +24,79 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
   department,
   lastUpdated,
   image,
+  viewMode = 'grid',
   onUseTemplate,
   onView,
   onDownload,
   onEdit
 }) => {
+  if (viewMode === 'list') {
+    return (
+      <Card className="w-full rounded-[5px] p-4">
+        <div className="flex items-center gap-4">
+          <div className="relative w-[80px] h-[60px] rounded-[5px] overflow-hidden flex-shrink-0">
+            <img
+              className="w-full h-full object-cover"
+              alt={`${title} Preview`}
+              src={image || "/placeholder.svg"}
+            />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <h3 className="font-medium text-base text-[#383838e6] truncate">
+              {title}
+            </h3>
+            <div className="flex items-center gap-4 mt-1">
+              <span className="text-sm text-[#38383899]">{category}</span>
+              <div className="flex items-center gap-[7px]">
+                <div className="w-[5px] h-[5px] bg-[#38383866] rounded-[2.5px]" />
+                <span className="text-sm text-[#38383899]">{department}</span>
+              </div>
+            </div>
+            <p className="text-sm text-[#38383899] mt-1">Last updated {lastUpdated}</p>
+          </div>
+
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <Button
+              variant="outline"
+              className="h-auto px-4 py-2 rounded-[5px] border-[#e0e0e0] text-[#38383899] font-medium text-sm"
+              onClick={() => onUseTemplate?.(id)}
+            >
+              Use as Template
+            </Button>
+
+            <div className="flex items-center gap-1">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="p-2.5"
+                onClick={() => onView?.(id)}
+              >
+                <Eye className="w-5 h-5 text-gray-500" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="p-2.5"
+                onClick={() => onDownload?.(id)}
+              >
+                <Download className="w-5 h-5 text-gray-500" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="p-2.5"
+                onClick={() => onEdit?.(id)}
+              >
+                <Edit2 className="w-5 h-5 text-gray-500" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-[325px] overflow-hidden rounded-[5px] pb-8">
       <div className="relative w-full h-[120px] overflow-hidden">

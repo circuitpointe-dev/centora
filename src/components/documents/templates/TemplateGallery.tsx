@@ -12,7 +12,7 @@ const templatesData = [
     category: 'Report',
     department: 'Finance',
     lastUpdated: '2 days ago',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop'
   },
   {
     id: '2',
@@ -20,7 +20,7 @@ const templatesData = [
     category: 'Agreement',
     department: 'HR',
     lastUpdated: '2 days ago',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=240&fit=crop'
   },
   {
     id: '3',
@@ -28,7 +28,7 @@ const templatesData = [
     category: 'Financial',
     department: 'Accounting',
     lastUpdated: '2 days ago',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=240&fit=crop'
   },
   {
     id: '4',
@@ -36,7 +36,7 @@ const templatesData = [
     category: 'Document',
     department: 'HR',
     lastUpdated: '2 days ago',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=240&fit=crop'
   },
   {
     id: '5',
@@ -44,7 +44,7 @@ const templatesData = [
     category: 'Agreement',
     department: 'Legal',
     lastUpdated: '2 days ago',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=240&fit=crop'
   },
   {
     id: '6',
@@ -52,7 +52,7 @@ const templatesData = [
     category: 'Report',
     department: 'Finance',
     lastUpdated: '2 days ago',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop'
   }
 ];
 
@@ -95,25 +95,26 @@ export const TemplateGallery = () => {
     <div className="space-y-6">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4 flex-1">
-          {/* Search */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search templates..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
+        {/* Search */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search templates..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
 
+        {/* Right side controls */}
+        <div className="flex items-center gap-3">
           {/* View Mode Toggle */}
           <div className="flex items-center border rounded-md">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('grid')}
-              className="rounded-r-none"
+              className={`rounded-r-none ${viewMode === 'grid' ? 'bg-violet-600 hover:bg-violet-700 text-white' : ''}`}
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -121,7 +122,7 @@ export const TemplateGallery = () => {
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className="rounded-l-none"
+              className={`rounded-l-none ${viewMode === 'list' ? 'bg-violet-600 hover:bg-violet-700 text-white' : ''}`}
             >
               <List className="h-4 w-4" />
             </Button>
@@ -153,21 +154,21 @@ export const TemplateGallery = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
 
-        {/* Create Template Button */}
-        <Button 
-          className="bg-violet-600 hover:bg-violet-700 text-white"
-          onClick={handleCreateTemplate}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Create Template
-        </Button>
+          {/* Create Template Button */}
+          <Button 
+            className="bg-violet-600 hover:bg-violet-700 text-white"
+            onClick={handleCreateTemplate}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Template
+          </Button>
+        </div>
       </div>
 
       {/* Templates Grid/List */}
       <div className={`${viewMode === 'grid' 
-        ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+        ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8' 
         : 'flex flex-col gap-4'
       }`}>
         {filteredTemplates.map((template) => (
@@ -179,6 +180,7 @@ export const TemplateGallery = () => {
             department={template.department}
             lastUpdated={template.lastUpdated}
             image={template.image}
+            viewMode={viewMode}
             onUseTemplate={handleUseTemplate}
             onView={handleView}
             onDownload={handleDownload}
