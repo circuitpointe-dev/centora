@@ -50,21 +50,21 @@ export const PolicyCard: React.FC<PolicyCardProps> = ({ policy, onViewPolicy }) 
           {/* Footer */}
           <div className="space-y-3">
             {/* Meta Information */}
-            <div className="flex items-center gap-4 text-xs text-gray-500">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-gray-500">
               <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
+                <Calendar className="h-3 w-3 flex-shrink-0" />
                 <span>Updated {new Date(policy.lastUpdated).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric'
                 })}</span>
               </div>
-              <span>•</span>
-              <span>{policy.department}</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="truncate">{policy.department}</span>
             </div>
 
             {/* Action Button */}
-            <div className="mt-auto">
+            <div className="pt-2">
               <Button
                 onClick={() => onViewPolicy(policy)}
                 variant="outline"
