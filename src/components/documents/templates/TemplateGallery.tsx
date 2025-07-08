@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn } from '@/lib/utils';
 import { TemplateCard } from './TemplateCard';
 import { TemplateDetailDialog } from './TemplateDetailDialog';
+import { TemplateEditor } from './TemplateEditor';
 
 const templatesData = [
   {
@@ -65,6 +66,8 @@ export const TemplateGallery = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<any>(null);
 
   const filteredTemplates = templatesData.filter(template => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,14 +93,44 @@ export const TemplateGallery = () => {
   };
 
   const handleEdit = (id: string) => {
-    console.log('Edit template:', id);
-    // TODO: Implement template editing logic
+    const template = templatesData.find(t => t.id === id);
+    if (template) {
+      setEditingTemplate(template);
+      setIsEditing(true);
+    }
+  };
+
+  const handleBackToGallery = () => {
+    setIsEditing(false);
+    setEditingTemplate(null);
+  };
+
+  const handleSaveTemplate = (content: string) => {
+    console.log('Save template:', content);
+    // TODO: Implement save logic
+  };
+
+  const handlePublishTemplate = (content: string) => {
+    console.log('Publish template:', content);
+    // TODO: Implement publish logic
   };
 
   const handleCreateTemplate = () => {
     console.log('Create new template');
     // TODO: Implement template creation logic
   };
+
+  // If editing, show the editor
+  if (isEditing && editingTemplate) {
+    return (
+      <TemplateEditor
+        template={editingTemplate}
+        onBack={handleBackToGallery}
+        onSave={handleSaveTemplate}
+        onPublish={handlePublishTemplate}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
