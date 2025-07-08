@@ -156,7 +156,7 @@ export const TemplateGallery = () => {
               size="sm"
               className={cn(
                 "h-7 w-7 p-0",
-                viewMode === 'grid' && "bg-muted"
+                viewMode === 'grid' && "bg-violet-600 text-white hover:bg-violet-700"
               )}
               onClick={() => setViewMode('grid')}
             >
@@ -167,7 +167,7 @@ export const TemplateGallery = () => {
               size="sm"
               className={cn(
                 "h-7 w-7 p-0",
-                viewMode === 'list' && "bg-muted"
+                viewMode === 'list' && "bg-violet-600 text-white hover:bg-violet-700"
               )}
               onClick={() => setViewMode('list')}
             >
@@ -215,7 +215,7 @@ export const TemplateGallery = () => {
 
       {/* Templates Display */}
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredTemplates.map((template) => (
             <TemplateCard
               key={template.id}
