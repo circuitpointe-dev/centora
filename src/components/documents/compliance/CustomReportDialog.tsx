@@ -58,26 +58,164 @@ export const CustomReportDialog = ({ open, onOpenChange }: CustomReportDialogPro
 
     if (showReport) {
       return (
-        <div className="space-y-4">
+        <div className="space-y-6 h-full overflow-y-auto">
           <h3 className="text-lg font-semibold text-gray-900">Custom Compliance Report</h3>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">Selected Metrics:</p>
-            <ul className="list-disc list-inside space-y-1">
-              {selectedMetrics.map(metricId => {
-                const metric = metrics.find(m => m.id === metricId);
-                return <li key={metricId} className="text-sm text-gray-800">{metric?.label}</li>;
-              })}
-            </ul>
-            <p className="text-sm text-gray-600 mt-4">Date Range: {startDate || "N/A"} - {endDate || "N/A"}</p>
-            <p className="text-sm text-gray-600">Format: {reportFormat.toUpperCase()}</p>
+          
+          {/* Stat Cards */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                </div>
+                <div>
+                  <p className="text-xl font-semibold">34</p>
+                  <p className="text-xs text-gray-500">Total Policies Assigned</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                  <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+                </div>
+                <div>
+                  <p className="text-xl font-semibold">180</p>
+                  <p className="text-xs text-gray-500">Total Acknowledges</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                  <div className="w-3 h-3 bg-yellow-600 rounded-full"></div>
+                </div>
+                <div>
+                  <p className="text-xl font-semibold">45%</p>
+                  <p className="text-xs text-gray-500">Acknowledgement Rate</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                  <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                </div>
+                <div>
+                  <p className="text-xl font-semibold">6</p>
+                  <p className="text-xs text-gray-500">Policies Expired</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="bg-white border rounded-lg p-6">
-            <h4 className="font-medium mb-4">Report Data Preview</h4>
-            <div className="text-sm text-gray-600">
-              <p>• Total policies tracked: 34</p>
-              <p>• Acknowledgement rate: 78%</p>
-              <p>• Expired policies: 6</p>
-              <p>• Compliance score: 82%</p>
+
+          {/* Bar Chart */}
+          <div className="bg-white p-6 rounded-lg border">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-medium">Policy Acknowledgement Rates by Team</h4>
+              <span className="text-xs text-gray-500">View All</span>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-600 w-12">IT</span>
+                <div className="flex-1 bg-gray-100 rounded h-8 relative">
+                  <div className="bg-blue-600 h-full rounded" style={{width: '85%'}}></div>
+                </div>
+                <span className="text-xs text-gray-600 w-8">85%</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-600 w-12">HR</span>
+                <div className="flex-1 bg-gray-100 rounded h-8 relative">
+                  <div className="bg-blue-600 h-full rounded" style={{width: '60%'}}></div>
+                </div>
+                <span className="text-xs text-gray-600 w-8">60%</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-600 w-12">Finance</span>
+                <div className="flex-1 bg-gray-100 rounded h-8 relative">
+                  <div className="bg-blue-600 h-full rounded" style={{width: '75%'}}></div>
+                </div>
+                <span className="text-xs text-gray-600 w-8">75%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Two Column Cards */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-sm">Users with Most Pending Items</h4>
+                <span className="text-xs text-gray-500">View All</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-600">John Smith</span>
+                  <span className="text-red-600">5 pending</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-600">Sarah Johnson</span>
+                  <span className="text-red-600">3 pending</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-600">Mike Wilson</span>
+                  <span className="text-red-600">2 pending</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-sm">Expired Policies</h4>
+                <span className="text-xs text-gray-500">View All</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-600">Data Security Policy</span>
+                  <span className="text-red-600">2 days ago</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-600">Code of Conduct</span>
+                  <span className="text-red-600">1 week ago</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-600">Safety Guidelines</span>
+                  <span className="text-red-600">3 days ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Audit History */}
+          <div className="bg-white p-4 rounded-lg border">
+            <h4 className="font-medium mb-3">Audit History</h4>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">14 Jan 2025 08:30</span>
+                  <span className="text-gray-600">John Smith</span>
+                  <span className="text-gray-600">Acknowledged</span>
+                  <span className="text-gray-600">Data Security Policy</span>
+                </div>
+                <span className="bg-green-100 text-green-600 px-2 py-1 rounded text-xs">Completed</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">13 Jan 2025 14:22</span>
+                  <span className="text-gray-600">Sarah Johnson</span>
+                  <span className="text-gray-600">Viewed</span>
+                  <span className="text-gray-600">Code of Conduct</span>
+                </div>
+                <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs">Viewed</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">12 Jan 2025 11:15</span>
+                  <span className="text-gray-600">Mike Wilson</span>
+                  <span className="text-gray-600">Downloaded</span>
+                  <span className="text-gray-600">Safety Guidelines</span>
+                </div>
+                <span className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded text-xs">Downloaded</span>
+              </div>
             </div>
           </div>
         </div>
@@ -128,7 +266,7 @@ export const CustomReportDialog = ({ open, onOpenChange }: CustomReportDialogPro
         {/* Content */}
         <div className="flex flex-1 overflow-hidden">
           {/* Left Column - Form */}
-          <div className="w-1/2 p-6 border-r border-gray-200 overflow-y-auto">
+          <div className="w-1/3 p-6 border-r border-gray-200 overflow-y-auto">
             <div className="space-y-8">
               {/* Select Metrics */}
               <div>
@@ -209,7 +347,7 @@ export const CustomReportDialog = ({ open, onOpenChange }: CustomReportDialogPro
           </div>
 
           {/* Right Column - Preview */}
-          <div className="w-1/2 p-6 bg-gray-50">
+          <div className="w-2/3 p-6 bg-gray-50">
             <div className="h-full">
               {renderPreview()}
             </div>
