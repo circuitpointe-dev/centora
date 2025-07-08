@@ -3,6 +3,7 @@ import { AcknowledgedStatCards } from './acknowledged/AcknowledgedStatCards';
 import { AcknowledgedToolbar } from './acknowledged/AcknowledgedToolbar';
 import { AcknowledgedTable } from './acknowledged/AcknowledgedTable';
 import { BulkReminderDialog } from './acknowledged/BulkReminderDialog';
+import { SingleReminderDialog } from './acknowledged/SingleReminderDialog';
 import { ReminderSuccessDialog } from './acknowledged/ReminderSuccessDialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -105,6 +106,9 @@ export const AcknowledgedDashboard = () => {
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [bulkReminderOpen, setBulkReminderOpen] = useState(false);
   const [bulkReminderMessage, setBulkReminderMessage] = useState('');
+  const [singleReminderOpen, setSingleReminderOpen] = useState(false);
+  const [singleReminderEmployee, setSingleReminderEmployee] = useState<Employee | null>(null);
+  const [singleReminderMessage, setSingleReminderMessage] = useState('');
   const [reminderSuccessOpen, setReminderSuccessOpen] = useState(false);
   const { toast } = useToast();
 
@@ -118,8 +122,25 @@ export const AcknowledgedDashboard = () => {
   });
 
   const handleSendReminder = (employeeId: string) => {
-    console.log('Send reminder to employee:', employeeId);
-    // Implement send reminder logic
+    const employee = employees.find(emp => emp.id === employeeId);
+    if (employee) {
+      setSingleReminderEmployee(employee);
+      setSingleReminderMessage(`Hello ${employee.name},
+
+This is a reminder to review and acknowledge the ${employee.policyAssigned} policy document.
+
+Acknowledging this policy confirms that you have read, understood, and agreed to comply with its contents. This step is required to meet organizational compliance standards.
+
+Thank you`);
+      setSingleReminderOpen(true);
+    }
+  };
+
+  const handleConfirmSingleReminder = () => {
+    console.log('Sending reminder to employee:', singleReminderEmployee?.id);
+    setSingleReminderOpen(false);
+    setReminderSuccessOpen(true);
+    setSingleReminderEmployee(null);
   };
 
   const handleMarkAsExempt = (employeeId: string) => {
@@ -216,6 +237,16 @@ Thank you`);
         message={bulkReminderMessage}
         onMessageChange={setBulkReminderMessage}
         onConfirm={handleConfirmBulkReminder}
+      />
+
+      {/* Single Reminder Dialog */}
+      <SingleReminderDialog
+        open={singleReminderOpen}
+        onOpenChange={setSingleReminderOpen}
+        employee={singleReminderEmployee}
+        message={singleReminderMessage}
+        onMessageChange={setSingleReminderMessage}
+        onConfirm={handleConfirmSingleReminder}
       />
 
       {/* Success Dialog */}

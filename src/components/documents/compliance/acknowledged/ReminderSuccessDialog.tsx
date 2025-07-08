@@ -14,7 +14,7 @@ export const ReminderSuccessDialog: React.FC<ReminderSuccessDialogProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-white">
+      <DialogContent className="max-w-lg bg-white">
         <div className="text-center py-8">
           <div className="mx-auto mb-6 w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center">
             <CheckCircle className="w-8 h-8 text-violet-600" />
