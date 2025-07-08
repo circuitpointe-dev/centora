@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { TemplateCard } from './TemplateCard';
+import { TemplateDetailDialog } from './TemplateDetailDialog';
 
 const templatesData = [
   {
@@ -62,6 +63,8 @@ export const TemplateGallery = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const filteredTemplates = templatesData.filter(template => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -75,22 +78,25 @@ export const TemplateGallery = () => {
 
   const handleUseTemplate = (id: string) => {
     console.log('Use template:', id);
+    // TODO: Implement template usage logic
   };
 
   const handleView = (id: string) => {
-    console.log('View template:', id);
-  };
-
-  const handleDownload = (id: string) => {
-    console.log('Download template:', id);
+    const template = templatesData.find(t => t.id === id);
+    if (template) {
+      setSelectedTemplate(template);
+      setIsDialogOpen(true);
+    }
   };
 
   const handleEdit = (id: string) => {
     console.log('Edit template:', id);
+    // TODO: Implement template editing logic
   };
 
   const handleCreateTemplate = () => {
     console.log('Create new template');
+    // TODO: Implement template creation logic
   };
 
   return (
@@ -189,7 +195,6 @@ export const TemplateGallery = () => {
               viewMode={viewMode}
               onUseTemplate={handleUseTemplate}
               onView={handleView}
-              onDownload={handleDownload}
               onEdit={handleEdit}
             />
           ))}
@@ -240,10 +245,6 @@ export const TemplateGallery = () => {
                           <Eye className="h-4 w-4 mr-2" />
                           Preview
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDownload(template.id)}>
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleEdit(template.id)}>
                           <Edit2 className="h-4 w-4 mr-2" />
                           Edit
@@ -266,6 +267,15 @@ export const TemplateGallery = () => {
           </p>
         </div>
       )}
+
+      {/* Template Detail Dialog */}
+      <TemplateDetailDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        template={selectedTemplate}
+        onUseTemplate={handleUseTemplate}
+        onEdit={handleEdit}
+      />
     </div>
   );
 };

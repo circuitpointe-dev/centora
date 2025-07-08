@@ -78,14 +78,6 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
                 variant="ghost" 
                 size="icon" 
                 className="p-2.5"
-                onClick={() => onDownload?.(id)}
-              >
-                <Download className="w-5 h-5 text-gray-500" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="p-2.5"
                 onClick={() => onEdit?.(id)}
               >
                 <Edit2 className="w-5 h-5 text-gray-500" />
@@ -141,14 +133,6 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
               onClick={() => onView?.(id)}
             >
               <Eye className="w-5 h-5 text-gray-500" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="p-2.5"
-              onClick={() => onDownload?.(id)}
-            >
-              <Download className="w-5 h-5 text-gray-500" />
             </Button>
             <Button 
               variant="ghost" 
