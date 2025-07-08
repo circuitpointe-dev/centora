@@ -156,7 +156,7 @@ export const TemplateGallery = () => {
               size="sm"
               className={cn(
                 "h-7 w-7 p-0",
-                viewMode === 'grid' && "bg-violet-600 text-white hover:bg-violet-700"
+                viewMode === 'grid' && "bg-muted"
               )}
               onClick={() => setViewMode('grid')}
             >
@@ -167,7 +167,7 @@ export const TemplateGallery = () => {
               size="sm"
               className={cn(
                 "h-7 w-7 p-0",
-                viewMode === 'list' && "bg-violet-600 text-white hover:bg-violet-700"
+                viewMode === 'list' && "bg-muted"
               )}
               onClick={() => setViewMode('list')}
             >

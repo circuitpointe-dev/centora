@@ -90,7 +90,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
   }
 
   return (
-    <Card className="w-[325px] overflow-hidden rounded-[5px] pb-4">
+    <Card className="w-[280px] overflow-hidden rounded-[5px] pb-4">
       <div className="relative w-full h-[120px] overflow-hidden">
         <img
           className="w-full h-full object-cover"
