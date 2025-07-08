@@ -116,17 +116,8 @@ export const TemplateGallery = () => {
   };
 
   const handleCreateTemplate = () => {
-    // Create a new template object for editing
-    const newTemplate = {
-      id: 'new',
-      title: 'New Template',
-      category: 'Document',
-      department: 'General',
-      lastUpdated: 'Just now',
-      content: ''
-    };
-    setEditingTemplate(newTemplate);
-    setIsEditing(true);
+    console.log('Create new template');
+    // TODO: Implement template creation logic
   };
 
   // If editing, show the editor
