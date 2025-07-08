@@ -25,7 +25,7 @@ export const ReferenceCard: React.FC<ReferenceCardProps> = ({
   onDownload
 }) => {
   return (
-    <Card className="w-[325px] overflow-hidden rounded-[5px] pb-8">
+    <Card className="w-[325px] overflow-hidden rounded-[5px] pb-4">
       <div className="relative w-full h-[120px] overflow-hidden">
         <img
           className="w-full h-full object-cover"
@@ -34,7 +34,7 @@ export const ReferenceCard: React.FC<ReferenceCardProps> = ({
         />
       </div>
 
-      <CardContent className="flex flex-col items-start gap-6 pt-6 px-4">
+      <CardContent className="flex flex-col items-start gap-4 pt-4 px-4">
         <div className="flex flex-col w-full items-start gap-2">
           <h3 className="font-medium text-base text-[#383838e6] tracking-normal">
             {name}
