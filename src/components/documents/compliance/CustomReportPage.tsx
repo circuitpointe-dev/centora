@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { GeneratedReportPage } from './GeneratedReportPage';
 
 interface CustomReportPageProps {
   onBack: () => void;
@@ -16,6 +17,11 @@ export const CustomReportPage = ({ onBack }: CustomReportPageProps) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [reportFormat, setReportFormat] = useState('pdf');
+  const [showGeneratedReport, setShowGeneratedReport] = useState(false);
+
+  if (showGeneratedReport) {
+    return <GeneratedReportPage onBack={() => setShowGeneratedReport(false)} />;
+  }
 
   const metrics = [
     { id: 'acknowledgement', label: 'Acknowledgement Report' },
@@ -166,6 +172,7 @@ export const CustomReportPage = ({ onBack }: CustomReportPageProps) => {
             <Button
               className="w-full bg-violet-600 hover:bg-violet-700 text-white"
               disabled={selectedMetrics.length === 0}
+              onClick={() => setShowGeneratedReport(true)}
             >
               Generate Report
             </Button>
