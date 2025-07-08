@@ -66,9 +66,9 @@ export const PolicyDetailDialog: React.FC<PolicyDetailDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] bg-white p-0">
+      <DialogContent className="max-w-2xl max-h-[90vh] bg-white p-0 flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-1">
@@ -82,19 +82,11 @@ export const PolicyDetailDialog: React.FC<PolicyDetailDialogProps> = ({
                 <span>Status: {policy.status}</span>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onOpenChange(false)}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-5 w-5" />
-            </Button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
           {/* Overview */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Overview</h3>
@@ -142,7 +134,7 @@ export const PolicyDetailDialog: React.FC<PolicyDetailDialogProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 bg-gray-50">
+        <div className="p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
           <div className="flex items-center justify-between">
             <Button 
               variant="link" 

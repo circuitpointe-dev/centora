@@ -64,15 +64,17 @@ export const PolicyCard: React.FC<PolicyCardProps> = ({ policy, onViewPolicy }) 
             </div>
 
             {/* Action Button */}
-            <Button
-              onClick={() => onViewPolicy(policy)}
-              variant="outline"
-              size="sm"
-              className="w-full group-hover:border-violet-300 group-hover:text-violet-700 transition-colors"
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              View Policy
-            </Button>
+            <div className="mt-auto">
+              <Button
+                onClick={() => onViewPolicy(policy)}
+                variant="outline"
+                size="sm"
+                className="w-full group-hover:border-violet-300 group-hover:text-violet-700 transition-colors"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View Policy
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
