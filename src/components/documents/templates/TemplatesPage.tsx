@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { TemplateGallery } from './TemplateGallery';
+import { ReferenceMaterials } from './ReferenceMaterials';
 
 const TemplatesPage = () => {
   const navigationTabs = [
@@ -41,9 +42,7 @@ const TemplatesPage = () => {
         </TabsContent>
 
         <TabsContent value="reference" className="mt-6">
-          <div className="text-center py-12">
-            <p className="text-gray-500">Reference Materials coming soon</p>
-          </div>
+          <ReferenceMaterials />
         </TabsContent>
       </Tabs>
     </div>
