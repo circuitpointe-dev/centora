@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Search, Grid3X3, List, Filter, Plus } from 'lucide-react';
+import { Search, Grid2X2, List, Filter, Plus, Eye, Download, Edit2, MoreHorizontal, Play } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 import { TemplateCard } from './TemplateCard';
 
 const templatesData = [
@@ -109,20 +111,26 @@ export const TemplateGallery = () => {
         {/* Right side controls */}
         <div className="flex items-center gap-3">
           {/* View Mode Toggle */}
-          <div className="flex items-center border rounded-md">
+          <div className="flex items-center gap-1 border rounded-md p-1">
             <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              variant="ghost"
               size="sm"
+              className={cn(
+                "h-7 w-7 p-0",
+                viewMode === 'grid' && "bg-muted"
+              )}
               onClick={() => setViewMode('grid')}
-              className={`rounded-r-none ${viewMode === 'grid' ? 'bg-violet-600 hover:bg-violet-700 text-white' : ''}`}
             >
-              <Grid3X3 className="h-4 w-4" />
+              <Grid2X2 className="h-4 w-4" />
             </Button>
             <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              variant="ghost"
               size="sm"
+              className={cn(
+                "h-7 w-7 p-0",
+                viewMode === 'list' && "bg-muted"
+              )}
               onClick={() => setViewMode('list')}
-              className={`rounded-l-none ${viewMode === 'list' ? 'bg-violet-600 hover:bg-violet-700 text-white' : ''}`}
             >
               <List className="h-4 w-4" />
             </Button>
@@ -166,28 +174,89 @@ export const TemplateGallery = () => {
         </div>
       </div>
 
-      {/* Templates Grid/List */}
-      <div className={`${viewMode === 'grid' 
-        ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8' 
-        : 'flex flex-col gap-4'
-      }`}>
-        {filteredTemplates.map((template) => (
-          <TemplateCard
-            key={template.id}
-            id={template.id}
-            title={template.title}
-            category={template.category}
-            department={template.department}
-            lastUpdated={template.lastUpdated}
-            image={template.image}
-            viewMode={viewMode}
-            onUseTemplate={handleUseTemplate}
-            onView={handleView}
-            onDownload={handleDownload}
-            onEdit={handleEdit}
-          />
-        ))}
-      </div>
+      {/* Templates Display */}
+      {viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredTemplates.map((template) => (
+            <TemplateCard
+              key={template.id}
+              id={template.id}
+              title={template.title}
+              category={template.category}
+              department={template.department}
+              lastUpdated={template.lastUpdated}
+              image={template.image}
+              viewMode={viewMode}
+              onUseTemplate={handleUseTemplate}
+              onView={handleView}
+              onDownload={handleDownload}
+              onEdit={handleEdit}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-semibold">Template Name</TableHead>
+                <TableHead className="font-semibold">Category</TableHead>
+                <TableHead className="font-semibold">Department</TableHead>
+                <TableHead className="font-semibold">Last Updated</TableHead>
+                <TableHead className="font-semibold w-16">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredTemplates.map((template) => (
+                <TableRow key={template.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-10 h-8 rounded overflow-hidden flex-shrink-0">
+                        <img
+                          className="w-full h-full object-cover"
+                          alt={`${template.title} Preview`}
+                          src={template.image}
+                        />
+                      </div>
+                      <div className="font-medium text-gray-900">{template.title}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-gray-600">{template.category}</TableCell>
+                  <TableCell className="text-gray-600">{template.department}</TableCell>
+                  <TableCell className="text-gray-600">{template.lastUpdated}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleUseTemplate(template.id)}>
+                          <Play className="h-4 w-4 mr-2" />
+                          Use as Template
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleView(template.id)}>
+                          <Eye className="h-4 w-4 mr-2" />
+                          Preview
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDownload(template.id)}>
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEdit(template.id)}>
+                          <Edit2 className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Empty State */}
       {filteredTemplates.length === 0 && (
