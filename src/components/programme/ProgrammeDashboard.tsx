@@ -45,10 +45,10 @@ const budgetData = [
 ];
 
 const financialAllocationData = [
-  { name: 'Project D', value: 350 },
-  { name: 'Project C', value: 280 },
-  { name: 'Project B', value: 380 },
-  { name: 'Project A', value: 150 },
+  { name: 'Project A', value: 350 },
+  { name: 'Project B', value: 280 },
+  { name: 'Project C', value: 380 },
+  { name: 'Project D', value: 150 },
 ];
 
 const upcomingMilestones = [
@@ -170,9 +170,9 @@ const ProgrammeDashboard = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="onTrack" stackId="a" fill="#22C55E" name="On-Track" />
-                  <Bar dataKey="atRisk" stackId="a" fill="#EAB308" name="At Risk" />
-                  <Bar dataKey="delayed" stackId="a" fill="#EF4444" name="Delayed" />
+                  <Bar dataKey="onTrack" stackId="a" fill="#22C55E" name="On-Track" style={{ filter: 'none' }} />
+                  <Bar dataKey="atRisk" stackId="a" fill="#EAB308" name="At Risk" style={{ filter: 'none' }} />
+                  <Bar dataKey="delayed" stackId="a" fill="#EF4444" name="Delayed" style={{ filter: 'none' }} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -229,7 +229,7 @@ const ProgrammeDashboard = () => {
                 <XAxis type="number" domain={[0, 400]} tickCount={9} />
                 <YAxis dataKey="name" type="category" />
                 <Tooltip />
-                <Bar dataKey="value" fill="#3B82F6" />
+                <Bar dataKey="value" fill="#3B82F6" style={{ filter: 'none' }} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
