@@ -14,7 +14,7 @@ export const getModuleName = (moduleId: string) => {
     inventory: 'Inventory Management',
     finance: 'Finance & Control',
     learning: 'Learning Management',
-    documents: 'Document Management',
+    documents: 'Document Manager',
     hr: 'HR Management',
     users: 'User Management',
     grants: 'Grants Management',

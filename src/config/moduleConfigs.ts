@@ -81,7 +81,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     ]
   },
   documents: {
-    name: 'Document Management',
+    name: 'Document Manager',
     icon: FileText,
     color: 'text-gray-600',
     features: [

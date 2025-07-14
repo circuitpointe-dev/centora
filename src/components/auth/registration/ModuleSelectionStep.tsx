@@ -20,7 +20,7 @@ const ModuleSelectionStep = ({
     "Inventory Management",
     "Finance & Control",
     "Learning Management",
-    "Document Management",
+    "Document Manager",
     "Human Resources Management",
     "Users Management",
     "Grant Management",
