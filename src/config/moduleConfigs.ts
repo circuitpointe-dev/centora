@@ -19,6 +19,11 @@ import {
   FileSignature,
   Shield,
   File,
+  Briefcase,
+  FolderKanban,
+  Network,
+  MapPin,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface ModuleFeature {
@@ -99,10 +104,12 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     color: 'text-blue-600',
     features: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'project-management', name: 'Project Management', icon: Target },
-      { id: 'beneficiary-management', name: 'Beneficiary Management', icon: Users },
-      { id: 'impact-tracking', name: 'Impact Tracking', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
+      { id: 'projects', name: 'Projects', icon: FolderKanban },
+      { id: 'products', name: 'Products', icon: Briefcase },
+      { id: 'me-framework', name: 'M&E Framework', icon: Target },
+      { id: 'collaboration-knowledge', name: 'Collaboration & Knowledge Hub', icon: Network },
+      { id: 'resources-risk', name: 'Resources & Risk Management', icon: AlertTriangle },
+      { id: 'gis-report', name: 'GIS & Report', icon: MapPin },
     ]
   },
   procurement: {
