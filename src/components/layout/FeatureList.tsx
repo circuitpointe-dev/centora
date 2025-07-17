@@ -33,16 +33,22 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
   return (
     <div className="p-4 space-y-2 h-full overflow-y-auto">
       {features?.map((feature) => {
-        // Simplified route matching logic
+        // Enhanced route matching logic
         const isActive = (() => {
+          const currentPath = location.pathname;
+          
           if (feature.id === 'dashboard') {
-            // For dashboard, check if we're on the main module dashboard route or just the module route
-            return location.pathname === `/dashboard/${currentModule}` || 
-                   location.pathname === `/dashboard/${currentModule}/dashboard` ||
-                   location.pathname.endsWith(`/dashboard/${currentModule}`);
+            // For dashboard, check all possible dashboard routes
+            const dashboardPaths = [
+              `/dashboard/${currentModule}`,
+              `/dashboard/${currentModule}/`,
+              `/dashboard/${currentModule}/dashboard`,
+              `/dashboard/${currentModule}/dashboard/`
+            ];
+            return dashboardPaths.some(path => currentPath === path);
           } else {
             // For other features, check if the route includes the feature id
-            return location.pathname.includes(`/${currentModule}/${feature.id}`);
+            return currentPath.includes(`/${currentModule}/${feature.id}`);
           }
         })();
         
