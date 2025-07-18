@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export const GrantsProgressCard = () => {
   // Data for progress bars
@@ -9,10 +10,16 @@ export const GrantsProgressCard = () => {
     { value: 75, color: "bg-violet-400", width: "75%" },
   ];
 
+  // Data for checkboxes
+  const checkboxItems = [
+    { id: "disbursement", label: "Disbursement", color: "#7C3AED" },
+    { id: "spending", label: "Spending", color: "#AD8AF5" },
+  ];
+
   return (
-    <Card className="shadow-[0_4px_16px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)] transition-shadow duration-300 border-0">
+    <Card className="border border-violet-200 rounded-lg h-full">
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium text-gray-700">Portfolio Progress</CardTitle>
+        <CardTitle className="text-sm font-medium">Portfolio Progress</CardTitle>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <div className="space-y-6">
@@ -34,6 +41,26 @@ export const GrantsProgressCard = () => {
                 style={{ width: progressData[1].width }}
               />
             </div>
+          </div>
+
+          {/* Checkbox section */}
+          <div className="flex gap-8 pt-2">
+            {checkboxItems.map((item) => (
+              <div key={item.id} className="flex items-center gap-3">
+                <Checkbox
+                  id={item.id}
+                  className="w-5 h-5 border-2"
+                  style={{ borderColor: item.color }}
+                  defaultChecked
+                />
+                <label
+                  htmlFor={item.id}
+                  className="text-sm text-gray-700 cursor-pointer"
+                >
+                  {item.label}
+                </label>
+              </div>
+            ))}
           </div>
         </div>
       </CardContent>
