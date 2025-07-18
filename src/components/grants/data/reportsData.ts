@@ -40,18 +40,10 @@ export const reportsData: Report[] = [
     status: "Overdue"
   },
   {
-    id: 5,
-    grantId: 1,
-    reportType: "Financial Report",
-    dueDate: "2025-09-15",
-    submitted: false,
-    status: "Upcoming"
-  },
-  {
     id: 6,
     grantId: 2,
     reportType: "Narrative Report",
-    dueDate: "2024-08-20",
+    dueDate: "2025-07-11",
     submitted: false,
     status: "In Progress"
   },
