@@ -12,8 +12,8 @@ export const GrantsStatisticsCards = () => {
     
     return (
       <div className="flex flex-col items-center">
-        <div className="relative w-16 h-16">
-          <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 100 100">
+        <div className="relative w-24 h-24">
+          <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
             <circle
               cx="50"
               cy="50"
@@ -36,7 +36,7 @@ export const GrantsStatisticsCards = () => {
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-sm font-bold" style={{ color }}>{percentage}%</span>
+            <span className="text-xl font-bold" style={{ color }}>{percentage}%</span>
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-2 text-center">{title}</p>
@@ -104,19 +104,19 @@ export const GrantsStatisticsCards = () => {
       {/* Second Row - Ring Charts and Portfolio Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="hover:shadow-xl transition-all duration-300 shadow-lg border border-purple-200">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-center">Disbursement Rate (%)</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center pb-4">
+          <CardContent className="flex justify-center">
             <RingChart percentage={85} color="#8B5CF6" title="" />
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-xl transition-all duration-300 shadow-lg border border-blue-200">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-center">Compliance (%)</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center pb-4">
+          <CardContent className="flex justify-center">
             <RingChart percentage={65} color="#3B82F6" title="" />
           </CardContent>
         </Card>
