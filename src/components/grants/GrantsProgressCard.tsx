@@ -4,63 +4,65 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 
 export const GrantsProgressCard = () => {
-  // Data for progress bars
+  // Data for progress bars with labels and amounts
   const progressData = [
-    { value: 81, color: "bg-violet-600", width: "81%" },
-    { value: 75, color: "bg-violet-400", width: "75%" },
-  ];
-
-  // Data for checkboxes
-  const checkboxItems = [
-    { id: "disbursement", label: "Disbursement", color: "#7C3AED" },
-    { id: "spending", label: "Spending", color: "#AD8AF5" },
+    { 
+      label: "Disbursed Funds", 
+      value: 75, 
+      color: "bg-blue-500", 
+      width: "75%", 
+      amount: "$7,500,000",
+      description: "Released over allocated"
+    },
+    { 
+      label: "Spent Funds", 
+      value: 93, 
+      color: "bg-red-500", 
+      width: "93%", 
+      amount: "$7,000,000",
+      description: "Expended over released"
+    },
   ];
 
   return (
-    <Card className="border border-violet-200 rounded-lg h-full">
+    <Card className="border border-violet-200 rounded-lg h-full shadow-lg hover:shadow-xl transition-all duration-300">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium">Portfolio Progress</CardTitle>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <div className="space-y-6">
-          {/* First progress bar */}
+          {/* Disbursed Funds Progress */}
           <div className="space-y-2">
-            <div className="h-3.5 rounded-full bg-gray-100">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-gray-600">{progressData[0].label} - {progressData[0].amount}</span>
+            </div>
+            <div className="h-2 rounded-full bg-gray-100">
               <div
-                className={`${progressData[0].color} h-3.5 rounded-full transition-all duration-500`}
+                className={`${progressData[0].color} h-2 rounded-full transition-all duration-500`}
                 style={{ width: progressData[0].width }}
               />
             </div>
           </div>
 
-          {/* Second progress bar */}
+          {/* Spent Funds Progress */}
           <div className="space-y-2">
-            <div className="h-3.5 rounded-full bg-gray-100">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-gray-600">{progressData[1].label} - {progressData[1].amount}</span>
+            </div>
+            <div className="h-2 rounded-full bg-gray-100">
               <div
-                className={`${progressData[1].color} h-3.5 rounded-full transition-all duration-500`}
+                className={`${progressData[1].color} h-2 rounded-full transition-all duration-500`}
                 style={{ width: progressData[1].width }}
               />
             </div>
           </div>
 
-          {/* Checkbox section */}
-          <div className="flex gap-8 pt-2">
-            {checkboxItems.map((item) => (
-              <div key={item.id} className="flex items-center gap-3">
-                <Checkbox
-                  id={item.id}
-                  className="w-5 h-5 border-2"
-                  style={{ borderColor: item.color }}
-                  defaultChecked
-                />
-                <label
-                  htmlFor={item.id}
-                  className="text-sm text-gray-700 cursor-pointer"
-                >
-                  {item.label}
-                </label>
-              </div>
-            ))}
+          {/* Total burn rate display */}
+          <div className="pt-2 border-t border-gray-100">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-600">Total burn rate (%)</span>
+              <span className="text-lg font-bold text-gray-900">93%</span>
+            </div>
           </div>
         </div>
       </CardContent>
