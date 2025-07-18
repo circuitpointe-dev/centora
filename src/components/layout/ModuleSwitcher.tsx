@@ -30,13 +30,8 @@ const ModuleSwitcher = ({ currentModule, isCollapsed, onModuleSwitch }: ModuleSw
         {!isCollapsed && (
           <div className="mb-3">
             <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-              {isDonor ? "Available Module" : "Switch Module"}
+              Switch Module
             </h3>
-            {isDonor && (
-              <p className="text-xs text-gray-400 mb-2">
-                Donors have access to Grants Management only
-              </p>
-            )}
           </div>
         )}
         {availableModules.map((moduleId) => {
@@ -54,15 +49,9 @@ const ModuleSwitcher = ({ currentModule, isCollapsed, onModuleSwitch }: ModuleSw
                 isCollapsed ? "px-2" : "px-3",
                 isCurrentModule 
                   ? "bg-violet-700 text-white hover:bg-violet-800" 
-                  : "hover:bg-violet-100 hover:text-violet-900",
-                isDonor && !isCurrentModule && "opacity-50 cursor-not-allowed"
+                  : "hover:bg-violet-100 hover:text-violet-900"
               )}
-              onClick={() => {
-                if (!isDonor || isCurrentModule) {
-                  onModuleSwitch(moduleId);
-                }
-              }}
-              disabled={isDonor && !isCurrentModule}
+              onClick={() => onModuleSwitch(moduleId)}
             >
               <module.icon className={cn("h-4 w-4", module.color, isCollapsed ? "" : "mr-3")} />
               {!isCollapsed && <span className="text-sm font-light">{module.name}</span>}
