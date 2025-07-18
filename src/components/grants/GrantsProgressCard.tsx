@@ -25,14 +25,14 @@ export const GrantsProgressCard = () => {
   ];
 
   return (
-    <Card className="border border-violet-200 rounded-lg h-full shadow-lg hover:shadow-xl transition-all duration-300">
-      <CardHeader className="pb-3">
+    <Card className="border border-violet-200 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+      <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">Portfolio Progress</CardTitle>
       </CardHeader>
-      <CardContent className="p-6 pt-0">
-        <div className="space-y-6">
+      <CardContent className="py-3 px-6">
+        <div className="space-y-4">
           {/* Disbursed Funds Progress */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <div className="flex justify-between items-center text-xs">
               <span className="text-gray-600">{progressData[0].label} - {progressData[0].amount}</span>
             </div>
@@ -45,7 +45,7 @@ export const GrantsProgressCard = () => {
           </div>
 
           {/* Spent Funds Progress */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <div className="flex justify-between items-center text-xs">
               <span className="text-gray-600">{progressData[1].label} - {progressData[1].amount}</span>
             </div>
@@ -58,10 +58,10 @@ export const GrantsProgressCard = () => {
           </div>
 
           {/* Total burn rate display */}
-          <div className="pt-2 border-t border-gray-100">
+          <div className="pt-1 border-t border-gray-100">
             <div className="flex justify-between items-center">
               <span className="text-xs text-gray-600">Total burn rate (%)</span>
-              <span className="text-lg font-bold text-gray-900">93%</span>
+              <span className="text-sm font-bold text-gray-900">93%</span>
             </div>
           </div>
         </div>
