@@ -12,8 +12,8 @@ export const GrantsStatisticsCards = () => {
     
     return (
       <div className="flex flex-col items-center">
-        <div className="relative w-24 h-24">
-          <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+        <div className="relative w-16 h-16">
+          <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 100 100">
             <circle
               cx="50"
               cy="50"
@@ -36,7 +36,7 @@ export const GrantsStatisticsCards = () => {
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xl font-bold" style={{ color }}>{percentage}%</span>
+            <span className="text-sm font-bold" style={{ color }}>{percentage}%</span>
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-2 text-center">{title}</p>

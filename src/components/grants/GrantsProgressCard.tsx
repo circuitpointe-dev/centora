@@ -25,7 +25,7 @@ export const GrantsProgressCard = () => {
   ];
 
   return (
-    <Card className="border border-violet-200 rounded-lg h-full shadow-lg hover:shadow-xl transition-all duration-300">
+    <Card className="border border-violet-200 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium">Portfolio Progress</CardTitle>
       </CardHeader>
