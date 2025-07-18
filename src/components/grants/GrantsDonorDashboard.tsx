@@ -5,6 +5,7 @@ import { Plus, Award, CheckCircle, Archive, TrendingUp, FileCheck, AlertCircle }
 import { GrantsStatisticsCards } from './GrantsStatisticsCards';
 import { GrantsProgressCard } from './GrantsProgressCard';
 import { GrantsTable } from './GrantsTable';
+import UpcomingReportingDeadlines from './UpcomingReportingDeadlines';
 const GrantsDonorDashboard = () => {
   return <div className="space-y-6 p-6">
       <div>
@@ -16,6 +17,9 @@ const GrantsDonorDashboard = () => {
 
       {/* Statistics Cards Section */}
       <GrantsStatisticsCards />
+
+      {/* Upcoming Reporting Deadlines Section */}
+      <UpcomingReportingDeadlines />
 
       {/* Grants Table Section */}
       <GrantsTable />
