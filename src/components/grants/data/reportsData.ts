@@ -15,7 +15,7 @@ export const reportsData: Report[] = [
     id: 1,
     grantId: 1,
     reportType: "Narrative Report",
-    dueDate: "2024-07-15",
+    dueDate: "2025-07-15",
     submitted: true,
     status: "Submitted",
     submittedDate: "2024-07-12",
@@ -28,14 +28,14 @@ export const reportsData: Report[] = [
     dueDate: "2024-07-15",
     submitted: true,
     status: "Submitted",
-    submittedDate: "2024-07-14",
+    submittedDate: "2025-07-14",
     fileName: "financial_report_q2_2024.pdf"
   },
   {
     id: 3,
     grantId: 1,
     reportType: "Progress Report",
-    dueDate: "2024-08-30",
+    dueDate: "2025-08-30",
     submitted: false,
     status: "Upcoming"
   },
@@ -101,7 +101,7 @@ export const reportsData: Report[] = [
     id: 11,
     grantId: 2,
     reportType: "Quarterly Report",
-    dueDate: "2024-07-20",
+    dueDate: "2025-06-20",
     submitted: false,
     status: "Upcoming"
   },
@@ -109,7 +109,7 @@ export const reportsData: Report[] = [
     id: 12,
     grantId: 3,
     reportType: "Financial Report",
-    dueDate: "2024-07-22",
+    dueDate: "2025-06-22",
     submitted: false,
     status: "Upcoming"
   },
@@ -125,7 +125,7 @@ export const reportsData: Report[] = [
     id: 14,
     grantId: 2,
     reportType: "Progress Report",
-    dueDate: "2024-07-28",
+    dueDate: "2025-07-28",
     submitted: false,
     status: "Upcoming"
   },
@@ -133,7 +133,7 @@ export const reportsData: Report[] = [
     id: 15,
     grantId: 1,
     reportType: "Compliance Check",
-    dueDate: "2024-08-05",
+    dueDate: "2025-08-05",
     submitted: false,
     status: "Upcoming"
   },
@@ -141,7 +141,7 @@ export const reportsData: Report[] = [
     id: 16,
     grantId: 3,
     reportType: "Annual Report",
-    dueDate: "2024-08-15",
+    dueDate: "2025-08-15",
     submitted: false,
     status: "Upcoming"
   }
