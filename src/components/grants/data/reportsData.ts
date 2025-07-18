@@ -32,14 +32,6 @@ export const reportsData: Report[] = [
     fileName: "financial_report_q2_2024.pdf"
   },
   {
-    id: 3,
-    grantId: 1,
-    reportType: "Progress Report",
-    dueDate: "2025-08-30",
-    submitted: false,
-    status: "Upcoming"
-  },
-  {
     id: 4,
     grantId: 1,
     reportType: "Narrative Report",
@@ -102,14 +94,6 @@ export const reportsData: Report[] = [
     grantId: 2,
     reportType: "Quarterly Report",
     dueDate: "2025-07-20",
-    submitted: false,
-    status: "Upcoming"
-  },
-  {
-    id: 16,
-    grantId: 3,
-    reportType: "Annual Report",
-    dueDate: "2025-07-15",
     submitted: false,
     status: "Upcoming"
   }
