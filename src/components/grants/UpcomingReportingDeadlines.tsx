@@ -35,7 +35,7 @@ const UpcomingReportingDeadlines = () => {
         urgencyText: `Due in ${days} days`,
         priority: 2
       };
-    } else if (days <= 15) {
+    } else {
       return {
         color: 'green',
         dotColor: 'bg-green-500',
@@ -44,16 +44,14 @@ const UpcomingReportingDeadlines = () => {
         priority: 3
       };
     }
-    return null;
   };
 
-  // Filter and process reports for upcoming deadlines (within 15 days)
+  // Filter and process reports for upcoming deadlines
   const upcomingReports = reportsData
     .filter(report => !report.submitted && report.status !== 'Overdue')
     .map(report => {
       const days = getDaysUntilDue(report.dueDate);
       const urgencyInfo = getUrgencyInfo(days);
-      if (!urgencyInfo) return null;
 
       const grant = grantsData.find(g => g.id === report.grantId);
       
@@ -65,21 +63,17 @@ const UpcomingReportingDeadlines = () => {
       };
     })
     .filter(Boolean)
-    .sort((a, b) => a!.urgencyInfo.priority - b!.urgencyInfo.priority)
-    .slice(0, 3); // Show only top 3 most urgent
+    .sort((a, b) => a!.urgencyInfo.priority - b!.urgencyInfo.priority);
 
   const reportCount = upcomingReports.length;
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div>
         <h2 className="text-lg font-medium text-gray-900">Upcoming Reporting Deadlines</h2>
-        <Badge variant="outline" className="text-xs">
-          COUNT: {reportCount}
-        </Badge>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {upcomingReports.map((report) => (
           <Card key={report!.id} className="border border-gray-200 rounded-sm shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
@@ -115,22 +109,12 @@ const UpcomingReportingDeadlines = () => {
             </CardContent>
           </Card>
         ))}
-        
-        {/* Fill empty slots if less than 3 reports */}
-        {Array.from({ length: Math.max(0, 3 - reportCount) }, (_, index) => (
-          <Card key={`empty-${index}`} className="border border-gray-100 rounded-sm shadow-sm opacity-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                No upcoming reports
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 space-y-3">
-              <div className="text-xs text-gray-400">
-                All reports are up to date
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      </div>
+
+      <div className="flex justify-end">
+        <Badge variant="outline" className="text-xs">
+          COUNT: {reportCount}
+        </Badge>
       </div>
     </div>
   );

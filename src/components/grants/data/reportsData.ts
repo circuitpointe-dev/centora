@@ -96,5 +96,53 @@ export const reportsData: Report[] = [
     dueDate: "2024-11-15",
     submitted: false,
     status: "Upcoming"
+  },
+  {
+    id: 11,
+    grantId: 2,
+    reportType: "Quarterly Report",
+    dueDate: "2024-07-20",
+    submitted: false,
+    status: "Upcoming"
+  },
+  {
+    id: 12,
+    grantId: 3,
+    reportType: "Financial Report",
+    dueDate: "2024-07-22",
+    submitted: false,
+    status: "Upcoming"
+  },
+  {
+    id: 13,
+    grantId: 3,
+    reportType: "Impact Report",
+    dueDate: "2024-07-25",
+    submitted: false,
+    status: "Upcoming"
+  },
+  {
+    id: 14,
+    grantId: 2,
+    reportType: "Progress Report",
+    dueDate: "2024-07-28",
+    submitted: false,
+    status: "Upcoming"
+  },
+  {
+    id: 15,
+    grantId: 1,
+    reportType: "Compliance Check",
+    dueDate: "2024-08-05",
+    submitted: false,
+    status: "Upcoming"
+  },
+  {
+    id: 16,
+    grantId: 3,
+    reportType: "Annual Report",
+    dueDate: "2024-08-15",
+    submitted: false,
+    status: "Upcoming"
   }
 ];
