@@ -42,7 +42,7 @@ const DEMO_USERS: User[] = [
     name: "Millicent Ogbu",
     organization: "AmplifyChange",
     userType: "Donor",
-    subscribedModules: ["grants"]
+    subscribedModules: ["fundraising", "grants", "documents", "programme", "procurement", "inventory", "finance", "learning", "hr", "users"]
   }
 ];
 

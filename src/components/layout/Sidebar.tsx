@@ -64,8 +64,7 @@ const Sidebar = ({
     return null;
   }
 
-  const isDonor = user.userType === "Donor";
-  const canSwitchModules = !isDonor && user.subscribedModules.length > 1;
+  const canSwitchModules = user.subscribedModules.length > 1;
 
   return (
     <>
