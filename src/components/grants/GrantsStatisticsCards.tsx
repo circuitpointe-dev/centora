@@ -104,19 +104,19 @@ export const GrantsStatisticsCards = () => {
       {/* Second Row - Ring Charts and Portfolio Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="hover:shadow-xl transition-all duration-300 shadow-lg border border-purple-200">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-center">Disbursement Rate (%)</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent className="flex justify-center pb-4">
             <RingChart percentage={85} color="#8B5CF6" title="" />
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-xl transition-all duration-300 shadow-lg border border-blue-200">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-center">Compliance (%)</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent className="flex justify-center pb-4">
             <RingChart percentage={65} color="#3B82F6" title="" />
           </CardContent>
         </Card>
