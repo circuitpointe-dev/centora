@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-// Card components are no longer needed, so they are removed from the import
-// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Plus } from 'lucide-react';
+import { Plus, Grid3X3, List } from 'lucide-react';
 import { GrantsTableFilters } from './components/GrantsTableFilters';
 import { GrantsTableRow } from './components/GrantsTableRow';
+import { GrantsGridCard } from './components/GrantsGridCard';
 import { ExportDropdown } from './components/ExportDropdown';
 import { EmptyGrantsState } from './components/EmptyGrantsState';
 import { useGrantsFilters } from './hooks/useGrantsFilters';
 
 export const GrantsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const { filters, setFilters, filteredData } = useGrantsFilters();
 
   const itemsPerPage = 5;
@@ -34,6 +34,26 @@ export const GrantsTable = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 mt-6"> {/* Replaced CardHeader with a div and added margin */}
         <h2 className="text-xl font-medium">Grants Portfolio</h2> {/* Replaced CardTitle with h2, maintaining style */}
         <div className="flex gap-2">
+          {/* View Mode Toggle */}
+          <div className="flex bg-muted rounded-md p-1">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+              className="h-8 px-3"
+            >
+              <Grid3X3 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className="h-8 px-3"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+          
           <ExportDropdown data={filteredData} />
           <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
             <Link to="/dashboard/grants/new">
@@ -55,27 +75,36 @@ export const GrantsTable = () => {
           <EmptyGrantsState />
         ) : (
           <>
-            {/* Table */}
-            <div className="rounded-md border mt-4"> {/* Added margin-top to separate from filters */}
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Grant Name</TableHead>
-                    <TableHead>Organization</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Compliance</TableHead>
-                    <TableHead>Disbursement</TableHead>
-                    <TableHead>Reporting Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {currentData.map((grant) => (
-                    <GrantsTableRow key={grant.id} grant={grant} />
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+            {viewMode === 'list' ? (
+              /* Table View */
+              <div className="rounded-md border mt-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Grant Name</TableHead>
+                      <TableHead>Organization</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Compliance</TableHead>
+                      <TableHead>Disbursement</TableHead>
+                      <TableHead>Reporting Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentData.map((grant) => (
+                      <GrantsTableRow key={grant.id} grant={grant} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              /* Grid View */
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                {currentData.map((grant) => (
+                  <GrantsGridCard key={grant.id} grant={grant} />
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
             <div className="mt-6">
