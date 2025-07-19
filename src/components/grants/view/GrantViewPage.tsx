@@ -63,28 +63,28 @@ const GrantViewPage = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="border-b border-gray-200">
-          <TabsList className="h-auto p-0 bg-transparent">
+          <TabsList className="h-auto p-0 bg-transparent w-full justify-start">
             <TabsTrigger 
               value="overview" 
-              className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none px-6 py-3"
+              className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none flex-1 py-3"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger 
               value="reports" 
-              className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none px-6 py-3"
+              className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none flex-1 py-3"
             >
               Reports
             </TabsTrigger>
             <TabsTrigger 
               value="disbursements" 
-              className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none px-6 py-3"
+              className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none flex-1 py-3"
             >
               Disbursements
             </TabsTrigger>
             <TabsTrigger 
               value="compliance" 
-              className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none px-6 py-3"
+              className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none flex-1 py-3"
             >
               Compliance
             </TabsTrigger>
