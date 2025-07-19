@@ -35,7 +35,7 @@ export const reportsData: Report[] = [
     id: 4,
     grantId: 1,
     reportType: "Narrative Report",
-    dueDate: "2025-06-15",
+    dueDate: "2025-07-18",
     submitted: false,
     status: "Overdue"
   },
@@ -61,7 +61,7 @@ export const reportsData: Report[] = [
     id: 8,
     grantId: 1,
     reportType: "Impact Assessment",
-    dueDate: "2025-07-15",
+    dueDate: "2025-07-20",
     submitted: false,
     status: "Upcoming"
   },
@@ -69,7 +69,7 @@ export const reportsData: Report[] = [
     id: 9,
     grantId: 1,
     reportType: "Compliance Report",
-    dueDate: "2024-05-30",
+    dueDate: "2025-08-10",
     submitted: false,
     status: "Overdue"
   },
