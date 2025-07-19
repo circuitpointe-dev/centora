@@ -37,7 +37,7 @@ export const GrantsTable = () => {
           {/* View Mode Toggle */}
           <div className="flex bg-muted rounded-md p-1">
             <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('grid')}
               className="h-8 px-3"
@@ -45,7 +45,7 @@ export const GrantsTable = () => {
               <Grid3X3 className="h-4 w-4" />
             </Button>
             <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
               className="h-8 px-3"
@@ -99,7 +99,7 @@ export const GrantsTable = () => {
               </div>
             ) : (
               /* Grid View */
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                 {currentData.map((grant) => (
                   <GrantsGridCard key={grant.id} grant={grant} />
                 ))}

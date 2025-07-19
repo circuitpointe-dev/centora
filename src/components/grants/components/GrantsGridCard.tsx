@@ -68,11 +68,11 @@ export const GrantsGridCard: React.FC<GrantsGridCardProps> = ({ grant }) => {
         </div>
 
         {/* Status */}
-        <div>
-          <h3 className="font-medium text-foreground mb-1">Status</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium text-foreground">Status</h3>
           <Badge 
             variant="secondary" 
-            className={`${getStatusColor(grant.status)} text-white`}
+            className={`${getStatusColor(grant.status)} text-white border-0`}
           >
             {grant.status}
           </Badge>
