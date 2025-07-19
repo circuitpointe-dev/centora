@@ -111,7 +111,7 @@ const UpcomingReportingDeadlines = () => {
         ))}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-start">
         <Badge variant="outline" className="text-xs">
           COUNT: {reportCount}
         </Badge>
