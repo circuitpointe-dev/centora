@@ -16,7 +16,7 @@ export const GrantsTable = () => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const { filters, setFilters, filteredData } = useGrantsFilters();
 
-  const itemsPerPage = 5;
+  const itemsPerPage = viewMode === 'grid' ? 12 : 5;
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -37,18 +37,18 @@ export const GrantsTable = () => {
           {/* View Mode Toggle */}
           <div className="flex bg-muted rounded-md p-1">
             <Button
-              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+              variant="ghost"
               size="sm"
               onClick={() => setViewMode('grid')}
-              className="h-8 px-3"
+              className={`h-8 px-3 ${viewMode === 'grid' ? 'bg-background shadow-sm' : ''}`}
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
             <Button
-              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+              variant="ghost"
               size="sm"
               onClick={() => setViewMode('list')}
-              className="h-8 px-3"
+              className={`h-8 px-3 ${viewMode === 'list' ? 'bg-background shadow-sm' : ''}`}
             >
               <List className="h-4 w-4" />
             </Button>

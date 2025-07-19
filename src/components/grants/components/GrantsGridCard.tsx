@@ -72,7 +72,7 @@ export const GrantsGridCard: React.FC<GrantsGridCardProps> = ({ grant }) => {
           <h3 className="font-medium text-foreground">Status</h3>
           <Badge 
             variant="secondary" 
-            className={`${getStatusColor(grant.status)} text-white border-0`}
+            className={`${getStatusColor(grant.status)} text-black border-0`}
           >
             {grant.status}
           </Badge>
