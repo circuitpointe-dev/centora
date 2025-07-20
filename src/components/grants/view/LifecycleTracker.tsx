@@ -22,10 +22,10 @@ export const LifecycleTracker: React.FC<LifecycleTrackerProps> = ({ currentStatu
 
   const currentIndex = getCurrentStageIndex();
   
-  // Update stages with active status
+  // Update stages with active status - only current stage is active
   const updatedStages = stages.map((stage, index) => ({
     ...stage,
-    isActive: index <= currentIndex
+    isActive: index === currentIndex
   }));
 
   const progressPercentage = ((currentIndex + 1) / stages.length) * 100;
