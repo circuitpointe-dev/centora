@@ -2,17 +2,22 @@ import React, { useState } from 'react';
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Edit, Save, X } from 'lucide-react';
 import { grantsData } from '../data/grantsData';
 import Overview from './Overview';
+import EditableOverview from './EditableOverview';
 import { ReportsTable } from './ReportsTable';
 import { DisbursementsTable } from './DisbursementsTable';
 import { ComplianceTable } from './ComplianceTable';
+import { useToast } from "@/hooks/use-toast";
 
 const GrantViewPage = () => {
   const { grantId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedData, setEditedData] = useState({});
 
   // Find the grant by ID
   const grant = grantsData.find(g => g.id === parseInt(grantId || '0'));
@@ -27,6 +32,36 @@ const GrantViewPage = () => {
 
   const handleCloseGrant = () => {
     navigate(`/dashboard/grants/close/${grant.id}`);
+  };
+
+  const handleEdit = () => {
+    setIsEditMode(true);
+  };
+
+  const handleSave = () => {
+    // TODO: Implement actual save logic to backend
+    console.log('Saving edited data:', editedData);
+    toast({
+      title: "Grant updated",
+      description: "Grant details have been successfully updated.",
+    });
+    setIsEditMode(false);
+    setEditedData({});
+  };
+
+  const handleCancel = () => {
+    setIsEditMode(false);
+    setEditedData({});
+  };
+
+  const handleDataUpdate = (section: string, field: string, value: string) => {
+    setEditedData(prev => ({
+      ...prev,
+      [section]: {
+        ...(prev[section] || {}),
+        [field]: value
+      }
+    }));
   };
 
   return (
@@ -52,13 +87,45 @@ const GrantViewPage = () => {
             {grant.organization}
           </p>
         </div>
-        <Button 
-          variant="destructive"
-          onClick={handleCloseGrant}
-          className="bg-red-600 hover:bg-red-700"
-        >
-          Close Grant
-        </Button>
+        <div className="flex items-center gap-3">
+          {isEditMode ? (
+            <>
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                className="flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Save Changes
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                onClick={handleEdit}
+                className="flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                Edit
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={handleCloseGrant}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Close Grant
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -92,19 +159,23 @@ const GrantViewPage = () => {
         </div>
 
         <TabsContent value="overview" className="mt-0">
-          <Overview grant={grant} />
+          {isEditMode ? (
+            <EditableOverview grant={grant} onUpdate={handleDataUpdate} />
+          ) : (
+            <Overview grant={grant} />
+          )}
         </TabsContent>
 
         <TabsContent value="reports" className="mt-6">
-          <ReportsTable grantId={grant.id} />
+          <ReportsTable grantId={grant.id} isEditMode={isEditMode} />
         </TabsContent>
 
         <TabsContent value="disbursements" className="mt-6">
-          <DisbursementsTable grantId={grant.id} />
+          <DisbursementsTable grantId={grant.id} isEditMode={isEditMode} />
         </TabsContent>
 
         <TabsContent value="compliance" className="mt-6">
-          <ComplianceTable grantId={grant.id} />
+          <ComplianceTable grantId={grant.id} isEditMode={isEditMode} />
         </TabsContent>
       </Tabs>
     </div>

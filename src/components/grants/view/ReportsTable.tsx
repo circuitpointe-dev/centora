@@ -22,6 +22,7 @@ import { reportsData, Report } from "../data/reportsData";
 
 interface ReportsTableProps {
   grantId: number;
+  isEditMode?: boolean;
 }
 
 const getStatusColor = (status: string) => {
@@ -34,7 +35,7 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export const ReportsTable = ({ grantId }: ReportsTableProps) => {
+export const ReportsTable = ({ grantId, isEditMode = false }: ReportsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 

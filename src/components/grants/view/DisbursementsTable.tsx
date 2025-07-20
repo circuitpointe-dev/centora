@@ -22,6 +22,7 @@ import { DisbursementDialog } from "./DisbursementDialog";
 
 interface DisbursementsTableProps {
   grantId: number;
+  isEditMode?: boolean;
 }
 
 const getStatusColor = (status: string) => {
@@ -39,7 +40,7 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-export const DisbursementsTable = ({ grantId }: DisbursementsTableProps) => {
+export const DisbursementsTable = ({ grantId, isEditMode = false }: DisbursementsTableProps) => {
   const [disbursements, setDisbursements] = useState(
     disbursementsData.filter(d => d.grantId === grantId)
   );

@@ -31,9 +31,10 @@ import { UploadEvidenceDialog } from "./UploadEvidenceDialog";
 
 interface ComplianceTableProps {
   grantId: number;
+  isEditMode?: boolean;
 }
 
-export const ComplianceTable = ({ grantId }: ComplianceTableProps) => {
+export const ComplianceTable = ({ grantId, isEditMode = false }: ComplianceTableProps) => {
   const [requirements, setRequirements] = useState(
     complianceData.filter(r => r.grantId === grantId)
   );
