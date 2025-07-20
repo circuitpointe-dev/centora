@@ -96,12 +96,12 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div className="flex gap-4 mb-6">
       {stats.map((stat, index) => (
-        <Card key={index} className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-center gap-4">
-              <div>
+        <Card key={index} className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-200 flex-shrink-0">
+          <CardContent className="p-4 h-full">
+            <div className="flex items-center justify-center gap-4 h-full">
+              <div className="text-center">
                 <h3 className="text-sm font-medium text-gray-600 mb-1">
                   {stat.title}
                 </h3>
@@ -116,7 +116,7 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
       ))}
       
       {/* Portfolio Progress Card */}
-      <Card className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-violet-200">
+      <Card className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-violet-200 flex-1">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex-shrink-0 mr-4">
