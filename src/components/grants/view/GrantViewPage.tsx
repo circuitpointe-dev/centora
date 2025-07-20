@@ -74,19 +74,19 @@ const GrantViewPage = () => {
               value="reports" 
               className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none flex-1 py-3"
             >
-              Reports
+              Reporting Schedule
             </TabsTrigger>
             <TabsTrigger 
               value="disbursements" 
               className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none flex-1 py-3"
             >
-              Disbursements
+              Disbursement Schedule
             </TabsTrigger>
             <TabsTrigger 
               value="compliance" 
               className="border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent rounded-none flex-1 py-3"
             >
-              Compliance
+              Compliance Requirements
             </TabsTrigger>
           </TabsList>
         </div>
