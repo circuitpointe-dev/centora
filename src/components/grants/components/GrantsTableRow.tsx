@@ -30,6 +30,10 @@ export const GrantsTableRow = ({ grant }: GrantsTableRowProps) => {
     navigate(`/dashboard/grants/view/${grant.id}`);
   };
 
+  const handleEdit = () => {
+    navigate(`/dashboard/grants/view/${grant.id}?edit=true`);
+  };
+
   return (
     <TableRow>
       <TableCell className="font-medium">{grant.grantName}</TableCell>
@@ -71,7 +75,7 @@ export const GrantsTableRow = ({ grant }: GrantsTableRowProps) => {
           <Button variant="ghost" size="sm" onClick={handleView}>
             <Eye className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={handleEdit}>
             <Edit className="h-4 w-4" />
           </Button>
         </div>

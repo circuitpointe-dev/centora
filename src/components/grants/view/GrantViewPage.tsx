@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams, Navigate, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Edit, Save, X } from 'lucide-react';
@@ -15,9 +15,24 @@ const GrantViewPage = () => {
   const { grantId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('overview');
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedData, setEditedData] = useState({});
+
+  // Check for edit mode from URL
+  useEffect(() => {
+    const editParam = searchParams.get('edit');
+    if (editParam === 'true') {
+      setIsEditMode(true);
+      // Remove the edit parameter from URL after setting state
+      setSearchParams(prev => {
+        const newParams = new URLSearchParams(prev);
+        newParams.delete('edit');
+        return newParams;
+      });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Find the grant by ID
   const grant = grantsData.find(g => g.id === parseInt(grantId || '0'));

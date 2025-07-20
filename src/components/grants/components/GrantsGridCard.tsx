@@ -30,6 +30,10 @@ export const GrantsGridCard: React.FC<GrantsGridCardProps> = ({ grant }) => {
     navigate(`/dashboard/grants/view/${grant.id}`);
   };
 
+  const handleEdit = () => {
+    navigate(`/dashboard/grants/view/${grant.id}?edit=true`);
+  };
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4 space-y-3">
@@ -96,6 +100,7 @@ export const GrantsGridCard: React.FC<GrantsGridCardProps> = ({ grant }) => {
             <Button 
               variant="outline" 
               size="sm"
+              onClick={handleEdit}
               className="flex-1"
             >
               <Edit className="h-4 w-4 mr-1" />
