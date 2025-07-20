@@ -36,6 +36,7 @@ export const DisbursementDialog: React.FC<DisbursementDialogProps> = ({
 }) => {
   const [milestone, setMilestone] = useState("");
   const [amount, setAmount] = useState("");
+  const [dueDate, setDueDate] = useState<Date>();
   const [disbursedOn, setDisbursedOn] = useState<Date>();
   const [isReleased, setIsReleased] = useState(true);
 
@@ -45,22 +46,25 @@ export const DisbursementDialog: React.FC<DisbursementDialogProps> = ({
     if (disbursement) {
       setMilestone(disbursement.milestone);
       setAmount(disbursement.amount.toString());
+      setDueDate(new Date(disbursement.dueDate));
       setDisbursedOn(new Date(disbursement.disbursedOn));
       setIsReleased(disbursement.status === 'Released');
     } else {
       setMilestone("");
       setAmount("");
+      setDueDate(undefined);
       setDisbursedOn(undefined);
       setIsReleased(true);
     }
   }, [disbursement, open]);
 
   const handleSave = () => {
-    if (!milestone || !amount || !disbursedOn) return;
+    if (!milestone || !amount || !dueDate || !disbursedOn) return;
 
     onSave({
       milestone,
       amount: parseFloat(amount),
+      dueDate: format(dueDate, "yyyy-MM-dd"),
       disbursedOn: format(disbursedOn, "yyyy-MM-dd"),
       status: isReleased ? 'Released' : 'Pending',
     });
@@ -103,6 +107,33 @@ export const DisbursementDialog: React.FC<DisbursementDialogProps> = ({
               placeholder="Enter amount"
               className="border-gray-300"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-gray-700">Due Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal border-gray-300",
+                    !dueDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dueDate ? format(dueDate, "PPP") : <span>Pick a due date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dueDate}
+                  onSelect={setDueDate}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="space-y-2">
@@ -154,7 +185,7 @@ export const DisbursementDialog: React.FC<DisbursementDialogProps> = ({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={!milestone || !amount || !disbursedOn}
+            disabled={!milestone || !amount || !dueDate || !disbursedOn}
             className="bg-purple-600 hover:bg-purple-700"
           >
             Save Milestone

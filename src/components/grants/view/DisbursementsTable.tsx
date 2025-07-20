@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Plus, MoreVertical, Edit, Check, Trash2 } from "lucide-react";
+import { Plus, MoreVertical, Edit, Check, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -123,6 +123,7 @@ export const DisbursementsTable = ({ grantId }: DisbursementsTableProps) => {
             <TableRow className="bg-gray-50">
               <TableHead className="font-semibold text-black">Milestone</TableHead>
               <TableHead className="font-semibold text-black">Amount</TableHead>
+              <TableHead className="font-semibold text-black">Due Date</TableHead>
               <TableHead className="font-semibold text-black">Disbursed On</TableHead>
               <TableHead className="font-semibold text-black">Status</TableHead>
               <TableHead className="font-semibold text-black text-center">Actions</TableHead>
@@ -138,7 +139,13 @@ export const DisbursementsTable = ({ grantId }: DisbursementsTableProps) => {
                   {formatCurrency(disbursement.amount)}
                 </TableCell>
                 <TableCell className="text-gray-600">
-                  {new Date(disbursement.disbursedOn).toLocaleDateString()}
+                  {new Date(disbursement.dueDate).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="text-gray-600">
+                  {disbursement.status === 'Released' 
+                    ? new Date(disbursement.disbursedOn).toLocaleDateString() 
+                    : '-'
+                  }
                 </TableCell>
                 <TableCell>
                   <span className={`text-xs px-2 py-1 rounded-sm ${getStatusColor(disbursement.status)}`}>
@@ -165,6 +172,15 @@ export const DisbursementsTable = ({ grantId }: DisbursementsTableProps) => {
                           <Edit className="h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
+                        {disbursement.status === 'Released' && (
+                          <DropdownMenuItem
+                            onClick={() => console.log('View receipt for disbursement:', disbursement.id)}
+                            className="flex items-center gap-2 text-gray-700 hover:bg-gray-50"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View Receipt
+                          </DropdownMenuItem>
+                        )}
                         {disbursement.status === 'Pending' && (
                           <DropdownMenuItem
                             onClick={() => handleMarkAsReleased(disbursement)}
