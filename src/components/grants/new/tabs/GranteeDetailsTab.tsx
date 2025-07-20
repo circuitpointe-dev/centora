@@ -68,7 +68,7 @@ export const GranteeDetailsTab: React.FC<GranteeDetailsTabProps> = ({ data, onUp
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="space-y-2">
           <Label htmlFor="organization" className="text-sm font-medium">
             Organization *
