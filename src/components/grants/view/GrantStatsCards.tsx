@@ -100,8 +100,8 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
       {stats.map((stat, index) => (
         <Card key={index} className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-200">
           <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
+            <div className="flex items-center justify-center gap-4">
+              <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">
                   {stat.title}
                 </h3>
@@ -119,7 +119,7 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
       <Card className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-violet-200">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
-            <div className="flex-1">
+            <div className="flex-shrink-0 mr-4">
               <h3 className="text-sm font-medium text-gray-600 mb-1">
                 Burn rate {burnRate}%
               </h3>
