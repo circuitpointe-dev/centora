@@ -42,7 +42,7 @@ const GrantViewPage = () => {
   }
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/dashboard/grants/dashboard');
   };
 
   const handleCloseGrant = () => {
@@ -65,8 +65,7 @@ const GrantViewPage = () => {
   };
 
   const handleCancel = () => {
-    setIsEditMode(false);
-    setEditedData({});
+    navigate('/dashboard/grants/dashboard');
   };
 
   const handleDataUpdate = (section: string, field: string, value: string) => {
