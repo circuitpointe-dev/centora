@@ -31,11 +31,11 @@ export const LifecycleTracker: React.FC<LifecycleTrackerProps> = ({ currentStatu
   const progressPercentage = ((currentIndex + 1) / stages.length) * 100;
 
   return (
-    <Card className="border-none shadow-none">
+    <Card className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-200">
       <CardContent className="flex flex-col h-[145px] items-center gap-8 px-[13px] py-6 bg-white">
         <div className="flex flex-col items-start gap-6 relative self-stretch w-full">
           <div className="flex flex-col items-start gap-4 relative self-stretch w-full">
-            <div className="flex items-center justify-around gap-[151px] relative self-stretch w-full">
+            <div className="flex items-center justify-start relative self-stretch w-full">
               <h3 className="font-normal text-[#383838] text-[19px] [font-family:'Inter-Regular',Helvetica]">
                 Lifecycle Tracker
               </h3>
@@ -47,14 +47,14 @@ export const LifecycleTracker: React.FC<LifecycleTrackerProps> = ({ currentStatu
               {updatedStages.map((stage) => (
                 <Badge
                   key={stage.id}
-                  variant={stage.isActive ? "default" : "outline"}
-                  className={`w-[77px] h-auto px-3 py-1.5 rounded-2xl ${
+                  variant="outline"
+                  className={`w-[77px] h-auto px-3 py-1.5 rounded-2xl flex items-center justify-center ${
                     stage.isActive
-                      ? "bg-violet-600 text-white"
-                      : "bg-white text-violet-600 border-violet-600"
+                      ? "bg-violet-600 text-white border-violet-600"
+                      : "bg-transparent text-violet-600 border-violet-600"
                   }`}
                 >
-                  <span className="text-[10px] font-normal [font-family:'Inter-Regular',Helvetica]">
+                  <span className="text-[10px] font-normal [font-family:'Inter-Regular',Helvetica] text-center">
                     {stage.name}
                   </span>
                 </Badge>
