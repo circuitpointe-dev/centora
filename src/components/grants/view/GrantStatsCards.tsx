@@ -118,39 +118,37 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
       {/* Portfolio Progress Card */}
       <Card className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-violet-200">
         <CardContent className="p-4">
-          <h3 className="text-sm font-medium text-gray-600 mb-3">Burn rate</h3>
-          <div className="space-y-3">
-            {/* Disbursed Funds Progress */}
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600">{portfolioData[0].label} - {portfolioData[0].amount}</span>
-              </div>
-              <div className="h-2 rounded-full bg-gray-100">
-                <div
-                  className={`${portfolioData[0].color} h-2 rounded-full transition-all duration-500`}
-                  style={{ width: portfolioData[0].width }}
-                />
-              </div>
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Burn rate {burnRate}%
+              </h3>
             </div>
-
-            {/* Spent Funds Progress */}
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-600">{portfolioData[1].label} - {portfolioData[1].amount}</span>
+            <div className="flex-1 space-y-2">
+              {/* Disbursed Funds Progress */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-600">{portfolioData[0].label} - {portfolioData[0].amount}</span>
+                </div>
+                <div className="h-2 rounded-full bg-gray-100">
+                  <div
+                    className={`${portfolioData[0].color} h-2 rounded-full transition-all duration-500`}
+                    style={{ width: portfolioData[0].width }}
+                  />
+                </div>
               </div>
-              <div className="h-2 rounded-full bg-gray-100">
-                <div
-                  className={`${portfolioData[1].color} h-2 rounded-full transition-all duration-500`}
-                  style={{ width: portfolioData[1].width }}
-                />
-              </div>
-            </div>
 
-            {/* Total burn rate display */}
-            <div className="pt-1 border-t border-gray-100">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">Total burn rate (%)</span>
-                <span className="text-sm font-bold text-gray-900">{burnRate}%</span>
+              {/* Spent Funds Progress */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-gray-600">{portfolioData[1].label} - {portfolioData[1].amount}</span>
+                </div>
+                <div className="h-2 rounded-full bg-gray-100">
+                  <div
+                    className={`${portfolioData[1].color} h-2 rounded-full transition-all duration-500`}
+                    style={{ width: portfolioData[1].width }}
+                  />
+                </div>
               </div>
             </div>
           </div>
