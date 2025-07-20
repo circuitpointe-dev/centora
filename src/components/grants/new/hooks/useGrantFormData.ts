@@ -13,11 +13,19 @@ export interface GrantFormData {
     grantAdministrator: string;
   };
   granteeDetails: {
-    granteeName: string;
+    organization: string;
     granteeRefId: string;
+    region: string;
+    programArea: string;
     contactPerson: string;
     email: string;
     phoneNumber: string;
+    documents: Array<{
+      type: string;
+      name: string;
+      url?: string;
+      file?: File;
+    }>;
   };
   granteeSubmission: {
     narrativeReports: Array<{ title: string; status: string }>;
@@ -66,11 +74,14 @@ const initialFormData: GrantFormData = {
     grantAdministrator: '',
   },
   granteeDetails: {
-    granteeName: '',
+    organization: '',
     granteeRefId: 'GR-0001',
+    region: '',
+    programArea: '',
     contactPerson: '',
     email: '',
     phoneNumber: '',
+    documents: [],
   },
   granteeSubmission: {
     narrativeReports: [],
