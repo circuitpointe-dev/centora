@@ -6,7 +6,9 @@ export interface GrantFormData {
     grantName: string;
     startDate: Date | undefined;
     endDate: Date | undefined;
-    grantManagers: string[];
+    amount: string;
+    currency: string;
+    grantManager: string;
     fiduciaryOfficer: string;
     grantAdministrator: string;
   };
@@ -57,7 +59,9 @@ const initialFormData: GrantFormData = {
     grantName: '',
     startDate: undefined,
     endDate: undefined,
-    grantManagers: [],
+    amount: '',
+    currency: 'USD',
+    grantManager: '',
     fiduciaryOfficer: '',
     grantAdministrator: '',
   },

@@ -15,7 +15,9 @@ interface OverviewTabProps {
     grantName: string;
     startDate: Date | undefined;
     endDate: Date | undefined;
-    grantManagers: string[];
+    amount: string;
+    currency: string;
+    grantManager: string;
     fiduciaryOfficer: string;
     grantAdministrator: string;
   };
@@ -38,16 +40,13 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, onUpdate }) => {
     onUpdate({ [field]: value });
   };
 
-  const addGrantManager = (managerId: string) => {
-    const manager = staffMembers.find(s => s.id === managerId);
-    if (manager && !data.grantManagers.includes(manager.name)) {
-      handleInputChange('grantManagers', [...data.grantManagers, manager.name]);
-    }
-  };
-
-  const removeGrantManager = (managerName: string) => {
-    handleInputChange('grantManagers', data.grantManagers.filter(name => name !== managerName));
-  };
+  const currencies = [
+    { code: 'USD', name: 'US Dollar', symbol: '$' },
+    { code: 'EUR', name: 'Euro', symbol: '€' },
+    { code: 'GBP', name: 'British Pound', symbol: '£' },
+    { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+    { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -124,41 +123,53 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, onUpdate }) => {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium">
-            Grant Manager(s) *
+          <Label htmlFor="amount" className="text-sm font-medium">
+            Amount *
           </Label>
-          <Select onValueChange={addGrantManager}>
+          <Input
+            id="amount"
+            type="number"
+            value={data.amount}
+            onChange={(e) => handleInputChange('amount', e.target.value)}
+            placeholder="Enter grant amount"
+            className="rounded-sm"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">
+            Currency *
+          </Label>
+          <Select value={data.currency} onValueChange={(value) => handleInputChange('currency', value)}>
             <SelectTrigger className="rounded-sm">
-              <SelectValue placeholder="Add grant manager" />
+              <SelectValue placeholder="Select currency" />
             </SelectTrigger>
             <SelectContent>
-              {staffMembers
-                .filter(member => !data.grantManagers.includes(member.name))
-                .map((member) => (
-                  <SelectItem key={member.id} value={member.id}>
-                    {member.name} - {member.role}
-                  </SelectItem>
-                ))}
+              {currencies.map((currency) => (
+                <SelectItem key={currency.code} value={currency.code}>
+                  {currency.symbol} {currency.name} ({currency.code})
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-          
-          {data.grantManagers.length > 0 && (
-            <div className="space-y-2 mt-2">
-              {data.grantManagers.map((manager, index) => (
-                <div key={index} className="flex items-center gap-2 bg-gray-50 p-2 rounded-sm">
-                  <span className="text-sm flex-1">{manager}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeGrantManager(manager)}
-                    className="h-6 w-6 p-0"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">
+            Grant Manager *
+          </Label>
+          <Select value={data.grantManager} onValueChange={(value) => handleInputChange('grantManager', value)}>
+            <SelectTrigger className="rounded-sm">
+              <SelectValue placeholder="Select grant manager" />
+            </SelectTrigger>
+            <SelectContent>
+              {staffMembers.map((member) => (
+                <SelectItem key={member.id} value={member.name}>
+                  {member.name} - {member.role}
+                </SelectItem>
               ))}
-            </div>
-          )}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
