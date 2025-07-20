@@ -18,7 +18,7 @@ const ContactsSection = (): JSX.Element => {
   ];
 
   return (
-    <Card className="flex flex-col rounded-sm h-fit shadow-lg border border-purple-200">
+    <Card className="flex flex-col rounded-sm h-full shadow-lg border border-purple-200">
       <CardHeader className="p-6 pb-4">
         <CardTitle className="text-lg font-semibold text-black">
           Grantee Details

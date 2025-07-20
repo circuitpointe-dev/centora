@@ -39,7 +39,7 @@ export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.El
   ];
 
   return (
-    <Card className="w-full rounded-sm overflow-hidden h-fit flex flex-col shadow-lg border border-purple-200">
+    <Card className="w-full rounded-sm overflow-hidden h-full flex flex-col shadow-lg border border-purple-200">
       <CardContent className="p-6 flex-1 flex flex-col">
         <h2 className="text-lg font-semibold text-black mb-6">
           Grant Details

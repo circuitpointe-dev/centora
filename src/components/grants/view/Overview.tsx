@@ -29,14 +29,9 @@ export default function Overview({ grant }: OverviewProps): JSX.Element {
       <LifecycleTracker currentStatus={grant.status} />
       
       {/* Grant Details and Contacts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         <GrantDetailsSection grant={grant} />
         <ContactsSection />
-      </div>
-      
-      {/* Reviewer's Report */}
-      <div className="grid grid-cols-1">
-        <FinalReportSection />
       </div>
     </div>
   );
