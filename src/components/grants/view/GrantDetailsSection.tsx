@@ -30,16 +30,16 @@ export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.El
 
   const grantDetails = [
     { label: "Grant Name", value: grant.grantName },
-    { label: "Grantee", value: grant.organization },
-    { label: "Status", value: currentStatus, isSelectable: true },
-    { label: "Compliance", value: `${grant.compliance}% Compliant` },
-    { label: "Program Area", value: grant.programArea },
-    { label: "Reporting Set Up", value: grant.nextReportDue },
+    { label: "Start Date", value: "Jan 15, 2024" },
+    { label: "End Date", value: "Dec 31, 2024" },
     { label: "Amount", value: grant.amount },
+    { label: "Grant Manager", value: "Sarah Johnson" },
+    { label: "Fiduciary Officer", value: "Michael Chen" },
+    { label: "Grant Administrator", value: "Emily Davis" },
   ];
 
   return (
-    <Card className="w-full rounded-sm overflow-hidden h-fit flex flex-col">
+    <Card className="w-full rounded-sm overflow-hidden h-fit flex flex-col shadow-lg border border-purple-200">
       <CardContent className="p-6 flex-1 flex flex-col">
         <h2 className="text-lg font-semibold text-black mb-6">
           Grant Details
@@ -52,34 +52,9 @@ export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.El
                 {detail.label}
               </div>
               <div className="flex items-center gap-1">
-                {detail.isSelectable ? (
-                  <Select value={currentStatus} onValueChange={handleStatusChange}>
-                    <SelectTrigger className="w-auto h-auto p-0 border-none bg-transparent">
-                      <SelectValue asChild>
-                        <span className={`text-xs px-2 py-1 rounded-sm ${getStatusColor(currentStatus)}`}>
-                          {currentStatus}
-                        </span>
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent className="bg-white border border-gray-200 rounded-sm">
-                      {statusOptions.map((status) => (
-                        <SelectItem 
-                          key={status} 
-                          value={status}
-                          className="hover:bg-gray-50"
-                        >
-                          <span className={`text-xs px-2 py-1 rounded-sm ${getStatusColor(status)}`}>
-                            {status}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <span className="text-sm text-gray-600">
-                    {detail.value}
-                  </span>
-                )}
+                <span className="text-sm text-gray-600">
+                  {detail.value}
+                </span>
               </div>
             </div>
           ))}
