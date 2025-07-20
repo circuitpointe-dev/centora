@@ -20,8 +20,27 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
   const completedCompliance = grantCompliance.filter(c => c.status === 'Completed').length;
   const complianceRate = totalCompliance > 0 ? Math.round((completedCompliance / totalCompliance) * 100) : 0;
 
-  // Calculate burn rate (assuming it's related to disbursement progress)
-  const burnRate = disbursementRate; // You can adjust this calculation based on your business logic
+  // Portfolio progress data for this grant
+  const portfolioData = [
+    { 
+      label: "Disbursed Funds", 
+      value: disbursementRate, 
+      color: "bg-blue-500", 
+      width: `${disbursementRate}%`, 
+      amount: "$750,000",
+      description: "Released over allocated"
+    },
+    { 
+      label: "Spent Funds", 
+      value: Math.min(disbursementRate + 10, 100), 
+      color: "bg-red-500", 
+      width: `${Math.min(disbursementRate + 10, 100)}%`, 
+      amount: "$700,000",
+      description: "Expended over released"
+    },
+  ];
+
+  const burnRate = Math.min(disbursementRate + 10, 100);
 
   const stats = [
     {
@@ -33,11 +52,6 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
       title: "Compliance (%)",
       percentage: complianceRate,
       color: "text-blue-600"
-    },
-    {
-      title: "Burn rate",
-      percentage: burnRate,
-      color: "text-gray-600"
     }
   ];
 
@@ -84,7 +98,7 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       {stats.map((stat, index) => (
-        <Card key={index} className="rounded-sm">
+        <Card key={index} className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-purple-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex-1">
@@ -100,6 +114,48 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
           </CardContent>
         </Card>
       ))}
+      
+      {/* Portfolio Progress Card */}
+      <Card className="rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-violet-200">
+        <CardContent className="p-4">
+          <h3 className="text-sm font-medium text-gray-600 mb-3">Burn rate</h3>
+          <div className="space-y-3">
+            {/* Disbursed Funds Progress */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-600">{portfolioData[0].label} - {portfolioData[0].amount}</span>
+              </div>
+              <div className="h-2 rounded-full bg-gray-100">
+                <div
+                  className={`${portfolioData[0].color} h-2 rounded-full transition-all duration-500`}
+                  style={{ width: portfolioData[0].width }}
+                />
+              </div>
+            </div>
+
+            {/* Spent Funds Progress */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-600">{portfolioData[1].label} - {portfolioData[1].amount}</span>
+              </div>
+              <div className="h-2 rounded-full bg-gray-100">
+                <div
+                  className={`${portfolioData[1].color} h-2 rounded-full transition-all duration-500`}
+                  style={{ width: portfolioData[1].width }}
+                />
+              </div>
+            </div>
+
+            {/* Total burn rate display */}
+            <div className="pt-1 border-t border-gray-100">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Total burn rate (%)</span>
+                <span className="text-sm font-bold text-gray-900">{burnRate}%</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
