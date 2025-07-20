@@ -1,5 +1,7 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 interface LifecycleTrackerProps {
   currentStatus: string;
@@ -7,10 +9,10 @@ interface LifecycleTrackerProps {
 
 export const LifecycleTracker: React.FC<LifecycleTrackerProps> = ({ currentStatus }) => {
   const stages = [
-    { name: "Application", key: "Pending" },
-    { name: "Approved", key: "Approved" },
-    { name: "Active", key: "Active" },
-    { name: "Closed", key: "Closed" }
+    { id: 1, name: "Application", key: "Pending", isActive: false },
+    { id: 2, name: "Approved", key: "Approved", isActive: false },
+    { id: 3, name: "Active", key: "Active", isActive: false },
+    { id: 4, name: "Closed", key: "Closed", isActive: false }
   ];
 
   const getCurrentStageIndex = () => {
@@ -19,53 +21,51 @@ export const LifecycleTracker: React.FC<LifecycleTrackerProps> = ({ currentStatu
   };
 
   const currentIndex = getCurrentStageIndex();
+  
+  // Update stages with active status
+  const updatedStages = stages.map((stage, index) => ({
+    ...stage,
+    isActive: index <= currentIndex
+  }));
 
-  const getStageStyle = (index: number) => {
-    if (index < currentIndex) {
-      // Past stages - completed
-      return "bg-purple-600 text-white border-purple-600";
-    } else if (index === currentIndex) {
-      // Current stage - active
-      return "bg-purple-600 text-white border-purple-600";
-    } else {
-      // Future stages - pending
-      return "bg-white text-gray-400 border-gray-300";
-    }
-  };
-
-  const getConnectorStyle = (index: number) => {
-    if (index < currentIndex) {
-      return "bg-purple-600";
-    } else {
-      return "bg-gray-300";
-    }
-  };
+  const progressPercentage = ((currentIndex + 1) / stages.length) * 100;
 
   return (
-    <Card className="rounded-sm mb-6">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-lg font-semibold text-black">
-          Lifecycle tracker
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-6 pb-6">
-        <div className="flex items-center justify-between relative">
-          {stages.map((stage, index) => (
-            <React.Fragment key={stage.key}>
-              <div className="flex flex-col items-center relative z-10">
-                <div
-                  className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${getStageStyle(index)}`}
+    <Card className="border-none shadow-none">
+      <CardContent className="flex flex-col h-[145px] items-center gap-8 px-[13px] py-6 bg-white">
+        <div className="flex flex-col items-start gap-6 relative self-stretch w-full">
+          <div className="flex flex-col items-start gap-4 relative self-stretch w-full">
+            <div className="flex items-center justify-around gap-[151px] relative self-stretch w-full">
+              <h3 className="font-normal text-[#383838] text-[19px] [font-family:'Inter-Regular',Helvetica]">
+                Lifecycle Tracker
+              </h3>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start gap-4 relative self-stretch w-full">
+            <div className="flex items-end justify-between px-[78px] py-0 relative self-stretch w-full">
+              {updatedStages.map((stage) => (
+                <Badge
+                  key={stage.id}
+                  variant={stage.isActive ? "default" : "outline"}
+                  className={`w-[77px] h-auto px-3 py-1.5 rounded-2xl ${
+                    stage.isActive
+                      ? "bg-violet-600 text-white"
+                      : "bg-white text-violet-600 border-violet-600"
+                  }`}
                 >
-                  {stage.name}
-                </div>
-              </div>
-              {index < stages.length - 1 && (
-                <div 
-                  className={`flex-1 h-1 mx-4 transition-colors ${getConnectorStyle(index)}`}
-                />
-              )}
-            </React.Fragment>
-          ))}
+                  <span className="text-[10px] font-normal [font-family:'Inter-Regular',Helvetica]">
+                    {stage.name}
+                  </span>
+                </Badge>
+              ))}
+            </div>
+
+            <Progress
+              value={progressPercentage}
+              className="h-2.5 w-full bg-[#f0f1f4] rounded-[27px]"
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
