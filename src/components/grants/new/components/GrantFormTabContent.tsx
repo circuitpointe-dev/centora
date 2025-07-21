@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OverviewTab } from '../tabs/OverviewTab';
 import { GranteeDetailsTab } from '../tabs/GranteeDetailsTab';
 import { GranteeSubmissionTab } from '../tabs/GranteeSubmissionTab';
-import { ReportingScheduleTab } from '../tabs/ReportingScheduleTab';
+
 import { ComplianceChecklistTab } from '../tabs/ComplianceChecklistTab';
 import { DisbursementScheduleTab } from '../tabs/DisbursementScheduleTab';
 import { GrantFormData } from '../hooks/useGrantFormData';
@@ -63,19 +63,6 @@ export const GrantFormTabContent: React.FC<GrantFormTabContentProps> = ({
         </Card>
       </TabsContent>
 
-      <TabsContent value="reporting-schedule" className="space-y-6 mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Reporting Schedule</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ReportingScheduleTab
-              data={formData.reportingSchedule}
-              onUpdate={(data) => updateFormData('reportingSchedule', data)}
-            />
-          </CardContent>
-        </Card>
-      </TabsContent>
 
       <TabsContent value="compliance-checklist" className="space-y-6 mt-6">
         <Card>

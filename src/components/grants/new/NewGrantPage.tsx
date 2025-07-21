@@ -22,7 +22,6 @@ const NewGrantPage = () => {
     { id: 'grantee-details', label: 'Grantee Details' },
     { id: 'grantee-submission', label: 'Submissions Setup' },
     { id: 'disbursement-schedule', label: 'Disbursement Schedule' },
-    { id: 'reporting-schedule', label: 'Reporting Schedule' },
     { id: 'compliance-checklist', label: 'Compliance Checklist' },
   ];
 

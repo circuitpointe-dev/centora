@@ -51,17 +51,6 @@ export interface GrantFormData {
     startDate: Date | undefined;
     endDate: Date | undefined;
   };
-  reportingSchedule: {
-    frequency: string;
-    periodStart: Date | undefined;
-    periodEnd: Date | undefined;
-    reportingPeriods: Array<{
-      label: string;
-      submissionType: string;
-      dueDate: Date | undefined;
-      assignedReviewer: string;
-    }>;
-  };
   complianceChecklist: {
     complianceRequirements: Array<{
       name: string;
@@ -107,12 +96,6 @@ const initialFormData: GrantFormData = {
     frequency: '',
     startDate: undefined,
     endDate: undefined,
-  },
-  reportingSchedule: {
-    frequency: '',
-    periodStart: undefined,
-    periodEnd: undefined,
-    reportingPeriods: [],
   },
   complianceChecklist: {
     complianceRequirements: [],
