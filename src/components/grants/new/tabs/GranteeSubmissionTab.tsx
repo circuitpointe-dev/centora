@@ -40,9 +40,10 @@ interface GranteeSubmissionTabProps {
 
 export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data, onUpdate }) => {
   const [newSubmissionTypeName, setNewSubmissionTypeName] = useState('');
-  const [frequency, setFrequency] = useState(data.frequency || '');
-  const [startDate, setStartDate] = useState<Date | undefined>(data.startDate);
-  const [endDate, setEndDate] = useState<Date | undefined>(data.endDate);
+  const [selectedSubmissionType, setSelectedSubmissionType] = useState<string>('');
+  const [frequency, setFrequency] = useState('');
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
 
   const defaultSubmissionTypes: SubmissionType[] = [
     { id: 'narrative', name: 'Narrative', enabled: true },
@@ -52,6 +53,18 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
   ];
 
   const currentSubmissionTypes = data.submissionTypes?.length ? data.submissionTypes : defaultSubmissionTypes;
+  
+  // Staff list for reviewer selection
+  const staffMembers = [
+    'John Smith',
+    'Sarah Johnson', 
+    'Michael Brown',
+    'Emily Davis',
+    'David Wilson'
+  ];
+
+  // Get configured submission types from report entries
+  const configuredTypes = (data.reportEntries || []).map(entry => entry.submissionType);
 
   const toggleSubmissionType = (id: string) => {
     const updated = currentSubmissionTypes.map(type =>
@@ -80,24 +93,29 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
   };
 
   const generateReportTimeline = () => {
-    if (!frequency || !startDate || !endDate) return;
+    if (!selectedSubmissionType || !frequency || !startDate || !endDate) return;
 
-    const enabledTypes = currentSubmissionTypes.filter(type => type.enabled);
-    const newEntries: ReportEntry[] = enabledTypes.map(type => ({
-      id: `${type.id}-${Date.now()}`,
-      submissionType: type.name,
+    const submissionType = currentSubmissionTypes.find(type => type.id === selectedSubmissionType);
+    if (!submissionType) return;
+
+    const newEntry: ReportEntry = {
+      id: `${submissionType.id}-${Date.now()}`,
+      submissionType: submissionType.name,
       reportingPeriod: `${format(startDate, 'MMM yyyy')} - ${format(endDate, 'MMM yyyy')}`,
       dueDate: format(endDate, 'MMM dd, yyyy'),
       assignedReviewer: '',
-    }));
+    };
 
     const existingEntries = data.reportEntries || [];
     onUpdate({ 
-      reportEntries: [...existingEntries, ...newEntries],
-      frequency,
-      startDate,
-      endDate,
+      reportEntries: [...existingEntries, newEntry]
     });
+
+    // Reset form
+    setSelectedSubmissionType('');
+    setFrequency('');
+    setStartDate(undefined);
+    setEndDate(undefined);
   };
 
   const updateReportEntry = (id: string, field: string, value: string) => {
@@ -121,31 +139,39 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {currentSubmissionTypes.map((type) => (
-              <div key={type.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={type.id}
-                  checked={type.enabled}
-                  onCheckedChange={() => toggleSubmissionType(type.id)}
-                />
-                <label
-                  htmlFor={type.id}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex-1"
-                >
-                  {type.name}
-                </label>
-                {type.isCustom && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeCustomSubmissionType(type.id)}
-                    className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
+            {currentSubmissionTypes.map((type) => {
+              const isConfigured = configuredTypes.includes(type.name);
+              return (
+                <div key={type.id} className={cn("flex items-center space-x-2", isConfigured && "opacity-50")}>
+                  <Checkbox
+                    id={type.id}
+                    checked={type.enabled}
+                    onCheckedChange={() => toggleSubmissionType(type.id)}
+                    disabled={isConfigured}
+                  />
+                  <label
+                    htmlFor={type.id}
+                    className={cn(
+                      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex-1",
+                      isConfigured && "line-through"
+                    )}
                   >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-            ))}
+                    {type.name}
+                  </label>
+                  {type.isCustom && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeCustomSubmissionType(type.id)}
+                      className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
+                      disabled={isConfigured}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
           </div>
           
           <div className="flex gap-2 pt-4 border-t">
@@ -155,7 +181,7 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
               placeholder="Enter new submission type name"
               className="rounded-sm"
             />
-            <Button onClick={addCustomSubmissionType} className="flex items-center gap-2 rounded-sm">
+            <Button onClick={addCustomSubmissionType} variant="outline" className="flex items-center gap-2 rounded-sm">
               <Plus className="h-4 w-4" />
               Add More
             </Button>
@@ -169,7 +195,25 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
           <CardTitle className="text-lg">Reporting Setup</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Submission Type</label>
+              <Select value={selectedSubmissionType} onValueChange={setSelectedSubmissionType}>
+                <SelectTrigger className="rounded-sm">
+                  <SelectValue placeholder="Select submission type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {currentSubmissionTypes
+                    .filter(type => type.enabled && !configuredTypes.includes(type.name))
+                    .map(type => (
+                      <SelectItem key={type.id} value={type.id}>
+                        {type.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Frequency</label>
               <Select value={frequency} onValueChange={setFrequency}>
@@ -242,7 +286,8 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
 
           <Button 
             onClick={generateReportTimeline}
-            disabled={!frequency || !startDate || !endDate}
+            disabled={!selectedSubmissionType || !frequency || !startDate || !endDate}
+            variant="outline"
             className="flex items-center gap-2 rounded-sm"
           >
             Generate Report Timeline
@@ -271,12 +316,21 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
                       <TableCell>{entry.reportingPeriod}</TableCell>
                       <TableCell>{entry.dueDate}</TableCell>
                       <TableCell>
-                        <Input
-                          value={entry.assignedReviewer}
-                          onChange={(e) => updateReportEntry(entry.id, 'assignedReviewer', e.target.value)}
-                          placeholder="Select assigned reviewer"
-                          className="rounded-sm"
-                        />
+                        <Select 
+                          value={entry.assignedReviewer} 
+                          onValueChange={(value) => updateReportEntry(entry.id, 'assignedReviewer', value)}
+                        >
+                          <SelectTrigger className="rounded-sm">
+                            <SelectValue placeholder="Select reviewer" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {staffMembers.map((staff) => (
+                              <SelectItem key={staff} value={staff}>
+                                {staff}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                       <TableCell>
                         <Button
