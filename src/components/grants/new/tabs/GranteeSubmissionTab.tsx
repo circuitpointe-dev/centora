@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Calendar, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, Calendar, ChevronDown, Edit, FileText } from 'lucide-react';
 import { TemplateUploadModal } from '../components/TemplateUploadModal';
+import { ExistingTemplatesModal } from '../components/ExistingTemplatesModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,10 +29,18 @@ interface ReportEntry {
   assignedReviewer: string;
 }
 
+interface SelectedTemplate {
+  id: string;
+  name: string;
+  type: string;
+  lastModified: string;
+}
+
 interface GranteeSubmissionTabProps {
   data: {
     submissionTypes: SubmissionType[];
     reportEntries: ReportEntry[];
+    selectedTemplates: SelectedTemplate[];
     frequency: string;
     startDate: Date | undefined;
     endDate: Date | undefined;
@@ -46,6 +55,7 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [existingTemplatesModalOpen, setExistingTemplatesModalOpen] = useState(false);
 
   const defaultSubmissionTypes: SubmissionType[] = [
     { id: 'narrative', name: 'Narrative', enabled: true },
@@ -133,8 +143,41 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
   };
 
   const handleTemplateUpload = (template: any) => {
-    console.log('Template uploaded:', template);
-    // TODO: Handle template upload logic
+    const newTemplate: SelectedTemplate = {
+      id: `template-${Date.now()}`,
+      name: template.name,
+      type: template.type,
+      lastModified: new Date().toISOString().split('T')[0],
+    };
+    
+    const existingTemplates = data.selectedTemplates || [];
+    onUpdate({ 
+      selectedTemplates: [...existingTemplates, newTemplate]
+    });
+  };
+
+  const handleTemplateSelect = (template: any) => {
+    const newTemplate: SelectedTemplate = {
+      id: template.id,
+      name: template.name,
+      type: template.type,
+      lastModified: template.lastModified,
+    };
+    
+    const existingTemplates = data.selectedTemplates || [];
+    onUpdate({ 
+      selectedTemplates: [...existingTemplates, newTemplate]
+    });
+  };
+
+  const handleEditTemplate = (templateId: string) => {
+    console.log('Edit template:', templateId);
+    // TODO: Implement edit logic
+  };
+
+  const handleDeleteTemplate = (templateId: string) => {
+    const updated = (data.selectedTemplates || []).filter(template => template.id !== templateId);
+    onUpdate({ selectedTemplates: updated });
   };
 
   return (
@@ -367,7 +410,11 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4">
-            <Button variant="outline" className="flex items-center gap-2 rounded-sm">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 rounded-sm"
+              onClick={() => setExistingTemplatesModalOpen(true)}
+            >
               <Plus className="h-4 w-4" />
               Create with existing templates
             </Button>
@@ -383,6 +430,58 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
           <p className="text-sm text-muted-foreground mt-2">
             Upload documents to create templates for your submission types.
           </p>
+
+          {/* Templates Table */}
+          {data.selectedTemplates && data.selectedTemplates.length > 0 && (
+            <div className="mt-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Template Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Last Modified</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.selectedTemplates.map((template) => (
+                    <TableRow key={template.id}>
+                      <TableCell className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        {template.name}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="rounded-sm">
+                          {template.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{template.lastModified}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditTemplate(template.id)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteTemplate(template.id)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -392,6 +491,14 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
         onOpenChange={setUploadModalOpen}
         submissionTypes={currentSubmissionTypes}
         onTemplateUpload={handleTemplateUpload}
+      />
+
+      {/* Existing Templates Modal */}
+      <ExistingTemplatesModal
+        open={existingTemplatesModalOpen}
+        onOpenChange={setExistingTemplatesModalOpen}
+        submissionTypes={currentSubmissionTypes}
+        onTemplateSelect={handleTemplateSelect}
       />
     </div>
   );

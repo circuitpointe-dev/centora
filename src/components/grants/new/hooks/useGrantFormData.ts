@@ -41,6 +41,12 @@ export interface GrantFormData {
       dueDate: string;
       assignedReviewer: string;
     }>;
+    selectedTemplates: Array<{
+      id: string;
+      name: string;
+      type: string;
+      lastModified: string;
+    }>;
     frequency: string;
     startDate: Date | undefined;
     endDate: Date | undefined;
@@ -95,6 +101,7 @@ const initialFormData: GrantFormData = {
   granteeSubmission: {
     submissionTypes: [],
     reportEntries: [],
+    selectedTemplates: [],
     frequency: '',
     startDate: undefined,
     endDate: undefined,
