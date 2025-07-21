@@ -155,15 +155,6 @@ export const ExistingTemplatesModal: React.FC<ExistingTemplatesModalProps> = ({
               {filteredTemplates.map((template) => (
                 <Card key={template.id} className="shadow-md hover:shadow-lg transition-shadow">
                   <CardContent className="p-4 space-y-3">
-                    {/* PDF Document Preview */}
-                    <div className="aspect-[3/4] bg-muted rounded-sm overflow-hidden border">
-                      <img
-                        src={template.previewUrl}
-                        alt={`${template.name} preview`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    
                     {/* Document Name */}
                     <h3 className="font-medium text-sm truncate text-center" title={template.name}>
                       {template.name}
@@ -175,7 +166,7 @@ export const ExistingTemplatesModal: React.FC<ExistingTemplatesModalProps> = ({
                         variant="outline"
                         size="sm"
                         onClick={() => handleDownload(template)}
-                        className="flex-1 rounded-sm bg-transparent border border-border hover:bg-muted"
+                        className="flex-1 rounded-sm"
                       >
                         <Download className="h-3 w-3 mr-1" />
                         Download
@@ -183,7 +174,7 @@ export const ExistingTemplatesModal: React.FC<ExistingTemplatesModalProps> = ({
                       <Button
                         size="sm"
                         onClick={() => handleUseTemplate(template)}
-                        className="flex-1 rounded-sm bg-primary text-primary-foreground hover:bg-primary/90"
+                        className="flex-1 rounded-sm bg-purple-600 text-white hover:bg-purple-700"
                       >
                         Use Template
                       </Button>
