@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, Calendar, ChevronDown } from 'lucide-react';
+import { TemplateUploadModal } from '../components/TemplateUploadModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,6 +45,7 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
   const [frequency, setFrequency] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
   const defaultSubmissionTypes: SubmissionType[] = [
     { id: 'narrative', name: 'Narrative', enabled: true },
@@ -128,6 +130,11 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
   const removeReportEntry = (id: string) => {
     const updated = (data.reportEntries || []).filter(entry => entry.id !== id);
     onUpdate({ reportEntries: updated });
+  };
+
+  const handleTemplateUpload = (template: any) => {
+    console.log('Template uploaded:', template);
+    // TODO: Handle template upload logic
   };
 
   return (
@@ -364,15 +371,28 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
               <Plus className="h-4 w-4" />
               Create with existing templates
             </Button>
-            <Button variant="outline" className="flex items-center gap-2 rounded-sm">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 rounded-sm"
+              onClick={() => setUploadModalOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
               Upload template
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-2">
-            Template functionality will be implemented soon.
+            Upload documents to create templates for your submission types.
           </p>
         </CardContent>
       </Card>
+
+      {/* Template Upload Modal */}
+      <TemplateUploadModal
+        open={uploadModalOpen}
+        onOpenChange={setUploadModalOpen}
+        submissionTypes={currentSubmissionTypes}
+        onTemplateUpload={handleTemplateUpload}
+      />
     </div>
   );
 };
