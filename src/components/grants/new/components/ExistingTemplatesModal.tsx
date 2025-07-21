@@ -37,7 +37,7 @@ export const ExistingTemplatesModal: React.FC<ExistingTemplatesModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
 
-  // Mock template data for development - separate templates
+  // Mock template data for development
   const mockTemplates: Template[] = [
     {
       id: '1',
@@ -183,7 +183,7 @@ export const ExistingTemplatesModal: React.FC<ExistingTemplatesModalProps> = ({
                       <Button
                         size="sm"
                         onClick={() => handleUseTemplate(template)}
-                        className="flex-1 rounded-sm bg-primary text-primary-foreground hover:bg-primary/90"
+                        className="flex-1 rounded-sm"
                       >
                         Use template
                       </Button>
