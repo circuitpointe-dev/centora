@@ -131,9 +131,9 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       {/* Submission Types Section */}
-      <Card className="shadow-sm">
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="text-lg">Submission Types</CardTitle>
         </CardHeader>
@@ -190,7 +190,7 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
       </Card>
 
       {/* Reporting Setup Section */}
-      <Card className="shadow-sm">
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="text-lg">Reporting Setup</CardTitle>
         </CardHeader>
@@ -294,65 +294,67 @@ export const GranteeSubmissionTab: React.FC<GranteeSubmissionTabProps> = ({ data
           </Button>
 
           {data.reportEntries && data.reportEntries.length > 0 && (
-            <div className="mt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Submission Type</TableHead>
-                    <TableHead>Reporting Period</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Assigned Reviewer</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.reportEntries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell>
-                        <Badge variant="outline" className="rounded-sm">
-                          {entry.submissionType}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{entry.reportingPeriod}</TableCell>
-                      <TableCell>{entry.dueDate}</TableCell>
-                      <TableCell>
-                        <Select 
-                          value={entry.assignedReviewer} 
-                          onValueChange={(value) => updateReportEntry(entry.id, 'assignedReviewer', value)}
-                        >
-                          <SelectTrigger className="rounded-sm">
-                            <SelectValue placeholder="Select reviewer" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {staffMembers.map((staff) => (
-                              <SelectItem key={staff} value={staff}>
-                                {staff}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeReportEntry(entry.id)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+            <div className="mt-6 overflow-x-auto">
+              <div className="min-w-[800px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[140px]">Submission Type</TableHead>
+                      <TableHead className="min-w-[200px]">Reporting Period</TableHead>
+                      <TableHead className="min-w-[120px]">Due Date</TableHead>
+                      <TableHead className="min-w-[180px]">Assigned Reviewer</TableHead>
+                      <TableHead className="min-w-[80px]">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {data.reportEntries.map((entry) => (
+                      <TableRow key={entry.id}>
+                        <TableCell>
+                          <Badge variant="outline" className="rounded-sm">
+                            {entry.submissionType}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">{entry.reportingPeriod}</TableCell>
+                        <TableCell className="whitespace-nowrap">{entry.dueDate}</TableCell>
+                        <TableCell>
+                          <Select 
+                            value={entry.assignedReviewer} 
+                            onValueChange={(value) => updateReportEntry(entry.id, 'assignedReviewer', value)}
+                          >
+                            <SelectTrigger className="rounded-sm min-w-[160px]">
+                              <SelectValue placeholder="Select reviewer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {staffMembers.map((staff) => (
+                                <SelectItem key={staff} value={staff}>
+                                  {staff}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeReportEntry(entry.id)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
         </CardContent>
       </Card>
 
       {/* Templates Section */}
-      <Card className="shadow-sm">
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="text-lg">Templates</CardTitle>
         </CardHeader>
