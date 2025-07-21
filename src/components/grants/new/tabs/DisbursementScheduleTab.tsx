@@ -71,8 +71,8 @@ export const DisbursementScheduleTab: React.FC<DisbursementScheduleTabProps> = (
         
         {/* Form to add new disbursement */}
         <div className="border rounded-sm p-4 bg-background/50">
-          <h4 className="text-sm font-medium mb-3">Add New Disbursement</h4>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="space-y-4">
+            {/* Milestone - Full width row */}
             <div>
               <Label htmlFor="milestone" className="text-sm">Milestone</Label>
               <Input
@@ -84,69 +84,73 @@ export const DisbursementScheduleTab: React.FC<DisbursementScheduleTabProps> = (
               />
             </div>
             
-            <div>
-              <Label htmlFor="amount" className="text-sm">Amount</Label>
-              <div className="flex">
-                <Input
-                  id="amount"
-                  type="number"
-                  placeholder="0.00"
-                  value={newDisbursement.amount || ''}
-                  onChange={(e) => setNewDisbursement(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
-                  className="rounded-sm rounded-r-none"
-                />
-                <Select 
-                  value={newDisbursement.currency} 
-                  onValueChange={(value) => setNewDisbursement(prev => ({ ...prev, currency: value }))}
-                >
-                  <SelectTrigger className="w-20 rounded-sm rounded-l-none border-l-0">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {currencies.map((currency) => (
-                      <SelectItem key={currency} value={currency}>{currency}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Amount and Date - Shared row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="amount" className="text-sm">Amount</Label>
+                <div className="flex">
+                  <Select 
+                    value={newDisbursement.currency} 
+                    onValueChange={(value) => setNewDisbursement(prev => ({ ...prev, currency: value }))}
+                  >
+                    <SelectTrigger className="w-20 rounded-sm rounded-r-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border z-50">
+                      {currencies.map((currency) => (
+                        <SelectItem key={currency} value={currency}>{currency}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="0.00"
+                    value={newDisbursement.amount || ''}
+                    onChange={(e) => setNewDisbursement(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
+                    className="rounded-sm rounded-l-none border-l-0"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="date" className="text-sm">Disbursement Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal rounded-sm",
+                        !newDisbursement.disbursementDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {newDisbursement.disbursementDate ? (
+                        format(newDisbursement.disbursementDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background border z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={newDisbursement.disbursementDate}
+                      onSelect={(date) => setNewDisbursement(prev => ({ ...prev, disbursementDate: date }))}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             
-            <div>
-              <Label htmlFor="date" className="text-sm">Disbursement Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal rounded-sm",
-                      !newDisbursement.disbursementDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {newDisbursement.disbursementDate ? (
-                      format(newDisbursement.disbursementDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={newDisbursement.disbursementDate}
-                    onSelect={(date) => setNewDisbursement(prev => ({ ...prev, disbursementDate: date }))}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            <div className="flex items-end">
+            {/* Add Button */}
+            <div className="flex justify-end">
               <Button 
                 onClick={addDisbursement}
                 variant="ghost"
-                className="w-full bg-transparent hover:bg-accent rounded-sm"
+                className="bg-transparent hover:bg-accent rounded-sm"
                 disabled={!newDisbursement.milestone || !newDisbursement.amount || !newDisbursement.disbursementDate}
               >
                 <Plus className="h-4 w-4 mr-2" />
