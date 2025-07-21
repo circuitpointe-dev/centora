@@ -28,13 +28,22 @@ export interface GrantFormData {
     }>;
   };
   granteeSubmission: {
-    narrativeReports: Array<{ title: string; status: string }>;
-    financialReports: Array<{ title: string; status: string }>;
-    meReports: Array<{ title: string; status: string }>;
-    customReportTypes: Array<{
+    submissionTypes: Array<{
+      id: string;
       name: string;
-      reports: Array<{ title: string; status: string }>;
+      enabled: boolean;
+      isCustom?: boolean;
     }>;
+    reportEntries: Array<{
+      id: string;
+      submissionType: string;
+      reportingPeriod: string;
+      dueDate: string;
+      assignedReviewer: string;
+    }>;
+    frequency: string;
+    startDate: Date | undefined;
+    endDate: Date | undefined;
   };
   reportingSchedule: {
     frequency: string;
@@ -84,10 +93,11 @@ const initialFormData: GrantFormData = {
     documents: [],
   },
   granteeSubmission: {
-    narrativeReports: [],
-    financialReports: [],
-    meReports: [],
-    customReportTypes: [],
+    submissionTypes: [],
+    reportEntries: [],
+    frequency: '',
+    startDate: undefined,
+    endDate: undefined,
   },
   reportingSchedule: {
     frequency: '',

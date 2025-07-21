@@ -52,7 +52,7 @@ export const GrantFormTabContent: React.FC<GrantFormTabContentProps> = ({
       <TabsContent value="grantee-submission" className="space-y-6 mt-6">
         <Card>
           <CardHeader>
-            <CardTitle>Grantee Submission</CardTitle>
+            <CardTitle>Submission Setup</CardTitle>
           </CardHeader>
           <CardContent>
             <GranteeSubmissionTab

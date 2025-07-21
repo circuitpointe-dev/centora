@@ -20,7 +20,7 @@ const NewGrantPage = () => {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'grantee-details', label: 'Grantee Details' },
-    { id: 'grantee-submission', label: 'Grantee Submission' },
+    { id: 'grantee-submission', label: 'Submission Setup' },
     { id: 'reporting-schedule', label: 'Reporting Schedule' },
     { id: 'compliance-checklist', label: 'Compliance Checklist' },
     { id: 'disbursement-schedule', label: 'Disbursement Schedule' },
