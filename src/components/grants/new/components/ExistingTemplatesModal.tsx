@@ -37,62 +37,62 @@ export const ExistingTemplatesModal: React.FC<ExistingTemplatesModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
 
-  // Mock template data for development - separate templates
+  // Mock template data with different document preview images
   const mockTemplates: Template[] = [
     {
       id: '1',
       name: 'Template 1.pdf',
       type: 'Narrative',
-      previewUrl: '/lovable-uploads/e7986328-5665-4739-b5a5-86ac2274eca2.png',
+      previewUrl: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=600&fit=crop',
       lastModified: '2024-01-15',
     },
     {
       id: '2',
       name: 'Template 2.pdf',
       type: 'Financial',
-      previewUrl: '/lovable-uploads/e7986328-5665-4739-b5a5-86ac2274eca2.png',
+      previewUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=600&fit=crop',
       lastModified: '2024-01-10',
     },
     {
       id: '3',
       name: 'Monthly Report Template.pdf',
       type: 'M & E',
-      previewUrl: '/lovable-uploads/e7986328-5665-4739-b5a5-86ac2274eca2.png',
+      previewUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop',
       lastModified: '2024-01-08',
     },
     {
       id: '4',
       name: 'Quarterly Financial.pdf',
       type: 'Financial',
-      previewUrl: '/lovable-uploads/e7986328-5665-4739-b5a5-86ac2274eca2.png',
+      previewUrl: 'https://images.unsplash.com/photo-1554224154-26032fbc4d72?w=400&h=600&fit=crop',
       lastModified: '2024-01-05',
     },
     {
       id: '5',
       name: 'Impact Assessment.pdf',
       type: 'M & E',
-      previewUrl: '/lovable-uploads/e7986328-5665-4739-b5a5-86ac2274eca2.png',
+      previewUrl: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=600&fit=crop',
       lastModified: '2024-01-03',
     },
     {
       id: '6',
       name: 'Annual Report.pdf',
       type: 'Narrative',
-      previewUrl: '/lovable-uploads/e7986328-5665-4739-b5a5-86ac2274eca2.png',
+      previewUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop',
       lastModified: '2024-01-01',
     },
     {
       id: '7',
       name: 'Budget Template.pdf',
       type: 'Financial',
-      previewUrl: '/lovable-uploads/e7986328-5665-4739-b5a5-86ac2274eca2.png',
+      previewUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=600&fit=crop',
       lastModified: '2023-12-28',
     },
     {
       id: '8',
       name: 'Progress Report.pdf',
       type: 'Other',
-      previewUrl: '/lovable-uploads/e7986328-5665-4739-b5a5-86ac2274eca2.png',
+      previewUrl: 'https://images.unsplash.com/photo-1554224154-26032fbc4d72?w=400&h=600&fit=crop',
       lastModified: '2023-12-25',
     },
   ];
@@ -151,10 +151,19 @@ export const ExistingTemplatesModal: React.FC<ExistingTemplatesModalProps> = ({
 
           {/* Templates Grid */}
           <div className="max-h-[60vh] overflow-y-auto">
-            <div className="grid grid-cols-4 gap-6 p-1">
+            <div className="grid grid-cols-3 gap-6 p-1">
               {filteredTemplates.map((template) => (
                 <Card key={template.id} className="shadow-md hover:shadow-lg transition-shadow">
                   <CardContent className="p-4 space-y-3">
+                    {/* PDF Document Preview */}
+                    <div className="aspect-[3/4] bg-muted rounded-sm overflow-hidden border">
+                      <img
+                        src={template.previewUrl}
+                        alt={`${template.name} preview`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
                     {/* Document Name */}
                     <h3 className="font-medium text-sm truncate text-center" title={template.name}>
                       {template.name}
