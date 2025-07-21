@@ -71,7 +71,9 @@ export interface GrantFormData {
   };
   disbursementSchedule: {
     disbursements: Array<{
+      milestone: string;
       amount: number;
+      currency: string;
       disbursementDate: Date | undefined;
     }>;
   };
