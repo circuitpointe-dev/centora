@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
 import { ActiveGrantsTable } from '@/components/grants/ActiveGrantsTable';
+import { ActiveGrantsStatCards } from '@/components/grants/ActiveGrantsStatCards';
 
 const ActiveGrantsPage = () => {
   const { user } = useAuth();
@@ -11,6 +12,20 @@ const ActiveGrantsPage = () => {
   if (user?.userType === 'Donor') {
     return (
       <div className="space-y-6 p-6">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-xl font-medium text-gray-900 mb-2">
+            Active Grants
+          </h1>
+          <p className="text-gray-600">
+            Overview of currently active grants and their progress
+          </p>
+        </div>
+
+        {/* Statistics Cards */}
+        <ActiveGrantsStatCards />
+
+        {/* Active Grants Table */}
         <ActiveGrantsTable />
       </div>
     );
