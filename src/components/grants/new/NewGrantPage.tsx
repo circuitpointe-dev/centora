@@ -50,8 +50,8 @@ const NewGrantPage = () => {
   };
 
   const handleSave = () => {
-    console.log('Saving grant:', formData);
-    setShowSuccessDialog(true);
+    console.log('Navigating to preview with data:', formData);
+    navigate('/dashboard/grants/review', { state: { formData } });
   };
 
   const handleSuccessConfirm = () => {

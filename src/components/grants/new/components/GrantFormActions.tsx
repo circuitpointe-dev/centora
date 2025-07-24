@@ -43,7 +43,7 @@ export const GrantFormActions: React.FC<GrantFormActionsProps> = ({
             onClick={onSave}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
-            Save
+            Preview
           </Button>
         ) : (
           <Button 
