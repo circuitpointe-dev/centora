@@ -257,6 +257,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
               </Button>
               <Button
                 onClick={() => setShowApproveDialog(true)}
+                className="bg-violet-600 text-white hover:bg-violet-700"
               >
                 Approve
               </Button>
