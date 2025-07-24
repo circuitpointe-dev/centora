@@ -53,7 +53,7 @@ const GrantReviewPage: React.FC<GrantReviewPageProps> = () => {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Overview Card */}
         <Card>
           <CardHeader>
@@ -229,7 +229,7 @@ const GrantReviewPage: React.FC<GrantReviewPageProps> = () => {
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex justify-between items-center pt-6">
+        <div className="col-span-full flex justify-between items-center pt-6">
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
