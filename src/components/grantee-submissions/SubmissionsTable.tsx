@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Grid, List, Filter, Eye } from 'lucide-react';
 import { submissionsData, type Submission } from './data/submissionsData';
+import SubmissionDetailDialog from './SubmissionDetailDialog';
 
 export const SubmissionsTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,6 +15,8 @@ export const SubmissionsTable = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
   const itemsPerPage = 8;
 
   const filteredSubmissions = submissionsData.filter(submission => {
@@ -46,8 +49,14 @@ export const SubmissionsTable = () => {
     }
   };
 
+  const handleViewSubmission = (submission: Submission) => {
+    setSelectedSubmission(submission);
+    setShowDetailDialog(true);
+  };
+
   return (
-    <div className="space-y-4">
+    <>
+      <div className="space-y-4">
       {/* Table Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -167,7 +176,11 @@ export const SubmissionsTable = () => {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewSubmission(submission)}
+                      >
                         <Eye className="h-4 w-4 mr-1" />
                         View
                       </Button>
@@ -210,13 +223,18 @@ export const SubmissionsTable = () => {
                   </span>
                 </div>
                 
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Action</span>
-                  <Button variant="ghost" size="sm" className="p-0 h-auto font-normal text-gray-600">
-                    <Eye className="h-4 w-4 mr-1" />
-                    View
-                  </Button>
-                </div>
+                 <div className="flex justify-between items-center">
+                   <span className="text-sm text-gray-600">Action</span>
+                   <Button 
+                     variant="ghost" 
+                     size="sm" 
+                     className="p-0 h-auto font-normal text-gray-600"
+                     onClick={() => handleViewSubmission(submission)}
+                   >
+                     <Eye className="h-4 w-4 mr-1" />
+                     View
+                   </Button>
+                 </div>
               </div>
             </Card>
           ))}
@@ -248,5 +266,13 @@ export const SubmissionsTable = () => {
         </div>
       </div>
     </div>
+
+    {/* Submission Detail Dialog */}
+    <SubmissionDetailDialog
+      submission={selectedSubmission}
+      isOpen={showDetailDialog}
+      onClose={() => setShowDetailDialog(false)}
+    />
+  </>
   );
 };
