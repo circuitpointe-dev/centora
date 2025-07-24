@@ -78,44 +78,91 @@ export const SubmissionsTable = () => {
         </div>
       </div>
 
-      {/* Table */}
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Submission type</TableHead>
-                <TableHead>Grant name</TableHead>
-                <TableHead>Organization</TableHead>
-                <TableHead>Submitted on</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedSubmissions.map((submission) => (
-                <TableRow key={submission.id}>
-                  <TableCell className="font-medium">{submission.submissionType}</TableCell>
-                  <TableCell>{submission.grantName}</TableCell>
-                  <TableCell>{submission.organization}</TableCell>
-                  <TableCell>{submission.submittedOn}</TableCell>
-                  <TableCell>
-                    <span className={getStatusBadge(submission.status)}>
-                      {submission.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                  </TableCell>
+      {/* Content - List or Grid View */}
+      {viewMode === 'list' ? (
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Submission type</TableHead>
+                  <TableHead>Grant name</TableHead>
+                  <TableHead>Organization</TableHead>
+                  <TableHead>Submitted on</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {paginatedSubmissions.map((submission) => (
+                  <TableRow key={submission.id}>
+                    <TableCell className="font-medium">{submission.submissionType}</TableCell>
+                    <TableCell>{submission.grantName}</TableCell>
+                    <TableCell>{submission.organization}</TableCell>
+                    <TableCell>{submission.submittedOn}</TableCell>
+                    <TableCell>
+                      <span className={getStatusBadge(submission.status)}>
+                        {submission.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {paginatedSubmissions.map((submission) => (
+            <Card key={submission.id} className="p-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm text-gray-600">Submission type</p>
+                    <p className="font-medium">{submission.submissionType}</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <p className="text-sm text-gray-600">Grant name</p>
+                  <p className="font-medium">{submission.grantName}</p>
+                </div>
+                
+                <div>
+                  <p className="text-sm text-gray-600">Organization</p>
+                  <p className="font-medium">{submission.organization}</p>
+                </div>
+                
+                <div>
+                  <p className="text-sm text-gray-600">Submitted at</p>
+                  <p className="font-medium">{submission.submittedOn}</p>
+                </div>
+                
+                <div>
+                  <p className="text-sm text-gray-600">Status</p>
+                  <span className={getStatusBadge(submission.status)}>
+                    {submission.status}
+                  </span>
+                </div>
+                
+                <div>
+                  <p className="text-sm text-gray-600">Action</p>
+                  <Button variant="ghost" size="sm" className="p-0 h-auto font-normal text-gray-600">
+                    <Eye className="h-4 w-4 mr-1" />
+                    View
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Pagination */}
       <div className="flex items-center justify-between">
