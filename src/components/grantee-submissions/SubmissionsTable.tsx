@@ -9,15 +9,24 @@ import { submissionsData, type Submission } from './data/submissionsData';
 
 export const SubmissionsTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const itemsPerPage = 8;
 
-  const filteredSubmissions = submissionsData.filter(submission =>
-    submission.grantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.submissionType.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredSubmissions = submissionsData.filter(submission => {
+    const matchesSearch = 
+      submission.grantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.submissionType.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || submission.status === statusFilter;
+    const matchesType = typeFilter === 'all' || submission.submissionType === typeFilter;
+    
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
   const totalPages = Math.ceil(filteredSubmissions.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -71,10 +80,62 @@ export const SubmissionsTable = () => {
           >
             <List className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter
-          </Button>
+          <div className="relative">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Filter
+            </Button>
+            {showFilterDropdown && (
+              <div className="absolute right-0 top-full mt-2 bg-white border rounded-lg shadow-lg p-4 z-10 w-64">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Status</label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All statuses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All statuses</SelectItem>
+                        <SelectItem value="Pending review">Pending review</SelectItem>
+                        <SelectItem value="Revision requested">Revision requested</SelectItem>
+                        <SelectItem value="Approved">Approved</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Submission Type</label>
+                    <Select value={typeFilter} onValueChange={setTypeFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All types" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All types</SelectItem>
+                        <SelectItem value="Narrative">Narrative</SelectItem>
+                        <SelectItem value="Financial">Financial</SelectItem>
+                        <SelectItem value="M & E">M & E</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      setStatusFilter('all');
+                      setTypeFilter('all');
+                      setShowFilterDropdown(false);
+                    }}
+                    className="w-full"
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -122,37 +183,35 @@ export const SubmissionsTable = () => {
           {paginatedSubmissions.map((submission) => (
             <Card key={submission.id} className="p-4">
               <div className="space-y-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-sm text-gray-600">Submission type</p>
-                    <p className="font-medium">{submission.submissionType}</p>
-                  </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Submission type</span>
+                  <span className="font-medium">{submission.submissionType}</span>
                 </div>
                 
-                <div>
-                  <p className="text-sm text-gray-600">Grant name</p>
-                  <p className="font-medium">{submission.grantName}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Grant name</span>
+                  <span className="font-medium">{submission.grantName}</span>
                 </div>
                 
-                <div>
-                  <p className="text-sm text-gray-600">Organization</p>
-                  <p className="font-medium">{submission.organization}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Organization</span>
+                  <span className="font-medium">{submission.organization}</span>
                 </div>
                 
-                <div>
-                  <p className="text-sm text-gray-600">Submitted at</p>
-                  <p className="font-medium">{submission.submittedOn}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Submitted at</span>
+                  <span className="font-medium">{submission.submittedOn}</span>
                 </div>
                 
-                <div>
-                  <p className="text-sm text-gray-600">Status</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Status</span>
                   <span className={getStatusBadge(submission.status)}>
                     {submission.status}
                   </span>
                 </div>
                 
-                <div>
-                  <p className="text-sm text-gray-600">Action</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Action</span>
                   <Button variant="ghost" size="sm" className="p-0 h-auto font-normal text-gray-600">
                     <Eye className="h-4 w-4 mr-1" />
                     View
