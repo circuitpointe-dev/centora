@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { GranteeSubmissionsTabNavigation } from '@/components/grantee-submissions/GranteeSubmissionsTabNavigation';
 import { SubmissionStatsCards } from '@/components/grantee-submissions/SubmissionStatsCards';
 import { SubmissionsTable } from '@/components/grantee-submissions/SubmissionsTable';
+import { ReportingTrackerContent } from '@/components/reporting-tracker/ReportingTrackerContent';
 
 const GranteeSubmissionsPage = () => {
   const [activeTab, setActiveTab] = useState<"grantee-submissions" | "reporting-tracker" | "compliance-monitor" | "disbursement-monitor">("grantee-submissions");
@@ -34,12 +35,7 @@ const GranteeSubmissionsPage = () => {
           </>
         );
       case "reporting-tracker":
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Reporting Tracker</h3>
-            <p className="text-gray-500">Track reporting schedules and deadlines.</p>
-          </div>
-        );
+        return <ReportingTrackerContent />;
       case "compliance-monitor":
         return (
           <div className="text-center py-12">
