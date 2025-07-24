@@ -63,7 +63,7 @@ const GranteeSubmissionsPage = () => {
     <div className="space-y-6 p-6">
       {/* Header with Tab Title and Period Filter */}
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-2xl font-semibold text-gray-900">
+        <h1 className="text-xl font-medium text-gray-900">
           {getTabTitle()}
         </h1>
         {activeTab === "grantee-submissions" && (

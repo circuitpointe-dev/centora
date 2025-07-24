@@ -56,11 +56,11 @@ export const SubmissionStatsCards = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
       {/* Submission Status Summary */}
-      <Card>
+      <Card className="lg:col-span-1">
         <CardHeader>
-          <CardTitle className="text-lg font-medium">Submission status summary</CardTitle>
+          <CardTitle className="text-base font-medium">Submission status summary</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-64">
@@ -87,9 +87,9 @@ export const SubmissionStatsCards = () => {
       </Card>
 
       {/* Overdue Submissions by Type */}
-      <Card>
+      <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle className="text-lg font-medium">Overdue submissions by type</CardTitle>
+          <CardTitle className="text-base font-medium">Overdue submissions by type</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-64">

@@ -34,7 +34,7 @@ export const GranteeSubmissionsTabNavigation: React.FC<GranteeSubmissionsTabNavi
   onTabChange,
 }) => {
   return (
-    <div className="flex gap-3 mb-6">
+    <div className="flex justify-between mb-6">
       {tabDefs.map((tab) => (
         <button
           key={tab.value}
