@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { GrantFormData } from './hooks/useGrantFormData';
+import InviteGranteeDialog from './InviteGranteeDialog';
 
 interface GrantReviewPageProps {}
 
@@ -13,6 +14,7 @@ const GrantReviewPage: React.FC<GrantReviewPageProps> = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const formData = location.state?.formData as GrantFormData;
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
   const handleCancel = () => {
     navigate('/dashboard/grants');
@@ -23,10 +25,15 @@ const GrantReviewPage: React.FC<GrantReviewPageProps> = () => {
   };
 
   const handleFinish = () => {
+    setIsInviteDialogOpen(true);
+  };
+
+  const handleInvitationSent = () => {
+    setIsInviteDialogOpen(false);
     console.log('Creating grant:', formData);
     toast({
       title: "Grant created successfully",
-      description: "Your grant has been created and is now active.",
+      description: "Your grant has been created and grantee invitation sent.",
     });
     navigate('/dashboard/grants/active-grants');
   };
@@ -242,11 +249,19 @@ const GrantReviewPage: React.FC<GrantReviewPageProps> = () => {
               onClick={handleFinish}
               className="bg-purple-600 hover:bg-purple-700 text-white"
             >
-              Finish
+              Invite Grantee
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Invite Grantee Dialog */}
+      <InviteGranteeDialog
+        isOpen={isInviteDialogOpen}
+        onClose={() => setIsInviteDialogOpen(false)}
+        onSend={handleInvitationSent}
+        formData={formData}
+      />
     </div>
   );
 };
