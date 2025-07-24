@@ -43,7 +43,7 @@ export const ComplianceChecklistTab: React.FC<ComplianceChecklistTabProps> = ({ 
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Compliance Requirements</h3>
-        <Button onClick={addComplianceRequirement} className="flex items-center gap-2 rounded-sm">
+        <Button variant="ghost" onClick={addComplianceRequirement} className="flex items-center gap-2 rounded-sm">
           <Plus className="h-4 w-4" />
           Add Requirement
         </Button>
