@@ -115,7 +115,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 grid w-full max-w-4xl bg-white rounded-lg shadow-lg border p-6 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 grid w-full max-w-2xl bg-white rounded-lg shadow-lg border p-6 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold mb-4 text-black">
               {submission.submissionType} - {submission.grantName}
@@ -257,7 +257,6 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
               </Button>
               <Button
                 onClick={() => setShowApproveDialog(true)}
-                className="bg-black text-white hover:bg-gray-800"
               >
                 Approve
               </Button>
