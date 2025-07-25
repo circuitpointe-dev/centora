@@ -20,17 +20,16 @@ export const ComplianceCharts = () => {
     );
   };
 
-  const customDayContent = (day: Date) => {
-    if (isDueDate(day)) {
-      return (
-        <div className="relative w-full h-full flex items-center justify-center">
-          <div className="w-6 h-6 bg-violet-600 text-white rounded-full flex items-center justify-center text-xs font-medium">
-            {day.getDate()}
-          </div>
-        </div>
-      );
+  const modifiers = {
+    dueDate: dueDates
+  };
+
+  const modifiersStyles = {
+    dueDate: {
+      backgroundColor: 'hsl(var(--primary))',
+      color: 'white',
+      borderRadius: '50%'
     }
-    return <span>{day.getDate()}</span>;
   };
 
   return (
@@ -119,9 +118,8 @@ export const ComplianceCharts = () => {
             selected={calendarDate}
             onSelect={setCalendarDate}
             className="rounded-md border-none p-0"
-            components={{
-              DayContent: ({ date }) => customDayContent(date)
-            }}
+            modifiers={modifiers}
+            modifiersStyles={modifiersStyles}
           />
         </CardContent>
       </Card>
