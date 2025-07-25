@@ -5,6 +5,7 @@ import { GranteeSubmissionsTabNavigation } from '@/components/grantee-submission
 import { SubmissionStatsCards } from '@/components/grantee-submissions/SubmissionStatsCards';
 import { SubmissionsTable } from '@/components/grantee-submissions/SubmissionsTable';
 import { ReportingTrackerContent } from '@/components/reporting-tracker/ReportingTrackerContent';
+import { ComplianceMonitorContent } from '@/components/compliance-monitor/ComplianceMonitorContent';
 
 const GranteeSubmissionsPage = () => {
   const [activeTab, setActiveTab] = useState<"grantee-submissions" | "reporting-tracker" | "compliance-monitor" | "disbursement-monitor">("grantee-submissions");
@@ -15,11 +16,11 @@ const GranteeSubmissionsPage = () => {
       case "grantee-submissions":
         return "Grantee Submissions";
       case "reporting-tracker":
-        return "Reporting tracker";
+        return "Reporting Tracker";
       case "compliance-monitor":
-        return "Compliance monitor";
+        return "Compliance Monitor";
       case "disbursement-monitor":
-        return "Disbursement monitor";
+        return "Disbursement Monitor";
       default:
         return "Grantee Submissions";
     }
@@ -37,12 +38,7 @@ const GranteeSubmissionsPage = () => {
       case "reporting-tracker":
         return <ReportingTrackerContent />;
       case "compliance-monitor":
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Compliance Monitor</h3>
-            <p className="text-gray-500">Monitor compliance requirements and status.</p>
-          </div>
-        );
+        return <ComplianceMonitorContent />;
       case "disbursement-monitor":
         return (
           <div className="text-center py-12">

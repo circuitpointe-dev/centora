@@ -13,17 +13,17 @@ const tabDefs = [
     icon: <FileText size={16} />,
   },
   {
-    label: "Reporting tracker",
+    label: "Reporting Tracker",
     value: "reporting-tracker",
     icon: <BarChart3 size={16} />,
   },
   {
-    label: "Compliance monitor",
+    label: "Compliance Monitor",
     value: "compliance-monitor",
     icon: <Shield size={16} />,
   },
   {
-    label: "Disbursement monitor",
+    label: "Disbursement Monitor",
     value: "disbursement-monitor",
     icon: <DollarSign size={16} />,
   },
