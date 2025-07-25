@@ -117,9 +117,10 @@ export const ComplianceCharts = () => {
             mode="single"
             selected={calendarDate}
             onSelect={setCalendarDate}
-            className="rounded-md border-none p-0"
+            className="rounded-md border-none p-0 [&_.rdp-nav]:hidden"
             modifiers={modifiers}
             modifiersStyles={modifiersStyles}
+            showOutsideDays={true}
           />
         </CardContent>
       </Card>
