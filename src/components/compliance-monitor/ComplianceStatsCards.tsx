@@ -45,18 +45,16 @@ export const ComplianceStatsCards = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {stats.map((stat, index) => (
-        <Card key={index} className="p-4">
+        <Card key={index} className="p-6">
           <CardContent className="p-0">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-600">{stat.title}</p>
-              </div>
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+            <div className="flex flex-col items-center text-center space-y-3">
+              <div className={`p-3 rounded-lg ${stat.bgColor}`}>
                 <div className={stat.iconColor}>
                   {stat.icon}
                 </div>
               </div>
+              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+              <p className="text-sm text-gray-600">{stat.title}</p>
             </div>
           </CardContent>
         </Card>
