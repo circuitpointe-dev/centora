@@ -100,26 +100,15 @@ export const ComplianceCharts = () => {
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium">Upcoming Due Dates</CardTitle>
         </CardHeader>
-        <CardContent className="pt-0">
-          <div className="flex items-center justify-between mb-4">
-            <Button variant="ghost" size="sm">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="font-medium text-sm">
-              {calendarDate?.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-            </span>
-            <Button variant="ghost" size="sm">
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+        <CardContent className="pt-0 flex justify-center">
           <Calendar
             mode="single"
             selected={calendarDate}
             onSelect={setCalendarDate}
-            className="rounded-md border-none p-0 [&_.rdp-nav]:hidden [&_.rdp-caption]:hidden"
+            className="pointer-events-auto scale-90 origin-top"
             modifiers={modifiers}
             modifiersStyles={modifiersStyles}
-            showOutsideDays={true}
+            showOutsideDays={false}
           />
         </CardContent>
       </Card>
