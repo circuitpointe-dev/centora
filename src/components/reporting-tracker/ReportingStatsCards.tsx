@@ -13,28 +13,28 @@ interface StatCard {
 export const ReportingStatsCards = () => {
   const stats: StatCard[] = [
     {
-      title: 'Total reports',
+      title: 'Total Reports',
       value: 38,
       icon: <FileText className="h-5 w-5" />,
       bgColor: 'bg-purple-50',
       iconColor: 'text-purple-600',
     },
     {
-      title: 'Reports submitted',
+      title: 'Reports Submitted',
       value: 5,
       icon: <Send className="h-5 w-5" />,
       bgColor: 'bg-blue-50',
       iconColor: 'text-blue-600',
     },
     {
-      title: 'Reports reviewed',
+      title: 'Reports Reviewed',
       value: 3,
       icon: <CheckCircle className="h-5 w-5" />,
       bgColor: 'bg-yellow-50',
       iconColor: 'text-yellow-600',
     },
     {
-      title: 'Reports due',
+      title: 'Reports Due',
       value: 6,
       icon: <AlertCircle className="h-5 w-5" />,
       bgColor: 'bg-red-50',
