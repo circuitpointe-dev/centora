@@ -20,20 +20,20 @@ export const ComplianceCharts = () => {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showEventDialog, setShowEventDialog] = useState(false);
 
-  // Sample calendar events for 2025 - focused on January
+  // Sample calendar events for July-December 2025
   const calendarEvents: CalendarEvent[] = [
-    { id: '1', date: '2025-01-03', title: 'Project Kickoff Meeting', description: 'Initial project planning and team coordination', type: 'meeting' },
-    { id: '2', date: '2025-01-08', title: 'Grant Application Deadline', description: 'Submit Q1 grant applications', type: 'deadline' },
-    { id: '3', date: '2025-01-15', title: 'Quarterly Report Due', description: 'Submit quarterly compliance report for Q4 2024', type: 'deadline' },
-    { id: '4', date: '2025-01-18', title: 'Stakeholder Review', description: 'Monthly stakeholder progress review', type: 'review' },
-    { id: '5', date: '2025-01-22', title: 'Compliance Review Meeting', description: 'Monthly review meeting with compliance team', type: 'meeting' },
-    { id: '6', date: '2025-01-25', title: 'Documentation Audit', description: 'Internal documentation compliance check', type: 'review' },
-    { id: '7', date: '2025-01-29', title: 'Budget Review Meeting', description: 'Monthly budget and financial review', type: 'meeting' },
-    { id: '8', date: '2025-02-05', title: 'Grant Documentation Review', description: 'Review and update grant documentation', type: 'review' },
-    { id: '9', date: '2025-02-14', title: 'Mid-Year Report Due', description: 'Submit mid-year progress report', type: 'deadline' },
-    { id: '10', date: '2025-02-28', title: 'Stakeholder Meeting', description: 'Quarterly stakeholder review meeting', type: 'meeting' },
-    { id: '11', date: '2025-03-10', title: 'Compliance Audit', description: 'Annual compliance audit review', type: 'review' },
-    { id: '12', date: '2025-03-25', title: 'Financial Report Due', description: 'Submit quarterly financial compliance report', type: 'deadline' }
+    { id: '1', date: '2025-07-08', title: 'Mid-Year Review Meeting', description: 'Comprehensive mid-year progress assessment', type: 'meeting' },
+    { id: '2', date: '2025-07-15', title: 'Grant Application Deadline', description: 'Submit Q3 grant applications', type: 'deadline' },
+    { id: '3', date: '2025-07-22', title: 'Compliance Audit', description: 'Semi-annual compliance audit review', type: 'review' },
+    { id: '4', date: '2025-08-05', title: 'Stakeholder Meeting', description: 'Monthly stakeholder progress review', type: 'meeting' },
+    { id: '5', date: '2025-08-18', title: 'Financial Report Due', description: 'Submit Q2 financial compliance report', type: 'deadline' },
+    { id: '6', date: '2025-09-10', title: 'Training Workshop', description: 'Compliance training for all staff members', type: 'meeting' },
+    { id: '7', date: '2025-09-25', title: 'Documentation Review', description: 'Quarterly documentation compliance check', type: 'review' },
+    { id: '8', date: '2025-10-07', title: 'Board Meeting', description: 'Quarterly board review and planning session', type: 'meeting' },
+    { id: '9', date: '2025-10-20', title: 'Annual Report Due', description: 'Submit comprehensive annual report', type: 'deadline' },
+    { id: '10', date: '2025-11-12', title: 'Performance Review', description: 'Annual performance and compliance review', type: 'review' },
+    { id: '11', date: '2025-11-28', title: 'Budget Planning Meeting', description: 'Next year budget planning session', type: 'meeting' },
+    { id: '12', date: '2025-12-15', title: 'Year-End Report Due', description: 'Final compliance report for 2025', type: 'deadline' }
   ];
 
   // Get dates that have due items
@@ -184,9 +184,9 @@ export const ComplianceCharts = () => {
 
       {/* Event Details Dialog */}
       <Dialog open={showEventDialog} onOpenChange={setShowEventDialog}>
-        <DialogContent className="max-w-md bg-white text-black border border-gray-200">
+        <DialogContent className="max-w-md bg-primary text-white border border-primary/20">
           <DialogHeader>
-            <DialogTitle className="text-black text-lg font-semibold flex items-center gap-2">
+            <DialogTitle className="text-white text-lg font-semibold flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
               Event Details
             </DialogTitle>
@@ -194,10 +194,10 @@ export const ComplianceCharts = () => {
           {selectedEvent && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-black font-medium text-base">{selectedEvent.title}</h3>
-                <p className="text-gray-600 text-sm mt-1">{selectedEvent.description}</p>
+                <h3 className="text-white font-medium text-base">{selectedEvent.title}</h3>
+                <p className="text-white/80 text-sm mt-1">{selectedEvent.description}</p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-white/70">
                 <Clock className="h-4 w-4" />
                 {new Date(selectedEvent.date).toLocaleDateString('en-US', {
                   weekday: 'long',
@@ -207,7 +207,7 @@ export const ComplianceCharts = () => {
                 })}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Type:</span>
+                <span className="text-sm text-white/70">Type:</span>
                 <span className={`text-xs px-2 py-1 rounded ${
                   selectedEvent.type === 'deadline' ? 'bg-red-100 text-red-800' :
                   selectedEvent.type === 'meeting' ? 'bg-blue-100 text-blue-800' :
