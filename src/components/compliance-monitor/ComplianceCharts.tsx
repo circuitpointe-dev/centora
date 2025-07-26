@@ -91,7 +91,7 @@ export const ComplianceCharts = () => {
       fontWeight: 'bold'
     },
     eventDate: {
-      backgroundColor: 'hsl(var(--primary))',
+      backgroundColor: '#7c3aed',
       color: 'white',
       borderRadius: '4px',
       fontWeight: 'bold'
