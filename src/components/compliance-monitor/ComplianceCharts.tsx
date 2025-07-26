@@ -184,9 +184,9 @@ export const ComplianceCharts = () => {
 
       {/* Event Details Dialog */}
       <Dialog open={showEventDialog} onOpenChange={setShowEventDialog}>
-        <DialogContent className="max-w-md bg-primary text-white border border-primary/20">
+        <DialogContent className="max-w-md bg-white text-black border border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-white text-lg font-semibold flex items-center gap-2">
+            <DialogTitle className="text-black text-lg font-semibold flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
               Event Details
             </DialogTitle>
@@ -194,10 +194,10 @@ export const ComplianceCharts = () => {
           {selectedEvent && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-white font-medium text-base">{selectedEvent.title}</h3>
-                <p className="text-white/80 text-sm mt-1">{selectedEvent.description}</p>
+                <h3 className="text-black font-medium text-base">{selectedEvent.title}</h3>
+                <p className="text-gray-600 text-sm mt-1">{selectedEvent.description}</p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-white/70">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Clock className="h-4 w-4" />
                 {new Date(selectedEvent.date).toLocaleDateString('en-US', {
                   weekday: 'long',
@@ -207,7 +207,7 @@ export const ComplianceCharts = () => {
                 })}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-white/70">Type:</span>
+                <span className="text-sm text-gray-500">Type:</span>
                 <span className={`text-xs px-2 py-1 rounded ${
                   selectedEvent.type === 'deadline' ? 'bg-red-100 text-red-800' :
                   selectedEvent.type === 'meeting' ? 'bg-blue-100 text-blue-800' :
