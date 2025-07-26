@@ -35,7 +35,7 @@ export const ComplianceCharts = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       {/* Overdue Compliance By Item Type - Bar Chart */}
-      <Card className="h-80">
+      <Card className="h-96">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium">Overdue Compliance By Item Type</CardTitle>
         </CardHeader>
@@ -59,7 +59,7 @@ export const ComplianceCharts = () => {
       </Card>
 
       {/* Compliance Status - Doughnut Chart */}
-      <Card className="h-80">
+      <Card className="h-96">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium">Compliance Status</CardTitle>
         </CardHeader>
@@ -96,7 +96,7 @@ export const ComplianceCharts = () => {
         </CardContent>
       </Card>
       {/* Upcoming Due Dates - Calendar */}
-      <Card className="h-80">
+      <Card className="h-96">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium">Upcoming Due Dates</CardTitle>
         </CardHeader>
