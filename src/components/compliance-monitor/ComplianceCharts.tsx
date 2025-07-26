@@ -20,18 +20,20 @@ export const ComplianceCharts = () => {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showEventDialog, setShowEventDialog] = useState(false);
 
-  // Sample calendar events for 2025
+  // Sample calendar events for 2025 - focused on January
   const calendarEvents: CalendarEvent[] = [
-    { id: '1', date: '2025-01-15', title: 'Quarterly Report Due', description: 'Submit quarterly compliance report for Q4 2024', type: 'deadline' },
-    { id: '2', date: '2025-01-22', title: 'Compliance Review Meeting', description: 'Monthly review meeting with compliance team', type: 'meeting' },
-    { id: '3', date: '2025-02-05', title: 'Grant Documentation Review', description: 'Review and update grant documentation', type: 'review' },
-    { id: '4', date: '2025-02-14', title: 'Mid-Year Report Due', description: 'Submit mid-year progress report', type: 'deadline' },
-    { id: '5', date: '2025-02-28', title: 'Stakeholder Meeting', description: 'Quarterly stakeholder review meeting', type: 'meeting' },
-    { id: '6', date: '2025-03-10', title: 'Compliance Audit', description: 'Annual compliance audit review', type: 'review' },
-    { id: '7', date: '2025-03-25', title: 'Financial Report Due', description: 'Submit quarterly financial compliance report', type: 'deadline' },
-    { id: '8', date: '2025-04-08', title: 'Training Session', description: 'Compliance training for new staff', type: 'meeting' },
-    { id: '9', date: '2025-04-20', title: 'Document Review', description: 'Review updated compliance procedures', type: 'review' },
-    { id: '10', date: '2025-05-15', title: 'Annual Report Due', description: 'Submit annual compliance report', type: 'deadline' }
+    { id: '1', date: '2025-01-03', title: 'Project Kickoff Meeting', description: 'Initial project planning and team coordination', type: 'meeting' },
+    { id: '2', date: '2025-01-08', title: 'Grant Application Deadline', description: 'Submit Q1 grant applications', type: 'deadline' },
+    { id: '3', date: '2025-01-15', title: 'Quarterly Report Due', description: 'Submit quarterly compliance report for Q4 2024', type: 'deadline' },
+    { id: '4', date: '2025-01-18', title: 'Stakeholder Review', description: 'Monthly stakeholder progress review', type: 'review' },
+    { id: '5', date: '2025-01-22', title: 'Compliance Review Meeting', description: 'Monthly review meeting with compliance team', type: 'meeting' },
+    { id: '6', date: '2025-01-25', title: 'Documentation Audit', description: 'Internal documentation compliance check', type: 'review' },
+    { id: '7', date: '2025-01-29', title: 'Budget Review Meeting', description: 'Monthly budget and financial review', type: 'meeting' },
+    { id: '8', date: '2025-02-05', title: 'Grant Documentation Review', description: 'Review and update grant documentation', type: 'review' },
+    { id: '9', date: '2025-02-14', title: 'Mid-Year Report Due', description: 'Submit mid-year progress report', type: 'deadline' },
+    { id: '10', date: '2025-02-28', title: 'Stakeholder Meeting', description: 'Quarterly stakeholder review meeting', type: 'meeting' },
+    { id: '11', date: '2025-03-10', title: 'Compliance Audit', description: 'Annual compliance audit review', type: 'review' },
+    { id: '12', date: '2025-03-25', title: 'Financial Report Due', description: 'Submit quarterly financial compliance report', type: 'deadline' }
   ];
 
   // Get dates that have due items
@@ -83,13 +85,14 @@ export const ComplianceCharts = () => {
 
   const modifiersStyles = {
     dueDate: {
-      backgroundColor: 'hsl(var(--primary))',
+      backgroundColor: 'hsl(var(--destructive))',
       color: 'white',
-      borderRadius: '4px'
+      borderRadius: '4px',
+      fontWeight: 'bold'
     },
     eventDate: {
-      backgroundColor: 'hsl(var(--accent))',
-      color: 'hsl(var(--accent-foreground))',
+      backgroundColor: 'hsl(var(--primary))',
+      color: 'white',
       borderRadius: '4px',
       fontWeight: 'bold'
     }
