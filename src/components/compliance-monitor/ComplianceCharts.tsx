@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Send } from 'lucide-react';
 import { overdueByItemType, complianceStatusData, upcomingDueDates } from './data/complianceMonitorData';
+import ReminderForm from '../opportunity-tracking/pipeline/ReminderForm';
 
 interface CalendarEvent {
   id: string;
@@ -19,6 +20,7 @@ export const ComplianceCharts = () => {
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(new Date());
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showEventDialog, setShowEventDialog] = useState(false);
+  const [showReminderForm, setShowReminderForm] = useState(false);
 
   // Sample calendar events for July-December 2025
   const calendarEvents: CalendarEvent[] = [
@@ -193,34 +195,78 @@ export const ComplianceCharts = () => {
           </DialogHeader>
           {selectedEvent && (
             <div className="space-y-4">
-              <div>
-                <h3 className="text-black font-medium text-base">{selectedEvent.title}</h3>
-                <p className="text-gray-600 text-sm mt-1">{selectedEvent.description}</p>
+              <div className="text-center mb-4">
+                <div className="text-lg font-semibold text-black">
+                  {new Date(selectedEvent.date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Clock className="h-4 w-4" />
-                {new Date(selectedEvent.date).toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+              
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Event name</span>
+                  <span className="text-sm font-medium text-black">{selectedEvent.title}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Organization</span>
+                  <span className="text-sm font-medium text-black">UNICEF</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Region</span>
+                  <span className="text-sm font-medium text-black">West</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Checklist items</span>
+                  <span className="text-sm font-medium text-black">12</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Met</span>
+                  <span className="text-sm font-medium text-black">10</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Overdue</span>
+                  <span className="text-sm font-medium text-black">1</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Pending</span>
+                  <span className="text-sm font-medium text-black">1</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Type:</span>
-                <span className={`text-xs px-2 py-1 rounded ${
-                  selectedEvent.type === 'deadline' ? 'bg-red-100 text-red-800' :
-                  selectedEvent.type === 'meeting' ? 'bg-blue-100 text-blue-800' :
-                  selectedEvent.type === 'review' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
-                  {selectedEvent.type.charAt(0).toUpperCase() + selectedEvent.type.slice(1)}
-                </span>
-              </div>
+              
+              {new Date(selectedEvent.date) > new Date() && (
+                <Button 
+                  className="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-700"
+                  onClick={() => setShowReminderForm(true)}
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Send reminder
+                </Button>
+              )}
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Reminder Form */}
+      <ReminderForm
+        open={showReminderForm}
+        date={selectedEvent ? new Date(selectedEvent.date) : undefined}
+        initialValue=""
+        onClose={() => setShowReminderForm(false)}
+        onSave={(text) => {
+          console.log('Reminder saved:', text);
+          setShowReminderForm(false);
+        }}
+      />
     </>
   );
 };
