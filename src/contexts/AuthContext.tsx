@@ -18,29 +18,21 @@ interface AuthContextType {
   isAuthenticated: boolean;
 }
 
-// Hardcoded users for demonstration
-const DEMO_USERS: User[] = [
+// Authorized users for development
+const AUTHORIZED_USERS: User[] = [
   {
     id: "1",
-    email: "chioma@cp.com",
-    name: "Chioma Ike",
-    organization: "CircuitPointe",
+    email: "user@ngo.com",
+    name: "NGO User",
+    organization: "Demo NGO Organization",
     userType: "NGO",
     subscribedModules: ["fundraising", "grants", "documents", "programme", "procurement", "inventory", "finance", "learning", "hr", "users"]
   },
   {
     id: "2",
-    email: "user@ngo.com",
-    name: "Richard Nwamadi",
-    organization: "FEHD Foundation",
-    userType: "NGO",
-    subscribedModules: ["fundraising", "grants", "documents"]
-  },
-  {
-    id: "3",
     email: "user@donor.com",
-    name: "Millicent Ogbu",
-    organization: "AmplifyChange",
+    name: "Donor User",
+    organization: "Demo Donor Organization",
     userType: "Donor",
     subscribedModules: ["fundraising", "grants", "documents", "programme", "procurement", "inventory", "finance", "learning", "hr", "users"]
   }
@@ -80,32 +72,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    if (!email || password.length < 6) {
+    // Validate password length (must be exactly 8 characters)
+    if (!email || password.length !== 8) {
       return false;
     }
 
-    // Check if it's a predefined demo user
-    const foundUser = DEMO_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
+    // Only allow authorized users
+    const foundUser = AUTHORIZED_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
     
-    let loginUser: User;
-    
-    if (foundUser) {
-      loginUser = foundUser;
-    } else {
-      // Create a new full modules user for any other email
-      loginUser = {
-        id: Date.now().toString(),
-        email,
-        name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        organization: "Demo Organization",
-        userType: "NGO",
-        subscribedModules: ["fundraising", "grants", "documents", "programme", "procurement", "inventory", "finance", "learning", "hr", "users"]
-      };
+    if (!foundUser) {
+      return false; // Unauthorized email
     }
 
     // Set user state and localStorage
-    setUser(loginUser);
-    localStorage.setItem('currentUser', JSON.stringify(loginUser));
+    setUser(foundUser);
+    localStorage.setItem('currentUser', JSON.stringify(foundUser));
     localStorage.setItem('isAuthenticated', 'true');
     
     return true;
