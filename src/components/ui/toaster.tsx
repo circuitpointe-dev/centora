@@ -37,14 +37,14 @@ function ToastWithProgress({ id, title, description, action, ...props }: ToastWi
       if (remaining > 0) {
         animationFrameId = requestAnimationFrame(updateProgress);
       } else {
-        dismiss(id); // Auto-dismiss when timer ends
+        dismiss(id);
       }
     };
 
     updateProgress();
 
     return () => {
-      cancelAnimationFrame(animationFrameId); // Cleanup
+      cancelAnimationFrame(animationFrameId);
     };
   }, [id, dismiss]);
 
@@ -55,11 +55,14 @@ function ToastWithProgress({ id, title, description, action, ...props }: ToastWi
           {title && <ToastTitle>{title}</ToastTitle>}
           {description && <ToastDescription>{description}</ToastDescription>}
         </div>
-        {/* Purple Progress Bar */}
+        {/* Purple Progress Bar (using inline styles for the indicator) */}
         <Progress
           value={progress}
           className="h-1 bg-purple-100" // Background track (light purple)
-          indicatorClassName="bg-purple-600" // Progress indicator (dark purple)
+          style={{
+            // Override the indicator color (dark purple)
+            ["--progress-indicator-color" as any]: "#7c3aed", // Tailwind's purple-600
+          }}
         />
       </div>
       {action}
