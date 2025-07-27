@@ -20,6 +20,7 @@ interface ToastWithProgressProps {
 
 function ToastWithProgress({ id, title, description, action, ...props }: ToastWithProgressProps) {
   const [progress, setProgress] = useState(100);
+  const { dismiss } = useToast();
 
   useEffect(() => {
     const startTime = Date.now();
@@ -34,11 +35,14 @@ function ToastWithProgress({ id, title, description, action, ...props }: ToastWi
       
       if (remaining > 0) {
         requestAnimationFrame(updateProgress);
+      } else {
+        // Auto-dismiss when countdown reaches 0
+        dismiss(id);
       }
     };
 
     updateProgress();
-  }, []);
+  }, [id, dismiss]);
 
   return (
     <Toast {...props}>

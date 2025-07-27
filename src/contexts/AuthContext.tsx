@@ -72,8 +72,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Validate password length (must be exactly 8 characters)
-    if (!email || password.length !== 8) {
+    // Validate password (must be "Circuit2025$")
+    if (!email || password !== "Circuit2025$") {
       return false;
     }
 
