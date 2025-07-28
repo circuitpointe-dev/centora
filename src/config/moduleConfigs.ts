@@ -24,6 +24,7 @@ import {
   Network,
   MapPin,
   AlertTriangle,
+  FileImage,
 } from 'lucide-react';
 
 interface ModuleFeature {
@@ -66,8 +67,9 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'active-grants', name: 'Active Grants', icon: CheckCircle },
       { id: 'pending-grants', name: 'Pending Grants', icon: Clock },
       { id: 'closed-grants', name: 'Closed Grants', icon: Archive },
-      { id: 'grants-archive', name: 'Grants Archive', icon: Archive },
       { id: 'grantee-submissions', name: 'Grantee Submissions', icon: FileCheck },
+      { id: 'templates', name: 'Templates', icon: FileImage },
+      { id: 'grants-archive', name: 'Grants Archive', icon: Archive },
       { id: 'settings', name: 'Settings/Admin', icon: Settings },
     ],
     ngoFeatures: [

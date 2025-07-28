@@ -14,6 +14,7 @@ import ClosedGrantsPage from './ClosedGrantsPage';
 import GrantsArchivePage from './GrantsArchivePage';
 import GranteeSubmissionsPage from './GranteeSubmissionsPage';
 import GrantsSettingsPage from './GrantsSettingsPage';
+import GrantsTemplatesPage from './TemplatesPage';
 import DocumentsFeaturePage from '@/components/documents/documents-feature/DocumentsFeaturePage';
 import ESignaturePage from '@/components/documents/e-signature/ESignaturePage';
 import CompliancePage from '@/components/documents/compliance/CompliancePage';
@@ -90,6 +91,10 @@ const GenericFeaturePage = () => {
 
   if (module === 'grants' && feature === 'grantee-submissions') {
     return <GranteeSubmissionsPage />;
+  }
+
+  if (module === 'grants' && feature === 'templates') {
+    return <GrantsTemplatesPage />;
   }
 
   if (module === 'grants' && feature === 'settings') {
