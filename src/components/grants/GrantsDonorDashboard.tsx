@@ -7,7 +7,7 @@ import { GrantsProgressCard } from './GrantsProgressCard';
 import { GrantsTable } from './GrantsTable';
 import UpcomingReportingDeadlines from './UpcomingReportingDeadlines';
 const GrantsDonorDashboard = () => {
-  return <div className="space-y-6 p-6">
+  return <div>
       <div>
         <h1 className="text-xl font-medium text-gray-900">
           Grants Dashboard

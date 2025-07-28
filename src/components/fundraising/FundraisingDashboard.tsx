@@ -31,7 +31,7 @@ const FundraisingDashboard = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div>
       {/* Header with Title and Quick Actions */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <h1 className="text-xl font-medium text-gray-900">

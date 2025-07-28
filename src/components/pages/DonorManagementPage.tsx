@@ -22,7 +22,7 @@ const DonorManagementPage = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div>
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-medium text-gray-900">Donor Management</h1>
       </div>

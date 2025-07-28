@@ -77,7 +77,6 @@ const DocumentsFeaturePage = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
     <div className="flex flex-col h-full gap-6 pb-6">
       {/* Header */}
       <div>
@@ -200,7 +199,6 @@ const DocumentsFeaturePage = () => {
         open={uploadDialogOpen}
         onOpenChange={setUploadDialogOpen}
       />
-    </div>
     </div>
   );
 };

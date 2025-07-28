@@ -8,7 +8,7 @@ import { DocumentByDepartmentSection } from "./dashboard/sections/DocumentByDepa
 
 const DocumentsDashboard = () => {
   return (
-    <div className="space-y-6 p-6">
+    <div>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-xl font-medium text-gray-900 mb-2">

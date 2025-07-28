@@ -89,7 +89,7 @@ const FundraisingAnalyticsPage: React.FC = () => {
       : "Select Period");
 
   return (
-    <div className="space-y-6 p-6">
+    <div>
       {/* Title */}
       <h1 className="text-xl font-medium text-gray-900">Analytics</h1>
       

@@ -48,7 +48,7 @@ const GranteeSubmissionsPage = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div>
       {/* Header with Tab Title and Period Filter */}
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-xl font-medium text-gray-900">

@@ -15,7 +15,7 @@ const CompliancePage = () => {
   ];
 
   return (
-    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-xl font-medium text-gray-900">Compliance</h1>

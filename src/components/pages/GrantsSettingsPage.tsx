@@ -5,7 +5,7 @@ import { Settings, Users, Shield, Bell } from 'lucide-react';
 
 const GrantsSettingsPage = () => {
   return (
-    <div className="space-y-6 p-6">
+    <div>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">

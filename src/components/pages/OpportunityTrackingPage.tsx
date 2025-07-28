@@ -65,7 +65,7 @@ const OpportunityTracking: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
 
   return (
-    <div className="space-y-6 p-6">
+    <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-xl font-medium text-gray-900">Opportunity Tracking</h1>
         <div className="flex gap-3">

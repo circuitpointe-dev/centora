@@ -19,7 +19,7 @@ const ManualProposalCreationPage = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div>
       <ManualProposalCreationDialog 
         open={isOpen} 
         onOpenChange={handleClose}

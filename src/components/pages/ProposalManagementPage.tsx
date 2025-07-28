@@ -39,7 +39,7 @@ const ProposalManagementPage: React.FC = () => {
   const creationContext = location.state?.creationContext;
 
   return (
-    <div className="space-y-6 p-6">
+    <div>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-xl font-medium text-gray-900 mb-2">
