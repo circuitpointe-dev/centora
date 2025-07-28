@@ -21,7 +21,9 @@ import {
   FileText,
   BarChart3,
   Calendar,
-  Users
+  Users,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface Template {
@@ -85,6 +87,7 @@ const TemplatesPage = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showViewDialog, setShowViewDialog] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [newTemplate, setNewTemplate] = useState({
     name: '',
     type: 'Report' as Template['type'],
@@ -93,12 +96,22 @@ const TemplatesPage = () => {
   });
   const { toast } = useToast();
 
+  const templatesPerPage = 8;
+
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          template.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || template.type.toLowerCase() === typeFilter.toLowerCase();
     return matchesSearch && matchesType;
   });
+
+  const totalPages = Math.ceil(filteredTemplates.length / templatesPerPage);
+  const startIndex = (currentPage - 1) * templatesPerPage;
+  const paginatedTemplates = filteredTemplates.slice(startIndex, startIndex + templatesPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const getTypeIcon = (type: Template['type']) => {
     switch (type) {
@@ -235,8 +248,8 @@ const TemplatesPage = () => {
       </Card>
 
       {/* Templates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map((template) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {paginatedTemplates.map((template) => (
           <Card key={template.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
@@ -300,6 +313,45 @@ const TemplatesPage = () => {
           </Card>
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "brand-purple" : "outline"}
+                size="sm"
+                onClick={() => handlePageChange(page)}
+                className="w-10"
+              >
+                {page}
+              </Button>
+            ))}
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {filteredTemplates.length === 0 && (
         <Card className="text-center py-12">
