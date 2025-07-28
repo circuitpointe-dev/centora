@@ -25,6 +25,10 @@ import {
   MapPin,
   AlertTriangle,
   FileImage,
+  Send,
+  ClipboardCheck,
+  Calendar,
+  UserCircle,
 } from 'lucide-react';
 
 interface ModuleFeature {
@@ -74,9 +78,10 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     ],
     ngoFeatures: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'assigned-grants', name: 'Assigned Grants', icon: Award },
-      { id: 'reports', name: 'Reports', icon: FileText },
-      { id: 'templates-docs', name: 'Templates & Docs', icon: File },
+      { id: 'reports-submissions', name: 'Reports Submissions', icon: Send },
+      { id: 'compliance-checklist', name: 'Compliance Checklist', icon: ClipboardCheck },
+      { id: 'disbursement-schedule', name: 'Disbursement Schedule', icon: Calendar },
+      { id: 'profile', name: 'Profile', icon: UserCircle },
       { id: 'settings', name: 'Settings', icon: Settings },
     ],
     donorFeatures: [
