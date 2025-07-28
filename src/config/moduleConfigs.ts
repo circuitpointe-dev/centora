@@ -83,6 +83,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
       { id: 'active-grants', name: 'Active Grants', icon: CheckCircle },
       { id: 'grantee-submissions', name: 'Grantee Submissions', icon: FileCheck },
+      { id: 'templates', name: 'Templates', icon: FileImage },
       { id: 'grants-archive', name: 'Grants Archive', icon: Archive },
       { id: 'settings', name: 'Settings', icon: Settings },
     ]
