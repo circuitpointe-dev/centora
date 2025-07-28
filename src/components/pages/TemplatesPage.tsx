@@ -192,14 +192,14 @@ const TemplatesPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-8 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Templates</h1>
-          <p className="text-gray-600 mt-1">Create and manage report templates for grants management</p>
+          <h1 className="text-3xl font-bold text-gray-900">Templates</h1>
+          <p className="text-gray-600 mt-2">Create and manage report templates for grants management</p>
         </div>
-        <Button onClick={() => setShowCreateDialog(true)}>
+        <Button variant="brand-purple" onClick={() => setShowCreateDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Create Template
         </Button>
@@ -269,6 +269,7 @@ const TemplatesPage = () => {
               <div className="flex flex-wrap gap-2">
                 <Button 
                   size="sm" 
+                  variant="brand-purple"
                   onClick={() => handleUseTemplate(template)}
                   className="flex-1"
                 >
@@ -371,6 +372,7 @@ const TemplatesPage = () => {
               Cancel
             </Button>
             <Button 
+              variant="brand-purple"
               onClick={handleCreateTemplate}
               disabled={!newTemplate.name || !newTemplate.category || !newTemplate.description}
             >
@@ -426,7 +428,10 @@ const TemplatesPage = () => {
             <Button variant="outline" onClick={() => setShowViewDialog(false)}>
               Close
             </Button>
-            <Button onClick={() => selectedTemplate && handleUseTemplate(selectedTemplate)}>
+            <Button 
+              variant="brand-purple" 
+              onClick={() => selectedTemplate && handleUseTemplate(selectedTemplate)}
+            >
               Use This Template
             </Button>
           </DialogFooter>
