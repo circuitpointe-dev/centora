@@ -328,21 +328,24 @@ const TemplatesPage = () => {
                   variant="outline"
                   onClick={() => handleViewTemplate(template)}
                 >
-                  <Eye className="h-3 w-3" />
+                  <Eye className="h-3 w-3 mr-1" />
+                  View
                 </Button>
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={() => handleEditTemplate(template)}
                 >
-                  <Edit className="h-3 w-3" />
+                  <Edit className="h-3 w-3 mr-1" />
+                  Edit
                 </Button>
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={() => handleDeleteTemplate(template)}
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  Delete
                 </Button>
               </div>
             </CardContent>
@@ -523,6 +526,33 @@ const TemplatesPage = () => {
               <div>
                 <Label className="text-sm font-medium">Created By</Label>
                 <p className="text-sm text-gray-600">{selectedTemplate.createdBy}</p>
+              </div>
+              
+              {/* Sample Document Section */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Sample Document</Label>
+                <div className="flex items-center justify-between mt-2 p-3 border rounded-md bg-gray-50">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      {selectedTemplate.name.replace(/\s+/g, '_')}_sample.pdf
+                    </span>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => {
+                      // Simulate download
+                      toast({
+                        title: "Download Started",
+                        description: "Sample document is being downloaded.",
+                      });
+                    }}
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    Download
+                  </Button>
+                </div>
               </div>
             </div>
           )}
