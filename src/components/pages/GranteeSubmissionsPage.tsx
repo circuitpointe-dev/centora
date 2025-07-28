@@ -6,6 +6,7 @@ import { SubmissionStatsCards } from '@/components/grantee-submissions/Submissio
 import { SubmissionsTable } from '@/components/grantee-submissions/SubmissionsTable';
 import { ReportingTrackerContent } from '@/components/reporting-tracker/ReportingTrackerContent';
 import { ComplianceMonitorContent } from '@/components/compliance-monitor/ComplianceMonitorContent';
+import { DisbursementMonitorContent } from '@/components/disbursement-monitor/DisbursementMonitorContent';
 
 const GranteeSubmissionsPage = () => {
   const [activeTab, setActiveTab] = useState<"grantee-submissions" | "reporting-tracker" | "compliance-monitor" | "disbursement-monitor">("grantee-submissions");
@@ -40,12 +41,7 @@ const GranteeSubmissionsPage = () => {
       case "compliance-monitor":
         return <ComplianceMonitorContent />;
       case "disbursement-monitor":
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Disbursement Monitor</h3>
-            <p className="text-gray-500">Monitor disbursement schedules and amounts.</p>
-          </div>
-        );
+        return <DisbursementMonitorContent />;
       default:
         return null;
     }
