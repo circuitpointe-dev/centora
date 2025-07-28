@@ -92,7 +92,7 @@ const GrantsArchivePage = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+          <h1 className="text-xl font-medium text-gray-900 mb-2">
             Grants Archive
           </h1>
           <p className="text-gray-600">
@@ -178,31 +178,69 @@ const GrantsArchivePage = () => {
         </Card>
       </div>
 
-      {/* Most Recent Archived Grant */}
+      {/* Most Recent Archived Grants */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-xl font-medium">
             <Archive className="h-5 w-5" />
-            <span>Most Recent Archived Grant</span>
+            <span>Most Recent Archived Grants</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">Grant Name</p>
-              <p className="font-medium">Clean Water Initiative</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-gray-600">Grant Name</p>
+                <p className="font-medium">Clean Water Initiative</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Organization</p>
+                <p className="font-medium">WaterAid Foundation</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Archived Date</p>
+                <p className="font-medium">March 15, 2024</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Final Status</p>
+                <Badge variant="secondary" className="bg-green-100 text-green-800">Successful</Badge>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">Organization</p>
-              <p className="font-medium">WaterAid Foundation</p>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-gray-600">Grant Name</p>
+                <p className="font-medium">Education for All</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Organization</p>
+                <p className="font-medium">Education Trust</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Archived Date</p>
+                <p className="font-medium">February 28, 2024</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Final Status</p>
+                <Badge variant="secondary" className="bg-green-100 text-green-800">Successful</Badge>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">Archived Date</p>
-              <p className="font-medium">March 15, 2024</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Final Status</p>
-              <Badge variant="secondary" className="bg-green-100 text-green-800">Successful</Badge>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-gray-600">Grant Name</p>
+                <p className="font-medium">Rural Healthcare</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Organization</p>
+                <p className="font-medium">Medical Relief Org</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Archived Date</p>
+                <p className="font-medium">January 20, 2024</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Final Status</p>
+                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending Review</Badge>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -212,7 +250,7 @@ const GrantsArchivePage = () => {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <CardTitle>Archived Grants</CardTitle>
+            <CardTitle className="text-xl font-medium">Archived Grants</CardTitle>
             <div className="flex items-center gap-2">
               <Button
                 variant={viewMode === 'list' ? 'default' : 'outline'}
