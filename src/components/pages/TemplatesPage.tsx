@@ -197,11 +197,10 @@ const TemplatesPage = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-xl font-medium text-gray-900">Templates</h1>
-          <p className="text-gray-600 mt-2">Create and manage report templates for grants management</p>
         </div>
         <Button variant="brand-purple" onClick={() => setShowCreateDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Create Template
+          Upload Template
         </Button>
       </div>
 
