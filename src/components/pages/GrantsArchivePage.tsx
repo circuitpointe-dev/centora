@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import ArchivedGrantDetailsDialog from '@/components/grants/archive/ArchivedGrantDetailsDialog';
 
 // Sample data
 const archivedGrantsData = [
@@ -62,6 +63,8 @@ const GrantsArchivePage = () => {
   const [selectedProgram, setSelectedProgram] = useState('all');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedGrant, setSelectedGrant] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const itemsPerPage = 10;
 
   const filteredGrants = archivedGrantsData.filter(grant => {
@@ -336,7 +339,14 @@ const GrantsArchivePage = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setSelectedGrant(grant);
+                          setIsDialogOpen(true);
+                        }}
+                      >
                         <Eye className="h-3 w-3 mr-1" />
                         View
                       </Button>
@@ -377,7 +387,15 @@ const GrantsArchivePage = () => {
                         </Badge>
                       </div>
                       <div className="pt-2">
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => {
+                            setSelectedGrant(grant);
+                            setIsDialogOpen(true);
+                          }}
+                        >
                           <Eye className="h-3 w-3 mr-1" />
                           View Details
                         </Button>
@@ -415,6 +433,18 @@ const GrantsArchivePage = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Grant Details Dialog */}
+      {selectedGrant && (
+        <ArchivedGrantDetailsDialog
+          isOpen={isDialogOpen}
+          onClose={() => {
+            setIsDialogOpen(false);
+            setSelectedGrant(null);
+          }}
+          grant={selectedGrant}
+        />
+      )}
     </div>
   );
 };
