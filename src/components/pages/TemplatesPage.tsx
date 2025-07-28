@@ -92,7 +92,8 @@ const TemplatesPage = () => {
     name: '',
     type: 'Report' as Template['type'],
     category: '',
-    description: ''
+    description: '',
+    file: null as File | null
   });
   const { toast } = useToast();
 
@@ -136,7 +137,10 @@ const TemplatesPage = () => {
   const handleCreateTemplate = () => {
     const template: Template = {
       id: templates.length + 1,
-      ...newTemplate,
+      name: newTemplate.name,
+      type: newTemplate.type,
+      category: newTemplate.category,
+      description: newTemplate.description,
       lastModified: new Date().toLocaleDateString('en-US', { 
         month: 'short', 
         day: 'numeric', 
@@ -147,7 +151,7 @@ const TemplatesPage = () => {
     };
 
     setTemplates([...templates, template]);
-    setNewTemplate({ name: '', type: 'Report', category: '', description: '' });
+    setNewTemplate({ name: '', type: 'Report', category: '', description: '', file: null });
     setShowCreateDialog(false);
     
     toast({
@@ -156,43 +160,16 @@ const TemplatesPage = () => {
     });
   };
 
-  const handleUseTemplate = (template: Template) => {
-    const updatedTemplates = templates.map(t => 
-      t.id === template.id ? { ...t, usageCount: t.usageCount + 1 } : t
-    );
-    setTemplates(updatedTemplates);
-    
+  const handleEditTemplate = (template: Template) => {
     toast({
-      title: "Template Used",
-      description: `Using ${template.name} template.`,
+      title: "Edit Template",
+      description: `Opening ${template.name} for editing.`,
     });
   };
 
   const handleViewTemplate = (template: Template) => {
     setSelectedTemplate(template);
     setShowViewDialog(true);
-  };
-
-  const handleCopyTemplate = (template: Template) => {
-    const newTemplate: Template = {
-      ...template,
-      id: templates.length + 1,
-      name: `${template.name} (Copy)`,
-      usageCount: 0,
-      createdBy: 'Current User',
-      lastModified: new Date().toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      })
-    };
-    
-    setTemplates([...templates, newTemplate]);
-    
-    toast({
-      title: "Template Copied",
-      description: `${template.name} has been copied successfully.`,
-    });
   };
 
   const handleDeleteTemplate = (template: Template) => {
@@ -202,6 +179,13 @@ const TemplatesPage = () => {
       title: "Template Deleted",
       description: `${template.name} has been deleted.`,
     });
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setNewTemplate({ ...newTemplate, file });
+    }
   };
 
   return (
@@ -281,14 +265,6 @@ const TemplatesPage = () => {
               <div className="flex flex-wrap gap-2">
                 <Button 
                   size="sm" 
-                  variant="brand-purple"
-                  onClick={() => handleUseTemplate(template)}
-                  className="flex-1"
-                >
-                  Use Template
-                </Button>
-                <Button 
-                  size="sm" 
                   variant="outline"
                   onClick={() => handleViewTemplate(template)}
                 >
@@ -297,9 +273,9 @@ const TemplatesPage = () => {
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => handleCopyTemplate(template)}
+                  onClick={() => handleEditTemplate(template)}
                 >
-                  <Copy className="h-3 w-3" />
+                  <Edit className="h-3 w-3" />
                 </Button>
                 <Button 
                   size="sm" 
@@ -408,6 +384,21 @@ const TemplatesPage = () => {
               />
             </div>
             <div>
+              <Label htmlFor="template-file">Upload Template Document</Label>
+              <Input
+                id="template-file"
+                type="file"
+                accept=".pdf,.doc,.docx,.txt"
+                onChange={handleFileUpload}
+                className="cursor-pointer"
+              />
+              {newTemplate.file && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Selected: {newTemplate.file.name}
+                </p>
+              )}
+            </div>
+            <div>
               <Label htmlFor="template-description">Description</Label>
               <Textarea
                 id="template-description"
@@ -425,9 +416,9 @@ const TemplatesPage = () => {
             <Button 
               variant="brand-purple"
               onClick={handleCreateTemplate}
-              disabled={!newTemplate.name || !newTemplate.category || !newTemplate.description}
+              disabled={!newTemplate.name || !newTemplate.category || !newTemplate.description || !newTemplate.file}
             >
-              Create Template
+              Upload Template
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -481,9 +472,9 @@ const TemplatesPage = () => {
             </Button>
             <Button 
               variant="brand-purple" 
-              onClick={() => selectedTemplate && handleUseTemplate(selectedTemplate)}
+              onClick={() => selectedTemplate && handleEditTemplate(selectedTemplate)}
             >
-              Use This Template
+              Edit Template
             </Button>
           </DialogFooter>
         </DialogContent>
