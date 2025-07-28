@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -86,7 +87,10 @@ const TemplatesPage = () => {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showViewDialog, setShowViewDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [templateToDelete, setTemplateToDelete] = useState<Template | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [newTemplate, setNewTemplate] = useState({
     name: '',
@@ -135,36 +139,69 @@ const TemplatesPage = () => {
   };
 
   const handleCreateTemplate = () => {
-    const template: Template = {
-      id: templates.length + 1,
-      name: newTemplate.name,
-      type: newTemplate.type,
-      category: newTemplate.category,
-      description: newTemplate.description,
-      lastModified: new Date().toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      }),
-      usageCount: 0,
-      createdBy: 'Current User'
-    };
+    if (isEditMode && selectedTemplate) {
+      // Update existing template
+      const updatedTemplates = templates.map(t => 
+        t.id === selectedTemplate.id 
+          ? {
+              ...t,
+              name: newTemplate.name,
+              type: newTemplate.type,
+              category: newTemplate.category,
+              description: newTemplate.description,
+              lastModified: new Date().toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+              })
+            }
+          : t
+      );
+      setTemplates(updatedTemplates);
+      
+      toast({
+        title: "Template Updated",
+        description: `${newTemplate.name} has been updated successfully.`,
+      });
+    } else {
+      // Create new template
+      const template: Template = {
+        id: templates.length + 1,
+        name: newTemplate.name,
+        type: newTemplate.type,
+        category: newTemplate.category,
+        description: newTemplate.description,
+        lastModified: new Date().toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        }),
+        usageCount: 0,
+        createdBy: 'Current User'
+      };
 
-    setTemplates([...templates, template]);
-    setNewTemplate({ name: '', type: 'Report', category: '', description: '', file: null });
-    setShowCreateDialog(false);
-    
-    toast({
-      title: "Template Created",
-      description: `${template.name} has been created successfully.`,
-    });
+      setTemplates([...templates, template]);
+      
+      toast({
+        title: "Template Created",
+        description: `${template.name} has been created successfully.`,
+      });
+    }
+
+    resetDialog();
   };
 
   const handleEditTemplate = (template: Template) => {
-    toast({
-      title: "Edit Template",
-      description: `Opening ${template.name} for editing.`,
+    setSelectedTemplate(template);
+    setNewTemplate({
+      name: template.name,
+      type: template.type,
+      category: template.category,
+      description: template.description,
+      file: null
     });
+    setIsEditMode(true);
+    setShowCreateDialog(true);
   };
 
   const handleViewTemplate = (template: Template) => {
@@ -173,12 +210,21 @@ const TemplatesPage = () => {
   };
 
   const handleDeleteTemplate = (template: Template) => {
-    setTemplates(templates.filter(t => t.id !== template.id));
-    
-    toast({
-      title: "Template Deleted",
-      description: `${template.name} has been deleted.`,
-    });
+    setTemplateToDelete(template);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeleteTemplate = () => {
+    if (templateToDelete) {
+      setTemplates(templates.filter(t => t.id !== templateToDelete.id));
+      
+      toast({
+        title: "Template Deleted",
+        description: `${templateToDelete.name} has been deleted.`,
+      });
+    }
+    setShowDeleteDialog(false);
+    setTemplateToDelete(null);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,6 +234,20 @@ const TemplatesPage = () => {
     }
   };
 
+  const resetDialog = () => {
+    setNewTemplate({ name: '', type: 'Report', category: '', description: '', file: null });
+    setShowCreateDialog(false);
+    setIsEditMode(false);
+    setSelectedTemplate(null);
+  };
+
+  const handleCreateNewTemplate = () => {
+    setIsEditMode(false);
+    setSelectedTemplate(null);
+    setNewTemplate({ name: '', type: 'Report', category: '', description: '', file: null });
+    setShowCreateDialog(true);
+  };
+
   return (
     <div className="p-8 space-y-8">
       {/* Header */}
@@ -195,7 +255,7 @@ const TemplatesPage = () => {
         <div>
           <h1 className="text-xl font-medium text-gray-900">Templates</h1>
         </div>
-        <Button variant="brand-purple" onClick={() => setShowCreateDialog(true)}>
+        <Button variant="brand-purple" onClick={handleCreateNewTemplate}>
           <Plus className="h-4 w-4 mr-2" />
           Upload Template
         </Button>
@@ -338,13 +398,13 @@ const TemplatesPage = () => {
         </Card>
       )}
 
-      {/* Create Template Dialog */}
-      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+      {/* Create/Edit Template Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={() => resetDialog()}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Create New Template</DialogTitle>
+            <DialogTitle>{isEditMode ? 'Edit Template' : 'Create New Template'}</DialogTitle>
             <DialogDescription>
-              Create a new report template for grants management
+              {isEditMode ? 'Update template details and document' : 'Create a new report template for grants management'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -410,15 +470,15 @@ const TemplatesPage = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+            <Button variant="outline" onClick={() => resetDialog()}>
               Cancel
             </Button>
             <Button 
               variant="brand-purple"
               onClick={handleCreateTemplate}
-              disabled={!newTemplate.name || !newTemplate.category || !newTemplate.description || !newTemplate.file}
+              disabled={!newTemplate.name || !newTemplate.category || !newTemplate.description || (!isEditMode && !newTemplate.file)}
             >
-              Upload Template
+              {isEditMode ? 'Update Template' : 'Upload Template'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -479,6 +539,24 @@ const TemplatesPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Template</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{templateToDelete?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteTemplate} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
