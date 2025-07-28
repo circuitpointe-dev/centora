@@ -5,7 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Grid, List, Upload, CheckCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { Search, Filter, Grid, List, Upload, CheckCircle, Eye, FileText } from 'lucide-react';
 
 interface DisbursementRecord {
   id: number;
@@ -15,6 +18,8 @@ interface DisbursementRecord {
   amountDisbursed: number;
   dueDate: string;
   status: 'Pending' | 'Released' | 'Delayed';
+  isDisbursed?: boolean;
+  hasReceipt?: boolean;
 }
 
 const disbursementData: DisbursementRecord[] = [
@@ -61,9 +66,15 @@ export const DisbursementTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [disbursementRecords, setDisbursementRecords] = useState<DisbursementRecord[]>(disbursementData);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<DisbursementRecord | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const { toast } = useToast();
   const itemsPerPage = 10;
 
-  const filteredData = disbursementData.filter(item => {
+  const filteredData = disbursementRecords.filter(item => {
     const matchesSearch = item.grantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.organization.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || item.status.toLowerCase() === statusFilter.toLowerCase();
@@ -91,12 +102,111 @@ export const DisbursementTable = () => {
     return variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleMarkAsDisbursed = (id: number) => {
-    console.log('Mark as disbursed:', id);
+  const handleMarkAsDisbursed = (record: DisbursementRecord) => {
+    setSelectedRecord(record);
+    setShowConfirmDialog(true);
   };
 
-  const handleUploadReceipt = (id: number) => {
-    console.log('Upload receipt:', id);
+  const confirmMarkAsDisbursed = () => {
+    if (selectedRecord) {
+      setDisbursementRecords(prev => 
+        prev.map(record => 
+          record.id === selectedRecord.id 
+            ? { ...record, isDisbursed: true, status: 'Released' as const }
+            : record
+        )
+      );
+      toast({
+        title: "Disbursement Marked",
+        description: `${selectedRecord.grantName} has been marked as disbursed.`,
+      });
+    }
+    setShowConfirmDialog(false);
+    setSelectedRecord(null);
+  };
+
+  const handleUploadReceipt = (record: DisbursementRecord) => {
+    setSelectedRecord(record);
+    setShowUploadDialog(true);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedFile(file);
+    }
+  };
+
+  const submitReceipt = () => {
+    if (selectedRecord && uploadedFile) {
+      setDisbursementRecords(prev => 
+        prev.map(record => 
+          record.id === selectedRecord.id 
+            ? { ...record, hasReceipt: true }
+            : record
+        )
+      );
+      toast({
+        title: "Receipt Uploaded",
+        description: `Receipt for ${selectedRecord.grantName} has been uploaded successfully.`,
+      });
+    }
+    setShowUploadDialog(false);
+    setSelectedRecord(null);
+    setUploadedFile(null);
+  };
+
+  const handleViewReceipt = (record: DisbursementRecord) => {
+    toast({
+      title: "Viewing Receipt",
+      description: `Opening receipt for ${record.grantName}`,
+    });
+  };
+
+  const getActionButtons = (item: DisbursementRecord) => {
+    if (!item.isDisbursed) {
+      return (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => handleMarkAsDisbursed(item)}
+          className="text-xs"
+        >
+          <CheckCircle className="h-3 w-3 mr-1" />
+          Mark as Disbursed
+        </Button>
+      );
+    }
+
+    if (item.isDisbursed && !item.hasReceipt) {
+      return (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => handleUploadReceipt(item)}
+          className="text-xs"
+        >
+          <Upload className="h-3 w-3 mr-1" />
+          Upload Receipt
+        </Button>
+      );
+    }
+
+    if (item.hasReceipt) {
+      return (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => handleViewReceipt(item)}
+          className="text-xs"
+        >
+          <Eye className="h-3 w-3 mr-1" />
+          View Receipt
+        </Button>
+      );
+    }
+
+    return null;
   };
 
   const renderListView = () => (
@@ -127,24 +237,7 @@ export const DisbursementTable = () => {
             </TableCell>
             <TableCell>
               <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleMarkAsDisbursed(item.id)}
-                  className="text-xs"
-                >
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Mark as Disbursed
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleUploadReceipt(item.id)}
-                  className="text-xs"
-                >
-                  <Upload className="h-3 w-3 mr-1" />
-                  Upload Receipt
-                </Button>
+                {getActionButtons(item)}
               </div>
             </TableCell>
           </TableRow>
@@ -172,24 +265,7 @@ export const DisbursementTable = () => {
                 <p><span className="font-medium">Due Date:</span> {item.dueDate}</p>
               </div>
               <div className="flex flex-col gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleMarkAsDisbursed(item.id)}
-                  className="text-xs"
-                >
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Mark as Disbursed
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleUploadReceipt(item.id)}
-                  className="text-xs"
-                >
-                  <Upload className="h-3 w-3 mr-1" />
-                  Upload Receipt
-                </Button>
+                {getActionButtons(item)}
               </div>
             </div>
           </CardContent>
@@ -282,6 +358,64 @@ export const DisbursementTable = () => {
           </>
         )}
       </CardContent>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Disbursement</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to mark "{selectedRecord?.grantName}" as disbursed?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmMarkAsDisbursed}>
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Receipt Dialog */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Upload Receipt</DialogTitle>
+            <DialogDescription>
+              Upload receipt for "{selectedRecord?.grantName}"
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="receipt-file">Select Receipt File</Label>
+              <Input
+                id="receipt-file"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                onChange={handleFileUpload}
+                className="mt-1"
+              />
+            </div>
+            {uploadedFile && (
+              <div className="flex items-center gap-2 text-sm text-green-600">
+                <FileText className="h-4 w-4" />
+                <span>{uploadedFile.name}</span>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowUploadDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={submitReceipt} disabled={!uploadedFile}>
+              Upload Receipt
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
