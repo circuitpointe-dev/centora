@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import LoginLeftColumn from "./LoginLeftColumn";
-import LoginForm from "./LoginForm";
+import SupabaseLoginForm from "./SupabaseLoginForm";
 import RegistrationModal from "./RegistrationModal";
 
 const LoginPage = () => {
@@ -22,7 +22,7 @@ const LoginPage = () => {
       <LoginLeftColumn />
 
       {/* Right Column – Login Form (always rendered) */}
-      <LoginForm onShowRegistration={() => setShowRegistration(true)} />
+      <SupabaseLoginForm onShowRegistration={() => setShowRegistration(true)} />
 
       {/* Registration Modal (conditionally rendered) */}
       {showRegistration && (

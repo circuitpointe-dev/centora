@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/SupabaseAuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 interface SupabaseLoginFormProps {
@@ -28,7 +29,7 @@ const SupabaseLoginForm = ({ onShowRegistration }: SupabaseLoginFormProps) => {
     setIsLoading(true);
 
     try {
-      // For development users, use the special password
+      // For development users, setup their profiles first
       if (isDevelopmentUser(email)) {
         if (password !== "Circuit2025$") {
           toast({
@@ -39,6 +40,11 @@ const SupabaseLoginForm = ({ onShowRegistration }: SupabaseLoginFormProps) => {
           setIsLoading(false);
           return;
         }
+        
+        // Setup development user
+        await supabase.functions.invoke('setup-dev-user', {
+          body: { email, password }
+        });
       }
 
       const { error } = await signIn(email, password);
