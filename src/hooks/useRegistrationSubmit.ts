@@ -16,26 +16,22 @@ export const useRegistrationSubmit = () => {
     try {
       const { error } = await signUp(formData.contactEmail, formData.password, formData);
 
-      if (!error) {
-        toast({
-          title: "Registration Successful",
-          description: `Welcome to Orbit ERP, ${formData.organizationName}! Please check your email to confirm your account.`,
-        });
-        
-        // Don't navigate immediately - user needs to confirm email first
-      } else {
+      if (error) {
         toast({
           title: "Registration Failed",
           description: error.message || "Please try again.",
           variant: "destructive",
         });
       }
+      
+      return { error };
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
+      return { error };
     } finally {
       setIsLoading(false);
     }

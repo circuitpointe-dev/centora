@@ -108,14 +108,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (slugError) throw slugError;
       
-      const redirectUrl = `${window.location.origin}/`;
-      
-      // Sign up the user
+      // Sign up the user with email confirmation disabled
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
           data: {
             full_name: organizationData.contactPersonName,
             organization_name: organizationData.organizationName,
@@ -145,7 +142,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (orgError) throw orgError;
 
         // Create organization contact
-        await supabase
+        const { error: contactError } = await supabase
           .from('organization_contacts')
           .insert({
             organization_id: orgData.id,
@@ -155,8 +152,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             is_primary: true
           });
 
+        if (contactError) console.error('Contact creation error:', contactError);
+
         // Create user profile
-        await supabase
+        const { error: profileError } = await supabase
           .from('profiles')
           .insert({
             id: authData.user.id,
@@ -165,34 +164,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             role: 'admin'
           });
 
+        if (profileError) console.error('Profile creation error:', profileError);
+
         // Insert selected modules
-        const moduleInserts = organizationData.selectedModules.map((moduleName: string) => ({
-          organization_id: orgData.id,
-          module_name: moduleName
-        }));
+        if (organizationData.selectedModules && organizationData.selectedModules.length > 0) {
+          const moduleInserts = organizationData.selectedModules.map((moduleName: string) => ({
+            organization_id: orgData.id,
+            module_name: moduleName
+          }));
 
-        await supabase
-          .from('organization_modules')
-          .insert(moduleInserts);
+          const { error: moduleError } = await supabase
+            .from('organization_modules')
+            .insert(moduleInserts);
 
-        // Send custom confirmation email
-        try {
-          await supabase.functions.invoke('send-confirmation-email', {
-            body: {
-              email: email,
-              organizationName: organizationData.organizationName,
-              confirmationUrl: `${window.location.origin}/dashboard`,
-            }
-          });
-          console.log('Custom confirmation email sent');
-        } catch (emailError) {
-          console.error('Failed to send custom confirmation email:', emailError);
-          // Don't fail the entire signup process if email fails
+          if (moduleError) console.error('Module creation error:', moduleError);
         }
 
         toast({
           title: "Registration Successful",
-          description: "Please check your email to confirm your account.",
+          description: `Welcome to Orbit ERP, ${organizationData.organizationName}! You can now use your account.`,
         });
       }
 

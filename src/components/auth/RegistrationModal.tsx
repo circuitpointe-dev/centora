@@ -9,7 +9,7 @@ import BasicInfoStep from "./registration/BasicInfoStep";
 import ModuleSelectionStep from "./registration/ModuleSelectionStep";
 import AdditionalInfoStep from "./registration/AdditionalInfoStep";
 import RegistrationStepper from "./registration/RegistrationStepper";
-import CredentialsDialog from "./CredentialsDialog";
+
 import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
 import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
 import { RegistrationData } from "./RegistrationForm";
@@ -21,11 +21,6 @@ interface RegistrationModalProps {
 
 const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [showCredentials, setShowCredentials] = useState(false);
-  const [generatedCredentials, setGeneratedCredentials] = useState({
-    email: "",
-    password: "",
-  });
   const { handleSubmit, isLoading } = useRegistrationSubmit();
 
   const [formData, setFormData] = useState<RegistrationData>({
@@ -103,26 +98,10 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
       return;
     }
 
-    // Generate acronym from organization name
-    const generateAcronym = (name: string) => {
-      return name
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase())
-        .join('')
-        .substring(0, 5); // Limit to 5 characters
-    };
-
-    const acronym = generateAcronym(formData.organizationName);
-    const generatedEmail = `orbit@${acronym.toLowerCase()}.com`;
-    const generatedPassword = formData.password;
-
-    setGeneratedCredentials({
-      email: generatedEmail,
-      password: generatedPassword,
-    });
-
-    await handleSubmit(formData);
-    setShowCredentials(true);
+    const { error } = await handleSubmit(formData);
+    if (!error) {
+      onClose();
+    }
   };
 
   const renderStep = () => {
@@ -291,17 +270,6 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
         </div>
       </AnimatePresence>
 
-      <CredentialsDialog
-        open={showCredentials}
-        onOpenChange={setShowCredentials}
-        email={generatedCredentials.email}
-        password={generatedCredentials.password}
-        onContinue={() => {
-          setShowCredentials(false);
-          onClose();
-          // You might want to automatically log the user in here
-        }}
-      />
     </>
   );
 };
