@@ -175,6 +175,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           .from('organization_modules')
           .insert(moduleInserts);
 
+        // Send custom confirmation email
+        try {
+          await supabase.functions.invoke('send-confirmation-email', {
+            body: {
+              email: email,
+              organizationName: organizationData.organizationName,
+              confirmationUrl: `${window.location.origin}/dashboard`,
+            }
+          });
+          console.log('Custom confirmation email sent');
+        } catch (emailError) {
+          console.error('Failed to send custom confirmation email:', emailError);
+          // Don't fail the entire signup process if email fails
+        }
+
         toast({
           title: "Registration Successful",
           description: "Please check your email to confirm your account.",
