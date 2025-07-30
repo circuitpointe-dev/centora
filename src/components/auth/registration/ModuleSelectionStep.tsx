@@ -14,32 +14,32 @@ const ModuleSelectionStep = ({
   updateFormData,
 }: ModuleSelectionStepProps) => {
   const allModules = [
-    { name: "Fundraising", available: true },
-    { name: "Document Manager", available: true },
-    { name: "Programme Management", available: false },
-    { name: "Procurement", available: false },
-    { name: "Inventory Management", available: false },
-    { name: "Finance & Control", available: false },
-    { name: "Learning Management", available: false },
-    { name: "Human Resources Management", available: false },
-    { name: "Users Management", available: false },
-    { name: "Grant Management", available: true },
+    "Fundraising",
+    "Programme Management",
+    "Procurement",
+    "Inventory Management",
+    "Finance & Control",
+    "Learning Management",
+    "Document Manager",
+    "Human Resources Management",
+    "Users Management",
+    "Grant Management",
   ];
 
   // If it's a Donor, only show Grant Management
   const availableModules = formData.organizationType === "Donor" 
-    ? allModules.filter(module => module.name === "Grant Management")
+    ? ["Grant Management"] 
     : allModules;
 
-  const handleModuleToggle = (moduleName: string) => {
+  const handleModuleToggle = (module: string) => {
     // If it's a Donor, Grant Management should always be selected
-    if (formData.organizationType === "Donor" && moduleName === "Grant Management") {
+    if (formData.organizationType === "Donor" && module === "Grant Management") {
       return; // Don't allow unchecking for Donors
     }
 
-    const updatedModules = formData.selectedModules.includes(moduleName)
-      ? formData.selectedModules.filter((m) => m !== moduleName)
-      : [...formData.selectedModules, moduleName];
+    const updatedModules = formData.selectedModules.includes(module)
+      ? formData.selectedModules.filter((m) => m !== module)
+      : [...formData.selectedModules, module];
 
     updateFormData({ selectedModules: updatedModules });
   };
@@ -60,29 +60,19 @@ const ModuleSelectionStep = ({
 
       <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
         {availableModules.map((module) => (
-          <div key={module.name} className={`flex items-center space-x-2 ${!module.available ? 'opacity-50' : ''}`}>
+          <div key={module} className="flex items-center space-x-2">
             <Checkbox
-              id={module.name}
-              checked={formData.selectedModules.includes(module.name)}
-              onCheckedChange={() => handleModuleToggle(module.name)}
+              id={module}
+              checked={formData.selectedModules.includes(module)}
+              onCheckedChange={() => handleModuleToggle(module)}
               className="h-5 w-5"
-              disabled={
-                !module.available || 
-                (formData.organizationType === "Donor" && module.name === "Grant Management")
-              }
+              disabled={formData.organizationType === "Donor" && module === "Grant Management"}
             />
             <Label
-              htmlFor={module.name}
-              className={`text-sm font-normal leading-none cursor-pointer ${
-                !module.available 
-                  ? 'text-gray-400 cursor-not-allowed' 
-                  : 'peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-              }`}
+              htmlFor={module}
+              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
-              {module.name}
-              {!module.available && (
-                <span className="text-xs text-gray-400 block">Coming Soon</span>
-              )}
+              {module}
             </Label>
           </div>
         ))}

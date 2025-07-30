@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "@/contexts/SupabaseAuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import ForgotPasswordDialog from "@/components/auth/ForgotPasswordDialog";
 
 interface LoginFormProps {
@@ -22,12 +21,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
-  const { signIn } = useAuth();
-
-  // Development users
-  const isDevelopmentUser = (email: string) => {
-    return email === 'user@ngo.com' || email === 'user@donor.com';
-  };
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,43 +38,40 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
     }
 
     try {
-      // For development users, setup their profiles first
-      if (isDevelopmentUser(email)) {
-        if (password !== "Circuit2025$") {
-          toast({
-            title: "Login Failed",
-            description: "Invalid password for development account.",
-            variant: "destructive",
-          });
-          setIsLoading(false);
-          return;
-        }
-        
-        // Setup development user
-        await supabase.functions.invoke('setup-dev-user', {
-          body: { email, password }
-        });
-      }
+      const success = await login(email, password);
 
-      const { error } = await signIn(email, password);
-
-      if (!error) {
+      if (success) {
         toast({
           title: "Login Successful",
-          description: "Welcome back!",
+          description: "Welcome to Orbit ERP!",
         });
-        navigate("/dashboard/fundraising/dashboard");
+        
+        // Get the logged in user from localStorage
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        
+        if (user && user.subscribedModules && user.subscribedModules.length > 0) {
+          const firstModule = user.subscribedModules[0];
+          
+          // For donors, navigate directly to the first grants feature (grants-manager)
+          if (user.userType === 'Donor' && firstModule === 'grants') {
+            navigate(`/dashboard/grants/grants-manager`, { replace: true });
+          } else {
+            navigate(`/dashboard/${firstModule}/dashboard`, { replace: true });
+          }
+        } else {
+          navigate("/dashboard/fundraising/dashboard", { replace: true });
+        }
       } else {
         toast({
-          title: "Login Failed",
-          description: error.message || "Please check your credentials.",
+          title: "Error",
+          description: "Invalid email or password",
           variant: "destructive",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message || "Something went wrong.",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {

@@ -14,173 +14,16 @@ export type Database = {
   }
   public: {
     Tables: {
-      organization_contacts: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          is_primary: boolean | null
-          name: string
-          organization_id: string
-          phone: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          is_primary?: boolean | null
-          name: string
-          organization_id: string
-          phone?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          is_primary?: boolean | null
-          name?: string
-          organization_id?: string
-          phone?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "organization_contacts_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      organization_modules: {
-        Row: {
-          activated_at: string | null
-          created_at: string
-          id: string
-          is_active: boolean | null
-          module_name: string
-          organization_id: string
-        }
-        Insert: {
-          activated_at?: string | null
-          created_at?: string
-          id?: string
-          is_active?: boolean | null
-          module_name: string
-          organization_id: string
-        }
-        Update: {
-          activated_at?: string | null
-          created_at?: string
-          id?: string
-          is_active?: boolean | null
-          module_name?: string
-          organization_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "organization_modules_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      organizations: {
-        Row: {
-          address: string | null
-          created_at: string
-          currency: string | null
-          establishment_date: string | null
-          id: string
-          name: string
-          slug: string
-          status: Database["public"]["Enums"]["organization_status"] | null
-          type: Database["public"]["Enums"]["organization_type"]
-          updated_at: string
-        }
-        Insert: {
-          address?: string | null
-          created_at?: string
-          currency?: string | null
-          establishment_date?: string | null
-          id?: string
-          name: string
-          slug: string
-          status?: Database["public"]["Enums"]["organization_status"] | null
-          type: Database["public"]["Enums"]["organization_type"]
-          updated_at?: string
-        }
-        Update: {
-          address?: string | null
-          created_at?: string
-          currency?: string | null
-          establishment_date?: string | null
-          id?: string
-          name?: string
-          slug?: string
-          status?: Database["public"]["Enums"]["organization_status"] | null
-          type?: Database["public"]["Enums"]["organization_type"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          full_name: string
-          id: string
-          organization_id: string
-          role: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          full_name: string
-          id: string
-          organization_id: string
-          role?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          full_name?: string
-          id?: string
-          organization_id?: string
-          role?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      generate_organization_slug: {
-        Args: { org_name: string }
-        Returns: string
-      }
-      get_user_organization_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
-      organization_status: "pending_verification" | "active" | "suspended"
-      organization_type: "NGO" | "Donor"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -307,9 +150,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      organization_status: ["pending_verification", "active", "suspended"],
-      organization_type: ["NGO", "Donor"],
-    },
+    Enums: {},
   },
 } as const
