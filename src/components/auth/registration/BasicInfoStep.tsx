@@ -69,45 +69,15 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="contactPersonName" className="text-xs">
-            Primary Contact Person Name *
-          </Label>
-          <Input
-            id="contactPersonName"
-            type="text"
-            placeholder="e.g., Amina Yusuf"
-            value={formData.contactPersonName}
-            onChange={(e) =>
-              updateFormData({ contactPersonName: e.target.value })
-            }
-            className="h-10 text-sm"
-          />
-        </div>
-
-        <div className="space-y-1">
-          <Label htmlFor="contactEmail" className="text-xs">
+          <Label htmlFor="email" className="text-xs">
             Primary Contact Email *
           </Label>
           <Input
-            id="contactEmail"
+            id="email"
             type="email"
-            placeholder="e.g., amina.yusuf@org.com"
-            value={formData.contactEmail}
-            onChange={(e) => updateFormData({ contactEmail: e.target.value })}
-            className="h-10 text-sm"
-          />
-        </div>
-
-        <div className="space-y-1">
-          <Label htmlFor="contactPhone" className="text-xs">
-            Primary Contact Phone Number *
-          </Label>
-          <Input
-            id="contactPhone"
-            type="tel"
-            placeholder="e.g., +234 801 234 5678"
-            value={formData.contactPhone}
-            onChange={(e) => updateFormData({ contactPhone: e.target.value })}
+            placeholder="e.g., admin@yourorganization.com"
+            value={formData.email}
+            onChange={(e) => updateFormData({ email: e.target.value })}
             className="h-10 text-sm"
           />
         </div>
@@ -120,7 +90,7 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Min 8 chars, mixed case, number, symbol"
+              placeholder="Min 8 chars"
               value={formData.password}
               onChange={(e) => updateFormData({ password: e.target.value })}
               className="h-10 text-sm"
@@ -137,6 +107,20 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
               )}
             </button>
           </div>
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="confirmPassword" className="text-xs">
+            Confirm Password *
+          </Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            value={formData.confirmPassword}
+            onChange={(e) => updateFormData({ confirmPassword: e.target.value })}
+            className="h-10 text-sm"
+          />
         </div>
       </div>
     </div>

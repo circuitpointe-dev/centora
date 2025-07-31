@@ -106,89 +106,99 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
       
-      // Generate organization slug
-      const { data: slugData, error: slugError } = await supabase
-        .rpc('generate_organization_slug', { org_name: organizationData.organizationName });
+      // Step 1: Create the Organization Record (as `anon` user)
+      const slugResponse = await supabase.rpc('generate_organization_slug', { 
+        org_name: organizationData.organizationName 
+      });
       
-      if (slugError) throw slugError;
+      if (slugResponse.error) throw slugResponse.error;
       
-      // Sign up the user with email confirmation disabled
+      const { data: orgData, error: orgError } = await supabase
+        .from('organizations')
+        .insert({
+          name: organizationData.organizationName,
+          email: organizationData.email,
+          type: organizationData.organizationType,
+          slug: slugResponse.data,
+          address: organizationData.address || '',
+          establishment_date: organizationData.establishmentDate || null,
+          currency: organizationData.currency || 'USD'
+        })
+        .select()
+        .single();
+
+      if (orgError) throw orgError;
+      const newOrganizationId = orgData.id;
+
+      // Step 2: Register the Primary User
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/`,
           data: {
-            full_name: organizationData.contactPersonName,
+            organization_id: newOrganizationId,
             organization_name: organizationData.organizationName,
-            organization_type: organizationData.organizationType,
-            organization_slug: slugData
+            organization_type: organizationData.organizationType
           }
         }
       });
 
       if (authError) throw authError;
+      if (!authData.user) throw new Error('User registration failed');
 
-      if (authData.user) {
-        // Create organization
-        const { data: orgData, error: orgError } = await supabase
-          .from('organizations')
-          .insert({
-            name: organizationData.organizationName,
-            type: organizationData.organizationType,
-            slug: slugData,
-            address: organizationData.address,
-            establishment_date: organizationData.establishmentDate,
-            currency: organizationData.currency
-          })
-          .select()
-          .single();
-
-        if (orgError) throw orgError;
-
-        // Create organization contact
-        const { error: contactError } = await supabase
-          .from('organization_contacts')
-          .insert({
-            organization_id: orgData.id,
-            name: organizationData.contactPersonName,
-            email: email,
-            phone: organizationData.contactPhone,
-            is_primary: true
-          });
-
-        if (contactError) console.error('Contact creation error:', contactError);
-
-        // Create user profile
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: authData.user.id,
-            organization_id: orgData.id,
-            full_name: organizationData.contactPersonName,
-            role: 'admin'
-          });
-
-        if (profileError) console.error('Profile creation error:', profileError);
-
-        // Insert selected modules
-        if (organizationData.selectedModules && organizationData.selectedModules.length > 0) {
-          const moduleInserts = organizationData.selectedModules.map((moduleName: string) => ({
-            organization_id: orgData.id,
-            module_name: moduleName
-          }));
-
-          const { error: moduleError } = await supabase
-            .from('organization_modules')
-            .insert(moduleInserts);
-
-          if (moduleError) console.error('Module creation error:', moduleError);
-        }
-
-        toast({
-          title: "Registration Successful",
-          description: `Welcome to Orbit ERP, ${organizationData.organizationName}! You can now use your account.`,
+      // Step 3: Create the Primary User's Profile (as `authenticated` user)
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          organization_id: newOrganizationId,
+          full_name: organizationData.contactPersonName || organizationData.organizationName,
+          role: 'admin'
         });
+
+      if (profileError) throw profileError;
+
+      // Step 4: Update Organization's primary_user_id (as `authenticated` user)
+      const { error: updateOrgError } = await supabase
+        .from('organizations')
+        .update({ primary_user_id: authData.user.id })
+        .eq('id', newOrganizationId);
+
+      if (updateOrgError) throw updateOrgError;
+
+      // Step 5: Create Organization Contacts (as `authenticated` user)
+      const { error: contactError } = await supabase
+        .from('organization_contacts')
+        .insert({
+          organization_id: newOrganizationId,
+          name: organizationData.contactPersonName || organizationData.organizationName,
+          email: organizationData.email,
+          phone: organizationData.contactPhone || '',
+          is_primary: true
+        });
+
+      if (contactError) throw contactError;
+
+      // Step 6: Create Organization Modules (as `authenticated` user)
+      if (organizationData.selectedModules && organizationData.selectedModules.length > 0) {
+        const moduleInserts = organizationData.selectedModules.map((moduleName: string) => ({
+          organization_id: newOrganizationId,
+          module_name: moduleName
+        }));
+
+        const { error: moduleError } = await supabase
+          .from('organization_modules')
+          .insert(moduleInserts);
+
+        if (moduleError) throw moduleError;
       }
+
+      // Auto-login success - user is already authenticated
+      toast({
+        title: "Registration Successful",
+        description: `Welcome to Orbit ERP, ${organizationData.organizationName}!`,
+      });
 
       return { error: null };
     } catch (error: any) {

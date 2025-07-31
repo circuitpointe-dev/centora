@@ -26,11 +26,14 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
   const [formData, setFormData] = useState<RegistrationData>({
     organizationName: "",
     organizationType: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    selectedModules: [],
+    // Additional info fields for compatibility
     contactPersonName: "",
     contactEmail: "",
     contactPhone: "",
-    password: "",
-    selectedModules: [],
     address: "",
     establishmentDate: "",
     currency: "USD",
@@ -40,12 +43,13 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
     setFormData((prev) => {
       const updated = { ...prev, ...data };
       
-      // If organization type changes to Donor, auto-select Grant Management
-      if (data.organizationType === "Donor" && prev.organizationType !== "Donor") {
-        updated.selectedModules = ["Grant Management"];
+      // Sync email fields for compatibility
+      if (data.email) {
+        updated.contactEmail = data.email;
       }
-      // If organization type changes from Donor to NGO, clear modules
-      else if (data.organizationType === "NGO" && prev.organizationType === "Donor") {
+      
+      // Clear modules when organization type changes
+      if (data.organizationType && data.organizationType !== prev.organizationType) {
         updated.selectedModules = [];
       }
       

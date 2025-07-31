@@ -15,32 +15,32 @@ const ModuleSelectionStep = ({
 }: ModuleSelectionStepProps) => {
   const allModules = [
     { name: "Fundraising", available: true },
-    { name: "Document Manager", available: true },
+    { name: "Documents Manager", available: true },
     { name: "Programme Management", available: false },
     { name: "Procurement", available: false },
     { name: "Inventory Management", available: false },
     { name: "Finance & Control", available: false },
     { name: "Learning Management", available: false },
-    { name: "Human Resources Management", available: false },
-    { name: "Users Management", available: false },
-    { name: "Grant Management", available: true },
+    { name: "HR Management", available: false },
+    { name: "User Management", available: false },
+    { name: "Grant Management", available: false },
   ];
 
-  // If it's a Donor, only show Grant Management
-  const availableModules = formData.organizationType === "Donor" 
-    ? allModules.filter(module => module.name === "Grant Management")
-    : allModules;
+  // Show all modules but only allow selection of available ones
+  const availableModules = allModules;
 
   const handleModuleToggle = (moduleName: string) => {
-    // If it's a Donor, Grant Management should always be selected
-    if (formData.organizationType === "Donor" && moduleName === "Grant Management") {
-      return; // Don't allow unchecking for Donors
+    // Only allow toggling of available modules
+    const module = allModules.find(m => m.name === moduleName);
+    if (!module || !module.available) {
+      return;
     }
 
-    const updatedModules = formData.selectedModules.includes(moduleName)
-      ? formData.selectedModules.filter((m) => m !== moduleName)
+    const isSelected = formData.selectedModules.includes(moduleName);
+    const updatedModules = isSelected
+      ? formData.selectedModules.filter(m => m !== moduleName)
       : [...formData.selectedModules, moduleName];
-
+    
     updateFormData({ selectedModules: updatedModules });
   };
 
@@ -51,10 +51,7 @@ const ModuleSelectionStep = ({
           Choose your ERP Modules
         </h2>
         <p className="text-xs text-gray-600 mt-1">
-          {formData.organizationType === "Donor" 
-            ? "As a Donor organization, you have access to Grant Management module."
-            : "Select the functionalities your organization needs. You can always add more later."
-          }
+          Select the modules your organization needs. Only highlighted modules are currently available.
         </p>
       </div>
 
@@ -66,10 +63,7 @@ const ModuleSelectionStep = ({
               checked={formData.selectedModules.includes(module.name)}
               onCheckedChange={() => handleModuleToggle(module.name)}
               className="h-5 w-5"
-              disabled={
-                !module.available || 
-                (formData.organizationType === "Donor" && module.name === "Grant Management")
-              }
+              disabled={!module.available}
             />
             <Label
               htmlFor={module.name}

@@ -14,7 +14,7 @@ export const useRegistrationSubmit = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await signUp(formData.contactEmail, formData.password, formData);
+      const { error } = await signUp(formData.email, formData.password, formData);
 
       if (error) {
         toast({
@@ -22,6 +22,9 @@ export const useRegistrationSubmit = () => {
           description: error.message || "Please try again.",
           variant: "destructive",
         });
+      } else {
+        // Registration successful - user is automatically logged in
+        navigate('/dashboard');
       }
       
       return { error };

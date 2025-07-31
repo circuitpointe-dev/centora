@@ -10,18 +10,20 @@ import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
 import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
 
 export interface RegistrationData {
-  // Basic Info
+  // Basic Info - New simplified structure
   organizationName: string;
   organizationType: "NGO" | "Donor" | "";
-  contactPersonName: string;
-  contactEmail: string;
-  contactPhone: string;
+  email: string;
   password: string;
+  confirmPassword: string;
 
   // Module Selection
   selectedModules: string[];
 
-  // Additional Info
+  // Additional Info - keeping for compatibility
+  contactPersonName: string;
+  contactEmail: string;
+  contactPhone: string;
   address: string;
   establishmentDate: string;
   currency: string;
@@ -38,26 +40,30 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
   const [formData, setFormData] = useState<RegistrationData>({
     organizationName: "",
     organizationType: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    selectedModules: [],
+    // Additional info fields for compatibility
     contactPersonName: "",
     contactEmail: "",
     contactPhone: "",
-    password: "",
-    selectedModules: [],
     address: "",
     establishmentDate: "",
-    currency: "USD", // Default currency
+    currency: "USD",
   });
 
   const updateFormData = (data: Partial<RegistrationData>) => {
     setFormData((prev) => {
       const updated = { ...prev, ...data };
       
-      // If organization type changes to Donor, auto-select Grant Management
-      if (data.organizationType === "Donor" && prev.organizationType !== "Donor") {
-        updated.selectedModules = ["Grant Management"];
+      // Sync email fields for compatibility
+      if (data.email) {
+        updated.contactEmail = data.email;
       }
-      // If organization type changes from Donor to NGO, clear modules
-      else if (data.organizationType === "NGO" && prev.organizationType === "Donor") {
+      
+      // Clear modules when organization type changes
+      if (data.organizationType && data.organizationType !== prev.organizationType) {
         updated.selectedModules = [];
       }
       

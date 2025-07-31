@@ -2,16 +2,24 @@
 import { RegistrationData } from "@/components/auth/RegistrationForm";
 
 export const validateStep1 = (formData: RegistrationData) => {
-  const { organizationName, contactPersonName, contactEmail, contactPhone, password} = formData;
+  const { organizationName, organizationType, email, password, confirmPassword } = formData;
   
   const errors: string[] = [];
 
-  if (!organizationName || !contactPersonName || !contactEmail || !contactPhone || !password) {
+  if (!organizationName || !organizationType || !email || !password || !confirmPassword) {
     errors.push("Please fill in all required fields");
+  }
+
+  if (email && !/\S+@\S+\.\S+/.test(email)) {
+    errors.push("Please enter a valid email address");
   }
 
   if (password.length < 8) {
     errors.push("Password must be at least 8 characters long");
+  }
+
+  if (password !== confirmPassword) {
+    errors.push("Passwords do not match");
   }
 
   return {
