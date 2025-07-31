@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Trash2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/SupabaseAuthContext";
 import { AddNotesDialog } from "@/components/fundraising/AddNotesDialog";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
@@ -18,7 +18,7 @@ interface Message {
 }
 
 export const CommunicationsSection: React.FC = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [addNotesOpen, setAddNotesOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
@@ -76,7 +76,7 @@ export const CommunicationsSection: React.FC = () => {
   const handleAddNote = (noteContent: string) => {
     const newMessage: Message = {
       id: Date.now(),
-      author: user?.name || "Current User",
+      author: profile?.full_name || "Current User",
       timestamp: new Date().toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',

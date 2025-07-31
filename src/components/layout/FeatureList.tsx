@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { moduleConfigs } from '@/config/moduleConfigs';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 
 interface FeatureListProps {
   currentModule: string;
@@ -14,7 +14,7 @@ interface FeatureListProps {
 
 const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureListProps) => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, userType } = useAuth();
   const currentModuleConfig = moduleConfigs[currentModule as keyof typeof moduleConfigs];
 
   if (!currentModuleConfig || !user) return null;
@@ -22,7 +22,7 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
   // Get the appropriate features based on user type for grants module
   const getFeatures = () => {
     if (currentModule === 'grants') {
-      const isDonor = user.userType === 'Donor';
+      const isDonor = userType === 'Donor';
       return isDonor ? currentModuleConfig.donorFeatures : currentModuleConfig.ngoFeatures;
     }
     return currentModuleConfig.features;

@@ -7,7 +7,7 @@ import { moduleConfigs } from "@/config/moduleConfigs";
 import SidebarHeader from "./SidebarHeader";
 import FeatureList from "./FeatureList";
 import ModuleSwitcher from "./ModuleSwitcher";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/SupabaseAuthContext";
 import black_logo from "@/assets/images/black_logo.png";
 import violet_logo from "@/assets/images/logo_violet.png";
 
@@ -23,7 +23,7 @@ const Sidebar = ({
   onToggleCollapse,
 }: SidebarProps) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, subscribedModules } = useAuth();
   const [showModuleSwitcher, setShowModuleSwitcher] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -54,17 +54,17 @@ const Sidebar = ({
   if (!currentModuleConfig || !user) return null;
 
   // Check if user has access to current module
-  const hasAccess = user.subscribedModules.includes(currentModule);
+  const hasAccess = subscribedModules.includes(currentModule);
   if (!hasAccess) {
     // Redirect to first available module
-    const firstModule = user.subscribedModules[0];
+    const firstModule = subscribedModules[0];
     if (firstModule) {
       navigate(`/dashboard/${firstModule}/dashboard`);
     }
     return null;
   }
 
-  const canSwitchModules = user.subscribedModules.length > 1;
+  const canSwitchModules = subscribedModules.length > 1;
 
   return (
     <>

@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useParams, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/SupabaseAuthContext";
 
 const MainLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { module } = useParams();
-  const { user } = useAuth();
+  const { user, subscribedModules } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -18,8 +18,8 @@ const MainLayout = () => {
 
   useEffect(() => {
     // Redirect if user doesn't have access to current module
-    if (user && module && !user.subscribedModules.includes(module)) {
-      const firstModule = user.subscribedModules[0];
+    if (user && module && !subscribedModules.includes(module)) {
+      const firstModule = subscribedModules[0];
       if (firstModule) {
         navigate(`/dashboard/${firstModule}/dashboard`);
       }
@@ -38,7 +38,7 @@ const MainLayout = () => {
   }
 
   // Check if user has access to the current module
-  if (!user.subscribedModules.includes(module)) {
+  if (!subscribedModules.includes(module)) {
     return null; // Will redirect in useEffect
   }
 

@@ -28,6 +28,10 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
+  // Convenience properties from profile
+  userType: 'NGO' | 'Donor' | null;
+  organizationName: string | null;
+  subscribedModules: string[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -233,6 +237,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signIn,
     signOut,
     isAuthenticated: !!user,
+    // Convenience properties from profile
+    userType: profile?.organization?.type || null,
+    organizationName: profile?.organization?.name || null,
+    subscribedModules: [], // TODO: Implement module subscriptions from database
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
