@@ -172,9 +172,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .from('organization_contacts')
         .insert({
           organization_id: newOrganizationId,
-          name: organizationData.contactPersonName || organizationData.organizationName,
+          name: organizationData.contactPersonName,
           email: organizationData.email,
-          phone: organizationData.contactPhone || '',
+          phone: organizationData.contactPhone,
           is_primary: true
         });
 

@@ -69,6 +69,34 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
         </div>
 
         <div className="space-y-1">
+          <Label htmlFor="contactPersonName" className="text-xs">
+            Contact Person Name *
+          </Label>
+          <Input
+            id="contactPersonName"
+            type="text"
+            placeholder="e.g., John Smith"
+            value={formData.contactPersonName}
+            onChange={(e) => updateFormData({ contactPersonName: e.target.value })}
+            className="h-10 text-sm"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="contactPhone" className="text-xs">
+            Contact Phone *
+          </Label>
+          <Input
+            id="contactPhone"
+            type="tel"
+            placeholder="e.g., +1234567890"
+            value={formData.contactPhone}
+            onChange={(e) => updateFormData({ contactPhone: e.target.value })}
+            className="h-10 text-sm"
+          />
+        </div>
+
+        <div className="space-y-1">
           <Label htmlFor="email" className="text-xs">
             Primary Contact Email *
           </Label>
@@ -107,20 +135,6 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
               )}
             </button>
           </div>
-        </div>
-
-        <div className="space-y-1">
-          <Label htmlFor="confirmPassword" className="text-xs">
-            Confirm Password *
-          </Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            placeholder="Confirm your password"
-            value={formData.confirmPassword}
-            onChange={(e) => updateFormData({ confirmPassword: e.target.value })}
-            className="h-10 text-sm"
-          />
         </div>
       </div>
     </div>

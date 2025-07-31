@@ -15,15 +15,14 @@ export interface RegistrationData {
   organizationType: "NGO" | "Donor" | "";
   email: string;
   password: string;
-  confirmPassword: string;
+  contactPersonName: string;
+  contactPhone: string;
 
   // Module Selection
   selectedModules: string[];
 
   // Additional Info - keeping for compatibility
-  contactPersonName: string;
   contactEmail: string;
-  contactPhone: string;
   address: string;
   establishmentDate: string;
   currency: string;
@@ -42,12 +41,11 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
     organizationType: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    contactPersonName: "",
+    contactPhone: "",
     selectedModules: [],
     // Additional info fields for compatibility
-    contactPersonName: "",
     contactEmail: "",
-    contactPhone: "",
     address: "",
     establishmentDate: "",
     currency: "USD",
