@@ -95,11 +95,13 @@ export type Database = {
           address: string | null
           created_at: string
           currency: string | null
+          email: string
           establishment_date: string | null
           id: string
           name: string
+          primary_user_id: string | null
           slug: string
-          status: Database["public"]["Enums"]["organization_status"] | null
+          status: Database["public"]["Enums"]["organization_status"]
           type: Database["public"]["Enums"]["organization_type"]
           updated_at: string
         }
@@ -107,11 +109,13 @@ export type Database = {
           address?: string | null
           created_at?: string
           currency?: string | null
+          email: string
           establishment_date?: string | null
           id?: string
           name: string
+          primary_user_id?: string | null
           slug: string
-          status?: Database["public"]["Enums"]["organization_status"] | null
+          status?: Database["public"]["Enums"]["organization_status"]
           type: Database["public"]["Enums"]["organization_type"]
           updated_at?: string
         }
@@ -119,11 +123,13 @@ export type Database = {
           address?: string | null
           created_at?: string
           currency?: string | null
+          email?: string
           establishment_date?: string | null
           id?: string
           name?: string
+          primary_user_id?: string | null
           slug?: string
-          status?: Database["public"]["Enums"]["organization_status"] | null
+          status?: Database["public"]["Enums"]["organization_status"]
           type?: Database["public"]["Enums"]["organization_type"]
           updated_at?: string
         }
@@ -135,7 +141,7 @@ export type Database = {
           full_name: string
           id: string
           organization_id: string
-          role: string | null
+          role: string
           updated_at: string
         }
         Insert: {
@@ -143,7 +149,7 @@ export type Database = {
           full_name: string
           id: string
           organization_id: string
-          role?: string | null
+          role?: string
           updated_at?: string
         }
         Update: {
@@ -151,7 +157,7 @@ export type Database = {
           full_name?: string
           id?: string
           organization_id?: string
-          role?: string | null
+          role?: string
           updated_at?: string
         }
         Relationships: [
@@ -176,6 +182,10 @@ export type Database = {
       get_user_organization_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      is_user_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
     }
     Enums: {
