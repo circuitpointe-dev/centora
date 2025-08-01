@@ -49,8 +49,8 @@ const Index = () => {
                   Sign In
                 </Button>
               </Link>
-              {/* "Get Started" now goes to /register */}
-              <Link to="/register">
+              {/* "Get Started" now goes to /signup */}
+              <Link to="/signup">
                 <Button className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg transform hover:scale-105 transition-all duration-200">
                   Get Started
                 </Button>
@@ -75,7 +75,7 @@ const Index = () => {
             measure impact all in one place.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
-            <Link to="/register">
+            <Link to="/signup">
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-xl transform hover:scale-105 transition-all duration-200 px-8 py-4 text-lg"
@@ -159,7 +159,7 @@ const Index = () => {
             <p className="text-xl mb-8 opacity-90">
               Join hundreds of organizations already maximizing their impact
             </p>
-            <Link to="/register">
+            <Link to="/signup">
               <Button
                 size="lg"
                 className="bg-white text-violet-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200"

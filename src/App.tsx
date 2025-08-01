@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/SupabaseAuthContext";
 
 import Index from "./components/pages/Index";
 import LoginPage from "./components/auth/LoginPage";
+import SignupPage from "./components/auth/SignupPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MainLayout from "./components/layout/MainLayout";
 import DashboardPage from "./components/pages/DashboardPage";
@@ -36,8 +37,11 @@ const App = () => (
             {/* Public: Login */}
             <Route path="/login" element={<LoginPage />} />
 
-            {/* Public: Register (also shows LoginPage, but auto-opens modal) */}
-            <Route path="/register" element={<LoginPage />} />
+            {/* Public: Register (dedicated OAuth-based signup page) */}
+            <Route path="/signup" element={<SignupPage />} />
+            
+            {/* Legacy register route redirect */}
+            <Route path="/register" element={<Navigate to="/signup" replace />} />
 
             {/* Protected: Manual Proposal Creation */}
             <Route

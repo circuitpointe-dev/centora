@@ -168,16 +168,18 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           </Button>
         </form>
 
-        {/* "Create an account" link */}
-        <p className="mt-6 text-center text-gray-500">
-          New NGO?{" "}
-          <button
-            onClick={onShowRegistration}
-            className="text-violet-600 hover:text-violet-700 font-medium cursor-pointer"
-          >
-            Create an account
-          </button>
-        </p>
+        {/* Create Account Link */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
+            New organization?{" "}
+            <Link
+              to="/signup"
+              className="font-medium text-violet-600 hover:text-violet-700 underline underline-offset-4 transition-colors"
+            >
+              Sign up here
+            </Link>
+          </p>
+        </div>
 
         {/* "Back to Home" link */}
         <div className="mt-4 text-center">

@@ -26,6 +26,7 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, organizationData: any) => Promise<{ error?: any }>;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
+  signUpWithOAuth: (organizationName: string, organizationType: 'NGO' | 'Donor', provider: 'google' | 'azure') => Promise<void>;
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
   // Convenience properties from profile
@@ -76,8 +77,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user profile when authenticated
-          setTimeout(() => {
+          // Check if this is a new OAuth user completing registration
+          setTimeout(async () => {
+            await handleOAuthRegistrationCompletion(session.user.id);
             fetchProfile(session.user.id);
           }, 0);
         } else {
@@ -101,6 +103,93 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleOAuthRegistrationCompletion = async (userId: string) => {
+    try {
+      // Check if user already has a profile (existing user)
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .single();
+
+      if (existingProfile) {
+        // User already exists, no need to complete registration
+        return;
+      }
+
+      // Get stored organization data from sessionStorage
+      const storedOrgData = sessionStorage.getItem('pendingOrgRegistration');
+      if (!storedOrgData) {
+        // No pending registration data
+        return;
+      }
+
+      const { organizationName, organizationType, organizationId } = JSON.parse(storedOrgData);
+
+      // Complete the registration process
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) return;
+
+      // Create user profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          organization_id: organizationId,
+          full_name: user.data.user.user_metadata?.full_name || user.data.user.email?.split('@')[0] || 'User',
+          role: 'admin'
+        });
+
+      if (profileError) throw profileError;
+
+      // Update organization with primary user
+      const { error: updateOrgError } = await supabase
+        .from('organizations')
+        .update({ primary_user_id: userId })
+        .eq('id', organizationId);
+
+      if (updateOrgError) throw updateOrgError;
+
+      // Create organization contact
+      const { error: contactError } = await supabase
+        .from('organization_contacts')
+        .insert({
+          organization_id: organizationId,
+          name: user.data.user.user_metadata?.full_name || organizationName,
+          email: user.data.user.email || '',
+          is_primary: true
+        });
+
+      if (contactError) throw contactError;
+
+      // Create default modules (Fundraising and Documents Manager)
+      const { error: moduleError } = await supabase
+        .from('organization_modules')
+        .insert([
+          { organization_id: organizationId, module_name: 'Fundraising' },
+          { organization_id: organizationId, module_name: 'Documents Manager' }
+        ]);
+
+      if (moduleError) throw moduleError;
+
+      // Clear stored data and show success
+      sessionStorage.removeItem('pendingOrgRegistration');
+      
+      toast({
+        title: "Welcome to Orbit ERP!",
+        description: `${organizationName} has been successfully registered.`,
+      });
+
+      // Redirect to dashboard
+      window.location.href = '/dashboard/fundraising';
+
+    } catch (error) {
+      console.error('OAuth registration completion error:', error);
+      // Clean up stored data on error
+      sessionStorage.removeItem('pendingOrgRegistration');
+    }
+  };
 
   const signUp = async (email: string, password: string, organizationData: any) => {
     try {
@@ -227,6 +316,57 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signUpWithOAuth = async (organizationName: string, organizationType: 'NGO' | 'Donor', provider: 'google' | 'azure') => {
+    try {
+      setLoading(true);
+
+      // Step 1: Create the Organization Record (as anon user)
+      const slugResponse = await supabase.rpc('generate_organization_slug', { 
+        org_name: organizationName 
+      });
+      
+      if (slugResponse.error) throw slugResponse.error;
+      
+      const { data: orgData, error: orgError } = await supabase
+        .from('organizations')
+        .insert({
+          name: organizationName,
+          email: '', // Will be filled after OAuth
+          type: organizationType,
+          slug: slugResponse.data,
+          address: '',
+          establishment_date: null,
+          currency: 'USD'
+        })
+        .select()
+        .single();
+
+      if (orgError) throw orgError;
+
+      // Store organization data for completion after OAuth
+      sessionStorage.setItem('pendingOrgRegistration', JSON.stringify({
+        organizationName,
+        organizationType,
+        organizationId: orgData.id
+      }));
+
+      // Step 2: Initiate OAuth flow
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: provider === 'azure' ? 'azure' : 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard/fundraising`
+        }
+      });
+
+      if (oauthError) throw oauthError;
+
+    } catch (error: any) {
+      setLoading(false);
+      console.error('OAuth signup error:', error);
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -245,6 +385,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading,
     signUp,
     signIn,
+    signUpWithOAuth,
     signOut,
     isAuthenticated: !!user,
     // Convenience properties from profile
