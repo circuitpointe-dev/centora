@@ -24,7 +24,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, organizationData: any) => Promise<{ error?: any }>;
+  signUp: (email: string, password: string, organizationData: any, captchaToken: string) => Promise<{ error?: any }>;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signUpWithOAuth: (organizationName: string, organizationType: 'NGO' | 'Donor', provider: 'google' | 'azure') => Promise<void>;
   signOut: () => Promise<void>;
@@ -191,7 +191,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string, organizationData: any) => {
+  const signUp = async (email: string, password: string, organizationData: any, captchaToken: string) => {
     try {
       setLoading(true);
 
@@ -220,7 +220,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
-          data: { organization_id: newOrganizationId }
+          data: { organization_id: newOrganizationId },
+          captchaToken: captchaToken // Pass the reCAPTCHA token for verification
         }
       });
 

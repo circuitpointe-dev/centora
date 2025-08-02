@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/SupabaseAuthContext";
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
 
@@ -25,7 +26,9 @@ const SignupPage = () => {
   const [contactPhone, setContactPhone] = useState("");
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
   const { signUpWithOAuth, signUp } = useAuth();
+  const siteKey = 'ES_85eb5bba29fd480a9b2bb38676aa7509';
 
   const validateBasicInfo = () => {
     if (!organizationName.trim()) {
@@ -65,7 +68,8 @@ const SignupPage = () => {
     }
   };
 
-  const handleEmailSignup = async () => {
+  const handleEmailSignup = async (e) => {
+    e.preventDefault();
     if (!validateBasicInfo()) return;
 
     if (!email.trim() || !password.trim() || !contactPersonName.trim() || !contactPhone.trim()) {
@@ -107,7 +111,7 @@ const SignupPage = () => {
         selectedModules: ["Fundraising", "Documents Manager"], // Default modules
       };
 
-      const { error } = await signUp(email, password, formData);
+      const { error } = await signUp(email, password, formData, captchaToken);
       
       if (error) {
         toast({
@@ -312,7 +316,11 @@ const SignupPage = () => {
                   />
                 </div>
               </div>
-
+              {/* The CAPTCHA widget */}
+              <HCaptcha
+                sitekey={siteKey}
+                onVerify={setCaptchaToken}
+              />
               <div className="space-y-3">
                 <Button
                   onClick={handleEmailSignup}
