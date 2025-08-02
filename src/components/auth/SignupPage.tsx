@@ -8,6 +8,14 @@ import { useAuth } from "@/contexts/SupabaseAuthContext";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
 
+const FormContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="w-full max-w-[320px] mx-auto">
+      {children}
+    </div>
+  );
+};
+
 const SignupPage = () => {
   const [organizationName, setOrganizationName] = useState("");
   const [organizationType, setOrganizationType] = useState<"NGO" | "Donor" | "">("");
@@ -131,7 +139,8 @@ const SignupPage = () => {
             Create your organization account to get started
           </p>
         </div>
-
+        {/* Wrapped Form Content */}
+        <FormContainer>
         {/* Organization Info Form */}
         <div className="space-y-6">
           <div className="space-y-4">
@@ -308,7 +317,7 @@ const SignupPage = () => {
                 <Button
                   onClick={handleEmailSignup}
                   disabled={isLoading}
-                  className="w-full h-10"
+                  className="w-full h-10 bg-violet-600 text-white hover:bg-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
                 >
                   Create Account
                 </Button>
@@ -340,7 +349,7 @@ const SignupPage = () => {
         </div>
 
         {/* Back to Home */}
-        <div className="text-center">
+        <div className="text-center mt-4">
           <Link
             to="/"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -349,6 +358,7 @@ const SignupPage = () => {
             Back to Home
           </Link>
         </div>
+        </FormContainer>
       </div>
     </div>
   );
