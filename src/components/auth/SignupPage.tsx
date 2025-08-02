@@ -145,7 +145,7 @@ const SignupPage = () => {
                 placeholder="e.g., Save the Children"
                 value={organizationName}
                 onChange={(e) => setOrganizationName(e.target.value)}
-                className="h-10"
+                className="h-10 w-64"
                 disabled={isLoading}
               />
             </div>
@@ -159,7 +159,7 @@ const SignupPage = () => {
                 onValueChange={(value: "NGO" | "Donor") => setOrganizationType(value)}
                 disabled={isLoading}
               >
-                <SelectTrigger className="h-10">
+                <SelectTrigger className="h-10 w-64">
                   <SelectValue placeholder="Select organization type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -187,7 +187,7 @@ const SignupPage = () => {
                   onClick={() => handleOAuthSignup('google')}
                   disabled={isLoading}
                   variant="outline"
-                  className="w-full h-10 text-sm font-medium"
+                  className="w-64 h-10 text-sm font-medium"
                 >
                   <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                     <path
@@ -214,7 +214,7 @@ const SignupPage = () => {
                   onClick={() => handleOAuthSignup('azure')}
                   disabled={isLoading}
                   variant="outline"
-                  className="w-full h-10 text-sm font-medium"
+                  className="w-64 h-10 text-sm font-medium"
                 >
                   <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                     <path
@@ -231,7 +231,7 @@ const SignupPage = () => {
                 <Button
                   variant="ghost"
                   onClick={() => setShowEmailForm(true)}
-                  className="text-sm text-muted-foreground hover:text-foreground"
+                  className="text-sm text-muted-foreground hover:text-foreground w-64"
                   disabled={isLoading}
                 >
                   <Mail className="w-4 h-4 mr-2" />
@@ -253,7 +253,7 @@ const SignupPage = () => {
                     placeholder="John Doe"
                     value={contactPersonName}
                     onChange={(e) => setContactPersonName(e.target.value)}
-                    className="h-10"
+                    className="h-10 w-64"
                     disabled={isLoading}
                   />
                 </div>
@@ -268,7 +268,7 @@ const SignupPage = () => {
                     placeholder="+1 (555) 123-4567"
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
-                    className="h-10"
+                    className="h-10 w-64"
                     disabled={isLoading}
                   />
                 </div>
@@ -283,7 +283,7 @@ const SignupPage = () => {
                     placeholder="john@organization.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-10"
+                    className="h-10 w-64"
                     disabled={isLoading}
                   />
                 </div>
@@ -298,7 +298,7 @@ const SignupPage = () => {
                     placeholder="Min. 8 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="h-10"
+                    className="h-10 w-64"
                     disabled={isLoading}
                   />
                 </div>
@@ -308,7 +308,7 @@ const SignupPage = () => {
                 <Button
                   onClick={handleEmailSignup}
                   disabled={isLoading}
-                  className="w-full h-10"
+                  className="w-64 h-10 bg-brand-purple hover:bg-brand-purple/90"
                 >
                   Create Account
                 </Button>
@@ -316,7 +316,7 @@ const SignupPage = () => {
                 <Button
                   variant="ghost"
                   onClick={() => setShowEmailForm(false)}
-                  className="w-full text-sm text-muted-foreground hover:text-foreground"
+                  className="w-64 text-sm text-muted-foreground hover:text-foreground"
                   disabled={isLoading}
                 >
                   Back to OAuth options
