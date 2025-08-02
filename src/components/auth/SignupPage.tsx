@@ -28,7 +28,7 @@ const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [captchaToken, setCaptchaToken] = useState('');
   const { signUpWithOAuth, signUp } = useAuth();
-  const siteKey = 'ES_85eb5bba29fd480a9b2bb38676aa7509';
+  const siteKey = '9ab0b564-5430-4e86-b268-500e58c2816c';
 
   const validateBasicInfo = () => {
     if (!organizationName.trim()) {
