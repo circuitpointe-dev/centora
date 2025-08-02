@@ -14,7 +14,7 @@ export const useRegistrationSubmit = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await signUp(formData.email, formData.password, formData);
+      const { error } = await signUp(formData.email, formData.password, formData, '');
 
       if (error) {
         toast({
