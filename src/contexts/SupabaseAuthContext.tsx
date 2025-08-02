@@ -194,55 +194,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUp = async (email: string, password: string, organizationData: any) => {
     try {
       setLoading(true);
-      
-      // Ensure we're in a clean anonymous state
-      await supabase.auth.signOut();
-      
-      // Small delay to ensure the client is truly anonymous
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Step 1: Create the Organization Record (as `anon` user)
-      const slugResponse = await supabase.rpc('generate_organization_slug', { 
-        org_name: organizationData.organizationName 
+
+      // Step 1: Call the register_organization_and_user RPC
+      const { data: rpcData, error: rpcError } = await supabase.rpc('register_organization_and_user' as any, {
+        p_org_name: organizationData.organizationName,
+        p_org_type: organizationData.organizationType,
+        p_user_email: email,
+        p_user_password: password,
+        p_full_name: organizationData.contactPersonName || organizationData.organizationName,
+        p_selected_modules: organizationData.selectedModules || ["Fundraising", "Documents Manager"],
+        p_address: organizationData.address || null,
+        p_establishment_date: organizationData.establishmentDate || null,
+        p_currency: organizationData.currency || 'USD',
+        p_contact_phone: organizationData.contactPhone || null
       });
-      
-      if (slugResponse.error) throw slugResponse.error;
-      
-      const { data: orgData, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
-          name: organizationData.organizationName,
-          email: organizationData.email,
-          type: organizationData.organizationType,
-          slug: slugResponse.data,
-          address: organizationData.address || '',
-          establishment_date: organizationData.establishmentDate || null,
-          currency: organizationData.currency || 'USD'
-        })
-        .select()
-        .single();
 
-      if (orgError) throw orgError;
-      const newOrganizationId = orgData.id;
+      if (rpcError) throw rpcError;
 
-      // Step 2: Register the Primary User
+      // Extract the new organization ID from the RPC response
+      const newOrganizationId = (rpcData as any)?.organization_id;
+
+      // Step 2: Sign up the user via auth.signUp
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            organization_id: newOrganizationId,
-            organization_name: organizationData.organizationName,
-            organization_type: organizationData.organizationType
-          }
+          data: { organization_id: newOrganizationId }
         }
       });
 
       if (authError) throw authError;
-      if (!authData.user) throw new Error('User registration failed');
+      if (!authData.user) throw new Error('User registration failed after auth signup');
 
-      // Step 3: Create the Primary User's Profile (as `authenticated` user)
+      // Step 3: Create the user profile
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -254,42 +239,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (profileError) throw profileError;
 
-      // Step 4: Update Organization's primary_user_id (as `authenticated` user)
-      const { error: updateOrgError } = await supabase
-        .from('organizations')
-        .update({ primary_user_id: authData.user.id })
-        .eq('id', newOrganizationId);
-
-      if (updateOrgError) throw updateOrgError;
-
-      // Step 5: Create Organization Contacts (as `authenticated` user)
-      const { error: contactError } = await supabase
-        .from('organization_contacts')
-        .insert({
-          organization_id: newOrganizationId,
-          name: organizationData.contactPersonName,
-          email: organizationData.email,
-          phone: organizationData.contactPhone,
-          is_primary: true
-        });
-
-      if (contactError) throw contactError;
-
-      // Step 6: Create Organization Modules (as `authenticated` user)
-      if (organizationData.selectedModules && organizationData.selectedModules.length > 0) {
-        const moduleInserts = organizationData.selectedModules.map((moduleName: string) => ({
-          organization_id: newOrganizationId,
-          module_name: moduleName
-        }));
-
-        const { error: moduleError } = await supabase
-          .from('organization_modules')
-          .insert(moduleInserts);
-
-        if (moduleError) throw moduleError;
-      }
-
-      // Auto-login success - user is already authenticated
+      // Registration successful - user is automatically logged in
       toast({
         title: "Registration Successful",
         description: `Welcome to Orbit ERP, ${organizationData.organizationName}!`,
