@@ -195,6 +195,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
       
+      // Ensure we're in a clean anonymous state
+      await supabase.auth.signOut();
+      
+      // Small delay to ensure the client is truly anonymous
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Step 1: Create the Organization Record (as `anon` user)
       const slugResponse = await supabase.rpc('generate_organization_slug', { 
         org_name: organizationData.organizationName 
