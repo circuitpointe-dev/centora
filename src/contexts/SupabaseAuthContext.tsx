@@ -127,6 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password,
         options: {
           emailRedirectTo: redirectUrl,
+          captchaToken: '',
           data: {
             full_name: organizationData.contactPersonName,
             organization_id: rpcResponse.organization_id
