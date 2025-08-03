@@ -168,7 +168,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         p_user_email: email,
         p_user_password: password,
         p_full_name: organizationData.contactPersonName,
-        p_selected_modules: organizationData.selectedModules || ["Fundraising", "Documents Manager"],
+        p_selected_modules: organizationData.selectedModules,
         p_address: organizationData.address || null,
         p_establishment_date: organizationData.establishmentDate || null,
         p_currency: organizationData.currency || 'USD',
