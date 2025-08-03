@@ -69,69 +69,63 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Check if this is a new OAuth user completing registration
-          setTimeout(async () => {
-            await handleOAuthRegistrationCompletion(session.user.id);
-            fetchProfile(session.user.id);
-          }, 0);
-        } else {
-          setProfile(null);
-        }
-        
-        setLoading(false);
-      }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+useEffect(() => {
+  // Set up auth state listener
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
-        fetchProfile(session.user.id);
+        setTimeout(async () => {
+          await handleRegistrationCompletion(session.user.id);
+          fetchProfile(session.user.id);
+        }, 0);
+      } else {
+        setProfile(null);
       }
+
       setLoading(false);
-    });
+    }
+  );
 
-    return () => subscription.unsubscribe();
-  }, []);
+  // Check for existing session
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setSession(session);
+    setUser(session?.user ?? null);
 
-  const handleOAuthRegistrationCompletion = async (userId: string) => {
-    try {
-      // Check if user already has a profile (existing user)
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', userId)
-        .single();
+    if (session?.user) {
+      fetchProfile(session.user.id);
+    }
+    setLoading(false);
+  });
 
-      if (existingProfile) {
-        // User already exists, no need to complete registration
-        return;
-      }
+  return () => subscription.unsubscribe();
+}, []);
 
-      // Get stored organization data from sessionStorage
-      const storedOrgData = sessionStorage.getItem('pendingOrgRegistration');
-      if (!storedOrgData) {
-        // No pending registration data
-        return;
-      }
 
-      const { organizationName, organizationType, organizationId } = JSON.parse(storedOrgData);
+const handleRegistrationCompletion = async (userId: string) => {
+  try {
+    // Check if user already has a profile (existing user)
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .single();
 
-      // Complete the registration process
+    if (existingProfile) {
+      // User already exists, no need to complete registration
+      return;
+    }
+
+    // Check for pending OAuth registration
+    const pendingOrg = sessionStorage.getItem('pendingOrgRegistration');
+    if (pendingOrg) {
+      const { organizationName, organizationType, organizationId } = JSON.parse(pendingOrg);
+
       const user = await supabase.auth.getUser();
       if (!user.data.user) return;
 
-      // Create user profile
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -143,7 +137,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (profileError) throw profileError;
 
-      // Update organization with primary user
       const { error: updateOrgError } = await supabase
         .from('organizations')
         .update({ primary_user_id: userId })
@@ -151,7 +144,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (updateOrgError) throw updateOrgError;
 
-      // Create organization contact
       const { error: contactError } = await supabase
         .from('organization_contacts')
         .insert({
@@ -163,7 +155,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (contactError) throw contactError;
 
-      // Create default modules (Fundraising and Documents Manager)
       const { error: moduleError } = await supabase
         .from('organization_modules')
         .insert([
@@ -173,30 +164,67 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (moduleError) throw moduleError;
 
-      // Clear stored data and show success
       sessionStorage.removeItem('pendingOrgRegistration');
-      
+
       toast({
         title: "Welcome to Orbit ERP!",
         description: `${organizationName} has been successfully registered.`,
       });
 
-      // Redirect to dashboard
       window.location.href = '/dashboard/fundraising';
-
-    } catch (error) {
-      console.error('OAuth registration completion error:', error);
-      // Clean up stored data on error
-      sessionStorage.removeItem('pendingOrgRegistration');
+      return;
     }
-  };
+
+    // Check for pending email registration
+    const pendingEmail = sessionStorage.getItem('pendingEmailRegistration');
+    if (pendingEmail) {
+      const { organizationId } = JSON.parse(pendingEmail);
+
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) return;
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          organization_id: organizationId,
+          full_name: user.data.user.user_metadata?.full_name || user.data.user.email?.split('@')[0] || 'User',
+          role: 'admin'
+        });
+
+      if (profileError) throw profileError;
+
+      const { error: updateOrgError } = await supabase
+        .from('organizations')
+        .update({ primary_user_id: userId })
+        .eq('id', organizationId);
+
+      if (updateOrgError) throw updateOrgError;
+
+      sessionStorage.removeItem('pendingEmailRegistration');
+
+      toast({
+        title: "Registration Complete!",
+        description: `Your account has been successfully created.`,
+      });
+
+      window.location.href = '/dashboard/fundraising';
+      return;
+    }
+  } catch (error) {
+    console.error('Registration completion error:', error);
+    sessionStorage.removeItem('pendingOrgRegistration');
+    sessionStorage.removeItem('pendingEmailRegistration');
+  }
+};
+
 
   const signUp = async (email: string, password: string, organizationData: any, captchaToken: string) => {
     try {
       setLoading(true);
 
       // Step 1: Call the register_organization_and_user RPC
-      const { data: rpcData, error: rpcError } = await supabase.rpc('register_organization_and_user' as any, {
+      const { data: rpcResponse, error: rpcError } = await supabase.rpc('register_organization_and_user' as any, {
         p_org_name: organizationData.organizationName,
         p_org_type: organizationData.organizationType,
         p_user_email: email,
@@ -209,46 +237,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         p_contact_phone: organizationData.contactPhone || null
       });
 
-      if (rpcError) throw rpcError;
+      if (rpcError || rpcResponse?.error) {
+        throw rpcError || new Error(rpcResponse.error);
+      }
 
-      // Extract the new organization ID from the RPC response
-      const newOrganizationId = (rpcData as any)?.organization_id;
+      const newOrganizationId = (rpcResponse as any)?.organization_id;
+      // Store the newOrganizationId in session storage for the listener
+      sessionStorage.setItem('pendingEmailRegistration', JSON.stringify({ organizationId: newOrganizationId }));
 
-      // Step 2: Sign up the user via auth.signUp
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+
+      // Step 2: Sign up the user (sends confirmation email)
+      const { error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: { organization_id: newOrganizationId },
-          captchaToken: captchaToken // Pass the reCAPTCHA token for verification
+          emailRedirectTo: `${window.location.origin}/`
         }
       });
-
       if (authError) throw authError;
-      if (!authData.user) throw new Error('User registration failed after auth signup');
 
-      // Step 3: Create the user profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          organization_id: newOrganizationId,
-          full_name: organizationData.contactPersonName || organizationData.organizationName,
-          role: 'admin'
-        });
-
-      if (profileError) throw profileError;
-
-      // Registration successful - user is automatically logged in
       toast({
-        title: "Registration Successful",
-        description: `Welcome to Orbit ERP, ${organizationData.organizationName}!`,
+        title: "Registration successful!",
+        description: "Please check your email to confirm your account and continue.",
       });
-
       return { error: null };
     } catch (error: any) {
-      console.error('Registration error:', error);
+      console.error('Final Registration error:', error);
       return { error };
     } finally {
       setLoading(false);
@@ -262,7 +276,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         password,
       });
-      
+
       if (error) throw error;
       return { error: null };
     } catch (error: any) {
@@ -277,34 +291,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
 
-      // Step 1: Create the Organization Record (as anon user)
-      const slugResponse = await supabase.rpc('generate_organization_slug', { 
-        org_name: organizationName 
-      });
-      
-      if (slugResponse.error) throw slugResponse.error;
-      
-      const { data: orgData, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
-          name: organizationName,
-          email: '', // Will be filled after OAuth
-          type: organizationType,
-          slug: slugResponse.data,
-          address: '',
-          establishment_date: null,
-          currency: 'USD'
-        })
-        .select()
-        .single();
+      // Step 1: Create the Organization Record (using the RPC)
+      // We create a dummy email and password that won't be used for auth
+      const dummyEmail = `${organizationName.replace(/\s/g, '').toLowerCase()}_${Date.now()}@orbit.com`;
+      const dummyPassword = Math.random().toString(36).slice(-8);
 
-      if (orgError) throw orgError;
+      const { data: rpcResponse, error: rpcError } = await supabase.rpc('register_organization_and_user' as any, {
+        p_org_name: organizationName,
+        p_org_type: organizationType,
+        p_user_email: dummyEmail,
+        p_user_password: dummyPassword,
+        p_full_name: organizationName, // Placeholder
+        p_selected_modules: ["Fundraising", "Documents Manager"],
+        p_address: null,
+        p_establishment_date: null,
+        p_currency: 'USD',
+        p_contact_phone: null
+      });
+
+      if (rpcError || rpcResponse?.error) {
+        throw rpcError || new Error(rpcResponse.error);
+      }
+      const newOrganizationId = (rpcResponse as any)?.organization_id;
 
       // Store organization data for completion after OAuth
       sessionStorage.setItem('pendingOrgRegistration', JSON.stringify({
         organizationName,
         organizationType,
-        organizationId: orgData.id
+        organizationId: newOrganizationId
       }));
 
       // Step 2: Initiate OAuth flow
