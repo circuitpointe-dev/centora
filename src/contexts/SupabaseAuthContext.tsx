@@ -120,13 +120,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { error: { message: rpcResponse.error } };
       }
 
-      // Step 2: Create user account
-      const redirectUrl = `${window.location.origin}/`;
+      // Step 2: Create user account (without email verification)
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
+          emailRedirectTo: null, // Disable email verification
           data: {
             full_name: organizationData.contactPersonName,
             organization_id: rpcResponse.organization_id
