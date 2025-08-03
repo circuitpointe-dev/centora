@@ -175,6 +175,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_registration_transaction: {
+        Args: { p_user_id: string; p_org_id: string }
+        Returns: undefined
+      }
       generate_organization_slug: {
         Args: { org_name: string }
         Returns: string
@@ -186,6 +190,36 @@ export type Database = {
       is_user_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      register_organization_and_user: {
+        Args: {
+          p_org_name: string
+          p_org_type: Database["public"]["Enums"]["organization_type"]
+          p_user_email: string
+          p_user_password: string
+          p_full_name: string
+          p_selected_modules: string[]
+          p_address?: string
+          p_establishment_date?: string
+          p_currency?: string
+          p_contact_phone?: string
+        }
+        Returns: Json
+      }
+      register_organization_and_user_atomic: {
+        Args: {
+          p_org_name: string
+          p_org_type: Database["public"]["Enums"]["organization_type"]
+          p_user_email: string
+          p_user_password: string
+          p_full_name: string
+          p_selected_modules?: string[]
+          p_address?: string
+          p_establishment_date?: string
+          p_currency?: string
+          p_contact_phone?: string
+        }
+        Returns: Json
       }
     }
     Enums: {
