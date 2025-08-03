@@ -108,7 +108,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-
   // Listen for auth events
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -117,14 +116,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          fetchProfile(session.user.id).then(() => {
-            // Fetch subscribed modules after profile is set
-            if (session.user?.user_metadata?.organization_id) {
-              fetchSubscribedModules(session.user.user_metadata.organization_id).then(modules => {
-                setSubscribedModules(modules);
-              });
-            }
-          });
+          fetchProfile(session.user.id);
         } else {
           setProfile(null);
           setSubscribedModules([]);
@@ -146,6 +138,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Separate effect to fetch modules when profile or user changes
+  useEffect(() => {
+    const fetchModules = async () => {
+      if (user && profile) {
+        // First try to get organization_id from user_metadata, then fall back to profile
+        const orgId = user.user_metadata?.organization_id || profile.organization_id;
+        if (orgId) {
+          const modules = await fetchSubscribedModules(orgId);
+          setSubscribedModules(modules);
+        }
+      } else {
+        setSubscribedModules([]);
+      }
+    };
+
+    fetchModules();
+  }, [user, profile]);
 
   const signUp = async (email: string, password: string, organizationData: any) => {
     try {
