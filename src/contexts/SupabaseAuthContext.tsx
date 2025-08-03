@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [subscribedModules, setSubscribedModules] = useState<string[]>([]);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -54,10 +55,56 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .select(`*, organization:organizations(*)`)
         .eq('id', userId)
         .single();
-      if (error) throw error;
+      if (error) {
+        // If profile doesn't exist, try to create it from user metadata
+        if (error.code === 'PGRST116') {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const user = sessionData.session?.user;
+          if (user?.user_metadata?.organization_id && user?.user_metadata?.full_name) {
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert({
+                id: userId,
+                organization_id: user.user_metadata.organization_id,
+                full_name: user.user_metadata.full_name,
+                role: 'admin'
+              });
+            
+            if (!insertError) {
+              // Retry fetching the profile
+              const { data: newData, error: newError } = await supabase
+                .from('profiles')
+                .select(`*, organization:organizations(*)`)
+                .eq('id', userId)
+                .single();
+              if (!newError) {
+                setProfile(newData as Profile);
+                return;
+              }
+            }
+          }
+        }
+        throw error;
+      }
       setProfile(data as Profile);
     } catch (error) {
       console.error('Error fetching profile:', error);
+    }
+  };
+
+  const fetchSubscribedModules = async (organizationId: string): Promise<string[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('organization_modules')
+        .select('module_name')
+        .eq('organization_id', organizationId)
+        .eq('is_active', true);
+      
+      if (error) throw error;
+      return data.map(module => module.module_name.toLowerCase());
+    } catch (error) {
+      console.error('Error fetching subscribed modules:', error);
+      return [];
     }
   };
 
@@ -70,9 +117,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          fetchProfile(session.user.id);
+          fetchProfile(session.user.id).then(() => {
+            // Fetch subscribed modules after profile is set
+            if (session.user?.user_metadata?.organization_id) {
+              fetchSubscribedModules(session.user.user_metadata.organization_id).then(modules => {
+                setSubscribedModules(modules);
+              });
+            }
+          });
         } else {
           setProfile(null);
+          setSubscribedModules([]);
         }
 
         setLoading(false);
@@ -202,7 +257,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated: !!user,
     userType: profile?.organization?.type || null,
     organizationName: profile?.organization?.name || null,
-    subscribedModules: [], // TODO: pull from DB if needed
+    subscribedModules,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
