@@ -50,12 +50,13 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Check if user already exists in auth.users
-    const { data: existingUser } = await supabase.auth.admin.getUserByEmail(email);
+    const { data: existingUsers } = await supabase.auth.admin.listUsers();
+    const existingUser = existingUsers?.users?.find(user => user.email === email);
     
     let userId: string;
     
-    if (existingUser.user) {
-      userId = existingUser.user.id;
+    if (existingUser) {
+      userId = existingUser.id;
     } else {
       // Create the user in auth.users
       const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
