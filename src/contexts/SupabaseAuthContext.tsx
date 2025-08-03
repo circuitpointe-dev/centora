@@ -24,7 +24,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, organizationData: any, captchaToken: string) => Promise<{ error?: any }>;
+  signUp: (email: string, password: string, organizationData: any) => Promise<{ error?: any }>;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signUpWithOAuth: (organizationName: string, organizationType: 'NGO' | 'Donor', provider: 'google' | 'azure') => Promise<void>;
   signOut: () => Promise<void>;
@@ -169,7 +169,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, organizationData: any, captchaToken: string) => {
+  const signUp = async (email: string, password: string, organizationData: any) => {
     try {
       setLoading(true);
       const { data: rpcResponse, error: rpcError } = await supabase.rpc('register_organization_and_user' as any, {
