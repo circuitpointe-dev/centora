@@ -175,7 +175,7 @@ const SignupPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl space-y-8">
+      <div className="w-full max-w-3xl space-y-8">
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-brand-purple mb-2">
@@ -324,11 +324,11 @@ const SignupPage = () => {
               <p className="text-sm text-muted-foreground">
                 Select the modules your organization needs. Only highlighted modules are currently available.
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {allModules.map((module) => (
                   <div 
                     key={module.name} 
-                    className={`flex items-center space-x-2 p-3 rounded-md border transition-all duration-200 ${
+                    className={`flex items-start space-x-2 p-3 rounded-md border transition-all duration-200 ${
                       !module.available 
                         ? 'opacity-50 bg-muted/50 cursor-not-allowed' 
                         : 'bg-background hover:border-primary/50 hover:shadow-sm cursor-pointer'
@@ -338,7 +338,7 @@ const SignupPage = () => {
                       id={module.name}
                       checked={formData.selectedModules.includes(module.name)}
                       onCheckedChange={() => handleModuleToggle(module.name)}
-                      className="h-4 w-4"
+                      className="h-4 w-4 mt-0.5 flex-shrink-0"
                       disabled={!module.available || isLoading}
                     />
                     <Label
