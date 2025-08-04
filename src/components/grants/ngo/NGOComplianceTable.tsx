@@ -106,7 +106,7 @@ export const NGOComplianceTable = ({ grantId }: NGOComplianceTableProps) => {
                         onClick={() => handleUploadEvidence(requirement)}
                       >
                         <Upload className="h-3 w-3 mr-1" />
-                        Upload
+                        Submit
                       </Button>
                     )}
                   </div>
@@ -127,6 +127,7 @@ export const NGOComplianceTable = ({ grantId }: NGOComplianceTableProps) => {
         open={isUploadDialogOpen}
         onOpenChange={setIsUploadDialogOpen}
         requirement={selectedRequirement?.requirement || ""}
+        requirementData={selectedRequirement}
         onUpload={handleUploadComplete}
       />
     </div>
