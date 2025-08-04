@@ -20,7 +20,6 @@ const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [establishmentDate, setEstablishmentDate] = useState<Date>();
-  
   const [formData, setFormData] = useState({
     organizationName: "",
     organizationType: "" as "NGO" | "Donor" | "",
@@ -66,12 +65,10 @@ const SignupPage = () => {
   const handleModuleToggle = (moduleName: string) => {
     const module = allModules.find(m => m.name === moduleName);
     if (!module || !module.available) return;
-
     const isSelected = formData.selectedModules.includes(moduleName);
     const updatedModules = isSelected
       ? formData.selectedModules.filter(m => m !== moduleName)
       : [...formData.selectedModules, moduleName];
-    
     updateField('selectedModules', updatedModules);
   };
 
@@ -82,7 +79,6 @@ const SignupPage = () => {
 
   const validateForm = () => {
     const { organizationName, organizationType, email, password, contactPersonName, contactPhone, selectedModules } = formData;
-    
     if (!organizationName.trim()) {
       toast({
         title: "Organization Name Required",
@@ -91,7 +87,6 @@ const SignupPage = () => {
       });
       return false;
     }
-
     if (!organizationType) {
       toast({
         title: "Organization Type Required",
@@ -100,7 +95,6 @@ const SignupPage = () => {
       });
       return false;
     }
-
     if (!contactPersonName.trim()) {
       toast({
         title: "Contact Person Name Required",
@@ -109,7 +103,6 @@ const SignupPage = () => {
       });
       return false;
     }
-
     if (!contactPhone.trim()) {
       toast({
         title: "Contact Phone Required",
@@ -118,7 +111,6 @@ const SignupPage = () => {
       });
       return false;
     }
-
     if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
       toast({
         title: "Valid Email Required",
@@ -127,7 +119,6 @@ const SignupPage = () => {
       });
       return false;
     }
-
     if (!password.trim() || password.length < 8) {
       toast({
         title: "Valid Password Required",
@@ -136,7 +127,6 @@ const SignupPage = () => {
       });
       return false;
     }
-
     if (selectedModules.length === 0) {
       toast({
         title: "Module Selection Required",
@@ -145,24 +135,19 @@ const SignupPage = () => {
       });
       return false;
     }
-
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-
     setIsLoading(true);
     try {
       const registrationData = {
         ...formData,
-        contactEmail: formData.email, // For compatibility
+        contactEmail: formData.email,
       };
-
       const { error } = await signUp(formData.email, formData.password, registrationData);
-      
       if (error) {
         toast({
           title: "Registration Failed",
@@ -200,15 +185,15 @@ const SignupPage = () => {
             Create your organization account to get started
           </p>
         </div>
-        
+
         {/* Registration Form */}
         <div className="bg-card rounded-lg border p-6 shadow-sm">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Organization Details Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-foreground">Organization Details</h3>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Organization Details */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">Organization Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="organizationName" className="text-sm font-medium">
                     Organization Name *
                   </Label>
@@ -218,13 +203,12 @@ const SignupPage = () => {
                     placeholder="e.g., Save the Children"
                     value={formData.organizationName}
                     onChange={(e) => updateField('organizationName', e.target.value)}
-                    className="h-10"
+                    className="h-10 mt-1"
                     disabled={isLoading}
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="organizationType" className="text-sm font-medium">
                     Organization Type *
                   </Label>
@@ -234,7 +218,7 @@ const SignupPage = () => {
                     disabled={isLoading}
                     required
                   >
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className="h-10 mt-1">
                       <SelectValue placeholder="Select organization type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -246,11 +230,11 @@ const SignupPage = () => {
               </div>
             </div>
 
-            {/* Contact Information Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-foreground">Contact Information</h3>
+            {/* Contact Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">Contact Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="contactPersonName" className="text-sm font-medium">
                     Contact Person Name *
                   </Label>
@@ -260,13 +244,12 @@ const SignupPage = () => {
                     placeholder="John Doe"
                     value={formData.contactPersonName}
                     onChange={(e) => updateField('contactPersonName', e.target.value)}
-                    className="h-10"
+                    className="h-10 mt-1"
                     disabled={isLoading}
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="contactPhone" className="text-sm font-medium">
                     Contact Phone *
                   </Label>
@@ -276,13 +259,12 @@ const SignupPage = () => {
                     placeholder="+1 (555) 123-4567"
                     value={formData.contactPhone}
                     onChange={(e) => updateField('contactPhone', e.target.value)}
-                    className="h-10"
+                    className="h-10 mt-1"
                     disabled={isLoading}
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="email" className="text-sm font-medium">
                     Email Address *
                   </Label>
@@ -292,17 +274,16 @@ const SignupPage = () => {
                     placeholder="john@organization.com"
                     value={formData.email}
                     onChange={(e) => updateField('email', e.target.value)}
-                    className="h-10"
+                    className="h-10 mt-1"
                     disabled={isLoading}
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="password" className="text-sm font-medium">
                     Password *
                   </Label>
-                  <div className="relative">
+                  <div className="relative mt-1">
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -332,15 +313,27 @@ const SignupPage = () => {
               </div>
             </div>
 
-            {/* Module Selection Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-foreground">ERP Modules *</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+            {/* Module Selection */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-foreground">ERP Modules *</h3>
+                <span className="text-sm text-muted-foreground">
+                  {formData.selectedModules.length} selected
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
                 Select the modules your organization needs. Only highlighted modules are currently available.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 {allModules.map((module) => (
-                  <div key={module.name} className={`flex items-center space-x-2 p-3 rounded-md border ${!module.available ? 'opacity-50 bg-muted/50' : 'bg-background'}`}>
+                  <div 
+                    key={module.name} 
+                    className={`flex items-center space-x-2 p-3 rounded-md border transition-all duration-200 ${
+                      !module.available 
+                        ? 'opacity-50 bg-muted/50 cursor-not-allowed' 
+                        : 'bg-background hover:border-primary/50 hover:shadow-sm cursor-pointer'
+                    }`}
+                  >
                     <Checkbox
                       id={module.name}
                       checked={formData.selectedModules.includes(module.name)}
@@ -364,21 +357,13 @@ const SignupPage = () => {
                   </div>
                 ))}
               </div>
-              {formData.selectedModules.length > 0 && (
-                <div className="mt-4 p-3 bg-primary/10 rounded-lg">
-                  <p className="text-sm text-primary">
-                    Selected: {formData.selectedModules.length} module
-                    {formData.selectedModules.length !== 1 ? "s" : ""} ({formData.selectedModules.join(", ")})
-                  </p>
-                </div>
-              )}
             </div>
 
-            {/* Additional Information Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-foreground">Additional Information</h3>
+            {/* Additional Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">Additional Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="address" className="text-sm font-medium">
                     Address
                   </Label>
@@ -387,13 +372,12 @@ const SignupPage = () => {
                     placeholder="Organization address"
                     value={formData.address}
                     onChange={(e) => updateField('address', e.target.value)}
-                    className="min-h-[80px]"
+                    className="min-h-[80px] mt-1"
                     disabled={isLoading}
                   />
                 </div>
-
                 <div className="space-y-4">
-                  <div className="space-y-2">
+                  <div>
                     <Label className="text-sm font-medium">
                       Establishment Date
                     </Label>
@@ -402,7 +386,7 @@ const SignupPage = () => {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full h-10 justify-start text-left font-normal",
+                            "w-full h-10 justify-start text-left font-normal mt-1",
                             !establishmentDate && "text-muted-foreground"
                           )}
                           disabled={isLoading}
@@ -423,8 +407,7 @@ const SignupPage = () => {
                       </PopoverContent>
                     </Popover>
                   </div>
-
-                  <div className="space-y-2">
+                  <div>
                     <Label htmlFor="currency" className="text-sm font-medium">
                       Primary Currency
                     </Label>
@@ -433,7 +416,7 @@ const SignupPage = () => {
                       onValueChange={(value) => updateField('currency', value)}
                       disabled={isLoading}
                     >
-                      <SelectTrigger className="h-10">
+                      <SelectTrigger className="h-10 mt-1">
                         <SelectValue placeholder="Select currency" />
                       </SelectTrigger>
                       <SelectContent>
@@ -448,9 +431,9 @@ const SignupPage = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Submit Button */}
-            <div className="pt-6 border-t">
+            <div className="pt-4 border-t">
               <Button
                 type="submit"
                 disabled={isLoading}
@@ -467,30 +450,30 @@ const SignupPage = () => {
               </Button>
             </div>
 
-            {/* Existing Users Link */}
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                Already have an account?{" "}
+            {/* Links */}
+            <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
+              <div className="text-center sm:text-left">
+                <p className="text-sm text-muted-foreground">
+                  Already have an account?{" "}
+                  <Link
+                    to="/login"
+                    className="font-medium text-primary hover:text-primary/80 underline underline-offset-4"
+                  >
+                    Sign in here
+                  </Link>
+                </p>
+              </div>
+              <div className="text-center sm:text-right">
                 <Link
-                  to="/login"
-                  className="font-medium text-primary hover:text-primary/80 underline underline-offset-4"
+                  to="/"
+                  className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Sign in here
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Back to Home
                 </Link>
-              </p>
+              </div>
             </div>
           </form>
-
-          {/* Back to Home */}
-          <div className="text-center mt-6 pt-6 border-t">
-            <Link
-              to="/"
-              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back to Home
-            </Link>
-          </div>
         </div>
       </div>
     </div>
