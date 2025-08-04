@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Search, Filter, Eye, RotateCcw, Send } from 'lucide-react';
 import { reportSubmissionData, type GrantSubmissionData, type ReportSubmissionData } from './data/reportSubmissionData';
 import { useToast } from '@/hooks/use-toast';
+import { ReportDetailsDialog } from './ReportDetailsDialog';
 
 export const ReportingTrackerContent = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,6 +16,8 @@ export const ReportingTrackerContent = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<ReportSubmissionData | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const itemsPerPage = 10;
   const { toast } = useToast();
 
@@ -87,10 +90,15 @@ export const ReportingTrackerContent = () => {
   };
 
   const handleView = (report: ReportSubmissionData) => {
-    toast({
-      title: "View Report",
-      description: `Viewing ${report.reportType} report`,
-    });
+    if (report.status === 'Approved') {
+      setSelectedReport(report);
+      setIsDialogOpen(true);
+    } else {
+      toast({
+        title: "View Report",
+        description: `Viewing ${report.reportType} report`,
+      });
+    }
   };
 
   const handleResubmit = (report: ReportSubmissionData) => {
@@ -268,6 +276,13 @@ export const ReportingTrackerContent = () => {
           </Button>
         </div>
       </div>
+
+      {/* Report Details Dialog */}
+      <ReportDetailsDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        report={selectedReport}
+      />
     </div>
   );
 };
