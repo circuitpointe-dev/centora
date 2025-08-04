@@ -19,7 +19,7 @@ import DocumentsFeaturePage from '@/components/documents/documents-feature/Docum
 import ESignaturePage from '@/components/documents/e-signature/ESignaturePage';
 import CompliancePage from '@/components/documents/compliance/CompliancePage';
 import TemplatesPage from '@/components/documents/templates/TemplatesPage';
-import { ReportingTrackerContent } from '@/components/reporting-tracker/ReportingTrackerContent';
+import ReportSubmissionsPage from './ReportSubmissionsPage';
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
@@ -103,7 +103,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'grants' && feature === 'reports-submissions') {
-    return <ReportingTrackerContent />;
+    return <ReportSubmissionsPage />;
   }
 
   if (module === 'fundraising' && feature === 'opportunity-tracking') {
