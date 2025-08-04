@@ -454,7 +454,7 @@ const SignupPage = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-base"
+                className="w-full h-10 bg-violet-600 text-white hover:bg-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
               >
                 {isLoading ? (
                   <>
