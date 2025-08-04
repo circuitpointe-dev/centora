@@ -16,6 +16,7 @@ import GenericFeaturePage from "./components/pages/GenericFeaturePage";
 import ManualProposalCreationPage from "./components/pages/ManualProposalCreationPage";
 import GrantViewPage from "./components/grants/view/GrantViewPage";
 import CloseGrantPage from "./components/grants/view/CloseGrantPage";
+import NGOGrantViewPage from "./components/grants/ngo/NGOGrantViewPage";
 import NewGrantPage from "./components/grants/new/NewGrantPage";
 import GrantReviewPage from "./components/grants/new/GrantReviewPage";
 import { RequestSignatureWizardPage } from "./components/documents/e-signature/RequestSignatureWizardPage";
@@ -97,6 +98,9 @@ const App = () => (
               
               {/* Grant View - nested within dashboard structure */}
               <Route path="view/:grantId" element={<GrantViewPage />} />
+              
+              {/* NGO Grant View - nested within dashboard structure */}
+              <Route path="ngo-view/:grantId" element={<NGOGrantViewPage />} />
               
               {/* New Grant - nested within dashboard structure */}
               <Route path="new" element={<NewGrantPage />} />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
@@ -79,6 +79,7 @@ const getStatusBadgeStyle = (status: string) => {
 };
 
 export const NGOGrantsTable = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [searchQuery, setSearchQuery] = useState('');
@@ -126,10 +127,15 @@ export const NGOGrantsTable = () => {
           <p><span className="font-medium">Funds Received:</span> {grant.fundsReceived}</p>
           <p><span className="font-medium">Next Report:</span> {grant.nextReportDue}</p>
         </div>
-        <Button variant="outline" size="sm" className="w-full">
-          <Eye className="h-3 w-3 mr-1" />
-          View
-        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => navigate(`/dashboard/grants/ngo-view/${grant.id}`)}
+                        >
+                          <Eye className="h-3 w-3 mr-1" />
+                          View
+                        </Button>
       </div>
     </Card>
   );
@@ -222,7 +228,11 @@ export const NGOGrantsTable = () => {
                       <TableCell>{grant.fundsReceived}</TableCell>
                       <TableCell>{grant.nextReportDue}</TableCell>
                       <TableCell>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate(`/dashboard/grants/ngo-view/${grant.id}`)}
+                        >
                           <Eye className="h-3 w-3 mr-1" />
                           View
                         </Button>
