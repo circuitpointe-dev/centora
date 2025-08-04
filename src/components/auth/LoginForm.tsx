@@ -186,7 +186,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
           <Link to="/">
             <Button
               variant="outline"
-              className="text-gray-600 hover:text-violet-600 border-gray-300 hover:border-violet-500"
+              className="text-gray-600 hover:text-violet-600"
             >
               ← Back to Home
             </Button>
