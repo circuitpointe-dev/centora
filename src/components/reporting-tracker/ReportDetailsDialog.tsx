@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle, Clock, FileText, Download, AlertCircle } from "lucide-react";
 import type { ReportSubmissionData } from "./data/reportSubmissionData";
 
@@ -90,17 +91,27 @@ export const ReportDetailsDialog = ({ open, onOpenChange, report }: ReportDetail
           {/* Submission Tracker */}
           <div>
             <h3 className="font-semibold mb-4">Submission Tracker</h3>
-            <div className="space-y-4">
+            <div className="flex items-center justify-between relative">
+              {/* Progress line */}
+              <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-200 z-0">
+                <div 
+                  className="h-full bg-green-500 transition-all duration-300"
+                  style={{ 
+                    width: `${(submissionStages.filter(stage => !stage.conditional || stage.conditional).filter(stage => stage.completed).length - 1) / (submissionStages.filter(stage => !stage.conditional || stage.conditional).length - 1) * 100}%` 
+                  }}
+                />
+              </div>
+              
               {submissionStages
                 .filter(stage => !stage.conditional || stage.conditional)
                 .map((stage, index) => {
                 const Icon = stage.icon;
                 return (
-                  <div key={index} className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-full ${stage.completed ? 'bg-green-100' : 'bg-gray-100'}`}>
-                      <Icon className={`h-4 w-4 ${stage.completed ? 'text-green-600' : 'text-gray-400'}`} />
+                  <div key={index} className="flex flex-col items-center space-y-2 relative z-10">
+                    <div className={`p-3 rounded-full border-2 bg-white ${stage.completed ? 'border-green-500 text-green-600' : 'border-gray-300 text-gray-400'}`}>
+                      <Icon className="h-5 w-5" />
                     </div>
-                    <div className="flex-1">
+                    <div className="text-center">
                       <p className={`text-sm font-medium ${stage.completed ? 'text-black' : 'text-gray-500'}`}>
                         {stage.label}
                       </p>
@@ -144,28 +155,33 @@ export const ReportDetailsDialog = ({ open, onOpenChange, report }: ReportDetail
           {/* Uploaded Documents */}
           <div>
             <h3 className="font-semibold mb-2">Uploaded Documents</h3>
-            <div className="space-y-2">
-              {uploadedDocuments
-                .filter(doc => !doc.conditional || doc.conditional)
-                .map((doc, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <FileText className="h-4 w-4 text-gray-500" />
-                    <div>
-                      <p className="text-sm font-medium">{doc.name}</p>
-                      <p className="text-xs text-gray-500">Uploaded on {doc.uploadDate}</p>
-                      {doc.notes && (
-                        <p className="text-xs text-gray-600 mt-1">{doc.notes}</p>
-                      )}
-                    </div>
-                  </div>
-                  <Button size="sm" variant="outline" className="text-black border-gray-300 hover:bg-gray-100">
-                    <Download className="h-3 w-3 mr-1" />
-                    Download
-                  </Button>
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>File name</TableHead>
+                  <TableHead>Uploaded on</TableHead>
+                  <TableHead>Notes by grantee</TableHead>
+                  <TableHead>Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {uploadedDocuments
+                  .filter(doc => !doc.conditional || doc.conditional)
+                  .map((doc, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{doc.name}</TableCell>
+                    <TableCell>{doc.uploadDate}</TableCell>
+                    <TableCell>{doc.notes}</TableCell>
+                    <TableCell>
+                      <Button size="sm" variant="outline" className="text-black border-gray-300 hover:bg-gray-100">
+                        <Download className="h-3 w-3 mr-1" />
+                        Download
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
 
           {/* Feedback */}
