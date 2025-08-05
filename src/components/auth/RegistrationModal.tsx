@@ -12,7 +12,7 @@ import RegistrationStepper from "./registration/RegistrationStepper";
 
 import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
 import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
-import { RegistrationData } from "./RegistrationForm";
+import { LegacyRegistrationData } from "./RegistrationForm";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface RegistrationModalProps {
@@ -23,7 +23,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const { handleSubmit, isLoading } = useRegistrationSubmit();
 
-  const [formData, setFormData] = useState<RegistrationData>({
+  const [formData, setFormData] = useState<LegacyRegistrationData>({
     organizationName: "",
     organizationType: "",
     email: "",
@@ -38,7 +38,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
     currency: "USD",
   });
 
-  const updateFormData = (data: Partial<RegistrationData>) => {
+  const updateFormData = (data: Partial<LegacyRegistrationData>) => {
     setFormData((prev) => {
       const updated = { ...prev, ...data };
       
