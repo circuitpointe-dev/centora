@@ -7,12 +7,8 @@ interface Organization {
   id: string;
   name: string;
   type: 'NGO' | 'Donor';
-  address: string;
-  primary_currency: string;
-  contact_phone: string;
+  slug: string;
   status: 'pending_verification' | 'active' | 'suspended';
-  created_at: string;
-  updated_at: string;
 }
 
 interface Profile {
@@ -82,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 .eq('id', userId)
                 .single();
               if (!newError) {
-                setProfile(newData as any);
+                setProfile(newData as Profile);
                 return;
               }
             }
@@ -90,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         throw error;
       }
-      setProfile(data as any);
+      setProfile(data as Profile);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -161,16 +157,76 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     fetchModules();
   }, [user, profile]);
 
-  const signUp = async (email: string, password: string, userData: any) => {
+  const signUp = async (email: string, password: string, organizationData: any) => {
     try {
-      // This is now handled by the new registration form components
-      // and the register_organization_and_user RPC function
-      // This method is kept for backward compatibility but should not be used
-      console.warn('Old signUp method called - use new registration flow instead');
-      return { error: { message: 'Please use the new registration flow' } };
-    } catch (error) {
-      console.error('SignUp error:', error);
+      setLoading(true);
+      
+      // Step 1: Create organization and related data
+      const { data: rpcResponse, error: rpcError } = await supabase.rpc('register_organization_and_user' as any, {
+        p_org_name: organizationData.organizationName,
+        p_org_type: organizationData.organizationType,
+        p_user_email: email,
+        p_user_password: password,
+        p_full_name: organizationData.contactPersonName,
+        p_selected_modules: organizationData.selectedModules,
+        p_address: organizationData.address || null,
+        p_establishment_date: organizationData.establishmentDate || null,
+        p_currency: organizationData.currency || 'USD',
+        p_contact_phone: organizationData.contactPhone || null
+      });
+
+      if (rpcError) {
+        console.error('Organization creation failed:', rpcError);
+        return { error: rpcError };
+      }
+
+      if (rpcResponse?.error) {
+        console.error('Organization creation error:', rpcResponse.error);
+        return { error: { message: rpcResponse.error } };
+      }
+
+      // Step 2: Create user account (without email verification)
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: null, // Disable email verification
+          data: {
+            full_name: organizationData.contactPersonName,
+            organization_id: rpcResponse.organization_id
+          }
+        }
+      });
+
+      if (authError) {
+        console.error('User creation failed:', authError);
+        return { error: authError };
+      }
+
+      // Step 3: Link user to organization (if user is immediately available)
+      if (authData.user) {
+        const { error: completeError } = await supabase.rpc('complete_registration_transaction' as any, {
+          p_user_id: authData.user.id,
+          p_org_id: rpcResponse.organization_id
+        });
+
+        if (completeError) {
+          console.error('Registration completion failed:', completeError);
+          return { error: completeError };
+        }
+      }
+
+      toast({
+        title: "Registration successful!",
+        description: "Please check your email to confirm your account.",
+      });
+      
+      return { error: null };
+    } catch (error: any) {
+      console.error('Signup error:', error);
       return { error };
+    } finally {
+      setLoading(false);
     }
   };
 

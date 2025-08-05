@@ -14,27 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      organization_contacts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_primary: boolean | null
+          name: string
+          organization_id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_primary?: boolean | null
+          name: string
+          organization_id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_primary?: boolean | null
+          name?: string
+          organization_id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_contacts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_modules: {
         Row: {
+          activated_at: string | null
+          created_at: string
           id: string
           is_active: boolean | null
           module_name: string
-          organization_id: string | null
-          selected_at: string | null
+          organization_id: string
         }
         Insert: {
+          activated_at?: string | null
+          created_at?: string
           id?: string
           is_active?: boolean | null
           module_name: string
-          organization_id?: string | null
-          selected_at?: string | null
+          organization_id: string
         }
         Update: {
+          activated_at?: string | null
+          created_at?: string
           id?: string
           is_active?: boolean | null
           module_name?: string
-          organization_id?: string | null
-          selected_at?: string | null
+          organization_id?: string
         }
         Relationships: [
           {
@@ -46,129 +90,75 @@ export type Database = {
           },
         ]
       }
-      organization_pricing: {
-        Row: {
-          id: string
-          organization_id: string | null
-          pricing_tier_id: string | null
-          selected_at: string | null
-        }
-        Insert: {
-          id?: string
-          organization_id?: string | null
-          pricing_tier_id?: string | null
-          selected_at?: string | null
-        }
-        Update: {
-          id?: string
-          organization_id?: string | null
-          pricing_tier_id?: string | null
-          selected_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "organization_pricing_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "organization_pricing_pricing_tier_id_fkey"
-            columns: ["pricing_tier_id"]
-            isOneToOne: false
-            referencedRelation: "pricing_tiers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       organizations: {
         Row: {
-          address: string
-          contact_phone: string
-          created_at: string | null
+          address: string | null
+          created_at: string
+          currency: string | null
+          email: string
+          establishment_date: string | null
           id: string
           name: string
-          primary_currency: string
-          status: Database["public"]["Enums"]["organization_status"] | null
+          primary_user_id: string | null
+          slug: string
+          status: Database["public"]["Enums"]["organization_status"]
           type: Database["public"]["Enums"]["organization_type"]
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
-          address: string
-          contact_phone: string
-          created_at?: string | null
+          address?: string | null
+          created_at?: string
+          currency?: string | null
+          email: string
+          establishment_date?: string | null
           id?: string
           name: string
-          primary_currency: string
-          status?: Database["public"]["Enums"]["organization_status"] | null
+          primary_user_id?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["organization_status"]
           type: Database["public"]["Enums"]["organization_type"]
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
-          address?: string
-          contact_phone?: string
-          created_at?: string | null
+          address?: string | null
+          created_at?: string
+          currency?: string | null
+          email?: string
+          establishment_date?: string | null
           id?: string
           name?: string
-          primary_currency?: string
-          status?: Database["public"]["Enums"]["organization_status"] | null
+          primary_user_id?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["organization_status"]
           type?: Database["public"]["Enums"]["organization_type"]
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      pricing_tiers: {
-        Row: {
-          created_at: string | null
-          description: string
-          display_name: string
-          features: Json
-          id: string
-          is_active: boolean | null
-          name: string
-        }
-        Insert: {
-          created_at?: string | null
-          description: string
-          display_name: string
-          features: Json
-          id?: string
-          is_active?: boolean | null
-          name: string
-        }
-        Update: {
-          created_at?: string | null
-          description?: string
-          display_name?: string
-          features?: Json
-          id?: string
-          is_active?: boolean | null
-          name?: string
+          updated_at?: string
         }
         Relationships: []
       }
       profiles: {
         Row: {
-          created_at: string | null
+          created_at: string
           full_name: string
           id: string
-          organization_id: string | null
-          role: string | null
+          organization_id: string
+          role: string
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           full_name: string
           id: string
-          organization_id?: string | null
-          role?: string | null
+          organization_id: string
+          role?: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           full_name?: string
           id?: string
-          organization_id?: string | null
-          role?: string | null
+          organization_id?: string
+          role?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -180,62 +170,55 @@ export type Database = {
           },
         ]
       }
-      registration_progress: {
-        Row: {
-          created_at: string | null
-          email: string
-          form_data: Json | null
-          id: string
-          organization_name: string | null
-          step_completed: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          email: string
-          form_data?: Json | null
-          id?: string
-          organization_name?: string | null
-          step_completed?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string
-          form_data?: Json | null
-          id?: string
-          organization_name?: string | null
-          step_completed?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      create_dev_users: {
+      complete_registration_transaction: {
+        Args: { p_user_id: string; p_org_id: string }
+        Returns: undefined
+      }
+      generate_organization_slug: {
+        Args: { org_name: string }
+        Returns: string
+      }
+      get_user_organization_id: {
         Args: Record<PropertyKey, never>
-        Returns: Json
+        Returns: string
+      }
+      is_user_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
       register_organization_and_user: {
         Args: {
-          p_organization_name: string
-          p_organization_type: Database["public"]["Enums"]["organization_type"]
-          p_organization_address: string
-          p_primary_currency: string
-          p_contact_phone: string
+          p_org_name: string
+          p_org_type: Database["public"]["Enums"]["organization_type"]
+          p_user_email: string
+          p_user_password: string
           p_full_name: string
-          p_email: string
-          p_password: string
           p_selected_modules: string[]
-          p_pricing_tier_name: string
+          p_address?: string
+          p_establishment_date?: string
+          p_currency?: string
+          p_contact_phone?: string
         }
         Returns: Json
       }
-      save_registration_progress: {
-        Args: { p_email: string; p_step: number; p_form_data: Json }
+      register_organization_and_user_atomic: {
+        Args: {
+          p_org_name: string
+          p_org_type: Database["public"]["Enums"]["organization_type"]
+          p_user_email: string
+          p_user_password: string
+          p_full_name: string
+          p_selected_modules?: string[]
+          p_address?: string
+          p_establishment_date?: string
+          p_currency?: string
+          p_contact_phone?: string
+        }
         Returns: Json
       }
     }

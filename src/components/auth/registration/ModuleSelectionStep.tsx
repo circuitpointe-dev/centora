@@ -2,19 +2,17 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { LegacyRegistrationData } from "../RegistrationForm";
+import { RegistrationData } from "../RegistrationForm";
 
 interface ModuleSelectionStepProps {
-  formData: LegacyRegistrationData;
-  updateFormData: (data: Partial<LegacyRegistrationData>) => void;
+  formData: RegistrationData;
+  updateFormData: (data: Partial<RegistrationData>) => void;
 }
 
 const ModuleSelectionStep = ({
   formData,
   updateFormData,
 }: ModuleSelectionStepProps) => {
-  // Show all modules but only allow selection of available ones
   const allModules = [
     { name: "Fundraising", available: true },
     { name: "Documents Manager", available: true },
@@ -28,6 +26,7 @@ const ModuleSelectionStep = ({
     { name: "Grant Management", available: false },
   ];
 
+  // Show all modules but only allow selection of available ones
   const availableModules = allModules;
 
   const handleModuleToggle = (moduleName: string) => {
@@ -57,51 +56,30 @@ const ModuleSelectionStep = ({
       </div>
 
       <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-        <TooltipProvider>
-          {availableModules.map((module) => (
-            <div key={module.name} className={`flex items-center space-x-2 ${!module.available ? 'opacity-50' : ''}`}>
-              {!module.available ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center space-x-2 cursor-not-allowed">
-                      <Checkbox
-                        id={module.name}
-                        checked={false}
-                        disabled={true}
-                        className="h-5 w-5"
-                      />
-                      <Label
-                        htmlFor={module.name}
-                        className="text-sm font-normal leading-none text-gray-400 cursor-not-allowed"
-                      >
-                        {module.name}
-                        <span className="text-xs text-gray-400 block">Coming Soon</span>
-                      </Label>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>This module is coming soon</p>
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                <>
-                  <Checkbox
-                    id={module.name}
-                    checked={formData.selectedModules.includes(module.name)}
-                    onCheckedChange={() => handleModuleToggle(module.name)}
-                    className="h-5 w-5"
-                  />
-                  <Label
-                    htmlFor={module.name}
-                    className="text-sm font-normal leading-none cursor-pointer"
-                  >
-                    {module.name}
-                  </Label>
-                </>
+        {availableModules.map((module) => (
+          <div key={module.name} className={`flex items-center space-x-2 ${!module.available ? 'opacity-50' : ''}`}>
+            <Checkbox
+              id={module.name}
+              checked={formData.selectedModules.includes(module.name)}
+              onCheckedChange={() => handleModuleToggle(module.name)}
+              className="h-5 w-5"
+              disabled={!module.available}
+            />
+            <Label
+              htmlFor={module.name}
+              className={`text-sm font-normal leading-none cursor-pointer ${
+                !module.available 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+              }`}
+            >
+              {module.name}
+              {!module.available && (
+                <span className="text-xs text-gray-400 block">Coming Soon</span>
               )}
-            </div>
-          ))}
-        </TooltipProvider>
+            </Label>
+          </div>
+        ))}
       </div>
 
       {formData.selectedModules.length > 0 && (

@@ -6,27 +6,27 @@ import BasicInfoStep from "./registration/BasicInfoStep";
 import ModuleSelectionStep from "./registration/ModuleSelectionStep";
 import AdditionalInfoStep from "./registration/AdditionalInfoStep";
 import RegistrationStepper from "./registration/RegistrationStepper";
-import { validateLegacyStep1, validateLegacyStep2 } from "@/utils/registrationValidation";
+import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
 import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
-import { RegistrationData } from "@/types/registration";
 
-// Legacy interface for backward compatibility with old components
-export interface LegacyRegistrationData {
+export interface RegistrationData {
+  // Basic Info - New simplified structure
   organizationName: string;
   organizationType: "NGO" | "Donor" | "";
   email: string;
   password: string;
   contactPersonName: string;
   contactPhone: string;
+
+  // Module Selection
   selectedModules: string[];
+
+  // Additional Info - keeping for compatibility
   contactEmail: string;
   address: string;
   establishmentDate: string;
   currency: string;
 }
-
-// Export RegistrationData for backward compatibility
-export type { RegistrationData } from "@/types/registration";
 
 interface RegistrationFormProps {
   onShowLogin: () => void;
@@ -36,7 +36,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const { handleSubmit, isLoading } = useRegistrationSubmit();
 
-  const [formData, setFormData] = useState<LegacyRegistrationData>({
+  const [formData, setFormData] = useState<RegistrationData>({
     organizationName: "",
     organizationType: "",
     email: "",
@@ -51,7 +51,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
     currency: "USD",
   });
 
-  const updateFormData = (data: Partial<LegacyRegistrationData>) => {
+  const updateFormData = (data: Partial<RegistrationData>) => {
     setFormData((prev) => {
       const updated = { ...prev, ...data };
       
@@ -71,7 +71,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
 
   const handleNext = () => {
     if (currentStep === 1) {
-      const validation = validateLegacyStep1(formData);
+      const validation = validateStep1(formData);
       if (!validation.isValid) {
         toast({
           title: "Error",
@@ -83,7 +83,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
     }
 
     if (currentStep === 2) {
-      const validation = validateLegacyStep2(formData);
+      const validation = validateStep2(formData);
       if (!validation.isValid) {
         toast({
           title: "Error",
@@ -102,8 +102,8 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
   };
 
   const onSubmit = async (skipAdditional = false) => {
-    const step1Validation = validateLegacyStep1(formData);
-    const step2Validation = validateLegacyStep2(formData);
+    const step1Validation = validateStep1(formData);
+    const step2Validation = validateStep2(formData);
 
     if (!step1Validation.isValid) {
       toast({

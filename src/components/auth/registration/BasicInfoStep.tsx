@@ -10,12 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { LegacyRegistrationData } from "../RegistrationForm";
+import { RegistrationData } from "../RegistrationForm";
 
 interface BasicInfoStepProps {
-  formData: LegacyRegistrationData;
-  updateFormData: (data: Partial<LegacyRegistrationData>) => void;
+  formData: RegistrationData;
+  updateFormData: (data: Partial<RegistrationData>) => void;
 }
 
 const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
@@ -124,15 +123,17 @@ const BasicInfoStep = ({ formData, updateFormData }: BasicInfoStepProps) => {
               onChange={(e) => updateFormData({ password: e.target.value })}
               className="h-10 text-sm"
             />
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-0 top-0 h-full px-3"
+              className="absolute inset-y-0 right-0 pr-2 flex items-center"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </Button>
+              {showPassword ? (
+                <EyeOff className="h-3 w-3 text-gray-400" />
+              ) : (
+                <Eye className="h-3 w-3 text-gray-400" />
+              )}
+            </button>
           </div>
         </div>
       </div>
