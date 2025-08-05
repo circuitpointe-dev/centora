@@ -2,7 +2,8 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { RegistrationData } from "../RegistrationForm";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { RegistrationData, AVAILABLE_MODULES } from "@/types/registration";
 
 interface ModuleSelectionStepProps {
   formData: RegistrationData;
@@ -13,25 +14,12 @@ const ModuleSelectionStep = ({
   formData,
   updateFormData,
 }: ModuleSelectionStepProps) => {
-  const allModules = [
-    { name: "Fundraising", available: true },
-    { name: "Documents Manager", available: true },
-    { name: "Programme Management", available: false },
-    { name: "Procurement", available: false },
-    { name: "Inventory Management", available: false },
-    { name: "Finance & Control", available: false },
-    { name: "Learning Management", available: false },
-    { name: "HR Management", available: false },
-    { name: "User Management", available: false },
-    { name: "Grant Management", available: false },
-  ];
-
   // Show all modules but only allow selection of available ones
-  const availableModules = allModules;
+  const availableModules = AVAILABLE_MODULES;
 
   const handleModuleToggle = (moduleName: string) => {
     // Only allow toggling of available modules
-    const module = allModules.find(m => m.name === moduleName);
+    const module = AVAILABLE_MODULES.find(m => m.name === moduleName);
     if (!module || !module.available) {
       return;
     }
@@ -56,30 +44,51 @@ const ModuleSelectionStep = ({
       </div>
 
       <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-        {availableModules.map((module) => (
-          <div key={module.name} className={`flex items-center space-x-2 ${!module.available ? 'opacity-50' : ''}`}>
-            <Checkbox
-              id={module.name}
-              checked={formData.selectedModules.includes(module.name)}
-              onCheckedChange={() => handleModuleToggle(module.name)}
-              className="h-5 w-5"
-              disabled={!module.available}
-            />
-            <Label
-              htmlFor={module.name}
-              className={`text-sm font-normal leading-none cursor-pointer ${
-                !module.available 
-                  ? 'text-gray-400 cursor-not-allowed' 
-                  : 'peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-              }`}
-            >
-              {module.name}
-              {!module.available && (
-                <span className="text-xs text-gray-400 block">Coming Soon</span>
+        <TooltipProvider>
+          {availableModules.map((module) => (
+            <div key={module.name} className={`flex items-center space-x-2 ${!module.available ? 'opacity-50' : ''}`}>
+              {!module.available ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center space-x-2 cursor-not-allowed">
+                      <Checkbox
+                        id={module.name}
+                        checked={false}
+                        disabled={true}
+                        className="h-5 w-5"
+                      />
+                      <Label
+                        htmlFor={module.name}
+                        className="text-sm font-normal leading-none text-gray-400 cursor-not-allowed"
+                      >
+                        {module.name}
+                        <span className="text-xs text-gray-400 block">Coming Soon</span>
+                      </Label>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>This module is coming soon</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <>
+                  <Checkbox
+                    id={module.name}
+                    checked={formData.selectedModules.includes(module.name)}
+                    onCheckedChange={() => handleModuleToggle(module.name)}
+                    className="h-5 w-5"
+                  />
+                  <Label
+                    htmlFor={module.name}
+                    className="text-sm font-normal leading-none cursor-pointer"
+                  >
+                    {module.name}
+                  </Label>
+                </>
               )}
-            </Label>
-          </div>
-        ))}
+            </div>
+          ))}
+        </TooltipProvider>
       </div>
 
       {formData.selectedModules.length > 0 && (

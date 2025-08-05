@@ -1,18 +1,9 @@
 // src/components/auth/LoginPage.tsx
 import React from "react";
-import LoginLeftColumn from "./LoginLeftColumn";
-import LoginForm from "./LoginForm";
+import AuthPage from "./AuthPage";
 
 const LoginPage = () => {
-  return (
-    <div className="flex h-screen w-full bg-white overflow-hidden">
-      {/* Left Column – Graphic */}
-      <LoginLeftColumn />
-
-      {/* Right Column – Login Form */}
-      <LoginForm onShowRegistration={() => {}} />
-    </div>
-  );
+  return <AuthPage />;
 };
 
 export default LoginPage;

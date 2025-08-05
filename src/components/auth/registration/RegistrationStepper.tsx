@@ -8,7 +8,8 @@ const RegistrationStepper = ({ currentStep }: RegistrationStepperProps) => {
   const steps = [
     { number: 1, title: "Basic Info" },
     { number: 2, title: "Modules" },
-    { number: 3, title: "Additional" },
+    { number: 3, title: "Pricing" },
+    { number: 4, title: "Confirm" },
   ];
 
   return (

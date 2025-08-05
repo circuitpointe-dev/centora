@@ -1,12 +1,12 @@
 
-import { RegistrationData } from "@/components/auth/RegistrationForm";
+import { RegistrationData } from "@/types/registration";
 
 export const validateStep1 = (formData: RegistrationData) => {
-  const { organizationName, organizationType, email, password, contactPersonName, contactPhone } = formData;
+  const { organizationName, organizationType, organizationAddress, primaryCurrency, email, password, contactPersonName, contactPhone } = formData;
   
   const errors: string[] = [];
 
-  if (!organizationName || !organizationType || !email || !password || !contactPersonName || !contactPhone) {
+  if (!organizationName || !organizationType || !organizationAddress || !primaryCurrency || !email || !password || !contactPersonName || !contactPhone) {
     errors.push("Please fill in all required fields");
   }
 
