@@ -14,13 +14,143 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      organization_modules: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          module_name: string
+          organization_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          module_name: string
+          organization_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          module_name?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_modules_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          address: string | null
+          contact_phone: string | null
+          created_at: string
+          currency: string | null
+          establishment_date: string | null
+          id: string
+          name: string
+          slug: string
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          currency?: string | null
+          establishment_date?: string | null
+          id?: string
+          name: string
+          slug: string
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          currency?: string | null
+          establishment_date?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          organization_id: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id: string
+          organization_id: string
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          organization_id?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      complete_registration_transaction: {
+        Args: { p_user_id: string; p_org_id: string }
+        Returns: Json
+      }
+      generate_unique_slug: {
+        Args: { base_name: string }
+        Returns: string
+      }
+      register_organization_and_user: {
+        Args: {
+          p_org_name: string
+          p_org_type: string
+          p_user_email: string
+          p_user_password: string
+          p_full_name: string
+          p_selected_modules: string[]
+          p_address?: string
+          p_establishment_date?: string
+          p_currency?: string
+          p_contact_phone?: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
