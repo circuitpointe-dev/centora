@@ -20,11 +20,11 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { RegistrationData } from "../RegistrationForm";
+import { LegacyRegistrationData } from "../RegistrationForm";
 
 interface AdditionalInfoStepProps {
-  formData: RegistrationData;
-  updateFormData: (data: Partial<RegistrationData>) => void;
+  formData: LegacyRegistrationData;
+  updateFormData: (data: Partial<LegacyRegistrationData>) => void;
 }
 
 const AdditionalInfoStep = ({

@@ -3,11 +3,11 @@ import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { RegistrationData, AVAILABLE_MODULES } from "@/types/registration";
+import { LegacyRegistrationData } from "../RegistrationForm";
 
 interface ModuleSelectionStepProps {
-  formData: RegistrationData;
-  updateFormData: (data: Partial<RegistrationData>) => void;
+  formData: LegacyRegistrationData;
+  updateFormData: (data: Partial<LegacyRegistrationData>) => void;
 }
 
 const ModuleSelectionStep = ({
@@ -15,11 +15,24 @@ const ModuleSelectionStep = ({
   updateFormData,
 }: ModuleSelectionStepProps) => {
   // Show all modules but only allow selection of available ones
-  const availableModules = AVAILABLE_MODULES;
+  const allModules = [
+    { name: "Fundraising", available: true },
+    { name: "Documents Manager", available: true },
+    { name: "Programme Management", available: false },
+    { name: "Procurement", available: false },
+    { name: "Inventory Management", available: false },
+    { name: "Finance & Control", available: false },
+    { name: "Learning Management", available: false },
+    { name: "HR Management", available: false },
+    { name: "User Management", available: false },
+    { name: "Grant Management", available: false },
+  ];
+
+  const availableModules = allModules;
 
   const handleModuleToggle = (moduleName: string) => {
     // Only allow toggling of available modules
-    const module = AVAILABLE_MODULES.find(m => m.name === moduleName);
+    const module = allModules.find(m => m.name === moduleName);
     if (!module || !module.available) {
       return;
     }

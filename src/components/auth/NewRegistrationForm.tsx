@@ -46,8 +46,21 @@ const NewRegistrationForm = ({ onShowLogin, onBackToHome }: NewRegistrationFormP
         });
         return;
       }
-      // Save progress after step 1
-      await saveProgress(formData.email, 1, formData);
+      // Convert to legacy format for progress saving compatibility
+      const legacyData = {
+        organizationName: formData.organizationName,
+        organizationType: formData.organizationType,
+        email: formData.email,
+        password: formData.password,
+        contactPersonName: formData.contactPersonName,
+        contactPhone: formData.contactPhone,
+        selectedModules: formData.selectedModules,
+        contactEmail: formData.email,
+        address: formData.organizationAddress,
+        establishmentDate: "",
+        currency: formData.primaryCurrency,
+      };
+      await saveProgress(formData.email, 1, legacyData);
     }
 
     if (currentStep === 2) {
@@ -59,7 +72,20 @@ const NewRegistrationForm = ({ onShowLogin, onBackToHome }: NewRegistrationFormP
         return;
       }
       // Save progress after step 2
-      await saveProgress(formData.email, 2, formData);
+      const legacyData = {
+        organizationName: formData.organizationName,
+        organizationType: formData.organizationType,
+        email: formData.email,
+        password: formData.password,
+        contactPersonName: formData.contactPersonName,
+        contactPhone: formData.contactPhone,
+        selectedModules: formData.selectedModules,
+        contactEmail: formData.email,
+        address: formData.organizationAddress,
+        establishmentDate: "",
+        currency: formData.primaryCurrency,
+      };
+      await saveProgress(formData.email, 2, legacyData);
     }
 
     if (currentStep === 3) {
@@ -68,7 +94,20 @@ const NewRegistrationForm = ({ onShowLogin, onBackToHome }: NewRegistrationFormP
         return;
       }
       // Save progress after step 3
-      await saveProgress(formData.email, 3, formData);
+      const legacyData = {
+        organizationName: formData.organizationName,
+        organizationType: formData.organizationType,
+        email: formData.email,
+        password: formData.password,
+        contactPersonName: formData.contactPersonName,
+        contactPhone: formData.contactPhone,
+        selectedModules: formData.selectedModules,
+        contactEmail: formData.email,
+        address: formData.organizationAddress,
+        establishmentDate: "",
+        currency: formData.primaryCurrency,
+      };
+      await saveProgress(formData.email, 3, legacyData);
     }
 
     setCurrentStep(prev => Math.min(prev + 1, 4));
@@ -97,15 +136,15 @@ const NewRegistrationForm = ({ onShowLogin, onBackToHome }: NewRegistrationFormP
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <BasicInfoStep formData={formData} updateFormData={updateFormData} />;
+        return <BasicInfoStep formData={formData as any} updateFormData={updateFormData as any} />;
       case 2:
-        return <ModuleSelectionStep formData={formData} updateFormData={updateFormData} />;
+        return <ModuleSelectionStep formData={formData as any} updateFormData={updateFormData as any} />;
       case 3:
         return <PricingSelectionStep formData={formData} updateFormData={updateFormData} />;
       case 4:
         return <ConfirmationStep formData={formData} updateFormData={updateFormData} />;
       default:
-        return <BasicInfoStep formData={formData} updateFormData={updateFormData} />;
+        return <BasicInfoStep formData={formData as any} updateFormData={updateFormData as any} />;
     }
   };
 

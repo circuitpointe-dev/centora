@@ -10,7 +10,7 @@ import ModuleSelectionStep from "./registration/ModuleSelectionStep";
 import AdditionalInfoStep from "./registration/AdditionalInfoStep";
 import RegistrationStepper from "./registration/RegistrationStepper";
 
-import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
+import { validateLegacyStep1, validateLegacyStep2 } from "@/utils/registrationValidation";
 import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
 import { LegacyRegistrationData } from "./RegistrationForm";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,7 +58,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
 
   const handleNext = () => {
     if (currentStep === 1) {
-      const validation = validateStep1(formData);
+      const validation = validateLegacyStep1(formData);
       if (!validation.isValid) {
         toast({
           title: "Error",
@@ -70,7 +70,7 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
     }
 
     if (currentStep === 2) {
-      const validation = validateStep2(formData);
+      const validation = validateLegacyStep2(formData);
       if (!validation.isValid) {
         toast({
           title: "Error",
@@ -89,8 +89,8 @@ const RegistrationModal = ({ onClose }: RegistrationModalProps) => {
   };
 
   const onSubmit = async (skipAdditional = false) => {
-    const step1Validation = validateStep1(formData);
-    const step2Validation = validateStep2(formData);
+    const step1Validation = validateLegacyStep1(formData);
+    const step2Validation = validateLegacyStep2(formData);
 
     if (!step1Validation.isValid || !step2Validation.isValid) {
       toast({

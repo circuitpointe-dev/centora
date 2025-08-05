@@ -6,7 +6,7 @@ import { RegistrationData } from "@/types/registration";
 export const useNewRegistrationSubmit = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const saveProgress = async (email: string, step: number, formData: RegistrationData) => {
+  const saveProgress = async (email: string, step: number, formData: any) => {
     try {
       const { error } = await supabase.rpc('save_registration_progress', {
         p_email: email,

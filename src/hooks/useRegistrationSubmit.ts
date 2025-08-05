@@ -3,14 +3,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/SupabaseAuthContext";
 import { toast } from "@/hooks/use-toast";
-import { RegistrationData } from "@/components/auth/RegistrationForm";
+import { LegacyRegistrationData } from "@/components/auth/RegistrationForm";
 
 export const useRegistrationSubmit = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { signUp } = useAuth();
 
-  const handleSubmit = async (formData: RegistrationData) => {
+  const handleSubmit = async (formData: LegacyRegistrationData) => {
     setIsLoading(true);
 
     try {

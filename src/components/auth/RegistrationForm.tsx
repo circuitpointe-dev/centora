@@ -6,7 +6,7 @@ import BasicInfoStep from "./registration/BasicInfoStep";
 import ModuleSelectionStep from "./registration/ModuleSelectionStep";
 import AdditionalInfoStep from "./registration/AdditionalInfoStep";
 import RegistrationStepper from "./registration/RegistrationStepper";
-import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
+import { validateLegacyStep1, validateLegacyStep2 } from "@/utils/registrationValidation";
 import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
 import { RegistrationData } from "@/types/registration";
 
@@ -26,7 +26,7 @@ export interface LegacyRegistrationData {
 }
 
 // Export RegistrationData for backward compatibility
-export { RegistrationData } from "@/types/registration";
+export type { RegistrationData } from "@/types/registration";
 
 interface RegistrationFormProps {
   onShowLogin: () => void;
@@ -71,21 +71,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
 
   const handleNext = () => {
     if (currentStep === 1) {
-      // Convert legacy format to new format for validation
-      const newFormatData: RegistrationData = {
-        organizationName: formData.organizationName,
-        organizationType: formData.organizationType as 'NGO' | 'Donor',
-        organizationAddress: formData.address || "",
-        primaryCurrency: formData.currency || "USD",
-        contactPersonName: formData.contactPersonName,
-        contactPhone: formData.contactPhone,
-        email: formData.email,
-        password: formData.password,
-        selectedModules: formData.selectedModules,
-        selectedPricingTier: "",
-        termsAccepted: false,
-      };
-      const validation = validateStep1(newFormatData);
+      const validation = validateLegacyStep1(formData);
       if (!validation.isValid) {
         toast({
           title: "Error",
@@ -97,21 +83,7 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
     }
 
     if (currentStep === 2) {
-      // Convert legacy format to new format for validation
-      const newFormatData: RegistrationData = {
-        organizationName: formData.organizationName,
-        organizationType: formData.organizationType as 'NGO' | 'Donor',
-        organizationAddress: formData.address || "",
-        primaryCurrency: formData.currency || "USD",
-        contactPersonName: formData.contactPersonName,
-        contactPhone: formData.contactPhone,
-        email: formData.email,
-        password: formData.password,
-        selectedModules: formData.selectedModules,
-        selectedPricingTier: "",
-        termsAccepted: false,
-      };
-      const validation = validateStep2(newFormatData);
+      const validation = validateLegacyStep2(formData);
       if (!validation.isValid) {
         toast({
           title: "Error",
@@ -130,23 +102,8 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
   };
 
   const onSubmit = async (skipAdditional = false) => {
-    // Convert legacy format to new format for validation
-    const newFormatData: RegistrationData = {
-      organizationName: formData.organizationName,
-      organizationType: formData.organizationType as 'NGO' | 'Donor',
-      organizationAddress: formData.address || "",
-      primaryCurrency: formData.currency || "USD",
-      contactPersonName: formData.contactPersonName,
-      contactPhone: formData.contactPhone,
-      email: formData.email,
-      password: formData.password,
-      selectedModules: formData.selectedModules,
-      selectedPricingTier: "",
-      termsAccepted: false,
-    };
-    
-    const step1Validation = validateStep1(newFormatData);
-    const step2Validation = validateStep2(newFormatData);
+    const step1Validation = validateLegacyStep1(formData);
+    const step2Validation = validateLegacyStep2(formData);
 
     if (!step1Validation.isValid) {
       toast({
