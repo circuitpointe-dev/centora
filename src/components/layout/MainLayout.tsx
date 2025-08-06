@@ -3,12 +3,13 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useParams, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { useAuth } from "@/contexts/SupabaseAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MainLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { module } = useParams();
-  const { user, subscribedModules } = useAuth();
+  const { user } = useAuth();
+  const subscribedModules = user?.subscribedModules || [];
   const navigate = useNavigate();
   const location = useLocation();
 

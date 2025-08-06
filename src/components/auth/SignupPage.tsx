@@ -8,14 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/SupabaseAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2, CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 const SignupPage = () => {
-  const { signUp } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -143,24 +143,20 @@ const SignupPage = () => {
     if (!validateForm()) return;
     setIsLoading(true);
     try {
-      const registrationData = {
-        ...formData,
-        contactEmail: formData.email,
-      };
-      const { error } = await signUp(formData.email, formData.password, registrationData);
-      if (error) {
-        toast({
-          title: "Registration Failed",
-          description: error.message || "Please try again.",
-          variant: "destructive",
-        });
-      } else {
+      const success = await register(formData.email, formData.password, formData.contactPersonName);
+      if (success) {
         toast({
           title: "Account Created Successfully!",
           description: "Please sign in with your credentials.",
           variant: "default",
         });
         navigate('/login');
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: "Please try again.",
+          variant: "destructive",
+        });
       }
     } catch (error: any) {
       toast({

@@ -1,12 +1,13 @@
 import React from 'react';
-import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
 import { ActiveGrantsTable } from '@/components/grants/ActiveGrantsTable';
 import { ActiveGrantsStatCards } from '@/components/grants/ActiveGrantsStatCards';
 
 const ActiveGrantsPage = () => {
-  const { user, userType } = useAuth();
+  const { user } = useAuth();
+  const userType = user?.userType;
 
   // Show donor-specific view for donors
   if (userType === 'Donor') {

@@ -7,12 +7,13 @@ import GrantsNGODashboard from '@/components/grants/GrantsNGODashboard';
 import GrantsDonorDashboard from '@/components/grants/GrantsDonorDashboard';
 import ProgrammeDashboard from '@/components/programme/ProgrammeDashboard';
 import GenericDashboard from '@/components/dashboard/GenericDashboard';
-import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DashboardPage = () => {
   const { module, feature } = useParams();
   const navigate = useNavigate();
-  const { user, userType } = useAuth();
+  const { user } = useAuth();
+  const userType = user?.userType;
   
   const getModuleName = (moduleId: string) => {
     const moduleNames: { [key: string]: string } = {

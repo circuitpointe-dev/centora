@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useAuth } from "@/contexts/SupabaseAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import UserProfileDialog from "./UserProfileDialog";
 import SettingsDialog from "./SettingsDialog";
@@ -35,22 +35,22 @@ interface HeaderProps {
 
 const Header = ({ sidebarCollapsed }: HeaderProps) => {
   const navigate = useNavigate();
-  const { signOut, user, profile } = useAuth();
+  const { logout, user } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = React.useState(false);
   const [showProfileDialog, setShowProfileDialog] = React.useState(false);
   const [showSettingsDialog, setShowSettingsDialog] = React.useState(false);
 
   // User data from auth context
   const currentUser = {
-    name: profile?.full_name || "User",
+    name: user?.name || "User",
     email: user?.email || "user@example.com", 
     phone: "+234 802 123 4567",
     avatar: "",
   };
 
   const handleLogout = () => {
-    // Call auth context signOut which handles localStorage cleanup
-    signOut();
+    // Call auth context logout which handles localStorage cleanup
+    logout();
 
     toast({
       title: "Logged out",

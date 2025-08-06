@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/SupabaseAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 
 interface RegistrationData {
@@ -22,7 +22,7 @@ interface SimpleRegistrationFormProps {
 }
 
 const SimpleRegistrationForm = ({ onShowLogin }: SimpleRegistrationFormProps) => {
-  const { signUp } = useAuth();
+  const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   
   const [formData, setFormData] = useState<RegistrationData>({
@@ -106,12 +106,17 @@ const SimpleRegistrationForm = ({ onShowLogin }: SimpleRegistrationFormProps) =>
 
     setIsLoading(true);
     try {
-      const { error } = await signUp(formData.email, formData.password, formData);
+      const success = await register(formData.email, formData.password, formData.contactPersonName);
       
-      if (error) {
+      if (success) {
+        toast({
+          title: "Account Created Successfully!",
+          description: "Welcome to Orbit ERP!",
+        });
+      } else {
         toast({
           title: "Registration Failed",
-          description: error.message || "Please try again.",
+          description: "Please try again.",
           variant: "destructive",
         });
       }

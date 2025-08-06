@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { moduleConfigs } from '@/config/moduleConfigs';
-import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ModuleSwitcherProps {
   currentModule: string;
@@ -13,7 +13,9 @@ interface ModuleSwitcherProps {
 }
 
 const ModuleSwitcher = ({ currentModule, isCollapsed, onModuleSwitch }: ModuleSwitcherProps) => {
-  const { user, userType, subscribedModules } = useAuth();
+  const { user } = useAuth();
+  const userType = user?.userType;
+  const subscribedModules = user?.subscribedModules || [];
 
   if (!user) return null;
 

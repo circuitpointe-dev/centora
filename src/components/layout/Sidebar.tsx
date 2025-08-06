@@ -7,7 +7,7 @@ import { moduleConfigs } from "@/config/moduleConfigs";
 import SidebarHeader from "./SidebarHeader";
 import FeatureList from "./FeatureList";
 import ModuleSwitcher from "./ModuleSwitcher";
-import { useAuth } from "@/contexts/SupabaseAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import black_logo from "@/assets/images/black_logo.png";
 import violet_logo from "@/assets/images/logo_violet.png";
 
@@ -23,7 +23,8 @@ const Sidebar = ({
   onToggleCollapse,
 }: SidebarProps) => {
   const navigate = useNavigate();
-  const { user, subscribedModules } = useAuth();
+  const { user } = useAuth();
+  const subscribedModules = user?.subscribedModules || [];
   const [showModuleSwitcher, setShowModuleSwitcher] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 

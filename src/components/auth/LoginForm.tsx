@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "@/contexts/SupabaseAuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import ForgotPasswordDialog from "@/components/auth/ForgotPasswordDialog";
 
 interface LoginFormProps {
@@ -22,7 +21,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { login } = useAuth();
 
   // Development users
   const isDevelopmentUser = (email: string) => {
@@ -44,27 +43,9 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
     }
 
     try {
-      // For development users, setup their profiles first
-      if (isDevelopmentUser(email)) {
-        if (password !== "Circuit2025$") {
-          toast({
-            title: "Login Failed",
-            description: "Invalid password for development account.",
-            variant: "destructive",
-          });
-          setIsLoading(false);
-          return;
-        }
-        
-        // Setup development user
-        await supabase.functions.invoke('setup-dev-user', {
-          body: { email, password }
-        });
-      }
+      const success = await login(email, password);
 
-      const { error } = await signIn(email, password);
-
-      if (!error) {
+      if (success) {
         toast({
           title: "Login Successful",
           description: "Welcome back!",
@@ -73,7 +54,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
       } else {
         toast({
           title: "Login Failed",
-          description: error.message || "Please check your credentials.",
+          description: "Please check your credentials.",
           variant: "destructive",
         });
       }

@@ -22,11 +22,12 @@ import TemplatesPage from '@/components/documents/templates/TemplatesPage';
 import ReportSubmissionsPage from './ReportSubmissionsPage';
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
-import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
-  const { user, userType } = useAuth();
+  const { user } = useAuth();
+  const userType = user?.userType;
   
   // Render specific page components for fundraising routes
   if (module === 'fundraising' && feature === 'donor-management') {

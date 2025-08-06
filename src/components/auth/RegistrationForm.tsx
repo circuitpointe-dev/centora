@@ -7,7 +7,7 @@ import ModuleSelectionStep from "./registration/ModuleSelectionStep";
 import AdditionalInfoStep from "./registration/AdditionalInfoStep";
 import RegistrationStepper from "./registration/RegistrationStepper";
 import { validateStep1, validateStep2 } from "@/utils/registrationValidation";
-import { useRegistrationSubmit } from "@/hooks/useRegistrationSubmit";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface RegistrationData {
   // Basic Info - New simplified structure
@@ -34,7 +34,8 @@ interface RegistrationFormProps {
 
 const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const { handleSubmit, isLoading } = useRegistrationSubmit();
+  const { register } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState<RegistrationData>({
     organizationName: "",
@@ -123,7 +124,30 @@ const RegistrationForm = ({ onShowLogin }: RegistrationFormProps) => {
       return;
     }
 
-    await handleSubmit(formData);
+    setIsLoading(true);
+    try {
+      const success = await register(formData.email, formData.password, formData.contactPersonName);
+      if (success) {
+        toast({
+          title: "Registration Successful!",
+          description: "Welcome to Orbit ERP!",
+        });
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: "Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Something went wrong.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const renderStep = () => {
