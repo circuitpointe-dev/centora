@@ -1,3 +1,4 @@
+
 // src/components/auth/LoginForm.tsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -165,8 +166,8 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
         <div className="mt-4 text-center">
           <Link to="/">
             <Button
-              variant="ghost"
-              className="text-gray-700 hover:text-violet-600"
+              variant="outline"
+              className="text-gray-600 hover:text-violet-600"
             >
               ← Back to Home
             </Button>
