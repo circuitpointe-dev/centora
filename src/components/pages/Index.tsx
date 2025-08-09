@@ -1,5 +1,5 @@
 // src/components/pages/Index.tsx
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import black_logo from "@/assets/images/black_logo.png";
 import violet_logo from "@/assets/images/logo_violet.png";
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 const Index = () => {
+  const location = useLocation();
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-purple-100">
       {/* Navigation */}
@@ -50,7 +51,7 @@ const Index = () => {
                 </Button>
               </Link>
               {/* "Get Started" now goes to /signup */}
-              <Link to="/signup">
+              <Link to="/signup" state={{ backgroundLocation: location }}>
                 <Button className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg transform hover:scale-105 transition-all duration-200">
                   Get Started
                 </Button>
@@ -75,7 +76,7 @@ const Index = () => {
             measure impact all in one place.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
-            <Link to="/signup">
+            <Link to="/signup" state={{ backgroundLocation: location }}>
               <Button
                 size="lg"
                 className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-xl transform hover:scale-105 transition-all duration-200 px-8 py-4 text-lg"
@@ -159,7 +160,7 @@ const Index = () => {
             <p className="text-xl mb-8 opacity-90">
               Join hundreds of organizations already maximizing their impact
             </p>
-            <Link to="/signup">
+            <Link to="/signup" state={{ backgroundLocation: location }}>
               <Button
                 size="lg"
                 className="bg-white text-violet-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200"

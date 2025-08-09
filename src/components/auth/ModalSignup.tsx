@@ -144,7 +144,7 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
         animate={{ scale: 1, opacity: 1 }}
         className="relative w-full max-w-md mx-auto"
       >
-        <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-2xl overflow-hidden border border-white/20">
+        <div className="bg-white/80 backdrop-blur-lg rounded-sm shadow-2xl overflow-hidden border border-white/20">
           {/* Header */}
           <div className="p-6 border-b border-white/20 flex justify-between items-center">
             <div>

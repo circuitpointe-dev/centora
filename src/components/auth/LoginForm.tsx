@@ -1,6 +1,6 @@
 // src/components/auth/LoginForm.tsx
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   // Development users
@@ -154,6 +155,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
             New organization?{" "}
             <Link
               to="/signup"
+              state={{ backgroundLocation: location }}
               className="font-medium text-violet-600 hover:text-violet-700 underline underline-offset-4 transition-colors"
             >
               Sign up here

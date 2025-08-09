@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 import Index from "./components/pages/Index";
@@ -24,6 +24,105 @@ import { DocumentEditorPage } from "./components/documents/e-signature/DocumentE
 
 const queryClient = new QueryClient();
 
+const AppRoutes = () => {
+  const location = useLocation();
+  const state = location.state as { backgroundLocation?: Location };
+  return (
+    <>
+      <Routes location={state?.backgroundLocation || location}>
+        {/* Public: Landing */}
+        <Route path="/" element={<Index />} />
+
+        {/* Public: Login */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Public: Register (dedicated OAuth-based signup page) */}
+        <Route path="/signup" element={<SignupPage />} />
+        
+        {/* Legacy register route redirect */}
+        <Route path="/register" element={<Navigate to="/signup" replace />} />
+
+        {/* Protected: Manual Proposal Creation */}
+        <Route
+          path="/dashboard/fundraising/manual-proposal-creation"
+          element={
+            <ProtectedRoute>
+              <ManualProposalCreationPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected: Close Grant Page */}
+        <Route
+          path="/dashboard/grants/close/:grantId"
+          element={
+            <ProtectedRoute>
+              <CloseGrantPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected: Request Signature Wizard */}
+        <Route
+          path="/dashboard/documents/request-signature"
+          element={
+            <ProtectedRoute>
+              <RequestSignatureWizardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected: Document Editor */}
+        <Route
+          path="/dashboard/documents/document-editor"
+          element={
+            <ProtectedRoute>
+              <DocumentEditorPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected: Dashboard + Features */}
+        <Route
+          path="/dashboard/:module"
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          {/* Dashboard page - no longer redirect by default */}
+          <Route path="dashboard" element={<DashboardPage />} />
+          
+          {/* Grant View - nested within dashboard structure */}
+          <Route path="view/:grantId" element={<GrantViewPage />} />
+          
+          {/* NGO Grant View - nested within dashboard structure */}
+          <Route path="ngo-view/:grantId" element={<NGOGrantViewPage />} />
+          
+          {/* New Grant - nested within dashboard structure */}
+          <Route path="new" element={<NewGrantPage />} />
+          
+          {/* Grant Review - nested within dashboard structure */}
+          <Route path="review" element={<GrantReviewPage />} />
+          
+          {/* Other features */}
+          <Route path=":feature" element={<GenericFeaturePage />} />
+        </Route>
+
+        {/* Catch-all: send anything else back to "/" */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {state?.backgroundLocation && (
+        <Routes>
+          <Route path="/signup" element={<SignupPage />} />
+        </Routes>
+      )}
+    </>
+  );
+};
+
 const App = () => (
   <AuthProvider>
     <QueryClientProvider client={queryClient}>
@@ -31,90 +130,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            {/* Public: Landing */}
-            <Route path="/" element={<Index />} />
-
-            {/* Public: Login */}
-            <Route path="/login" element={<LoginPage />} />
-
-            {/* Public: Register (dedicated OAuth-based signup page) */}
-            <Route path="/signup" element={<SignupPage />} />
-            
-            {/* Legacy register route redirect */}
-            <Route path="/register" element={<Navigate to="/signup" replace />} />
-
-            {/* Protected: Manual Proposal Creation */}
-            <Route
-              path="/dashboard/fundraising/manual-proposal-creation"
-              element={
-                <ProtectedRoute>
-                  <ManualProposalCreationPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Protected: Close Grant Page */}
-            <Route
-              path="/dashboard/grants/close/:grantId"
-              element={
-                <ProtectedRoute>
-                  <CloseGrantPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Protected: Request Signature Wizard */}
-            <Route
-              path="/dashboard/documents/request-signature"
-              element={
-                <ProtectedRoute>
-                  <RequestSignatureWizardPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Protected: Document Editor */}
-            <Route
-              path="/dashboard/documents/document-editor"
-              element={
-                <ProtectedRoute>
-                  <DocumentEditorPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Protected: Dashboard + Features */}
-            <Route
-              path="/dashboard/:module"
-              element={
-                <ProtectedRoute>
-                  <MainLayout />
-                </ProtectedRoute>
-              }
-            >
-              {/* Dashboard page - no longer redirect by default */}
-              <Route path="dashboard" element={<DashboardPage />} />
-              
-              {/* Grant View - nested within dashboard structure */}
-              <Route path="view/:grantId" element={<GrantViewPage />} />
-              
-              {/* NGO Grant View - nested within dashboard structure */}
-              <Route path="ngo-view/:grantId" element={<NGOGrantViewPage />} />
-              
-              {/* New Grant - nested within dashboard structure */}
-              <Route path="new" element={<NewGrantPage />} />
-              
-              {/* Grant Review - nested within dashboard structure */}
-              <Route path="review" element={<GrantReviewPage />} />
-              
-              {/* Other features */}
-              <Route path=":feature" element={<GenericFeaturePage />} />
-            </Route>
-
-            {/* Catch-all: send anything else back to "/" */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <AppRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
