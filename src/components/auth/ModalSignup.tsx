@@ -146,7 +146,7 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="relative w-full max-w-md mx-auto"
+        className={`relative w-full mx-auto ${currentStep === 3 ? 'max-w-4xl' : 'max-w-md'}`}
       >
         <div className="bg-white/90 backdrop-blur-lg rounded-lg shadow-xl overflow-hidden border border-gray-200">
           {/* Header */}
@@ -198,7 +198,7 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
             
             <Button 
               onClick={currentStep === steps.length ? handleSubmit : handleNext}
-              disabled={isLoading}
+              disabled={isLoading || (currentStep === 2 && formData.modules.length === 0)}
               className="ml-auto bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-700 hover:to-violet-600 text-white h-8 px-4 text-sm"
             >
               {isLoading ? (
