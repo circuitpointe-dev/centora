@@ -126,7 +126,7 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       toast({ title: "Success!", description: "Account created successfully" });
-      navigate('/dashboard');
+      navigate('/login');
     } catch (error) {
       toast({ title: "Error", description: "Registration failed", variant: "destructive" });
     } finally {
@@ -198,7 +198,7 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
             
             <Button 
               onClick={currentStep === steps.length ? handleSubmit : handleNext}
-              disabled={isLoading || (currentStep === 2 && formData.modules.length === 0)}
+              disabled={isLoading || (currentStep === 2 && formData.modules.length === 0) || (currentStep === steps.length && !formData.termsAccepted)}
               className="ml-auto bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-700 hover:to-violet-600 text-white h-8 px-4 text-sm"
             >
               {isLoading ? (
