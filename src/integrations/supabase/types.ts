@@ -14,16 +14,146 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      organization_modules: {
+        Row: {
+          created_at: string
+          module: Database["public"]["Enums"]["module_key"]
+          org_id: string
+        }
+        Insert: {
+          created_at?: string
+          module: Database["public"]["Enums"]["module_key"]
+          org_id: string
+        }
+        Update: {
+          created_at?: string
+          module?: Database["public"]["Enums"]["module_key"]
+          org_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_modules_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          phone: string | null
+          postal_code: string | null
+          primary_currency: string
+          state: string | null
+          type: Database["public"]["Enums"]["organization_type"]
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          postal_code?: string | null
+          primary_currency?: string
+          state?: string | null
+          type: Database["public"]["Enums"]["organization_type"]
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          postal_code?: string | null
+          primary_currency?: string
+          state?: string | null
+          type?: Database["public"]["Enums"]["organization_type"]
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          org_id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          org_id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          org_id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_org_admin: {
+        Args: { _org_id: string }
+        Returns: boolean
+      }
+      is_org_member: {
+        Args: { _org_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "org_admin" | "org_member"
+      module_key:
+        | "fundraising"
+        | "grants"
+        | "documents"
+        | "programme"
+        | "procurement"
+        | "inventory"
+        | "finance"
+        | "learning"
+        | "hr"
+        | "users"
+      organization_type: "NGO" | "DONOR"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +280,21 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["org_admin", "org_member"],
+      module_key: [
+        "fundraising",
+        "grants",
+        "documents",
+        "programme",
+        "procurement",
+        "inventory",
+        "finance",
+        "learning",
+        "hr",
+        "users",
+      ],
+      organization_type: ["NGO", "DONOR"],
+    },
   },
 } as const
