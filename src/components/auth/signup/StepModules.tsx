@@ -8,11 +8,11 @@ const StepModules = ({ formData, onChange }: {
   const moduleEntries = Object.entries(moduleConfigs);
   const enabledKeys = new Set(['fundraising', 'documents']);
   const [openKey, setOpenKey] = React.useState<string | null>(null);
-  const handleToggle = (moduleName: string, enabled: boolean, checked: boolean) => {
+  const handleToggle = (moduleKey: string, enabled: boolean, checked: boolean) => {
     if (!enabled) return;
     const updated = checked
-      ? [...formData.modules, moduleName]
-      : formData.modules.filter((m: string) => m !== moduleName);
+      ? [...formData.modules, moduleKey]
+      : formData.modules.filter((m: string) => m !== moduleKey);
     onChange('modules', updated);
   };
 
@@ -23,7 +23,7 @@ const StepModules = ({ formData, onChange }: {
         {moduleEntries.map(([key, cfg]) => {
           const enabled = enabledKeys.has(key);
           const name = cfg.name;
-          const checked = formData.modules.includes(name);
+          const checked = formData.modules.includes(key);
           return (
             <Tooltip key={key} open={openKey === key}>
               <TooltipTrigger asChild>
@@ -52,14 +52,14 @@ const StepModules = ({ formData, onChange }: {
                         }
                   }
                 >
-                  <input
-                    type="checkbox"
-                    id={`module-${key}`}
-                    checked={checked}
-                    disabled={!enabled}
-                    onChange={(e) => handleToggle(name, enabled, e.target.checked)}
-                    className="h-3.5 w-3.5 text-violet-600 rounded border-gray-300 focus:ring-violet-500 disabled:opacity-50"
-                  />
+          <input
+            type="checkbox"
+            id={`module-${key}`}
+            checked={checked}
+            disabled={!enabled}
+            onChange={(e) => handleToggle(key, enabled, e.target.checked)}
+            className="h-3.5 w-3.5 text-violet-600 rounded border-gray-300 focus:ring-violet-500 disabled:opacity-50"
+          />
                   <label
                     htmlFor={`module-${key}`}
                     className={`ml-2 text-xs ${enabled ? 'text-gray-700' : 'text-gray-400'}`}

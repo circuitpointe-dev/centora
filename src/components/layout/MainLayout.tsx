@@ -23,9 +23,12 @@ const MainLayout = () => {
       const firstModule = subscribedModules[0];
       if (firstModule) {
         navigate(`/dashboard/${firstModule}/dashboard`);
+      } else {
+        // Fallback to a safe default module when none assigned yet
+        navigate(`/dashboard/fundraising/dashboard`);
       }
     }
-  }, [user, module, navigate]);
+  }, [user, module, subscribedModules, navigate]);
 
   useEffect(() => {
     // If we're on a module root (like /dashboard/grants), redirect to dashboard

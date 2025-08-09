@@ -90,7 +90,40 @@ Deno.serve(async (req) => {
     "grants",
   ]);
 
-  const selectedModules = (payload.modules || []).filter((m) => allowedModules.has(m));
+  const displayToKey: Record<string, string> = {
+    "fundraising": "fundraising",
+    "grants management": "grants",
+    "grants": "grants",
+    "document manager": "documents",
+    "documents": "documents",
+    "programme management": "programme",
+    "programme": "programme",
+    "procurement": "procurement",
+    "inventory management": "inventory",
+    "inventory": "inventory",
+    "finance & control": "finance",
+    "finance": "finance",
+    "learning management": "learning",
+    "learning": "learning",
+    "hr management": "hr",
+    "hr": "hr",
+    "user management": "users",
+    "users": "users",
+  };
+
+  const toModuleKey = (val: string) => {
+    const v = (val || "").toLowerCase().trim();
+    if (allowedModules.has(v)) return v;
+    return displayToKey[v];
+  };
+
+  const dedupe = (arr: string[]) => Array.from(new Set(arr));
+
+  const selectedModules = dedupe(
+    (payload.modules || [])
+      .map((m) => toModuleKey(m))
+      .filter((m): m is string => !!m && allowedModules.has(m))
+  );
 
   let createdUserId: string | null = null;
   let createdOrgId: string | null = null;

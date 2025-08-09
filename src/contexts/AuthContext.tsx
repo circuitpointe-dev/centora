@@ -82,6 +82,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .map((m: any) => String(m.module).toLowerCase())
         .filter((m: string) => allModules.includes(m));
 
+      const fallbackModules = normalizedModules.length > 0
+        ? normalizedModules
+        : ['fundraising', 'documents'].filter((m) => allModules.includes(m));
+
       const orgType = (org?.type as 'NGO' | 'Donor' | undefined) ?? 'NGO';
 
       setUser({
@@ -90,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: profile.full_name || profile.email,
         organization: org?.name || '',
         userType: orgType,
-        subscribedModules: normalizedModules,
+        subscribedModules: fallbackModules,
       });
     } catch (error) {
       console.error('Auth profile load error:', error);
