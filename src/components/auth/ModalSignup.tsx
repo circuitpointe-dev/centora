@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import Step1 from './signup/StepOrganizationDetails';
 import Step2 from './signup/StepModules';
 import Step3 from './signup/StepPricingPlan';
@@ -123,12 +124,36 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast({ title: "Success!", description: "Account created successfully" });
+      const { data, error } = await supabase.functions.invoke('register-tenant', {
+        body: {
+          organizationName: formData.organizationName,
+          organizationType: formData.organizationType,
+          address: formData.address,
+          primaryCurrency: formData.primaryCurrency,
+          contactName: formData.contactName,
+          phone: formData.phone,
+          email: formData.email,
+          password: formData.password,
+          modules: formData.modules,
+          pricingPlan: formData.pricingPlan,
+          termsAccepted: formData.termsAccepted,
+        },
+      });
+
+      if (error) {
+        toast({ title: 'Error', description: error.message || 'Registration failed', variant: 'destructive' });
+        return;
+      }
+
+      if ((data as any)?.error) {
+        toast({ title: 'Error', description: (data as any).error, variant: 'destructive' });
+        return;
+      }
+
+      toast({ title: 'Success!', description: 'Account created successfully' });
       navigate('/login');
-    } catch (error) {
-      toast({ title: "Error", description: "Registration failed", variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err?.message || 'Registration failed', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
