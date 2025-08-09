@@ -144,27 +144,27 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
         animate={{ scale: 1, opacity: 1 }}
         className="relative w-full max-w-md mx-auto"
       >
-        <div className="bg-white/80 backdrop-blur-lg rounded-sm shadow-2xl overflow-hidden border border-white/20">
+        <div className="bg-white/90 backdrop-blur-lg rounded-lg shadow-xl overflow-hidden border border-gray-200">
           {/* Header */}
-          <div className="p-6 border-b border-white/20 flex justify-between items-center">
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-lg font-semibold text-gray-800">
                 {steps[currentStep - 1]?.title}
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-xs text-gray-500 mt-0.5">
                 Step {currentStep} of {steps.length}
               </p>
             </div>
             <button 
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1"
             >
-              <X size={24} />
+              <X size={18} />
             </button>
           </div>
           
           {/* Animated step content */}
-          <div className="p-6 max-h-[60vh] overflow-y-auto">
+          <div className="p-5 max-h-[60vh] overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
@@ -179,14 +179,14 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
           </div>
           
           {/* Footer navigation */}
-          <div className="p-4 border-t border-white/20 flex justify-between">
+          <div className="p-3 border-t border-gray-200 flex justify-between">
             {currentStep > 1 ? (
               <Button 
                 variant="ghost"
                 onClick={handlePrev}
-                className="flex items-center gap-1 text-gray-600"
+                className="flex items-center gap-1 text-gray-600 h-8 px-3 text-sm"
               >
-                <ChevronLeft size={18} /> Back
+                <ChevronLeft size={16} /> Back
               </Button>
             ) : (
               <div /> // Empty div for spacing
@@ -195,15 +195,15 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
             <Button 
               onClick={currentStep === steps.length ? handleSubmit : handleNext}
               disabled={isLoading}
-              className="ml-auto bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-700 hover:to-violet-600 text-white"
+              className="ml-auto bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-700 hover:to-violet-600 text-white h-8 px-4 text-sm"
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-3 w-3 animate-spin" />
               ) : currentStep === steps.length ? (
                 'Complete Registration'
               ) : (
                 <>
-                  Next <ChevronRight size={18} className="ml-1" />
+                  Next <ChevronRight size={16} className="ml-1" />
                 </>
               )}
             </Button>
@@ -219,26 +219,26 @@ const Step1 = ({ formData, onChange }: {
   formData: any, 
   onChange: (field: string, value: any) => void 
 }) => (
-  <div className="space-y-4">
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+  <div className="space-y-3">
+    <div className="space-y-1.5">
+      <label className="block text-xs font-medium text-gray-600">
         Organization Name *
       </label>
       <input
         type="text"
-        className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-violet-500"
+        className="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:ring-1 focus:ring-violet-500 focus:border-violet-500"
         value={formData.organizationName}
         onChange={(e) => onChange('organizationName', e.target.value)}
       />
     </div>
 
-    <div className="grid grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+    <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-1.5">
+        <label className="block text-xs font-medium text-gray-600">
           Organization Type *
         </label>
         <select
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-violet-500"
+          className="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:ring-1 focus:ring-violet-500 focus:border-violet-500"
           value={formData.organizationType}
           onChange={(e) => onChange('organizationType', e.target.value)}
         >
@@ -247,12 +247,12 @@ const Step1 = ({ formData, onChange }: {
         </select>
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+      <div className="space-y-1.5">
+        <label className="block text-xs font-medium text-gray-600">
           Primary Currency *
         </label>
         <select
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-violet-500"
+          className="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:ring-1 focus:ring-violet-500 focus:border-violet-500"
           value={formData.primaryCurrency}
           onChange={(e) => onChange('primaryCurrency', e.target.value)}
         >
@@ -263,63 +263,63 @@ const Step1 = ({ formData, onChange }: {
       </div>
     </div>
 
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="space-y-1.5">
+      <label className="block text-xs font-medium text-gray-600">
         Address
       </label>
       <input
         type="text"
-        className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-violet-500"
+        className="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:ring-1 focus:ring-violet-500 focus:border-violet-500"
         value={formData.address}
         onChange={(e) => onChange('address', e.target.value)}
       />
     </div>
 
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="space-y-1.5">
+      <label className="block text-xs font-medium text-gray-600">
         Contact Person *
       </label>
       <input
         type="text"
-        className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-violet-500"
+        className="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:ring-1 focus:ring-violet-500 focus:border-violet-500"
         value={formData.contactName}
         onChange={(e) => onChange('contactName', e.target.value)}
       />
     </div>
 
-    <div className="grid grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+    <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-1.5">
+        <label className="block text-xs font-medium text-gray-600">
           Email *
         </label>
         <input
           type="email"
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-violet-500"
+          className="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:ring-1 focus:ring-violet-500 focus:border-violet-500"
           value={formData.email}
           onChange={(e) => onChange('email', e.target.value)}
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+      <div className="space-y-1.5">
+        <label className="block text-xs font-medium text-gray-600">
           Phone
         </label>
         <input
           type="tel"
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-violet-500"
+          className="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:ring-1 focus:ring-violet-500 focus:border-violet-500"
           value={formData.phone}
           onChange={(e) => onChange('phone', e.target.value)}
         />
       </div>
     </div>
 
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="space-y-1.5">
+      <label className="block text-xs font-medium text-gray-600">
         Password *
       </label>
       <input
         type="password"
-        className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-violet-500"
+        className="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:ring-1 focus:ring-violet-500 focus:border-violet-500"
         value={formData.password}
         onChange={(e) => onChange('password', e.target.value)}
       />
@@ -340,9 +340,9 @@ const Step2 = ({ formData, onChange }: {
   ];
 
   return (
-    <div className="space-y-4">
-      <p className="text-gray-600">Select the modules your organization needs:</p>
-      <div className="space-y-3">
+    <div className="space-y-3 p-2">
+      <p className="text-xs text-gray-500">Select the modules your organization needs:</p>
+      <div className="space-y-2">
         {modules.map(module => (
           <div key={module} className="flex items-center">
             <input
@@ -355,9 +355,9 @@ const Step2 = ({ formData, onChange }: {
                   : formData.modules.filter((m: string) => m !== module);
                 onChange('modules', updated);
               }}
-              className="h-4 w-4 text-violet-600 rounded border-gray-300 focus:ring-violet-500"
+              className="h-3.5 w-3.5 text-violet-600 rounded border-gray-300 focus:ring-violet-500"
             />
-            <label htmlFor={`module-${module}`} className="ml-3 text-sm text-gray-700">
+            <label htmlFor={`module-${module}`} className="ml-2 text-xs text-gray-700">
               {module}
             </label>
           </div>
@@ -393,24 +393,24 @@ const Step3 = ({ formData, onChange }: {
   ];
 
   return (
-    <div className="space-y-4">
-      <p className="text-gray-600">Choose your preferred pricing plan:</p>
-      <div className="grid gap-4">
+    <div className="space-y-3">
+      <p className="text-xs text-gray-500">Choose your preferred pricing plan:</p>
+      <div className="grid gap-2">
         {plans.map(plan => (
           <div
             key={plan.id}
             onClick={() => onChange('pricingPlan', plan.id)}
-            className={`p-4 border rounded-lg cursor-pointer transition-all ${
+            className={`p-3 border rounded-md cursor-pointer transition-all ${
               formData.pricingPlan === plan.id
                 ? 'border-violet-500 bg-violet-50'
                 : 'border-gray-200 hover:border-violet-300'
             }`}
           >
             <div className="flex justify-between items-start">
-              <h3 className="font-medium">{plan.name}</h3>
-              <span className="font-bold text-violet-600">{plan.price}</span>
+              <h3 className="text-sm font-medium">{plan.name}</h3>
+              <span className="text-xs font-semibold text-violet-600">{plan.price}</span>
             </div>
-            <ul className="mt-2 text-sm text-gray-600 space-y-1">
+            <ul className="mt-1 text-xs text-gray-600 space-y-0.5">
               {plan.features.map(feature => (
                 <li key={feature}>• {feature}</li>
               ))}
@@ -426,11 +426,11 @@ const Step4 = ({ formData, onChange }: {
   formData: any, 
   onChange: (field: string, value: any) => void 
 }) => (
-  <div className="space-y-6">
-    <div className="space-y-4">
-      <h3 className="font-medium text-gray-800">Organization Details</h3>
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <div className="grid grid-cols-2 gap-4 text-sm">
+  <div className="space-y-4">
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium text-gray-800">Organization Details</h3>
+      <div className="bg-gray-50 p-3 rounded-md">
+        <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
             <p className="text-gray-500">Name</p>
             <p>{formData.organizationName}</p>
@@ -451,10 +451,10 @@ const Step4 = ({ formData, onChange }: {
       </div>
     </div>
 
-    <div className="space-y-4">
-      <h3 className="font-medium text-gray-800">Contact Information</h3>
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <div className="grid grid-cols-2 gap-4 text-sm">
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium text-gray-800">Contact Information</h3>
+      <div className="bg-gray-50 p-3 rounded-md">
+        <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
             <p className="text-gray-500">Contact Person</p>
             <p>{formData.contactName}</p>
@@ -471,24 +471,24 @@ const Step4 = ({ formData, onChange }: {
       </div>
     </div>
 
-    <div className="space-y-4">
-      <h3 className="font-medium text-gray-800">Selected Modules</h3>
-      <div className="bg-gray-50 p-4 rounded-lg">
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium text-gray-800">Selected Modules</h3>
+      <div className="bg-gray-50 p-3 rounded-md">
         {formData.modules.length > 0 ? (
-          <ul className="list-disc pl-5 text-sm space-y-1">
+          <ul className="list-disc pl-4 text-xs space-y-0.5">
             {formData.modules.map((module: string) => (
               <li key={module}>{module}</li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-500">No modules selected</p>
+          <p className="text-xs text-gray-500">No modules selected</p>
         )}
       </div>
     </div>
 
-    <div className="space-y-4">
-      <h3 className="font-medium text-gray-800">Pricing Plan</h3>
-      <div className="bg-gray-50 p-4 rounded-lg text-sm">
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium text-gray-800">Pricing Plan</h3>
+      <div className="bg-gray-50 p-3 rounded-md text-xs">
         {formData.pricingPlan ? (
           <p>{formData.pricingPlan.charAt(0).toUpperCase() + formData.pricingPlan.slice(1)} Plan</p>
         ) : (
@@ -497,17 +497,17 @@ const Step4 = ({ formData, onChange }: {
       </div>
     </div>
 
-    <div className="flex items-start mt-4">
-      <div className="flex items-center h-5">
+    <div className="flex items-start mt-3">
+      <div className="flex items-center h-4">
         <input
           id="terms"
           type="checkbox"
           checked={formData.termsAccepted}
           onChange={(e) => onChange('termsAccepted', e.target.checked)}
-          className="h-4 w-4 text-violet-600 rounded border-gray-300 focus:ring-violet-500"
+          className="h-3.5 w-3.5 text-violet-600 rounded border-gray-300 focus:ring-violet-500"
         />
       </div>
-      <label htmlFor="terms" className="ml-3 text-sm text-gray-700">
+      <label htmlFor="terms" className="ml-2 text-xs text-gray-700">
         I agree to the{' '}
         <a href="#" className="text-violet-600 hover:text-violet-500">
           Terms of Service
