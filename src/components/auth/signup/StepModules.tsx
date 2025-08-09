@@ -1,13 +1,13 @@
 import React from 'react';
 import { moduleConfigs } from '@/config/moduleConfigs';
-
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 const StepModules = ({ formData, onChange }: { 
   formData: any, 
   onChange: (field: string, value: any) => void 
 }) => {
   const moduleEntries = Object.entries(moduleConfigs);
   const enabledKeys = new Set(['fundraising', 'documents']);
-
+  const [openKey, setOpenKey] = React.useState<string | null>(null);
   const handleToggle = (moduleName: string, enabled: boolean, checked: boolean) => {
     if (!enabled) return;
     const updated = checked
@@ -25,23 +25,51 @@ const StepModules = ({ formData, onChange }: {
           const name = cfg.name;
           const checked = formData.modules.includes(name);
           return (
-            <div key={key} className="flex items-center">
-              <input
-                type="checkbox"
-                id={`module-${key}`}
-                checked={checked}
-                disabled={!enabled}
-                onChange={(e) => handleToggle(name, enabled, e.target.checked)}
-                className="h-3.5 w-3.5 text-violet-600 rounded border-gray-300 focus:ring-violet-500 disabled:opacity-50"
-              />
-              <label
-                htmlFor={`module-${key}`}
-                className={`ml-2 text-xs ${enabled ? 'text-gray-700' : 'text-gray-400'}`}
-                title={enabled ? '' : 'Coming soon'}
-              >
-                {name} {!enabled && '(Coming soon)'}
-              </label>
-            </div>
+            <Tooltip key={key} open={openKey === key}>
+              <TooltipTrigger asChild>
+                <div
+                  className="flex items-center"
+                  onClick={
+                    enabled
+                      ? undefined
+                      : (e) => {
+                          e.preventDefault();
+                          setOpenKey(key);
+                          window.setTimeout(() => setOpenKey(null), 1200);
+                        }
+                  }
+                  role={enabled ? undefined : 'button'}
+                  tabIndex={enabled ? -1 : 0}
+                  onKeyDown={
+                    enabled
+                      ? undefined
+                      : (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setOpenKey(key);
+                            window.setTimeout(() => setOpenKey(null), 1200);
+                          }
+                        }
+                  }
+                >
+                  <input
+                    type="checkbox"
+                    id={`module-${key}`}
+                    checked={checked}
+                    disabled={!enabled}
+                    onChange={(e) => handleToggle(name, enabled, e.target.checked)}
+                    className="h-3.5 w-3.5 text-violet-600 rounded border-gray-300 focus:ring-violet-500 disabled:opacity-50"
+                  />
+                  <label
+                    htmlFor={`module-${key}`}
+                    className={`ml-2 text-xs ${enabled ? 'text-gray-700' : 'text-gray-400'}`}
+                  >
+                    {name}
+                  </label>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top">Coming soon</TooltipContent>
+            </Tooltip>
           );
         })}
       </div>
