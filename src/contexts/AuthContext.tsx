@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
+import { allModules } from "@/config/moduleConfigs";
 
 interface AppUser {
   id: string;
@@ -70,20 +71,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const [{ data: org, error: orgError }, { data: modulesData, error: modulesError }] = await Promise.all([
-        supabase.from('organizations').select('name').eq('id', profile.org_id).single(),
+        supabase.from('organizations').select('name, type').eq('id', profile.org_id).single(),
         supabase.from('organization_modules').select('module').eq('org_id', profile.org_id),
       ]);
 
       if (orgError) console.error('Error loading organization:', orgError);
       if (modulesError) console.error('Error loading modules:', modulesError);
 
+      const normalizedModules = (modulesData || [])
+        .map((m: any) => String(m.module).toLowerCase())
+        .filter((m: string) => allModules.includes(m));
+
+      const orgType = (org?.type as 'NGO' | 'Donor' | undefined) ?? 'NGO';
+
       setUser({
         id: profile.id,
         email: profile.email,
         name: profile.full_name || profile.email,
         organization: org?.name || '',
-        userType: 'NGO',
-        subscribedModules: (modulesData || []).map((m: any) => String(m.module)),
+        userType: orgType,
+        subscribedModules: normalizedModules,
       });
     } catch (error) {
       console.error('Auth profile load error:', error);
