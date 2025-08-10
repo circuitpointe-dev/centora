@@ -78,7 +78,7 @@ const FundraisingDashboard = () => {
       </div>
 
       {/* Statistics Cards - Fundraising specific */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
         <Card className="hover:shadow-lg transition-shadow" style={{ backgroundColor: '#efe8fd' }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Proposals</CardTitle>
