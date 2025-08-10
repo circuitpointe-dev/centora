@@ -8,6 +8,7 @@ import { DeadlinesCard } from '@/components/fundraising/DeadlinesCard';
 import NewDonorDialog from '@/components/fundraising/NewDonorDialog';
 import AddOpportunityDialog from '@/components/opportunity-tracking/AddOpportunityDialog';
 import CreateProposalDialog from '@/components/proposal-management/CreateProposalDialog';
+import { donors, opportunities, proposals } from '@/data/fundraisingData';
 
 const FundraisingDashboard = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ const FundraisingDashboard = () => {
   const handleGenerateReports = () => {
     navigate('/dashboard/fundraising/fundraising-analytics?tab=generate-report');
   };
+  const hasStatsData = donors.length > 0 || opportunities.length > 0 || proposals.length > 0;
 
   return (
     <div>
@@ -84,9 +86,9 @@ const FundraisingDashboard = () => {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">6</div>
+            <div className="text-2xl font-bold">{hasStatsData ? "6" : "—"}</div>
             <p className="text-xs text-muted-foreground">
-              +2 this month
+              {hasStatsData ? "+2 this month" : "No proposals yet"}
             </p>
           </CardContent>
         </Card>
@@ -97,9 +99,9 @@ const FundraisingDashboard = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">68%</div>
+            <div className="text-2xl font-bold">{hasStatsData ? "68%" : "—"}</div>
             <p className="text-xs text-muted-foreground">
-              +5% from last quarter
+              {hasStatsData ? "+5% from last quarter" : "No data yet"}
             </p>
           </CardContent>
         </Card>
@@ -110,9 +112,9 @@ const FundraisingDashboard = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
+            <div className="text-2xl font-bold">{hasStatsData ? "8" : "0"}</div>
             <p className="text-xs text-muted-foreground">
-              +3 new this week
+              {hasStatsData ? "+3 new this week" : "No active opportunities"}
             </p>
           </CardContent>
         </Card>
@@ -123,9 +125,9 @@ const FundraisingDashboard = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$2.3M</div>
+            <div className="text-2xl font-bold">{hasStatsData ? "$2.3M" : "$0"}</div>
             <p className="text-xs text-muted-foreground">
-              +15% from last quarter
+              {hasStatsData ? "+15% from last quarter" : "No funds recorded yet"}
             </p>
           </CardContent>
         </Card>

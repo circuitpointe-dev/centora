@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarEvent, mockCalendarEvents } from "@/data/fundraisingData";
 
@@ -146,6 +146,13 @@ export const CalendarCard: React.FC = () => {
         </div>
       </CardHeader>
       <CardContent>
+        {events.length === 0 && (
+          <div className="flex flex-col items-center justify-center text-center py-8">
+            <Calendar className="h-8 w-8 mb-2 text-gray-400" />
+            <p className="text-sm font-medium text-gray-700">No calendar events yet</p>
+            <p className="text-xs text-gray-500">Click a date to add your first event.</p>
+          </div>
+        )}
         <div className="grid grid-cols-7 gap-1">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div
