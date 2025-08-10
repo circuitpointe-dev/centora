@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DeadlineItem, deadlinesData } from "@/data/fundraisingData";
+import type { DeadlineItem } from "@/data/fundraisingData";
 import { Calendar } from "lucide-react";
 
 interface DeadlineProps {
@@ -41,7 +41,7 @@ const Deadline: React.FC<DeadlineProps> = ({ item, isLast }) => {
   );
 };
 
-export const DeadlinesCard: React.FC = () => {
+export const DeadlinesCard: React.FC<{ items?: DeadlineItem[] }> = ({ items = [] }) => {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="flex-shrink-0">
@@ -51,18 +51,18 @@ export const DeadlinesCard: React.FC = () => {
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-6">
         <div className="flex-1 overflow-y-auto">
-          {deadlinesData.length === 0 ? (
+          {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center text-center py-8">
               <Calendar className="h-8 w-8 mb-2 text-gray-400" />
               <p className="text-sm font-medium text-gray-700">No upcoming deadlines</p>
               <p className="text-xs text-gray-500">New deadlines will appear here once you add opportunities and proposals.</p>
             </div>
           ) : (
-            deadlinesData.map((item, idx) => (
+            items.map((item, idx) => (
               <Deadline
                 key={item.id}
                 item={item}
-                isLast={idx === deadlinesData.length - 1}
+                isLast={idx === items.length - 1}
               />
             ))
           )}

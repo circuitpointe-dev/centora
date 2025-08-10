@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarEvent, mockCalendarEvents } from "@/data/fundraisingData";
+import type { CalendarEvent } from "@/data/fundraisingData";
 
 interface DayProps {
   date: Date;
@@ -53,7 +53,7 @@ const Day: React.FC<DayProps> = ({
 
 export const CalendarCard: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState<CalendarEvent[]>(mockCalendarEvents);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [newEventTitle, setNewEventTitle] = useState("");
   const [clickedEvent, setClickedEvent] = useState<CalendarEvent | null>(null);

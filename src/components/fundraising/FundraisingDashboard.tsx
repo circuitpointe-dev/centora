@@ -8,7 +8,6 @@ import { DeadlinesCard } from '@/components/fundraising/DeadlinesCard';
 import NewDonorDialog from '@/components/fundraising/NewDonorDialog';
 import AddOpportunityDialog from '@/components/opportunity-tracking/AddOpportunityDialog';
 import CreateProposalDialog from '@/components/proposal-management/CreateProposalDialog';
-import { donors, opportunities, proposals } from '@/data/fundraisingData';
 
 const FundraisingDashboard = () => {
   const navigate = useNavigate();
@@ -30,7 +29,7 @@ const FundraisingDashboard = () => {
   const handleGenerateReports = () => {
     navigate('/dashboard/fundraising/fundraising-analytics?tab=generate-report');
   };
-  const hasStatsData = donors.length > 0 || opportunities.length > 0 || proposals.length > 0;
+  const hasStatsData = false; // TODO: replace with dynamic checks when data is connected
 
   return (
     <div>
