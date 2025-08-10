@@ -42,10 +42,10 @@ Deno.serve(async (req) => {
 
   if (!url || !serviceRoleKey) {
     console.error("Missing env: SUPABASE_URL or ORBIT_SERVICE_ROLE_KEY");
-    return new Response(JSON.stringify({ error: "Server not configured" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
+    return new Response(
+      JSON.stringify({ success: false, code: "SERVER_MISCONFIGURED", message: "Server not configured" }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
   }
 
   const adminClient = createClient(url, serviceRoleKey);
@@ -54,10 +54,10 @@ Deno.serve(async (req) => {
   try {
     payload = (await req.json()) as RegisterPayload;
   } catch (e) {
-    return new Response(JSON.stringify({ error: "Invalid JSON payload" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
+    return new Response(
+      JSON.stringify({ success: false, code: "INVALID_JSON", message: "Invalid JSON payload" }),
+      { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
   }
 
   // Basic validation
@@ -71,10 +71,18 @@ Deno.serve(async (req) => {
   if (payload.termsAccepted === false) errors.push("termsAccepted must be true");
 
   if (errors.length) {
-    return new Response(JSON.stringify({ error: errors.join(", ") }), {
-      status: 400,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        code: "VALIDATION_ERROR",
+        message: "Validation failed",
+        details: errors,
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
   }
 
   const allowedModules = new Set([
@@ -141,10 +149,29 @@ Deno.serve(async (req) => {
 
     if (createUserError || !userRes?.user) {
       console.error("createUserError", createUserError);
-      return new Response(
-        JSON.stringify({ error: createUserError?.message || "Failed to create user" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      const msg = createUserError?.message || "Failed to create user";
+      const isDup = (createUserError as any)?.status === 422 || /already registered|duplicate|unique/i.test(msg || "");
+      const payload = isDup
+        ? {
+            success: false,
+            code: "DUPLICATE_EMAIL",
+            message: "This email is already registered.",
+            suggestedAction: "Use a different email address.",
+          }
+        : {
+            success: false,
+            code: "REGISTRATION_FAILED",
+            message: msg,
+          };
+      const status = isDup
+        ? 409
+        : ((createUserError as any)?.status && (createUserError as any)?.status >= 400
+            ? (createUserError as any).status
+            : 400);
+      return new Response(JSON.stringify(payload), {
+        status,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     createdUserId = userRes.user.id;
@@ -169,8 +196,9 @@ Deno.serve(async (req) => {
       if (createdUserId) {
         await adminClient.auth.admin.deleteUser(createdUserId);
       }
+      const msg = orgError?.message || "Failed to create organization";
       return new Response(
-        JSON.stringify({ error: orgError?.message || "Failed to create organization" }),
+        JSON.stringify({ success: false, code: "REGISTRATION_FAILED", message: msg }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -191,10 +219,21 @@ Deno.serve(async (req) => {
       // rollback org and user
       if (createdOrgId) await adminClient.from("organizations").delete().eq("id", createdOrgId);
       if (createdUserId) await adminClient.auth.admin.deleteUser(createdUserId);
-      return new Response(
-        JSON.stringify({ error: profileError.message || "Failed to create profile" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      const msg = profileError.message || "Failed to create profile";
+      const isDup = /duplicate|unique|profiles_email_unique/i.test(msg || "");
+      const payload = isDup
+        ? {
+            success: false,
+            code: "DUPLICATE_EMAIL",
+            message: "This email is already registered.",
+            suggestedAction: "Use a different email address.",
+          }
+        : { success: false, code: "REGISTRATION_FAILED", message: msg };
+      const status = isDup ? 409 : 400;
+      return new Response(JSON.stringify(payload), {
+        status,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // 4) Insert modules
@@ -207,8 +246,9 @@ Deno.serve(async (req) => {
         await adminClient.from("profiles").delete().eq("id", createdUserId);
         await adminClient.from("organizations").delete().eq("id", createdOrgId);
         if (createdUserId) await adminClient.auth.admin.deleteUser(createdUserId);
+        const msg = modulesError.message || "Failed to assign modules";
         return new Response(
-          JSON.stringify({ error: modulesError.message || "Failed to assign modules" }),
+          JSON.stringify({ success: false, code: "REGISTRATION_FAILED", message: msg }),
           { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
@@ -225,9 +265,12 @@ Deno.serve(async (req) => {
     if (createdOrgId) await adminClient.from("organizations").delete().eq("id", createdOrgId);
     if (createdUserId) await adminClient.auth.admin.deleteUser(createdUserId);
 
-    return new Response(JSON.stringify({ error: "Unexpected server error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
+    return new Response(
+      JSON.stringify({ success: false, code: "INTERNAL_ERROR", message: "Unexpected server error" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
   }
 });

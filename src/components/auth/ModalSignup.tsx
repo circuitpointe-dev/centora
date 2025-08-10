@@ -123,6 +123,17 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
+
+    const showDuplicateEmailToast = () =>
+      toast({
+        title: 'Registration failed',
+        description: 'This email is already registered. Please use a different email address.',
+        variant: 'destructive',
+      });
+
+    const showGenericError = (msg?: string) =>
+      toast({ title: 'Registration failed', description: msg || 'Please try again.', variant: 'destructive' });
+
     try {
       const { data, error } = await supabase.functions.invoke('register-tenant', {
         body: {
@@ -141,19 +152,48 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
       });
 
       if (error) {
-        toast({ title: 'Error', description: error.message || 'Registration failed', variant: 'destructive' });
+        const rawMsg = (error as any)?.message || '';
+        let parsed: any = null;
+        try {
+          parsed = JSON.parse(rawMsg);
+        } catch {}
+
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.code === 'DUPLICATE_EMAIL') {
+            showDuplicateEmailToast();
+            setCurrentStep(1);
+            return;
+          }
+          showGenericError(parsed.message);
+          return;
+        }
+
+        if (/duplicate|already registered|unique|exists/i.test(rawMsg)) {
+          showDuplicateEmailToast();
+          setCurrentStep(1);
+          return;
+        }
+
+        showGenericError(rawMsg);
         return;
       }
 
-      if ((data as any)?.error) {
-        toast({ title: 'Error', description: (data as any).error, variant: 'destructive' });
+      // Handle structured responses even on 200
+      const resp: any = data;
+      if (resp && resp.success === false) {
+        if (resp.code === 'DUPLICATE_EMAIL') {
+          showDuplicateEmailToast();
+          setCurrentStep(1);
+          return;
+        }
+        showGenericError(resp.message);
         return;
       }
 
       toast({ title: 'Success!', description: 'Account created successfully' });
       navigate('/login');
     } catch (err: any) {
-      toast({ title: 'Error', description: err?.message || 'Registration failed', variant: 'destructive' });
+      showGenericError(err?.message);
     } finally {
       setIsLoading(false);
     }
