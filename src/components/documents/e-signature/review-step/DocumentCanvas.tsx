@@ -35,6 +35,7 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
   const canvasRef = useRef<CanvasOverlayRef>(null);
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const [overlaySize, setOverlaySize] = useState<{ width: number; height: number }>({ width: 800, height: 1000 });
+  const [overlayOffset, setOverlayOffset] = useState<{ left: number; top: number }>({ left: 0, top: 0 });
 
   const currentFileUrl = uploadedFile?.url || fileUrl;
 
@@ -74,7 +75,8 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
       console.log("Dropped field data:", fieldData);
       if (fieldData.fieldType && fieldData.fieldData) {
          const containerEl = pageContainerRef.current;
-         const rect = (containerEl || e.currentTarget).getBoundingClientRect();
+         const pdfCanvas = containerEl?.querySelector('canvas') as HTMLCanvasElement | null;
+         const rect = (pdfCanvas || containerEl || e.currentTarget).getBoundingClientRect();
          const x = e.clientX - rect.left;
          const y = e.clientY - rect.top;
         console.log("Drop position:", { x, y });
@@ -138,11 +140,15 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
     if (!container) return;
     const pdfCanvas = container.querySelector('canvas') as HTMLCanvasElement | null;
     if (pdfCanvas) {
-      const rect = pdfCanvas.getBoundingClientRect();
-      const width = Math.round(rect.width);
-      const height = Math.round(rect.height);
+      const pdfRect = pdfCanvas.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const width = Math.round(pdfRect.width);
+      const height = Math.round(pdfRect.height);
       if (width && height) {
         setOverlaySize({ width, height });
+        const left = Math.round(pdfRect.left - containerRect.left + container.scrollLeft);
+        const top = Math.round(pdfRect.top - containerRect.top + container.scrollTop);
+        setOverlayOffset({ left, top });
       }
     }
   }, [loading, scale, pageNumber, currentFileUrl]);
@@ -242,6 +248,8 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
                   height={overlaySize.height}
                   onFieldAdded={onFieldAdded}
                   onCanvasReady={handleCanvasReady}
+                  offsetLeft={overlayOffset.left}
+                  offsetTop={overlayOffset.top}
                 />
               )}
             </div>

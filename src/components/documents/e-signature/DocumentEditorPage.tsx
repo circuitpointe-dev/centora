@@ -93,11 +93,15 @@ export const DocumentEditorPage: React.FC = () => {
           </div>
 
           {/* Right Column - Field Editor */}
-          <FieldEditorCard 
-            onPreview={handlePreview}
-            onContinue={handleContinue}
-            documentCount={selectedFiles.length + (selectedDoc ? 1 : 0)}
-          />
+          <aside className="col-span-3 h-full">
+            <div className="sticky top-4 h-[calc(100vh-160px)]">
+              <FieldEditorCard 
+                onPreview={handlePreview}
+                onContinue={handleContinue}
+                documentCount={selectedFiles.length + (selectedDoc ? 1 : 0)}
+              />
+            </div>
+          </aside>
         </div>
       </main>
 

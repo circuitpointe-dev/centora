@@ -15,6 +15,8 @@ interface CanvasOverlayProps {
   height: number;
   onFieldAdded?: (field: FieldData, position: { x: number; y: number }) => void;
   onCanvasReady?: (canvas: FabricCanvas) => void;
+  offsetLeft?: number;
+  offsetTop?: number;
 }
 
 export interface CanvasOverlayRef {
@@ -26,7 +28,9 @@ export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
   width,
   height,
   onFieldAdded,
-  onCanvasReady
+  onCanvasReady,
+  offsetLeft = 0,
+  offsetTop = 0
 }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
@@ -160,10 +164,12 @@ export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 pointer-events-auto"
+      className="absolute pointer-events-auto"
       style={{ 
         width: `${width}px`,
         height: `${height}px`,
+        left: `${offsetLeft}px`,
+        top: `${offsetTop}px`,
         zIndex: 10 
       }}
     />
