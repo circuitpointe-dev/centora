@@ -33,6 +33,8 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const canvasRef = useRef<CanvasOverlayRef>(null);
+  const pageContainerRef = useRef<HTMLDivElement>(null);
+  const [overlaySize, setOverlaySize] = useState<{ width: number; height: number }>({ width: 800, height: 1000 });
 
   const currentFileUrl = uploadedFile?.url || fileUrl;
 
@@ -71,9 +73,10 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
       const fieldData = JSON.parse(e.dataTransfer.getData("application/json"));
       console.log("Dropped field data:", fieldData);
       if (fieldData.fieldType && fieldData.fieldData) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+         const containerEl = pageContainerRef.current;
+         const rect = (containerEl || e.currentTarget).getBoundingClientRect();
+         const x = e.clientX - rect.left;
+         const y = e.clientY - rect.top;
         console.log("Drop position:", { x, y });
         
         // Use the canvas ref to add field to canvas
@@ -128,6 +131,21 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
       }
     };
   }, [uploadedFile]);
+
+  useEffect(() => {
+    if (loading) return;
+    const container = pageContainerRef.current;
+    if (!container) return;
+    const pdfCanvas = container.querySelector('canvas') as HTMLCanvasElement | null;
+    if (pdfCanvas) {
+      const rect = pdfCanvas.getBoundingClientRect();
+      const width = Math.round(rect.width);
+      const height = Math.round(rect.height);
+      if (width && height) {
+        setOverlaySize({ width, height });
+      }
+    }
+  }, [loading, scale, pageNumber, currentFileUrl]);
 
   // Export canvas state for external access
   const saveCanvasState = () => {
@@ -198,8 +216,6 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
 
           <div 
             className="relative flex-1 overflow-auto border rounded bg-gray-50 min-h-[400px]"
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
           >
             {loading && (
               <div className="flex items-center justify-center h-[400px]">
@@ -207,7 +223,7 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
               </div>
             )}
             
-            <div className="relative">
+            <div className="relative" ref={pageContainerRef} onDrop={handleDrop} onDragOver={handleDragOver}>
               <PDFViewer
                 fileUrl={currentFileUrl}
                 pageNumber={pageNumber}
@@ -222,6 +238,8 @@ export const DocumentCanvas: React.FC<DocumentCanvasProps> = ({ fileUrl, onField
                 <CanvasOverlay
                   ref={canvasRef}
                   scale={scale}
+                  width={overlaySize.width}
+                  height={overlaySize.height}
                   onFieldAdded={onFieldAdded}
                   onCanvasReady={handleCanvasReady}
                 />

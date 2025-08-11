@@ -11,6 +11,8 @@ interface FieldData {
 
 interface CanvasOverlayProps {
   scale: number;
+  width: number;
+  height: number;
   onFieldAdded?: (field: FieldData, position: { x: number; y: number }) => void;
   onCanvasReady?: (canvas: FabricCanvas) => void;
 }
@@ -19,13 +21,19 @@ export interface CanvasOverlayRef {
   addFieldToCanvas: (field: FieldData, position: { x: number; y: number }) => void;
 }
 
-export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
+export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({ 
   scale,
+  width,
+  height,
   onFieldAdded,
   onCanvasReady
 }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
+  const onCanvasReadyRef = useRef(onCanvasReady);
+  useEffect(() => {
+    onCanvasReadyRef.current = onCanvasReady;
+  }, [onCanvasReady]);
 
   // Initialize Fabric Canvas
   useEffect(() => {
@@ -33,15 +41,15 @@ export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
 
     try {
       const canvas = new FabricCanvas(canvasRef.current, {
-        width: 800,
-        height: 1000,
+        width: 1,
+        height: 1,
         backgroundColor: "transparent",
         selection: true,
       });
 
       console.log("Fabric canvas initialized:", canvas);
       setFabricCanvas(canvas);
-      onCanvasReady?.(canvas);
+      onCanvasReadyRef.current?.(canvas);
 
       return () => {
         try {
@@ -53,19 +61,22 @@ export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
     } catch (error) {
       console.error("Error initializing Fabric canvas:", error);
     }
-  }, [onCanvasReady]);
+  }, []);
 
-  // Update canvas zoom when scale changes
+  // Update canvas dimensions and zoom when size or scale changes
   useEffect(() => {
     if (!fabricCanvas) return;
-    
+
     try {
+      const baseWidth = Math.max(1, Math.floor(width / Math.max(scale, 0.0001)));
+      const baseHeight = Math.max(1, Math.floor(height / Math.max(scale, 0.0001)));
+      fabricCanvas.setDimensions({ width: baseWidth, height: baseHeight });
       fabricCanvas.setZoom(scale);
       fabricCanvas.renderAll();
     } catch (error) {
-      console.warn("Error updating canvas scale:", error);
+      console.warn("Error updating canvas dimensions/scale:", error);
     }
-  }, [fabricCanvas, scale]);
+  }, [fabricCanvas, width, height, scale]);
 
   const addFieldToCanvas = (field: FieldData, position: { x: number; y: number }) => {
     console.log("Adding field to canvas:", field, position);
@@ -151,8 +162,8 @@ export const CanvasOverlay = forwardRef<CanvasOverlayRef, CanvasOverlayProps>(({
       ref={canvasRef}
       className="absolute top-0 left-0 pointer-events-auto"
       style={{ 
-        width: `${800 * scale}px`, 
-        height: `${1000 * scale}px`,
+        width: `${width}px`,
+        height: `${height}px`,
         zIndex: 10 
       }}
     />
