@@ -34,6 +34,54 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  // Validation for Step 1 - Organization Details
+  type OrgErrors = Partial<Record<'organizationName' | 'organizationType' | 'primaryCurrency' | 'address' | 'contactName' | 'phone' | 'email' | 'password', string>>;
+
+  const getOrgErrors = (fd: typeof formData): OrgErrors => {
+    const errors: OrgErrors = {};
+
+    if (!fd.organizationName || fd.organizationName.trim().length < 2) {
+      errors.organizationName = 'Please enter your organization name (min 2 characters).';
+    }
+
+    if (!fd.organizationType) {
+      errors.organizationType = 'Please select an organization type.';
+    }
+
+    if (!fd.primaryCurrency) {
+      errors.primaryCurrency = 'Please select a primary currency.';
+    }
+
+    if (!fd.contactName || fd.contactName.trim().length < 2) {
+      errors.contactName = 'Please enter a contact person (min 2 characters).';
+    }
+
+    if (!fd.email) {
+      errors.email = 'Email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fd.email)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+
+    if (fd.phone && !/^\+?[0-9\s().-]{7,20}$/.test(fd.phone)) {
+      errors.phone = 'Please enter a valid phone number.';
+    }
+
+    const hasMinLen = fd.password.length >= 8;
+    const hasLower = /[a-z]/.test(fd.password);
+    const hasUpper = /[A-Z]/.test(fd.password);
+    const hasNumber = /\d/.test(fd.password);
+    // special is optional for now, but considered for strength
+    if (!fd.password) {
+      errors.password = 'Password is required.';
+    } else if (!(hasMinLen && hasLower && hasUpper && hasNumber)) {
+      errors.password = 'Use 8+ chars with upper, lower and a number.';
+    }
+
+    return errors;
+  };
+
+  const orgErrors = currentStep === 1 ? getOrgErrors(formData) : {};
+  const isOrgValid = currentStep === 1 ? Object.keys(orgErrors).length === 0 : true;
   // Steps configuration
   const steps = [
     {
@@ -42,26 +90,11 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
         <Step1 
           formData={formData} 
           onChange={handleChange} 
+          errors={orgErrors}
         />
       ),
       validate: () => {
-        if (!formData.organizationName.trim()) {
-          toast({ title: "Error", description: "Organization name is required", variant: "destructive" });
-          return false;
-        }
-        if (!formData.contactName.trim()) {
-          toast({ title: "Error", description: "Contact name is required", variant: "destructive" });
-          return false;
-        }
-        if (!formData.email.trim()) {
-          toast({ title: "Error", description: "Email is required", variant: "destructive" });
-          return false;
-        }
-        if (!formData.password) {
-          toast({ title: "Error", description: "Password is required", variant: "destructive" });
-          return false;
-        }
-        return true;
+        return Object.keys(orgErrors).length === 0;
       }
     },
     {
@@ -263,7 +296,12 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
             
             <Button 
               onClick={currentStep === steps.length ? handleSubmit : handleNext}
-              disabled={isLoading || (currentStep === 2 && formData.modules.length === 0) || (currentStep === steps.length && !formData.termsAccepted)}
+              disabled={
+                isLoading ||
+                (currentStep === 1 && !isOrgValid) ||
+                (currentStep === 2 && formData.modules.length === 0) ||
+                (currentStep === steps.length && !formData.termsAccepted)
+              }
               className="ml-auto bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-700 hover:to-violet-600 text-white h-8 px-4 text-sm"
             >
               {isLoading ? (
