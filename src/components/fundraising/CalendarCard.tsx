@@ -1,8 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { CalendarEvent } from "@/data/fundraisingData";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface DayProps {
   date: Date;
@@ -57,6 +59,69 @@ export const CalendarCard: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [newEventTitle, setNewEventTitle] = useState("");
   const [clickedEvent, setClickedEvent] = useState<CalendarEvent | null>(null);
+  const [orgId, setOrgId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        setUserId(user.id);
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("org_id")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (error) throw error;
+        if (profile?.org_id) setOrgId(profile.org_id as string);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load profile");
+      }
+    };
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (!orgId) return;
+    const fetchEvents = async () => {
+      try {
+        const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        const { data, error } = await (supabase as any)
+          .from("calendar_events")
+          .select("id,title,date,color")
+          .eq("org_id", orgId)
+          .gte("date", start.toISOString().slice(0, 10))
+          .lte("date", end.toISOString().slice(0, 10))
+          .order("date", { ascending: true });
+        if (error) throw error;
+        const mapped: CalendarEvent[] = ((data as any[]) || []).map((row: any) => ({
+          id: row.id,
+          title: row.title,
+          color: row.color || "#6b7280",
+          date: new Date(row.date),
+        }));
+        setEvents(mapped);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load calendar events");
+      }
+    };
+    fetchEvents();
+  }, [orgId, currentDate]);
+
+  const isSameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
+
+  const handleDateClick = (date: Date) => {
+    const existing = events.find((e) => isSameDay(e.date, date));
+    if (existing) {
+      setClickedEvent(existing);
+    } else {
+      setSelectedDate(date);
+    }
+  };
 
   const generateCalendar = (date: Date) => {
     const year = date.getFullYear();
@@ -83,9 +148,17 @@ export const CalendarCard: React.FC = () => {
     return calendarDays;
   };
 
-  const handleDeleteEvent = (eventId: string) => {
-    setEvents(events.filter((event) => event.id !== eventId));
-    setClickedEvent(null);
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      const { error } = await (supabase as any).from("calendar_events").delete().eq("id", eventId);
+      if (error) throw error;
+      setEvents(events.filter((event) => event.id !== eventId));
+      setClickedEvent(null);
+      toast.success("Event deleted");
+    } catch (err) {
+      console.error(err);
+      toast.error("Couldn't delete event");
+    }
   };
 
   const handlePrevMonth = () => {
@@ -100,19 +173,35 @@ export const CalendarCard: React.FC = () => {
     );
   };
 
-  const handleAddEvent = () => {
-    if (selectedDate && newEventTitle.trim()) {
-      setEvents([
-        ...events,
-        {
-          id: Date.now().toString(),
-          date: selectedDate,
-          title: newEventTitle,
+  const handleAddEvent = async () => {
+    if (selectedDate && newEventTitle.trim() && orgId && userId) {
+      try {
+        const payload = {
+          title: newEventTitle.trim(),
+          date: selectedDate.toISOString().slice(0, 10),
+          org_id: orgId,
+          created_by: userId,
           color: "#" + Math.floor(Math.random() * 16777215).toString(16),
-        },
-      ]);
-      setSelectedDate(null);
-      setNewEventTitle("");
+        } as any;
+        const { data, error } = await (supabase as any)
+          .from("calendar_events")
+          .insert(payload)
+          .select("id,title,date,color")
+          .single();
+        if (error) throw error;
+        setEvents([
+          ...events,
+          { id: (data as any).id, title: (data as any).title, date: new Date((data as any).date), color: (data as any).color || "#6b7280" },
+        ]);
+        setSelectedDate(null);
+        setNewEventTitle("");
+        toast.success("Event added");
+      } catch (err) {
+        console.error(err);
+        toast.error("Couldn't add event");
+      }
+    } else if (!orgId || !userId) {
+      toast.error("You must be signed in to add events");
     }
   };
 
@@ -169,7 +258,7 @@ export const CalendarCard: React.FC = () => {
               events={events.filter(
                 (e) => e.date.toDateString() === date.toDateString()
               )}
-              onDateClick={setSelectedDate}
+              onDateClick={handleDateClick}
               currentDate={currentDate}
               onEventClick={setClickedEvent}
             />
@@ -198,7 +287,7 @@ export const CalendarCard: React.FC = () => {
                 </button>
                 <button
                   onClick={() => handleDeleteEvent(clickedEvent.id)}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-sm transition-colors"
+                  className="px-4 py-2 bg-destructive text-destructive-foreground rounded hover:bg-destructive/90 focus:ring-2 focus:ring-destructive focus:ring-opacity-50 text-sm transition-colors"
                 >
                   Delete Event
                 </button>
@@ -230,7 +319,7 @@ export const CalendarCard: React.FC = () => {
                 </button>
                 <button
                   onClick={handleAddEvent}
-                  className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50 transition-colors"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors"
                 >
                   Add Event
                 </button>
