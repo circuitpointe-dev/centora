@@ -9,10 +9,12 @@ import { allFundingData, availableYears, statusLegend, months } from "@/data/fun
 import { EmptyFundingCycles } from "./EmptyFundingCycles";
 
 const FundingCycles: React.FC = () => {
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
   // Filter funding data by selected year
   const fundingData = []; // Clear static data - will be replaced with backend data
+  const availableYears: number[] = []; // Clear static years - will be populated from backend
+  const statusLegend: any[] = []; // Clear static legend - will be populated from backend
 
   const getPositionStyle = (cycle: FundingCycle) => {
     // Calculate position based on actual start month (0-indexed)
@@ -31,24 +33,26 @@ const FundingCycles: React.FC = () => {
       <div className="flex justify-between items-center mb-6 flex-shrink-0">
         <h2 className="text-base font-medium text-gray-900">Funding Cycles</h2>
         
-        {/* Year selector dropdown */}
-        <Select
-          value={selectedYear.toString()}
-          onValueChange={(value) => setSelectedYear(parseInt(value))}
-        >
-          <SelectTrigger className="w-28 h-9">
-            <SelectValue placeholder="Select Year">
-              {selectedYear}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {availableYears.map((year) => (
-              <SelectItem key={year} value={year.toString()}>
-                {year}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Year selector dropdown - only show if years available */}
+        {availableYears.length > 0 && (
+          <Select
+            value={selectedYear?.toString() || ""}
+            onValueChange={(value) => setSelectedYear(parseInt(value))}
+          >
+            <SelectTrigger className="w-28 h-9">
+              <SelectValue placeholder="Select Year">
+                {selectedYear || "Select Year"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {availableYears.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
       
       {/* Main content with fixed months header */}
@@ -122,16 +126,20 @@ const FundingCycles: React.FC = () => {
         )}
       </div>
       
-      <Separator className="my-6 flex-shrink-0" />
-      
-      <div className="flex gap-8 flex-shrink-0">
-        {statusLegend.map((item, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <div className={`w-3 h-3 ${item.color} rounded-sm`} />
-            <span className="text-sm text-gray-700">{item.status}</span>
+      {statusLegend.length > 0 && (
+        <>
+          <Separator className="my-6 flex-shrink-0" />
+          
+          <div className="flex gap-8 flex-shrink-0">
+            {statusLegend.map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div className={`w-3 h-3 ${item.color} rounded-sm`} />
+                <span className="text-sm text-gray-700">{item.status}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </section>
   );
 };
