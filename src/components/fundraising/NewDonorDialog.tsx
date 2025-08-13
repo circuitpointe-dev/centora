@@ -8,11 +8,16 @@ import { NewDonorForm } from "./NewDonorForm";
 
 interface NewDonorDialogProps {
   triggerButton?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const NewDonorDialog: React.FC<NewDonorDialogProps> = ({ triggerButton }) => {
-  const [open, setOpen] = useState(false);
+const NewDonorDialog: React.FC<NewDonorDialogProps> = ({ triggerButton, open: externalOpen, onOpenChange: externalOnOpenChange }) => {
+  const [internalOpen, setInternalOpen] = useState(false);
   const { toast } = useToast();
+
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = externalOnOpenChange || setInternalOpen;
 
   const handleSubmit = (donorData: any) => {
     console.log("New donor data:", donorData);

@@ -14,6 +14,7 @@ const DonorList: React.FC = () => {
   const [donors, setDonors] = useState<Donor[]>([]); // Clear static data - will be replaced with backend data
   const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [showNewDonorDialog, setShowNewDonorDialog] = useState(false);
   const itemsPerPage = 5;
   
   const totalPages = Math.ceil(donors.length / itemsPerPage);
@@ -44,7 +45,7 @@ const DonorList: React.FC = () => {
         </div>
 
         {donors.length === 0 ? (
-          <EmptyDonorList onAddDonor={() => {/* Add donor logic */}} />
+          <EmptyDonorList onAddDonor={() => setShowNewDonorDialog(true)} />
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -81,6 +82,13 @@ const DonorList: React.FC = () => {
           </>
         )}
       </section>
+
+      {/* New Donor Dialog controlled by empty state */}
+      <NewDonorDialog 
+        open={showNewDonorDialog}
+        onOpenChange={setShowNewDonorDialog}
+        triggerButton={<div style={{ display: 'none' }} />}
+      />
 
       {/* Donor Profile Centralized Dialog */}
       <Dialog open={showProfile} onOpenChange={setShowProfile}>

@@ -54,7 +54,7 @@ const FundingCycles: React.FC = () => {
       {/* Main content with fixed months header */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {fundingData.length === 0 ? (
-          <EmptyFundingCycles onAddCycle={() => {/* Add cycle logic */}} />
+          <EmptyFundingCycles />
         ) : (
           <>
             {/* Fixed months header */}
