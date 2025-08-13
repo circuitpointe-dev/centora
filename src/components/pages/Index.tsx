@@ -283,16 +283,14 @@ const Index = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Phone className="h-4 w-4" />
-                  <span className="text-sm">+1 (555) 123-4567</span>
+                  <span className="text-sm">+234 813 796 0683</span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <MapPin className="h-4 w-4 mt-1" />
                   <span className="text-sm">
-                    123 Innovation Drive
+                    16 Mbano Street, Aladinma
                     <br />
-                    Tech Valley, CA 94025
-                    <br />
-                    United States
+                    Owerri, Imo State Nigeria.
                   </span>
                 </div>
               </div>
