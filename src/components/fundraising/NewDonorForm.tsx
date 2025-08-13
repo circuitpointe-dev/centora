@@ -26,7 +26,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   initialData,
   isEditing = false 
 }) => {
-  const { focusAreas, loading: focusAreasLoading } = useFocusAreas();
+  const { focusAreas, loading: focusAreasLoading, refetch } = useFocusAreas();
   const [formData, setFormData] = useState({
     organization: initialData?.name || "",
     affiliation: "",
@@ -98,6 +98,8 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
 
   const handleFocusAreaSave = () => {
     setFocusAreaOpen(false);
+    // Refresh focus areas to show the newly created one
+    refetch();
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,7 +248,12 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
               <div className="text-sm text-gray-500">No focus areas available. Create one first.</div>
             ) : (
                focusAreas.map(area => {
-                const isSelected = selectedFocusAreas.includes(area.name)
+                const isSelected = selectedFocusAreas.includes(area.name);
+                // Extract background and text colors from the area.color string
+                const colorClasses = area.color.split(' ');
+                const bgColor = colorClasses.find(c => c.startsWith('bg-'));
+                const textColor = colorClasses.find(c => c.startsWith('text-'));
+                
                 return (
                   <div
                     key={area.id}
@@ -263,12 +270,12 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
                       border
                       cursor-pointer
                       transition-all
+                      ${bgColor} ${textColor}
                       ${isSelected 
-                        ? 'bg-primary text-primary-foreground border-primary shadow-sm' 
-                        : 'bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground'
+                        ? 'ring-2 ring-offset-1 ring-current shadow-sm' 
+                        : 'hover:ring-1 hover:ring-current hover:ring-opacity-30'
                       }
                     `}
-                    style={{ borderColor: area.color }}
                   >
                     {isSelected && (
                       <div className="w-2 h-2 rounded-full bg-current" />

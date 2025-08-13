@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus } from "lucide-react";
+import { X, Plus, AlertCircle } from "lucide-react";
 import { FocusArea, useFocusAreas } from "@/hooks/useFocusAreas";
 import { useToast } from "@/hooks/use-toast";
 import { colorOptions } from "@/utils/focusAreaColors";
@@ -21,7 +21,7 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
   onSave,
   onCancel,
 }) => {
-  const { createFocusArea, updateFocusArea } = useFocusAreas();
+  const { focusAreas, createFocusArea, updateFocusArea } = useFocusAreas();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,6 +36,7 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
   });
 
   const [newTag, setNewTag] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleAddTag = () => {
     if (newTag.trim() && !formData.interestTags.includes(newTag.trim())) {
@@ -54,16 +55,73 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
     }));
   };
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    // Required field validation
+    if (!formData.name.trim()) {
+      newErrors.name = "Focus area name is required";
+    } else if (focusAreas.some(area => area.name.toLowerCase() === formData.name.toLowerCase() && area.id !== focusArea?.id)) {
+      newErrors.name = "A Focus Area with this name already exists";
+    }
+    
+    if (!formData.description.trim()) {
+      newErrors.description = "Description is required";
+    }
+    
+    if (!formData.fundingStartDate) {
+      newErrors.fundingStartDate = "Funding start date is required";
+    } else if (new Date(formData.fundingStartDate) < new Date(new Date().toDateString())) {
+      newErrors.fundingStartDate = "Start date must be today or in the future";
+    }
+    
+    if (!formData.fundingEndDate) {
+      newErrors.fundingEndDate = "Funding end date is required";
+    }
+    
+    if (formData.amount <= 0) {
+      newErrors.amount = "Amount must be greater than 0";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation(); // Prevent event bubbling to parent form
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
       if (focusArea) {
         await updateFocusArea(focusArea.id, formData);
+        toast({
+          title: "Success",
+          description: "Focus Area updated successfully",
+        });
       } else {
         await createFocusArea(formData);
+        toast({
+          title: "Success",
+          description: "Focus Area created successfully",
+        });
+        // Clear form after successful creation
+        setFormData({
+          name: "",
+          description: "",
+          color: "bg-blue-100 text-blue-800",
+          fundingStartDate: "",
+          fundingEndDate: "",
+          amount: 0,
+          currency: "USD",
+          interestTags: [],
+        });
+        setErrors({});
       }
       
       // Call the optional callback for backward compatibility
@@ -71,8 +129,21 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
       onCancel();
     } catch (error) {
       console.error('Error saving focus area:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save focus area. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string | number) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -84,10 +155,17 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
           <Input
             id="name"
             value={formData.name}
-            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            onChange={(e) => handleInputChange('name', e.target.value)}
             placeholder="Enter focus area name"
+            className={errors.name ? "border-red-500" : ""}
             required
           />
+          {errors.name && (
+            <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+              <AlertCircle className="h-4 w-4" />
+              <span>{errors.name}</span>
+            </div>
+          )}
         </div>
 
         <div>
@@ -95,10 +173,17 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
           <Textarea
             id="description"
             value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            onChange={(e) => handleInputChange('description', e.target.value)}
             placeholder="Enter description"
             rows={3}
+            className={errors.description ? "border-red-500" : ""}
           />
+          {errors.description && (
+            <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+              <AlertCircle className="h-4 w-4" />
+              <span>{errors.description}</span>
+            </div>
+          )}
         </div>
 
         <div>
@@ -125,9 +210,16 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
               id="fundingStartDate"
               type="date"
               value={formData.fundingStartDate}
-              onChange={(e) => setFormData(prev => ({ ...prev, fundingStartDate: e.target.value }))}
+              onChange={(e) => handleInputChange('fundingStartDate', e.target.value)}
+              className={errors.fundingStartDate ? "border-red-500" : ""}
               required
             />
+            {errors.fundingStartDate && (
+              <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4" />
+                <span>{errors.fundingStartDate}</span>
+              </div>
+            )}
           </div>
           <div>
             <Label htmlFor="fundingEndDate">Funding End Date</Label>
@@ -135,9 +227,16 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
               id="fundingEndDate"
               type="date"
               value={formData.fundingEndDate}
-              onChange={(e) => setFormData(prev => ({ ...prev, fundingEndDate: e.target.value }))}
+              onChange={(e) => handleInputChange('fundingEndDate', e.target.value)}
+              className={errors.fundingEndDate ? "border-red-500" : ""}
               required
             />
+            {errors.fundingEndDate && (
+              <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4" />
+                <span>{errors.fundingEndDate}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -148,11 +247,18 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
               id="amount"
               type="number"
               value={formData.amount}
-              onChange={(e) => setFormData(prev => ({ ...prev, amount: Number(e.target.value) }))}
+              onChange={(e) => handleInputChange('amount', Number(e.target.value))}
               placeholder="0"
               min="0"
+              className={errors.amount ? "border-red-500" : ""}
               required
             />
+            {errors.amount && (
+              <div className="flex items-center gap-1 mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4" />
+                <span>{errors.amount}</span>
+              </div>
+            )}
           </div>
           <div>
             <Label htmlFor="currency">Currency</Label>
@@ -211,7 +317,7 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || Object.keys(errors).some(key => errors[key])}>
           {isSubmitting ? 'Saving...' : (focusArea ? 'Update Focus Area' : 'Create Focus Area')}
         </Button>
       </div>
