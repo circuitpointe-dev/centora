@@ -7,13 +7,18 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { getFocusAreaColor } from "@/data/focusAreaData";
 
+interface ContactPerson {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  is_primary: boolean;
+}
+
 interface ProfileInformationSectionProps {
   isEditing: boolean;
   formData: {
     organization: string;
-    contactPerson: string;
-    email: string;
-    secondaryEmail: string;
     affiliation: string;
     companyUrl: string;
     fundingStartDate: string;
@@ -21,13 +26,15 @@ interface ProfileInformationSectionProps {
   };
   onInputChange: (field: string, value: string) => void;
   interestTags: string[];
+  contacts: ContactPerson[];
 }
 
 export const ProfileInformationSection: React.FC<ProfileInformationSectionProps> = ({
   isEditing,
   formData,
   onInputChange,
-  interestTags
+  interestTags,
+  contacts
 }) => {
   return (
     <div className="flex flex-col items-start gap-4 h-full">
@@ -47,37 +54,33 @@ export const ProfileInformationSection: React.FC<ProfileInformationSectionProps>
               />
             </div>
 
-            {/* Contact Person */}
+            {/* Contact Persons */}
             <div className="flex flex-col items-start gap-2 w-full">
-              <Label className="text-sm text-muted-foreground">Name of Contact Person</Label>
-              <Input
-                value={formData.contactPerson}
-                onChange={(e) => onInputChange('contactPerson', e.target.value)}
-                disabled={!isEditing}
-                className="w-full"
-              />
-            </div>
-
-            {/* Email Fields */}
-            <div className="flex items-center gap-4 w-full">
-              <div className="flex flex-col flex-1 items-start gap-2">
-                <Label className="text-sm text-muted-foreground">Email</Label>
-                <Input
-                  value={formData.email}
-                  onChange={(e) => onInputChange('email', e.target.value)}
-                  disabled={!isEditing}
-                  className="w-full"
-                />
-              </div>
-
-              <div className="flex flex-col flex-1 items-start gap-2">
-                <Label className="text-sm text-muted-foreground">Secondary Email</Label>
-                <Input
-                  value={formData.secondaryEmail}
-                  onChange={(e) => onInputChange('secondaryEmail', e.target.value)}
-                  disabled={!isEditing}
-                  className="w-full"
-                />
+              <Label className="text-sm text-muted-foreground">Contact Persons</Label>
+              <div className="w-full space-y-3">
+                {contacts && contacts.length > 0 ? (
+                  contacts.map((contact) => (
+                    <div key={contact.id} className="p-3 border border-border rounded-md bg-muted/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm">{contact.full_name}</span>
+                            {contact.is_primary && (
+                              <Badge variant="outline" className="text-xs">Primary</Badge>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {contact.email} • {contact.phone}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-muted-foreground py-2">
+                    No contact persons added
+                  </div>
+                )}
               </div>
             </div>
 
@@ -137,7 +140,7 @@ export const ProfileInformationSection: React.FC<ProfileInformationSectionProps>
                 {interestTags.map((tag, index) => (
                   <Badge
                     key={index}
-                    className={`text-xs rounded-sm ${getFocusAreaColor(tag)}`}
+                    className={`text-xs rounded-sm ${getFocusAreaColor(tag)} pointer-events-none`}
                   >
                     {tag}
                   </Badge>

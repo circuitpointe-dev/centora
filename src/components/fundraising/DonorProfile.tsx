@@ -24,9 +24,6 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     organization: "",
-    contactPerson: "",
-    email: "",
-    secondaryEmail: "",
     affiliation: "",
     companyUrl: "",
     fundingStartDate: "",
@@ -39,12 +36,8 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
   // Update form data when donor prop changes
   useEffect(() => {
     if (donor) {
-      const primaryContact = donor.contacts?.find(c => c.is_primary) || donor.contacts?.[0];
       setFormData({
         organization: donor.name || "",
-        contactPerson: primaryContact?.full_name || "",
-        email: primaryContact?.email || "",
-        secondaryEmail: donor.contacts?.[1]?.email || "",
         affiliation: donor.affiliation || "",
         companyUrl: donor.organization_url || "",
         fundingStartDate: donor.funding_start_date || "",
@@ -61,29 +54,12 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
     if (!donor) return;
     
     try {
-      const primaryContact = donor.contacts?.find(c => c.is_primary) || donor.contacts?.[0];
-      const secondaryContact = donor.contacts?.find(c => !c.is_primary);
-      
       const updateData = {
         name: formData.organization,
         affiliation: formData.affiliation || undefined,
         organization_url: formData.companyUrl || undefined,
         funding_start_date: formData.fundingStartDate || undefined,
         funding_end_date: formData.fundingEndDate || undefined,
-        contacts: [
-          {
-            full_name: formData.contactPerson,
-            email: formData.email,
-            phone: primaryContact?.phone || "",
-            is_primary: true,
-          },
-          ...(formData.secondaryEmail ? [{
-            full_name: secondaryContact?.full_name || "",
-            email: formData.secondaryEmail,
-            phone: secondaryContact?.phone || "",
-            is_primary: false,
-          }] : []),
-        ],
         focus_area_ids: donor.focus_areas?.map(fa => fa.focus_area_id) || [],
       };
       
@@ -167,10 +143,11 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
                   formData={formData}
                   onInputChange={handleInputChange}
                   interestTags={donor.focus_areas?.map(fa => fa.focus_areas?.name || "") || []}
+                  contacts={donor.contacts || []}
                 />
               </div>
             <div className="h-full">
-              <EngagementHistorySection />
+              <EngagementHistorySection donorId={donor.id} />
             </div>
           </div>
           {/* Row 2: Communications & Notes and Files */}

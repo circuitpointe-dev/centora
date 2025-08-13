@@ -1,97 +1,57 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Pencil, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Trash2, Edit } from "lucide-react";
 import { ManageEngagementDialog } from "../ManageEngagementDialog";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { useDonorEngagements, useUpdateDonorEngagement, useDeleteDonorEngagement } from "@/hooks/useDonorEngagements";
+import { format } from "date-fns";
 
-export const EngagementHistorySection = (): JSX.Element => {
+interface EngagementHistorySectionProps {
+  donorId: string;
+}
+
+export const EngagementHistorySection: React.FC<EngagementHistorySectionProps> = ({ donorId }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
-  // Engagement history data with more entries for scrolling
-  const [engagementEntries, setEngagementEntries] = useState([
-    {
-      id: '1',
-      date: "April 12th, 2024",
-      description: "Lorem ipsum dolor sit amet consectetur. Sodales malesuada aen ean erat cum pulvinar.",
-      user: "John Smith"
-    },
-    {
-      id: '2',
-      date: "April 10th, 2024",
-      description: "Met with donor representative to discuss upcoming funding opportunities and quarterly objectives.",
-      user: "Jane Doe"
-    },
-    {
-      id: '3',
-      date: "April 8th, 2024",
-      description: "Follow-up call regarding quarterly report submission and compliance requirements.",
-      user: "Sarah Wilson"
-    },
-    {
-      id: '4',
-      date: "April 5th, 2024",
-      description: "Initial meeting to establish partnership framework and set expectations for collaboration.",
-      user: "John Smith"
-    },
-    {
-      id: '5',
-      date: "April 3rd, 2024",
-      description: "Review of previous year's performance metrics and discussion of improvement strategies.",
-      user: "Mike Johnson"
-    },
-    {
-      id: '6',
-      date: "April 1st, 2024",
-      description: "Quarterly planning session with stakeholders to align on goals and priorities.",
-      user: "Jane Doe"
-    },
-  ]);
-
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
+  const { toast } = useToast();
+  
+  const { data: engagementEntries = [], isLoading } = useDonorEngagements(donorId);
+  const updateEngagementMutation = useUpdateDonorEngagement();
+  const deleteEngagementMutation = useDeleteDonorEngagement();
 
-  const handleEdit = (id: string, currentText: string) => {
+  const handleEdit = (id: string, currentText: string): void => {
     setEditingEntry(id);
     setEditText(currentText);
   };
 
-  const handleSaveEdit = (id: string) => {
-    if (!editText.trim()) {
-      toast({
-        title: "Error",
-        description: "Engagement description cannot be empty.",
-        variant: "destructive",
+  const handleSaveEdit = async (id: string): Promise<void> => {
+    try {
+      await updateEngagementMutation.mutateAsync({
+        id,
+        description: editText,
       });
-      return;
+      setEditingEntry(null);
+      setEditText("");
+    } catch (error) {
+      // Error handled by mutation
     }
-
-    setEngagementEntries(prev =>
-      prev.map(entry =>
-        entry.id === id ? { ...entry, description: editText } : entry
-      )
-    );
-    setEditingEntry(null);
-    setEditText("");
-    
-    toast({
-      title: "Success",
-      description: "Engagement entry updated successfully.",
-    });
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = (): void => {
     setEditingEntry(null);
     setEditText("");
   };
 
-  const handleDelete = (id: string) => {
-    setEngagementEntries(prev => prev.filter(entry => entry.id !== id));
-    toast({
-      title: "Success",
-      description: "Engagement entry deleted successfully.",
-    });
+  const handleDelete = async (id: string): Promise<void> => {
+    try {
+      await deleteEngagementMutation.mutateAsync(id);
+    } catch (error) {
+      // Error handled by mutation
+    }
   };
 
   return (
@@ -101,78 +61,87 @@ export const EngagementHistorySection = (): JSX.Element => {
       </h2>
 
       <Card className="w-full flex-1">
-        <CardContent className="p-8 h-full flex flex-col">
-          <div className="flex flex-col items-start gap-4 w-full flex-1 overflow-y-auto max-h-[400px]">
-            {engagementEntries.map((entry) => (
-              <div
-                key={entry.id}
-                className="flex flex-col items-start gap-2 px-2.5 py-3 w-full rounded-[5px] border-b border-gray-100 last:border-b-0"
-              >
-                <div className="flex items-center justify-between w-full">
-                  <h3 className="font-semibold text-[#383839] text-sm">
-                    {entry.date}
-                  </h3>
-                  <div className="flex gap-2">
-                    {editingEntry === entry.id ? (
-                      <div className="flex gap-1">
+        <CardContent className="p-6 h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-sm text-muted-foreground">Loading engagement history...</div>
+              </div>
+            ) : engagementEntries.length > 0 ? (
+              engagementEntries.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="group relative py-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors"
+                >
+                  {editingEntry === entry.id ? (
+                    <div className="space-y-3">
+                      <Textarea
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        className="w-full resize-none"
+                        rows={3}
+                      />
+                      <div className="flex gap-2">
                         <Button
-                          variant="ghost"
                           size="sm"
                           onClick={() => handleSaveEdit(entry.id)}
-                          className="h-6 px-2 text-xs text-green-600"
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          disabled={updateEngagementMutation.isPending}
                         >
-                          Save
+                          {updateEngagementMutation.isPending ? "Saving..." : "Save"}
                         </Button>
                         <Button
-                          variant="ghost"
                           size="sm"
+                          variant="outline"
                           onClick={handleCancelEdit}
-                          className="h-6 px-2 text-xs text-gray-600"
                         >
                           Cancel
                         </Button>
                       </div>
-                    ) : (
-                      <>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="pr-16">
+                        <p className="text-sm text-gray-700 leading-relaxed mb-2">
+                          {entry.description}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          <span>{format(new Date(entry.engagement_date), 'MMM dd, yyyy')}</span>
+                          <span>•</span>
+                          <span>Added on {format(new Date(entry.created_at), 'MMM dd, yyyy')}</span>
+                        </div>
+                      </div>
+                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                         <Button
+                          size="sm"
                           variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0"
                           onClick={() => handleEdit(entry.id, entry.description)}
+                          className="h-8 w-8 p-0 hover:bg-blue-100"
                         >
-                          <Pencil className="h-3 w-3 text-violet-500" />
+                          <Edit className="h-3 w-3 text-blue-600" />
                         </Button>
                         <Button
+                          size="sm"
                           variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 p-0"
                           onClick={() => handleDelete(entry.id)}
+                          className="h-8 w-8 p-0 hover:bg-red-100"
+                          disabled={deleteEngagementMutation.isPending}
                         >
-                          <Trash2 className="h-3 w-3 text-violet-500" />
+                          <Trash2 className="h-3 w-3 text-red-600" />
                         </Button>
-                      </>
-                    )}
-                  </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-                
-                {editingEntry === entry.id ? (
-                  <textarea
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    className="text-[#383839b2] text-sm w-full min-h-[60px] border border-gray-300 rounded p-2 resize-none"
-                    autoFocus
-                  />
-                ) : (
-                  <p className="text-[#383839b2] text-sm w-full">
-                    {entry.description}
-                  </p>
-                )}
-                
-                <span className="text-xs text-[#707070] mt-1">
-                  by {entry.user}
-                </span>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="text-sm text-muted-foreground mb-2">No engagement entries yet</div>
+                <div className="text-xs text-muted-foreground">
+                  Click "Add Engagement Entry" to get started
+                </div>
               </div>
-            ))}
+            )}
           </div>
 
           <Button
@@ -188,6 +157,7 @@ export const EngagementHistorySection = (): JSX.Element => {
       <ManageEngagementDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
+        donorId={donorId}
       />
     </div>
   );

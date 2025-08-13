@@ -129,6 +129,36 @@ export type Database = {
           },
         ]
       }
+      donor_engagements: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string
+          donor_id: string
+          engagement_date: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description: string
+          donor_id: string
+          engagement_date?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string
+          donor_id?: string
+          engagement_date?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       donor_focus_areas: {
         Row: {
           created_at: string
@@ -164,6 +194,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      donor_giving_records: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          currency: string
+          donor_id: string
+          id: string
+          month: number
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by: string
+          currency?: string
+          donor_id: string
+          id?: string
+          month: number
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          currency?: string
+          donor_id?: string
+          id?: string
+          month?: number
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      donor_notes: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          donor_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by: string
+          donor_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          donor_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       donors: {
         Row: {

@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
+import { useCreateDonorEngagement } from '@/hooks/useDonorEngagements';
 
 interface ManageEngagementDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  donorId: string;
 }
 
 export interface EngagementEntry {
@@ -22,43 +23,27 @@ export interface EngagementEntry {
 export const ManageEngagementDialog: React.FC<ManageEngagementDialogProps> = ({
   isOpen,
   onClose,
+  donorId,
 }) => {
-  const [newEntry, setNewEntry] = useState({
-    description: '',
-  });
+  const [description, setDescription] = useState('');
+  const createEngagementMutation = useCreateDonorEngagement();
 
-  const handleAddEntry = () => {
-    if (!newEntry.description.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter engagement details.",
-        variant: "destructive",
-      });
+  const handleAddEntry = async () => {
+    if (!description.trim()) {
       return;
     }
 
-    const entry: EngagementEntry = {
-      id: Date.now().toString(),
-      date: new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      }),
-      description: newEntry.description,
-      user: 'Current User', // In real app, this would come from auth context
-    };
-
-    // Here you would typically add the entry to your state/database
-    console.log('New engagement entry:', entry);
-    
-    setNewEntry({ description: '' });
-    
-    toast({
-      title: "Success",
-      description: "Engagement entry added successfully.",
-    });
-    
-    onClose();
+    try {
+      await createEngagementMutation.mutateAsync({
+        donorId,
+        description,
+      });
+      
+      setDescription('');
+      onClose();
+    } catch (error) {
+      // Error handled by mutation
+    }
   };
 
   return (
@@ -80,8 +65,8 @@ export const ManageEngagementDialog: React.FC<ManageEngagementDialogProps> = ({
                   </Label>
                   <Textarea
                     id="description"
-                    value={newEntry.description}
-                    onChange={(e) => setNewEntry({ description: e.target.value })}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     placeholder="Enter engagement details..."
                     className="min-h-[120px] border-[#d2d2d2]"
                   />
@@ -97,9 +82,10 @@ export const ManageEngagementDialog: React.FC<ManageEngagementDialogProps> = ({
                   </Button>
                   <Button
                     onClick={handleAddEntry}
+                    disabled={createEngagementMutation.isPending}
                     className="bg-violet-600 hover:bg-violet-700 text-white"
                   >
-                    Add Engagement Entry
+                    {createEngagementMutation.isPending ? "Adding..." : "Add Engagement Entry"}
                   </Button>
                 </div>
               </div>
