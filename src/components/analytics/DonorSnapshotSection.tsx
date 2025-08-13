@@ -3,8 +3,14 @@ import React from "react";
 import { DonorSnapshotCards } from "./DonorSnapshotCards";
 import { DonorSegmentationChart } from "./charts/DonorSegmentationChart";
 import { OpportunityPipelineChart } from "./OpportunityPipelineChart";
+import { EmptyDonorSnapshot } from "./EmptyDonorSnapshot";
+import { EmptyOpportunityPipeline } from "./EmptyOpportunityPipeline";
 
 export const DonorSnapshotSection: React.FC = () => {
+  // For demo purposes, check if there's data - in real app this would come from props/state
+  const hasDonorData = false; // This will be dynamic from backend
+  const hasOpportunityData = false; // This will be dynamic from backend
+
   return (
     <div className="space-y-6">
       {/* Donor Snapshot and Opportunity Pipeline Row */}
@@ -13,10 +19,14 @@ export const DonorSnapshotSection: React.FC = () => {
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Donor Snapshot</h2>
           <div className="bg-white shadow rounded-lg border border-gray-100 p-6">
-            <div className="space-y-4">
-              <DonorSnapshotCards />
-              <DonorSegmentationChart />
-            </div>
+            {hasDonorData ? (
+              <div className="space-y-4">
+                <DonorSnapshotCards />
+                <DonorSegmentationChart />
+              </div>
+            ) : (
+              <EmptyDonorSnapshot onAddDonor={() => {/* Navigate to add donor */}} />
+            )}
           </div>
         </div>
 
@@ -24,7 +34,11 @@ export const DonorSnapshotSection: React.FC = () => {
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Opportunity Pipeline</h2>
           <div className="bg-white shadow rounded-lg border border-gray-100 p-6">
-            <OpportunityPipelineChart />
+            {hasOpportunityData ? (
+              <OpportunityPipelineChart />
+            ) : (
+              <EmptyOpportunityPipeline onCreateOpportunity={() => {/* Navigate to create opportunity */}} />
+            )}
           </div>
         </div>
       </div>

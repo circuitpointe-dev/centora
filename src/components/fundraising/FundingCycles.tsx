@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FundingCycle } from "@/types/donor";
 import { allFundingData, availableYears, statusLegend, months } from "@/data/fundingCyclesData";
+import { EmptyFundingCycles } from "./EmptyFundingCycles";
 
 const FundingCycles: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
@@ -52,67 +53,73 @@ const FundingCycles: React.FC = () => {
       
       {/* Main content with fixed months header */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Fixed months header */}
-        <div className="flex border-b border-gray-200 pb-2 mb-4 flex-shrink-0">
-          {/* Spacer for donor names column */}
-          <div className="w-[140px] min-w-[140px] pr-4"></div>
-          {/* Months labels - fixed position */}
-          <div className="flex-1 pl-4">
-            <div className="flex justify-between px-2">
-              {months.map((month) => (
-                <div key={month} className="text-sm text-gray-500 font-medium">
-                  {month}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Scrollable content area */}
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="flex">
-              {/* Left side for donor names */}
-              <div className="w-[140px] min-w-[140px] pr-4 border-r border-gray-200">
-                {fundingData.map((fund, index) => (
-                  <div key={index} className="h-14 flex items-center">
-                    <span className="text-sm text-gray-600 font-medium">{fund.name}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Right side for funding cycle bars */}
-              <div className="flex-1 overflow-hidden pl-4">
-                <div className="relative">
-                  {fundingData.map((fund, index) => (
-                    <div key={index} className="h-14 flex items-center relative">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div 
-                              className={`h-8 ${fund.color} rounded transition-opacity duration-200 absolute hover:opacity-90 cursor-pointer`}
-                              style={getPositionStyle(fund)}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent side="right" className="max-w-xs p-3">
-                            <p className="font-medium text-sm">{fund.name}</p>
-                            <p className="text-xs mt-1 text-gray-500">{fund.description}</p>
-                            <p className="text-xs mt-1 font-medium">Status: {fund.status}</p>
-                            {fund.startMonth && fund.endMonth && (
-                              <p className="text-xs mt-1">
-                                Period: {months[fund.startMonth-1]} - {months[fund.endMonth-1]} {selectedYear}
-                              </p>
-                            )}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+        {fundingData.length === 0 ? (
+          <EmptyFundingCycles onAddCycle={() => {/* Add cycle logic */}} />
+        ) : (
+          <>
+            {/* Fixed months header */}
+            <div className="flex border-b border-gray-200 pb-2 mb-4 flex-shrink-0">
+              {/* Spacer for donor names column */}
+              <div className="w-[140px] min-w-[140px] pr-4"></div>
+              {/* Months labels - fixed position */}
+              <div className="flex-1 pl-4">
+                <div className="flex justify-between px-2">
+                  {months.map((month) => (
+                    <div key={month} className="text-sm text-gray-500 font-medium">
+                      {month}
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-          </ScrollArea>
-        </div>
+
+            {/* Scrollable content area */}
+            <div className="flex-1 overflow-hidden">
+              <ScrollArea className="h-full">
+                <div className="flex">
+                  {/* Left side for donor names */}
+                  <div className="w-[140px] min-w-[140px] pr-4 border-r border-gray-200">
+                    {fundingData.map((fund, index) => (
+                      <div key={index} className="h-14 flex items-center">
+                        <span className="text-sm text-gray-600 font-medium">{fund.name}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Right side for funding cycle bars */}
+                  <div className="flex-1 overflow-hidden pl-4">
+                    <div className="relative">
+                      {fundingData.map((fund, index) => (
+                        <div key={index} className="h-14 flex items-center relative">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div 
+                                  className={`h-8 ${fund.color} rounded transition-opacity duration-200 absolute hover:opacity-90 cursor-pointer`}
+                                  style={getPositionStyle(fund)}
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="max-w-xs p-3">
+                                <p className="font-medium text-sm">{fund.name}</p>
+                                <p className="text-xs mt-1 text-gray-500">{fund.description}</p>
+                                <p className="text-xs mt-1 font-medium">Status: {fund.status}</p>
+                                {fund.startMonth && fund.endMonth && (
+                                  <p className="text-xs mt-1">
+                                    Period: {months[fund.startMonth-1]} - {months[fund.endMonth-1]} {selectedYear}
+                                  </p>
+                                )}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </ScrollArea>
+            </div>
+          </>
+        )}
       </div>
       
       <Separator className="my-6 flex-shrink-0" />

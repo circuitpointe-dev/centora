@@ -7,6 +7,7 @@ import DonorProfile from "./DonorProfile";
 import DonorTableRow from "./DonorTableRow";
 import DonorTablePagination from "./DonorTablePagination";
 import NewDonorDialog from "./NewDonorDialog";
+import { EmptyDonorList } from "./EmptyDonorList";
 
 const DonorList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,37 +43,43 @@ const DonorList: React.FC = () => {
           <NewDonorDialog />
         </div>
 
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Donor Name</TableHead>
-                <TableHead>Contact Info</TableHead>
-                <TableHead>Last Donation</TableHead>
-                <TableHead>Interest Tags</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentDonors.map((donor) => (
-                <DonorTableRow
-                  key={donor.id}
-                  donor={donor}
-                  onRowClick={handleRowClick}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        {donors.length === 0 ? (
+          <EmptyDonorList onAddDonor={() => {/* Add donor logic */}} />
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Donor Name</TableHead>
+                    <TableHead>Contact Info</TableHead>
+                    <TableHead>Last Donation</TableHead>
+                    <TableHead>Interest Tags</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentDonors.map((donor) => (
+                    <DonorTableRow
+                      key={donor.id}
+                      donor={donor}
+                      onRowClick={handleRowClick}
+                      onDelete={handleDelete}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
-        <DonorTablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalDonors={donors.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-        />
+            <DonorTablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalDonors={donors.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </>
+        )}
       </section>
 
       {/* Donor Profile Centralized Dialog */}
