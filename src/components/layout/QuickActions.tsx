@@ -21,7 +21,9 @@ const QuickActions: React.FC = () => {
     });
   };
 
-  const handleFocusAreaSave = () => {
+  const handleFocusAreaSave = (focusAreaData: any) => {
+    // The FocusAreaForm component handles the actual saving via useFocusAreas hook
+    // This callback just closes the dialog after successful save
     setFocusAreaOpen(false);
   };
 
