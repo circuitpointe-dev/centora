@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Donor } from "@/types/donor";
+import { type Donor } from "@/hooks/useDonors";
 import { getFocusAreaColor } from "@/data/focusAreaData";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import EditDonorDialog from "./EditDonorDialog";
@@ -55,29 +55,29 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
           <div>
             <p className="font-semibold text-gray-900">{donor.name}</p>
             <p className="text-sm text-gray-500">
-              Total: {formatCurrency(donor.totalDonations)}
+              Total: {formatCurrency(donor.total_donations)}
             </p>
           </div>
         </TableCell>
         <TableCell>
           <div className="space-y-1">
-            <p className="text-sm">{donor.contactInfo.email}</p>
-            <p className="text-sm text-gray-500">{donor.contactInfo.phone}</p>
+            <p className="text-sm">{donor.contacts?.[0]?.email || 'No email'}</p>
+            <p className="text-sm text-gray-500">{donor.contacts?.[0]?.phone || 'No phone'}</p>
           </div>
         </TableCell>
         <TableCell>
-          {formatDate(donor.lastDonation)}
+          {donor.last_donation_date ? formatDate(donor.last_donation_date) : 'No donations'}
         </TableCell>
         <TableCell>
           <div className="flex flex-wrap gap-1">
-            {donor.interestTags.slice(0, 2).map((tag, index) => (
-              <Badge key={index} className={`text-xs rounded-sm ${getFocusAreaColor(tag)}`}>
-                {tag}
+            {donor.focus_areas?.slice(0, 2).map((fa, index) => (
+              <Badge key={index} className={`text-xs rounded-sm ${fa.focus_areas?.color || 'bg-gray-100'}`}>
+                {fa.focus_areas?.name || 'Unknown'}
               </Badge>
             ))}
-            {donor.interestTags.length > 2 && (
+            {(donor.focus_areas?.length || 0) > 2 && (
               <Badge variant="outline" className="text-xs rounded-sm">
-                +{donor.interestTags.length - 2}
+                +{(donor.focus_areas?.length || 0) - 2}
               </Badge>
             )}
           </div>

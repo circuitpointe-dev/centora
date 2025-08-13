@@ -47,6 +47,175 @@ export type Database = {
         }
         Relationships: []
       }
+      donor_contacts: {
+        Row: {
+          created_at: string
+          donor_id: string
+          email: string
+          full_name: string
+          id: string
+          is_primary: boolean | null
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          donor_id: string
+          email: string
+          full_name: string
+          id?: string
+          is_primary?: boolean | null
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          donor_id?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_primary?: boolean | null
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donor_contacts_donor_id_fkey"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "donors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      donor_documents: {
+        Row: {
+          donor_id: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          donor_id: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          donor_id?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donor_documents_donor_id_fkey"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "donors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      donor_focus_areas: {
+        Row: {
+          created_at: string
+          donor_id: string
+          focus_area_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          donor_id: string
+          focus_area_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          donor_id?: string
+          focus_area_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donor_focus_areas_donor_id_fkey"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "donors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donor_focus_areas_focus_area_id_fkey"
+            columns: ["focus_area_id"]
+            isOneToOne: false
+            referencedRelation: "focus_areas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      donors: {
+        Row: {
+          affiliation: string | null
+          created_at: string
+          created_by: string
+          funding_end_date: string | null
+          funding_start_date: string | null
+          id: string
+          last_donation_date: string | null
+          name: string
+          notes: string | null
+          org_id: string
+          organization_url: string | null
+          status: Database["public"]["Enums"]["donor_status"]
+          total_donations: number | null
+          updated_at: string
+        }
+        Insert: {
+          affiliation?: string | null
+          created_at?: string
+          created_by: string
+          funding_end_date?: string | null
+          funding_start_date?: string | null
+          id?: string
+          last_donation_date?: string | null
+          name: string
+          notes?: string | null
+          org_id: string
+          organization_url?: string | null
+          status?: Database["public"]["Enums"]["donor_status"]
+          total_donations?: number | null
+          updated_at?: string
+        }
+        Update: {
+          affiliation?: string | null
+          created_at?: string
+          created_by?: string
+          funding_end_date?: string | null
+          funding_start_date?: string | null
+          id?: string
+          last_donation_date?: string | null
+          name?: string
+          notes?: string | null
+          org_id?: string
+          organization_url?: string | null
+          status?: Database["public"]["Enums"]["donor_status"]
+          total_donations?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       focus_areas: {
         Row: {
           amount: number
@@ -244,6 +413,7 @@ export type Database = {
     }
     Enums: {
       app_role: "org_admin" | "org_member"
+      donor_status: "active" | "inactive" | "potential"
       module_key:
         | "fundraising"
         | "grants"
@@ -384,6 +554,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["org_admin", "org_member"],
+      donor_status: ["active", "inactive", "potential"],
       module_key: [
         "fundraising",
         "grants",

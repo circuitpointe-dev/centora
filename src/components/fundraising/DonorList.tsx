@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { donorsData } from "@/data/donorData";
-import { Donor } from "@/types/donor";
+import { type Donor, useDonors } from "@/hooks/useDonors";
 import DonorProfile from "./DonorProfile";
 import DonorTableRow from "./DonorTableRow";
 import DonorTablePagination from "./DonorTablePagination";
@@ -11,7 +11,7 @@ import { EmptyDonorList } from "./EmptyDonorList";
 
 const DonorList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [donors, setDonors] = useState<Donor[]>([]); // Clear static data - will be replaced with backend data
+  const { data: donors = [], isLoading } = useDonors();
   const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showNewDonorDialog, setShowNewDonorDialog] = useState(false);
@@ -23,7 +23,8 @@ const DonorList: React.FC = () => {
   const currentDonors = donors.slice(startIndex, endIndex);
 
   const handleDelete = (id: string) => {
-    setDonors(prev => prev.filter(donor => donor.id !== id));
+    // TODO: Implement delete mutation
+    console.log('Delete donor:', id);
   };
 
   const handleRowClick = (donor: Donor) => {
@@ -94,10 +95,10 @@ const DonorList: React.FC = () => {
       <Dialog open={showProfile} onOpenChange={setShowProfile}>
         <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-auto p-0">
           {selectedDonor && (
-            <DonorProfile 
-              donor={selectedDonor} 
-              onEdit={handleEditDonor}
-            />
+            <div className="p-6">
+              <h2 className="text-xl font-semibold">{selectedDonor.name}</h2>
+              <p className="text-gray-600">{selectedDonor.affiliation}</p>
+            </div>
           )}
         </DialogContent>
       </Dialog>

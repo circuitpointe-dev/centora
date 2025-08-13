@@ -10,11 +10,11 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from "@/components/ui/side-dialog";
 import { FocusAreaForm } from "./FocusAreaForm";
 import { FocusArea, useFocusAreas } from "@/hooks/useFocusAreas";
-import { Donor } from "@/types/donor";
+import { useCreateDonor, useUpdateDonor, type Donor, type CreateDonorData } from "@/hooks/useDonors";
 import { useToast } from "@/hooks/use-toast";
 
 interface NewDonorFormProps {
-  onSubmit: (donorData: any) => void;
+  onSubmit?: (donorData: any) => void;
   onCancel: () => void;
   initialData?: Donor;
   isEditing?: boolean;
@@ -26,27 +26,31 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   initialData,
   isEditing = false 
 }) => {
+  const { toast } = useToast();
+  const createDonorMutation = useCreateDonor();
+  const updateDonorMutation = useUpdateDonor();
   const { focusAreas, loading: focusAreasLoading, refetch } = useFocusAreas();
+  
   const [formData, setFormData] = useState({
     organization: initialData?.name || "",
-    affiliation: "",
-    organizationUrl: "",
-    fundingStartDate: "",
-    fundingEndDate: "",
-    note: "",
+    affiliation: initialData?.affiliation || "",
+    organizationUrl: initialData?.organization_url || "",
+    fundingStartDate: initialData?.funding_start_date || "",
+    fundingEndDate: initialData?.funding_end_date || "",
+    note: initialData?.notes || "",
   });
 
   const [contacts, setContacts] = useState<ContactPerson[]>(
-    initialData ? [{
-      id: "1",
-      fullName: "",
-      email: initialData.contactInfo.email || "",
-      phone: initialData.contactInfo.phone || ""
-    }] : [{ id: "1", fullName: "", email: "", phone: "" }]
+    initialData?.contacts ? initialData.contacts.map((contact, index) => ({
+      id: contact.id || index.toString(),
+      fullName: contact.full_name,
+      email: contact.email,
+      phone: contact.phone
+    })) : [{ id: "1", fullName: "", email: "", phone: "" }]
   );
 
   const [selectedFocusAreas, setSelectedFocusAreas] = useState<string[]>(
-    initialData?.interestTags || []
+    initialData?.focus_areas?.map(fa => fa.focus_area_id) || []
   );
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -55,7 +59,6 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     contactId: ""
   });
   const [focusAreaOpen, setFocusAreaOpen] = useState(false);
-  const { toast } = useToast();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -88,11 +91,11 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     }
   };
 
-  const toggleFocusArea = (areaName: string) => {
+  const toggleFocusArea = (areaId: string) => {
     setSelectedFocusAreas(prev => 
-      prev.includes(areaName) 
-        ? prev.filter(area => area !== areaName)
-        : [...prev, areaName]
+      prev.includes(areaId) 
+        ? prev.filter(id => id !== areaId)
+        : [...prev, areaId]
     );
   };
 
@@ -113,12 +116,16 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
     if (!formData.organization.trim()) {
-      alert("Organization name is required");
+      toast({
+        title: "Validation Error",
+        description: "Organization name is required",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -127,18 +134,71 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     );
 
     if (validContacts.length === 0) {
-      alert("At least one complete contact person is required");
+      toast({
+        title: "Validation Error", 
+        description: "At least one complete contact person is required",
+        variant: "destructive",
+      });
       return;
     }
 
-    const donorData = {
-      ...formData,
-      contacts: validContacts,
-      focusAreas: selectedFocusAreas,
-      documents: uploadedFiles
+    const donorData: CreateDonorData = {
+      name: formData.organization,
+      affiliation: formData.affiliation,
+      organization_url: formData.organizationUrl,
+      funding_start_date: formData.fundingStartDate,
+      funding_end_date: formData.fundingEndDate,
+      notes: formData.note,
+      contacts: validContacts.map(contact => ({
+        full_name: contact.fullName,
+        email: contact.email,
+        phone: contact.phone,
+        is_primary: false,
+      })),
+      focus_area_ids: selectedFocusAreas,
+      documents: uploadedFiles,
     };
 
-    onSubmit(donorData);
+    try {
+      if (isEditing && initialData) {
+        await updateDonorMutation.mutateAsync({ 
+          id: initialData.id, 
+          donorData 
+        });
+        toast({
+          title: "Success",
+          description: "Donor updated successfully",
+        });
+      } else {
+        await createDonorMutation.mutateAsync(donorData);
+        toast({
+          title: "Success", 
+          description: "Donor created successfully",
+        });
+      }
+      
+      // Clear form after successful submission
+      setFormData({
+        organization: "",
+        affiliation: "",
+        organizationUrl: "",
+        fundingStartDate: "",
+        fundingEndDate: "",
+        note: ""
+      });
+      setContacts([{ id: "1", fullName: "", email: "", phone: "" }]);
+      setSelectedFocusAreas([]);
+      setUploadedFiles([]);
+      
+      onCancel(); // Close the form
+      onSubmit?.(donorData); // Call optional callback
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save donor",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -248,7 +308,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
               <div className="text-sm text-gray-500">No focus areas available. Create one first.</div>
             ) : (
                focusAreas.map(area => {
-                const isSelected = selectedFocusAreas.includes(area.name);
+                const isSelected = selectedFocusAreas.includes(area.id);
                 // Extract background and text colors from the area.color string
                 const colorClasses = area.color.split(' ');
                 const bgColor = colorClasses.find(c => c.startsWith('bg-'));
@@ -257,7 +317,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
                 return (
                   <div
                     key={area.id}
-                    onClick={() => toggleFocusArea(area.name)}
+                    onClick={() => toggleFocusArea(area.id)}
                     className={`
                       inline-flex
                       items-center
@@ -375,8 +435,14 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit">
-            {isEditing ? 'Update Donor' : 'Create Donor'}
+          <Button 
+            type="submit" 
+            disabled={createDonorMutation.isPending || updateDonorMutation.isPending}
+          >
+            {createDonorMutation.isPending || updateDonorMutation.isPending 
+              ? "Saving..." 
+              : isEditing ? 'Update Donor' : 'Create Donor'
+            }
           </Button>
         </div>
       </form>

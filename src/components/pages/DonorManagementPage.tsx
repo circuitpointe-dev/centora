@@ -12,13 +12,9 @@ const DonorManagementPage = () => {
   const [newDonorOpen, setNewDonorOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleNewDonorSubmit = (donorData: any) => {
-    console.log("New donor data:", donorData);
+  const handleNewDonorSubmit = () => {
+    // Form submission is now handled internally by NewDonorForm
     setNewDonorOpen(false);
-    toast({
-      title: "New Donor Created",
-      description: `${donorData.organization} has been successfully added to your donor list.`,
-    });
   };
 
   return (

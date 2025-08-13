@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit } from "lucide-react";
-import { Donor } from "@/types/donor";
+import { type Donor } from "@/hooks/useDonors";
 import { NewDonorForm } from "./NewDonorForm";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,13 +16,9 @@ const EditDonorDialog: React.FC<EditDonorDialogProps> = ({ donor, trigger }) => 
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleEditSubmit = (donorData: any) => {
-    console.log("Edit donor data:", donorData);
+  const handleEditSubmit = () => {
+    // Form submission is now handled internally by NewDonorForm
     setOpen(false);
-    toast({
-      title: "Donor Updated",
-      description: `${donorData.organization} has been successfully updated.`,
-    });
   };
 
   const handleCancel = () => {

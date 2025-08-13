@@ -19,14 +19,9 @@ const NewDonorDialog: React.FC<NewDonorDialogProps> = ({ triggerButton, open: ex
   const open = externalOpen !== undefined ? externalOpen : internalOpen;
   const setOpen = externalOnOpenChange || setInternalOpen;
 
-  const handleSubmit = (donorData: any) => {
-    console.log("New donor data:", donorData);
-    // Here you would typically send the data to your backend
+  const handleSubmit = () => {
+    // Form submission is now handled internally by NewDonorForm
     setOpen(false);
-    toast({
-      title: "New Donor Created",
-      description: `${donorData.organization} has been successfully added to your donor list.`,
-    });
   };
 
   const handleCancel = () => {
