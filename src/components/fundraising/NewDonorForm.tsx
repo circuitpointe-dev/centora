@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Upload, X } from "lucide-react";
+import { Plus, Upload, X, AlertCircle } from "lucide-react";
 import { ContactPersonForm, ContactPerson } from "./ContactPersonForm";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from "@/components/ui/side-dialog";
@@ -12,6 +12,7 @@ import { FocusAreaForm } from "./FocusAreaForm";
 import { FocusArea, useFocusAreas } from "@/hooks/useFocusAreas";
 import { useCreateDonor, useUpdateDonor, type Donor, type CreateDonorData } from "@/hooks/useDonors";
 import { useToast } from "@/hooks/use-toast";
+import { validateFiles, formatFileSize, getFileValidationSummary, type FileValidationError } from "@/utils/fileValidation";
 
 interface NewDonorFormProps {
   onSubmit?: (donorData: any) => void;
@@ -54,6 +55,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   );
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [fileValidationErrors, setFileValidationErrors] = useState<FileValidationError[]>([]);
   const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; contactId: string }>({
     show: false,
     contactId: ""
@@ -108,12 +110,38 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      setUploadedFiles(prev => [...prev, ...Array.from(files)]);
+      const newFiles = Array.from(files);
+      const allFiles = [...uploadedFiles, ...newFiles];
+      
+      // Validate all files together
+      const validation = validateFiles(allFiles);
+      
+      if (validation.errors.length > 0) {
+        setFileValidationErrors(validation.errors);
+        toast({
+          title: "File Validation Error",
+          description: getFileValidationSummary(validation),
+          variant: "destructive",
+        });
+      } else {
+        setFileValidationErrors([]);
+      }
+      
+      // Always update files, but user will see validation errors
+      setUploadedFiles(allFiles);
     }
+    
+    // Reset the input
+    event.target.value = '';
   };
 
   const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    const newFiles = uploadedFiles.filter((_, i) => i !== index);
+    setUploadedFiles(newFiles);
+    
+    // Re-validate remaining files
+    const validation = validateFiles(newFiles);
+    setFileValidationErrors(validation.errors);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,6 +168,19 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
         variant: "destructive",
       });
       return;
+    }
+
+    // Validate files before submission
+    if (uploadedFiles.length > 0) {
+      const validation = validateFiles(uploadedFiles);
+      if (validation.errors.length > 0) {
+        toast({
+          title: "File Validation Error",
+          description: "Please fix file validation errors before submitting",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     const donorData: CreateDonorData = {
@@ -189,6 +230,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
       setContacts([{ id: "1", fullName: "", email: "", phone: "" }]);
       setSelectedFocusAreas([]);
       setUploadedFiles([]);
+      setFileValidationErrors([]);
       
       onCancel(); // Close the form
       onSubmit?.(donorData); // Call optional callback
@@ -390,34 +432,86 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
         <div className="space-y-4">
           <h3 className="font-medium text-gray-900">Documents</h3>
           
-          {uploadedFiles.length > 0 && (
+          {/* File Validation Summary */}
+          {(uploadedFiles.length > 0 || fileValidationErrors.length > 0) && (
+            <div className="text-sm text-gray-600">
+              {getFileValidationSummary(validateFiles(uploadedFiles))}
+            </div>
+          )}
+          
+          {/* File Validation Errors */}
+          {fileValidationErrors.length > 0 && (
             <div className="space-y-2">
-              {uploadedFiles.map((file, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
-                  <span className="text-sm text-gray-700 truncate">{file.name}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile(index)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+              {fileValidationErrors.map((error, index) => (
+                <div key={index} className="flex items-start gap-2 p-2 bg-red-50 border border-red-200 rounded-md">
+                  <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-700">{error.file.name}</p>
+                    <ul className="text-xs text-red-600 list-disc list-inside">
+                      {error.errors.map((err, errIndex) => (
+                        <li key={errIndex}>{err}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               ))}
+            </div>
+          )}
+          
+          {uploadedFiles.length > 0 && (
+            <div className="space-y-2">
+              {uploadedFiles.map((file, index) => {
+                const hasError = fileValidationErrors.some(error => error.file === file);
+                return (
+                  <div 
+                    key={index} 
+                    className={`flex items-center justify-between p-2 rounded-md ${
+                      hasError ? 'bg-red-50 border border-red-200' : 'bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      {hasError && <AlertCircle className="h-4 w-4 text-red-500" />}
+                      <div className="flex-1">
+                        <span className={`text-sm truncate ${hasError ? 'text-red-700' : 'text-gray-700'}`}>
+                          {file.name}
+                        </span>
+                        <span className="text-xs text-gray-500 ml-2">
+                          ({formatFileSize(file.size)})
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(index)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
           )}
 
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
             <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 mb-2">Drag and drop files here or</p>
+            <p className="text-sm text-gray-600 mb-2">
+              Drag and drop files here or click to browse
+            </p>
+            <p className="text-xs text-gray-500 mb-4">
+              Supported: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, JPG, PNG, GIF, WEBP
+              <br />
+              Max 10MB per file, 50MB total
+            </p>
             <input
               type="file"
               multiple
               onChange={handleFileUpload}
               className="hidden"
               id="file-upload"
+              accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx,.jpg,.jpeg,.png,.gif,.webp"
             />
             <Button
               type="button"
@@ -437,7 +531,11 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
           </Button>
           <Button 
             type="submit" 
-            disabled={createDonorMutation.isPending || updateDonorMutation.isPending}
+            disabled={
+              createDonorMutation.isPending || 
+              updateDonorMutation.isPending || 
+              fileValidationErrors.length > 0
+            }
           >
             {createDonorMutation.isPending || updateDonorMutation.isPending 
               ? "Saving..." 

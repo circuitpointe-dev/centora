@@ -107,9 +107,12 @@ export const useCreateDonor = () => {
         throw new Error('User not authenticated or no organization');
       }
 
+      let donorId: string | null = null;
+      const uploadedFilePaths: string[] = [];
+
       try {
         // Step 1: Create donor with all related data atomically using database function
-        const { data: donorId, error: createError } = await supabase.rpc(
+        const { data: createdDonorId, error: createError } = await supabase.rpc(
           'create_donor_with_details',
           {
             _org_id: user.org_id,
@@ -129,49 +132,65 @@ export const useCreateDonor = () => {
           throw new Error(`Failed to create donor: ${createError.message}`);
         }
 
-        // Step 2: Upload documents if any (separate from atomic transaction)
-        const uploadedDocuments = [];
+        donorId = createdDonorId;
+
+        // Step 2: Upload documents if any with parallel uploads and atomic transaction
         if (donorData.documents && donorData.documents.length > 0) {
-          for (const file of donorData.documents) {
-            try {
-              const fileName = `${Date.now()}-${file.name}`;
-              const filePath = `${user.org_id}/${donorId}/${fileName}`;
+          const documentInserts: Array<{
+            donor_id: string;
+            file_name: string;
+            file_path: string;
+            file_size: number;
+            mime_type: string;
+            uploaded_by: string;
+          }> = [];
 
-              // Upload file to storage
-              const { error: uploadError } = await supabase.storage
-                .from('donor-documents')
-                .upload(filePath, file);
+          // Upload all files in parallel
+          const uploadPromises = donorData.documents.map(async (file) => {
+            const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${file.name}`;
+            const filePath = `${user.org_id}/${donorId}/${fileName}`;
 
-              if (uploadError) {
-                throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`);
-              }
+            // Upload file to storage
+            const { error: uploadError } = await supabase.storage
+              .from('donor-documents')
+              .upload(filePath, file);
 
-              // Create document record
-              const { error: docError } = await supabase
-                .from('donor_documents')
-                .insert({
-                  donor_id: donorId,
-                  file_name: file.name,
-                  file_path: filePath,
-                  file_size: file.size,
-                  mime_type: file.type,
-                  uploaded_by: user.id,
-                });
-
-              if (docError) {
-                // If document record creation fails, try to clean up the uploaded file
-                await supabase.storage
-                  .from('donor-documents')
-                  .remove([filePath]);
-                throw new Error(`Failed to save document record for ${file.name}: ${docError.message}`);
-              }
-
-              uploadedDocuments.push({ fileName: file.name, filePath });
-            } catch (fileError) {
-              // Log individual file errors but don't fail the entire operation
-              console.error(`Error uploading file ${file.name}:`, fileError);
-              throw fileError; // Re-throw to be caught by outer try-catch
+            if (uploadError) {
+              throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`);
             }
+
+            uploadedFilePaths.push(filePath);
+
+            return {
+              donor_id: donorId!,
+              file_name: file.name,
+              file_path: filePath,
+              file_size: file.size,
+              mime_type: file.type || 'application/octet-stream',
+              uploaded_by: user.id,
+            };
+          });
+
+          // Wait for all uploads to complete
+          const uploadResults = await Promise.all(uploadPromises);
+          documentInserts.push(...uploadResults);
+
+          // Insert all document records atomically
+          const { error: docError } = await supabase
+            .from('donor_documents')
+            .insert(documentInserts);
+
+          if (docError) {
+            // If document record creation fails, clean up all uploaded files
+            await Promise.all(
+              uploadedFilePaths.map(filePath =>
+                supabase.storage
+                  .from('donor-documents')
+                  .remove([filePath])
+                  .catch(console.error) // Don't fail cleanup if file removal fails
+              )
+            );
+            throw new Error(`Failed to save document records: ${docError.message}`);
           }
         }
 
@@ -196,6 +215,32 @@ export const useCreateDonor = () => {
 
         return donor;
       } catch (error) {
+        // If anything fails and we've created a donor, rollback everything
+        if (donorId) {
+          try {
+            // Clean up uploaded files
+            if (uploadedFilePaths.length > 0) {
+              await Promise.all(
+                uploadedFilePaths.map(filePath =>
+                  supabase.storage
+                    .from('donor-documents')
+                    .remove([filePath])
+                    .catch(console.error)
+                )
+              );
+            }
+
+            // Delete donor and all related records (cascades via foreign keys)
+            await supabase
+              .from('donors')
+              .delete()
+              .eq('id', donorId);
+          } catch (rollbackError) {
+            console.error('Failed to rollback donor creation:', rollbackError);
+            // Even if rollback fails, we still want to throw the original error
+          }
+        }
+
         // Enhanced error handling with more specific error messages
         if (error instanceof Error) {
           if (error.message.includes('already exists')) {
@@ -204,6 +249,8 @@ export const useCreateDonor = () => {
             throw new Error('You are not authorized to create donors for this organization');
           } else if (error.message.includes('upload')) {
             throw new Error(`File upload failed: ${error.message}`);
+          } else if (error.message.includes('row-level security')) {
+            throw new Error('Permission denied. Please check your access rights.');
           } else {
             throw new Error(`Failed to create donor: ${error.message}`);
           }
