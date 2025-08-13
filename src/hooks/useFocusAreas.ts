@@ -87,9 +87,25 @@ export const useFocusAreas = () => {
 
   const createFocusArea = async (data: Omit<FocusArea, 'id'>) => {
     try {
-      // Generate valid UUIDs for testing until auth is implemented
-      const orgId = '00000000-0000-0000-0000-000000000001';
-      const createdBy = '00000000-0000-0000-0000-000000000002';
+      // Get the current session and user
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error('User must be authenticated to create focus areas');
+      }
+
+      // Get user's profile to find org_id
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('org_id')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profileError || !profile) {
+        throw new Error('Could not find user profile');
+      }
+
+      const orgId = profile.org_id;
+      const createdBy = session.user.id;
       
       const { data: newFocusArea, error } = await supabase
         .from('focus_areas')
