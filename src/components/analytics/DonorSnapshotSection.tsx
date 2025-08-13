@@ -8,8 +8,8 @@ import { EmptyOpportunityPipeline } from "./EmptyOpportunityPipeline";
 
 export const DonorSnapshotSection: React.FC = () => {
   // For demo purposes, check if there's data - in real app this would come from props/state
-  const hasDonorData = false; // This will be dynamic from backend
-  const hasOpportunityData = false; // This will be dynamic from backend
+  const hasDonorData = false; // Clear static data - will be replaced with backend data
+  const hasOpportunityData = false; // Clear static data - will be replaced with backend data
 
   return (
     <div className="space-y-6">

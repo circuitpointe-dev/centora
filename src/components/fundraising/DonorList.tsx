@@ -11,7 +11,7 @@ import { EmptyDonorList } from "./EmptyDonorList";
 
 const DonorList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [donors, setDonors] = useState<Donor[]>(donorsData);
+  const [donors, setDonors] = useState<Donor[]>([]); // Clear static data - will be replaced with backend data
   const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const itemsPerPage = 5;

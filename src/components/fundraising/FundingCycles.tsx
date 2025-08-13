@@ -12,7 +12,7 @@ const FundingCycles: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
 
   // Filter funding data by selected year
-  const fundingData = allFundingData.filter(fund => fund.year === selectedYear);
+  const fundingData = []; // Clear static data - will be replaced with backend data
 
   const getPositionStyle = (cycle: FundingCycle) => {
     // Calculate position based on actual start month (0-indexed)
