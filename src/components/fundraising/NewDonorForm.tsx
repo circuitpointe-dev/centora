@@ -245,25 +245,36 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
             ) : focusAreas.length === 0 ? (
               <div className="text-sm text-gray-500">No focus areas available. Create one first.</div>
             ) : (
-              focusAreas.map(area => {
+               focusAreas.map(area => {
                 const isSelected = selectedFocusAreas.includes(area.name)
                 return (
-                  <Badge
+                  <div
                     key={area.id}
                     onClick={() => toggleFocusArea(area.name)}
                     className={`
-                      inline-block
-                      cursor-pointer
-                      text-center
-                      transition-colors 
-                      ${ isSelected ? 'bg-blue-50' : 'hover:bg-gray-50' }
-                      ${ area.color } 
-                      text-xs 
+                      inline-flex
+                      items-center
+                      gap-2
+                      px-3
+                      py-2
+                      text-xs
+                      font-medium
                       rounded-sm
+                      border
+                      cursor-pointer
+                      transition-all
+                      ${isSelected 
+                        ? 'bg-primary text-primary-foreground border-primary shadow-sm' 
+                        : 'bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground'
+                      }
                     `}
+                    style={{ borderColor: area.color }}
                   >
+                    {isSelected && (
+                      <div className="w-2 h-2 rounded-full bg-current" />
+                    )}
                     {area.name}
-                  </Badge>
+                  </div>
                 )
               })
             )}

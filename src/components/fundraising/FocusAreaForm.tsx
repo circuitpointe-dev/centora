@@ -56,6 +56,7 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling to parent form
     setIsSubmitting(true);
     
     try {
