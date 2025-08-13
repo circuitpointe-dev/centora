@@ -390,18 +390,31 @@ export type Database = {
         Returns: boolean
       }
       create_donor_with_details: {
-        Args: {
-          _org_id: string
-          _created_by: string
-          _name: string
-          _affiliation?: string
-          _organization_url?: string
-          _funding_start_date?: string
-          _funding_end_date?: string
-          _notes?: string
-          _contacts?: Json
-          _focus_area_ids?: string[]
-        }
+        Args:
+          | {
+              _org_id: string
+              _created_by: string
+              _name: string
+              _affiliation?: string
+              _organization_url?: string
+              _funding_start_date?: string
+              _funding_end_date?: string
+              _notes?: string
+              _contacts?: Json
+              _focus_area_ids?: string[]
+            }
+          | {
+              _org_id: string
+              _created_by: string
+              _name: string
+              _affiliation?: string
+              _organization_url?: string
+              _funding_start_date?: string
+              _funding_end_date?: string
+              _notes?: string
+              _contacts?: string
+              _focus_area_ids?: string[]
+            }
         Returns: string
       }
       get_org_member_count: {
