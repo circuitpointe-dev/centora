@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -7,36 +7,103 @@ import { ProfileInformationSection } from "./sections/ProfileInformationSection"
 import { CommunicationsSection } from "./sections/CommunicationsSection";
 import { FilesSection } from "./sections/FilesSection";
 import { GivingHistorySection } from "./sections/GivingHistorySection";
-import { Donor } from "@/types/donor";
+import { Donor, useUpdateDonor } from "@/hooks/useDonors";
+import { useToast } from "@/hooks/use-toast";
 
 interface DonorProfileProps {
   donor: Donor;
   onEdit: () => void;
+  onClose?: () => void;
 }
 
 export const DonorProfile: React.FC<DonorProfileProps> = ({
   donor,
   onEdit,
+  onClose,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    organization: donor.name,
-    contactPerson: donor.name,
-    email: donor.contactInfo.email,
-    secondaryEmail: "contact@fehd.org",
-    affiliation: "Lorem ipsum non aliquet fusce",
-    companyUrl: "https://FEHDfoundation.com",
-    fundingStartDate: "2024-01-01",
-    fundingEndDate: "2024-12-31",
+    organization: "",
+    contactPerson: "",
+    email: "",
+    secondaryEmail: "",
+    affiliation: "",
+    companyUrl: "",
+    fundingStartDate: "",
+    fundingEndDate: "",
   });
+  
+  const { toast } = useToast();
+  const updateDonorMutation = useUpdateDonor();
+
+  // Update form data when donor prop changes
+  useEffect(() => {
+    if (donor) {
+      const primaryContact = donor.contacts?.find(c => c.is_primary) || donor.contacts?.[0];
+      setFormData({
+        organization: donor.name || "",
+        contactPerson: primaryContact?.full_name || "",
+        email: primaryContact?.email || "",
+        secondaryEmail: donor.contacts?.[1]?.email || "",
+        affiliation: donor.affiliation || "",
+        companyUrl: donor.organization_url || "",
+        fundingStartDate: donor.funding_start_date || "",
+        fundingEndDate: donor.funding_end_date || "",
+      });
+    }
+  }, [donor]);
 
   const handleEdit = () => {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Save logic would go here
+  const handleSave = async () => {
+    if (!donor) return;
+    
+    try {
+      const primaryContact = donor.contacts?.find(c => c.is_primary) || donor.contacts?.[0];
+      const secondaryContact = donor.contacts?.find(c => !c.is_primary);
+      
+      const updateData = {
+        name: formData.organization,
+        affiliation: formData.affiliation || undefined,
+        organization_url: formData.companyUrl || undefined,
+        funding_start_date: formData.fundingStartDate || undefined,
+        funding_end_date: formData.fundingEndDate || undefined,
+        contacts: [
+          {
+            full_name: formData.contactPerson,
+            email: formData.email,
+            phone: primaryContact?.phone || "",
+            is_primary: true,
+          },
+          ...(formData.secondaryEmail ? [{
+            full_name: secondaryContact?.full_name || "",
+            email: formData.secondaryEmail,
+            phone: secondaryContact?.phone || "",
+            is_primary: false,
+          }] : []),
+        ],
+        focus_area_ids: donor.focus_areas?.map(fa => fa.focus_area_id) || [],
+      };
+      
+      await updateDonorMutation.mutateAsync({
+        id: donor.id,
+        donorData: updateData,
+      });
+      
+      setIsEditing(false);
+      toast({
+        title: "Success",
+        description: "Donor profile updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update donor profile. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -91,17 +158,17 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
           <Separator className="w-full" />
         </div>
 
-        <div className="flex flex-col gap-6">
-          {/* Row 1: Profile Information and Engagement History */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 items-start">
-            <div className="h-full">
-              <ProfileInformationSection
-                isEditing={isEditing}
-                formData={formData}
-                onInputChange={handleInputChange}
-                interestTags={donor.interestTags}
-              />
-            </div>
+          <div className="flex flex-col gap-6">
+            {/* Row 1: Profile Information and Engagement History */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 items-start">
+              <div className="h-full">
+                <ProfileInformationSection
+                  isEditing={isEditing}
+                  formData={formData}
+                  onInputChange={handleInputChange}
+                  interestTags={donor.focus_areas?.map(fa => fa.focus_areas?.name || "") || []}
+                />
+              </div>
             <div className="h-full">
               <EngagementHistorySection />
             </div>

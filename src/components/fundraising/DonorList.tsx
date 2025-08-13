@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { donorsData } from "@/data/donorData";
-import { type Donor, useDonors } from "@/hooks/useDonors";
+import { type Donor, useDonors, useDeleteDonor } from "@/hooks/useDonors";
+import { useToast } from "@/hooks/use-toast";
 import DonorProfile from "./DonorProfile";
 import DonorTableRow from "./DonorTableRow";
 import DonorTablePagination from "./DonorTablePagination";
@@ -12,6 +13,8 @@ import { EmptyDonorList } from "./EmptyDonorList";
 const DonorList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { data: donors = [], isLoading } = useDonors();
+  const deleteDonorMutation = useDeleteDonor();
+  const { toast } = useToast();
   const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showNewDonorDialog, setShowNewDonorDialog] = useState(false);
@@ -22,9 +25,20 @@ const DonorList: React.FC = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentDonors = donors.slice(startIndex, endIndex);
 
-  const handleDelete = (id: string) => {
-    // TODO: Implement delete mutation
-    console.log('Delete donor:', id);
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteDonorMutation.mutateAsync(id);
+      toast({
+        title: "Success",
+        description: "Donor deleted successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete donor. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleRowClick = (donor: Donor) => {
@@ -93,12 +107,16 @@ const DonorList: React.FC = () => {
 
       {/* Donor Profile Centralized Dialog */}
       <Dialog open={showProfile} onOpenChange={setShowProfile}>
-        <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-auto p-0">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-auto p-0">
           {selectedDonor && (
-            <div className="p-6">
-              <h2 className="text-xl font-semibold">{selectedDonor.name}</h2>
-              <p className="text-gray-600">{selectedDonor.affiliation}</p>
-            </div>
+            <DonorProfile 
+              donor={selectedDonor}
+              onEdit={() => {
+                // Handle edit action - could open edit dialog or inline editing
+                console.log('Edit donor:', selectedDonor.id);
+              }}
+              onClose={() => setShowProfile(false)}
+            />
           )}
         </DialogContent>
       </Dialog>

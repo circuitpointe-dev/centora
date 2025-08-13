@@ -109,7 +109,8 @@ export const ProfileInformationSection: React.FC<ProfileInformationSectionProps>
                 <Label className="text-sm text-muted-foreground">Funding Start Date</Label>
                 <Input
                   type={isEditing ? "date" : "text"}
-                  value={isEditing ? formData.fundingStartDate : "January 1, 2024"}
+                  value={isEditing ? formData.fundingStartDate : 
+                    formData.fundingStartDate ? new Date(formData.fundingStartDate).toLocaleDateString() : "Not specified"}
                   onChange={(e) => onInputChange('fundingStartDate', e.target.value)}
                   disabled={!isEditing}
                   className="w-full"
@@ -120,7 +121,8 @@ export const ProfileInformationSection: React.FC<ProfileInformationSectionProps>
                 <Label className="text-sm text-muted-foreground">Funding End Date</Label>
                 <Input
                   type={isEditing ? "date" : "text"}
-                  value={isEditing ? formData.fundingEndDate : "December 31, 2024"}
+                  value={isEditing ? formData.fundingEndDate : 
+                    formData.fundingEndDate ? new Date(formData.fundingEndDate).toLocaleDateString() : "Not specified"}
                   onChange={(e) => onInputChange('fundingEndDate', e.target.value)}
                   disabled={!isEditing}
                   className="w-full"
