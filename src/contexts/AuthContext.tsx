@@ -9,6 +9,7 @@ interface AppUser {
   email: string;
   name: string;
   organization: string;
+  org_id?: string;
   userType: 'NGO' | 'Donor';
   subscribedModules: string[];
 }
@@ -93,6 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: profile.email,
         name: profile.full_name || profile.email,
         organization: org?.name || '',
+        org_id: profile.org_id,
         userType: orgType,
         subscribedModules: fallbackModules,
       });

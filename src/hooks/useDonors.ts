@@ -72,9 +72,9 @@ export const useDonors = () => {
   const { user } = useAuth();
   
   return useQuery({
-    queryKey: ['donors', user?.organization],
+    queryKey: ['donors', user?.org_id],
     queryFn: async () => {
-      if (!user?.organization) throw new Error('No organization');
+      if (!user?.org_id) throw new Error('No organization');
       
       const { data, error } = await supabase
         .from('donors')
@@ -87,13 +87,13 @@ export const useDonors = () => {
           ),
           documents:donor_documents(*)
         `)
-        .eq('org_id', user.organization)
+        .eq('org_id', user.org_id)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
       return data as Donor[];
     },
-    enabled: !!user?.organization,
+    enabled: !!user?.org_id,
   });
 };
 
@@ -103,7 +103,7 @@ export const useCreateDonor = () => {
   
   return useMutation({
     mutationFn: async (donorData: CreateDonorData) => {
-      if (!user?.organization || !user?.id) {
+      if (!user?.org_id || !user?.id) {
         throw new Error('User not authenticated or no organization');
       }
 
@@ -111,7 +111,7 @@ export const useCreateDonor = () => {
       const { data: existingDonor } = await supabase
         .from('donors')
         .select('id')
-        .eq('org_id', user.organization)
+        .eq('org_id', user.org_id)
         .eq('name', donorData.name)
         .maybeSingle();
 
@@ -123,7 +123,7 @@ export const useCreateDonor = () => {
       const { data: donor, error: donorError } = await supabase
         .from('donors')
         .insert({
-          org_id: user.organization,
+          org_id: user.org_id,
           name: donorData.name,
           affiliation: donorData.affiliation,
           organization_url: donorData.organization_url,
@@ -169,7 +169,7 @@ export const useCreateDonor = () => {
       if (donorData.documents && donorData.documents.length > 0) {
         for (const file of donorData.documents) {
           const fileName = `${Date.now()}-${file.name}`;
-          const filePath = `${user.organization}/${donor.id}/${fileName}`;
+          const filePath = `${user.org_id}/${donor.id}/${fileName}`;
 
           const { error: uploadError } = await supabase.storage
             .from('donor-documents')
@@ -207,7 +207,7 @@ export const useUpdateDonor = () => {
   
   return useMutation({
     mutationFn: async ({ id, donorData }: { id: string; donorData: Partial<CreateDonorData> }) => {
-      if (!user?.organization) {
+      if (!user?.org_id) {
         throw new Error('User not authenticated or no organization');
       }
 
@@ -216,7 +216,7 @@ export const useUpdateDonor = () => {
         const { data: existingDonor } = await supabase
           .from('donors')
           .select('id')
-          .eq('org_id', user.organization)
+          .eq('org_id', user.org_id)
           .eq('name', donorData.name)
           .neq('id', id)
           .maybeSingle();
