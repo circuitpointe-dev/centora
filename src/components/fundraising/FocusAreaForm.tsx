@@ -6,11 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus } from "lucide-react";
-import { FocusArea } from "@/types/donor";
+import { FocusArea, useFocusAreas } from "@/hooks/useFocusAreas";
+import { useToast } from "@/hooks/use-toast";
+import { colorOptions } from "@/utils/focusAreaColors";
 
 interface FocusAreaFormProps {
   focusArea?: FocusArea;
-  onSave: (focusArea: Omit<FocusArea, 'id'>) => void;
+  onSave?: (focusArea: Omit<FocusArea, 'id'>) => void;
   onCancel: () => void;
 }
 
@@ -19,6 +21,9 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
   onSave,
   onCancel,
 }) => {
+  const { createFocusArea, updateFocusArea } = useFocusAreas();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: focusArea?.name || "",
     description: focusArea?.description || "",
@@ -31,15 +36,6 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
   });
 
   const [newTag, setNewTag] = useState("");
-
-  const colorOptions = [
-    { value: "bg-blue-100 text-blue-800", label: "Blue", preview: "bg-blue-100" },
-    { value: "bg-green-100 text-green-800", label: "Green", preview: "bg-green-100" },
-    { value: "bg-orange-100 text-orange-800", label: "Orange", preview: "bg-orange-100" },
-    { value: "bg-red-100 text-red-800", label: "Red", preview: "bg-red-100" },
-    { value: "bg-purple-100 text-purple-800", label: "Purple", preview: "bg-purple-100" },
-    { value: "bg-pink-100 text-pink-800", label: "Pink", preview: "bg-pink-100" },
-  ];
 
   const handleAddTag = () => {
     if (newTag.trim() && !formData.interestTags.includes(newTag.trim())) {
@@ -58,9 +54,25 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    setIsSubmitting(true);
+    
+    try {
+      if (focusArea) {
+        await updateFocusArea(focusArea.id, formData);
+      } else {
+        await createFocusArea(formData);
+      }
+      
+      // Call the optional callback for backward compatibility
+      onSave?.(formData);
+      onCancel();
+    } catch (error) {
+      console.error('Error saving focus area:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -198,8 +210,8 @@ export const FocusAreaForm: React.FC<FocusAreaFormProps> = ({
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit">
-          {focusArea ? 'Update Focus Area' : 'Create Focus Area'}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Saving...' : (focusArea ? 'Update Focus Area' : 'Create Focus Area')}
         </Button>
       </div>
     </form>

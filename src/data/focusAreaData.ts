@@ -1,5 +1,5 @@
 
-import { FocusArea } from "@/types/donor";
+import { FocusArea } from "@/hooks/useFocusAreas";
 
 export const focusAreasData: FocusArea[] = [
   {

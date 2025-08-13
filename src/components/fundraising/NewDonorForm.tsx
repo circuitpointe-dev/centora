@@ -6,11 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Upload, X } from "lucide-react";
 import { ContactPersonForm, ContactPerson } from "./ContactPersonForm";
-import { focusAreasData, getFocusAreaColor } from "@/data/focusAreaData";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from "@/components/ui/side-dialog";
 import { FocusAreaForm } from "./FocusAreaForm";
-import { FocusArea, Donor } from "@/types/donor";
+import { FocusArea, useFocusAreas } from "@/hooks/useFocusAreas";
+import { Donor } from "@/types/donor";
 import { useToast } from "@/hooks/use-toast";
 
 interface NewDonorFormProps {
@@ -26,6 +26,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   initialData,
   isEditing = false 
 }) => {
+  const { focusAreas, loading: focusAreasLoading } = useFocusAreas();
   const [formData, setFormData] = useState({
     organization: initialData?.name || "",
     affiliation: "",
@@ -95,13 +96,8 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     );
   };
 
-  const handleFocusAreaSave = (focusAreaData: Omit<FocusArea, 'id'>) => {
-    console.log("New focus area data:", focusAreaData);
+  const handleFocusAreaSave = () => {
     setFocusAreaOpen(false);
-    toast({
-      title: "Focus Area Created",
-      description: `${focusAreaData.name} has been successfully created.`,
-    });
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -244,27 +240,33 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
             </SideDialog>
           </div>
           <div className="flex flex-wrap items-start gap-2">
-            {focusAreasData.map(area => {
-              const isSelected = selectedFocusAreas.includes(area.name)
-              return (
-                <Badge
-                  key={area.id}
-                  onClick={() => toggleFocusArea(area.name)}
-                  className={`
-                    inline-block
-                    w
-                    text-center
-                    transition-colors 
-                    ${ isSelected ? 'bg-blue-50' : 'hover:bg-gray-50' }
-                    ${ getFocusAreaColor(area.name) } 
-                    text-xs 
-                    rounded-sm
-                  `}
-                >
-                  {area.name}
-                </Badge>
-              )
-            })}
+            {focusAreasLoading ? (
+              <div className="text-sm text-gray-500">Loading focus areas...</div>
+            ) : focusAreas.length === 0 ? (
+              <div className="text-sm text-gray-500">No focus areas available. Create one first.</div>
+            ) : (
+              focusAreas.map(area => {
+                const isSelected = selectedFocusAreas.includes(area.name)
+                return (
+                  <Badge
+                    key={area.id}
+                    onClick={() => toggleFocusArea(area.name)}
+                    className={`
+                      inline-block
+                      cursor-pointer
+                      text-center
+                      transition-colors 
+                      ${ isSelected ? 'bg-blue-50' : 'hover:bg-gray-50' }
+                      ${ area.color } 
+                      text-xs 
+                      rounded-sm
+                    `}
+                  >
+                    {area.name}
+                  </Badge>
+                )
+              })
+            )}
           </div>
         </div>
 

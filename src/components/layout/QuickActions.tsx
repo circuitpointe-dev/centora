@@ -6,7 +6,6 @@ import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideD
 import { useToast } from "@/hooks/use-toast";
 import { NewDonorForm } from "@/components/fundraising/NewDonorForm";
 import { FocusAreaForm } from "@/components/fundraising/FocusAreaForm";
-import { FocusArea } from "@/types/donor";
 
 const QuickActions: React.FC = () => {
   const [newDonorOpen, setNewDonorOpen] = useState(false);
@@ -22,13 +21,8 @@ const QuickActions: React.FC = () => {
     });
   };
 
-  const handleFocusAreaSave = (focusAreaData: Omit<FocusArea, 'id'>) => {
-    console.log("New focus area data:", focusAreaData);
+  const handleFocusAreaSave = () => {
     setFocusAreaOpen(false);
-    toast({
-      title: "Focus Area Created",
-      description: `${focusAreaData.name} has been successfully created.`,
-    });
   };
 
   return (

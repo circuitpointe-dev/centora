@@ -23,14 +23,4 @@ export interface Donor {
   status: 'Active' | 'Inactive' | 'Potential';
 }
 
-export interface FocusArea {
-  id: string;
-  name: string;
-  description: string;
-  color: string;
-  fundingStartDate: string;
-  fundingEndDate: string;
-  interestTags: string[];
-  amount: number;
-  currency: string;
-}
+// FocusArea interface moved to src/hooks/useFocusAreas.ts
