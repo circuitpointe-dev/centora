@@ -47,6 +47,54 @@ export type Database = {
         }
         Relationships: []
       }
+      focus_areas: {
+        Row: {
+          amount: number
+          color: string
+          created_at: string
+          created_by: string
+          currency: string
+          description: string | null
+          funding_end_date: string
+          funding_start_date: string
+          id: string
+          interest_tags: string[] | null
+          name: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          color: string
+          created_at?: string
+          created_by: string
+          currency?: string
+          description?: string | null
+          funding_end_date: string
+          funding_start_date: string
+          id?: string
+          interest_tags?: string[] | null
+          name: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          color?: string
+          created_at?: string
+          created_by?: string
+          currency?: string
+          description?: string | null
+          funding_end_date?: string
+          funding_start_date?: string
+          id?: string
+          interest_tags?: string[] | null
+          name?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       organization_modules: {
         Row: {
           created_at: string
