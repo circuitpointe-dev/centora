@@ -87,9 +87,9 @@ export const useFocusAreas = () => {
 
   const createFocusArea = async (data: Omit<FocusArea, 'id'>) => {
     try {
-      // For now, we'll use a placeholder org_id until user auth is implemented
-      const orgId = 'placeholder-org-id';
-      const createdBy = 'placeholder-user-id';
+      // Generate valid UUIDs for testing until auth is implemented
+      const orgId = '00000000-0000-0000-0000-000000000001';
+      const createdBy = '00000000-0000-0000-0000-000000000002';
       
       const { data: newFocusArea, error } = await supabase
         .from('focus_areas')
