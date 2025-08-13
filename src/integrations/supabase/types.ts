@@ -389,6 +389,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_access_donor_document: {
+        Args: { file_path: string }
+        Returns: boolean
+      }
       create_donor_with_details: {
         Args: {
           _org_id: string
