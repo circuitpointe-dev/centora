@@ -164,6 +164,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_update_member_role: {
+        Args: {
+          _member_id: string
+          _new_role: Database["public"]["Enums"]["app_role"]
+          _org_id: string
+        }
+        Returns: boolean
+      }
+      get_org_member_count: {
+        Args: { _org_id: string }
+        Returns: number
+      }
+      get_org_member_list: {
+        Args: { _org_id: string }
+        Returns: {
+          id: string
+          full_name: string
+          role: Database["public"]["Enums"]["app_role"]
+          created_at: string
+        }[]
+      }
       is_org_admin: {
         Args: { _org_id: string }
         Returns: boolean
