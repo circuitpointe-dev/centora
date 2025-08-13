@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      calendar_events: {
+        Row: {
+          color: string | null
+          created_at: string
+          created_by: string
+          date: string
+          id: string
+          org_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          created_by: string
+          date: string
+          id?: string
+          org_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          created_by?: string
+          date?: string
+          id?: string
+          org_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       organization_modules: {
         Row: {
           created_at: string
