@@ -1,50 +1,46 @@
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import KanbanBoard from "@/components/opportunity-tracking/KanbanBoard";
 import OpportunityFilter, { FilterOptions } from "@/components/opportunity-tracking/OpportunityFilter";
 import AddOpportunityDialog from "@/components/opportunity-tracking/AddOpportunityDialog";
 import OpportunityDetailDialog from "@/components/opportunity-tracking/OpportunityDetailDialog";
-import { mockOpportunities, Opportunity } from "@/types/opportunity";
-import { Plus, PanelTop } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useOpportunities, DatabaseOpportunity } from "@/hooks/useOpportunities";
+import { useDonors } from "@/hooks/useDonors";
 // New import for pipeline dashboard dialog
 import OpportunityPipelineDialog from "@/components/opportunity-tracking/pipeline/OpportunityPipelineDialog";
 
 const OpportunityTracking: React.FC = () => {
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
-  const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>(mockOpportunities);
+  const { data: opportunities = [], isLoading, error } = useOpportunities();
+  const { data: donors = [] } = useDonors();
   const [filters, setFilters] = useState<FilterOptions>({});
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showPipelineDialog, setShowPipelineDialog] = useState(false);
-  const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
+  const [selectedOpportunity, setSelectedOpportunity] = useState<DatabaseOpportunity | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const { toast } = useToast();
 
   // Extract unique donors and sectors for filters
-  const donors = useMemo(() => Array.from(new Set(opportunities.map((opp) => opp.donorName))), [opportunities]);
+  const donorNames = useMemo(() => Array.from(new Set(opportunities.map((opp) => opp.donor?.name).filter(Boolean))), [opportunities]);
   const sectors = useMemo(
     () => Array.from(new Set(opportunities.filter((opp) => opp.sector).map((opp) => opp.sector as string))),
     [opportunities]
   );
 
-  // Filter opportunities when filters change
-  useEffect(() => {
+  // Filter opportunities
+  const filteredOpportunities = useMemo(() => {
     let result = opportunities;
-    if (filters.donor) result = result.filter((opp) => opp.donorName === filters.donor);
+    if (filters.donor) result = result.filter((opp) => opp.donor?.name === filters.donor);
     if (filters.sector) result = result.filter((opp) => opp.sector === filters.sector);
     if (filters.type) result = result.filter((opp) => opp.type === filters.type);
     if (filters.deadlineAfter) result = result.filter((opp) => new Date(opp.deadline) >= filters.deadlineAfter!);
     if (filters.deadlineBefore) result = result.filter((opp) => new Date(opp.deadline) <= filters.deadlineBefore!);
-    setFilteredOpportunities(result);
+    return result;
   }, [filters, opportunities]);
 
-  const handleAddOpportunity = (newOpportunity: Opportunity) => {
-    setOpportunities((prev) => [newOpportunity, ...prev]);
-    toast({ title: "Opportunity Added", description: `${newOpportunity.title} has been added successfully.` });
-  };
-
-  const handleCardClick = (opportunity: Opportunity) => {
+  const handleCardClick = (opportunity: DatabaseOpportunity) => {
     setSelectedOpportunity(opportunity);
     setShowDetailDialog(true);
   };
@@ -52,17 +48,25 @@ const OpportunityTracking: React.FC = () => {
   const handleFilterChange = (newFilters: FilterOptions) => setFilters(newFilters);
 
   const donorsForDropdown = useMemo(
-    () =>
-      opportunities
-        .map((opp) => ({ id: opp.donorId, name: opp.donorName }))
-        .filter((donor, idx, self) => idx === self.findIndex((d) => d.id === donor.id)),
-    [opportunities]
+    () => donors.map((donor) => ({ id: donor.id, name: donor.name })),
+    [donors]
   );
 
   // Month/year state for pipeline dialog
   const today = new Date();
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <h3 className="text-lg font-medium text-foreground mb-2">Error Loading Opportunities</h3>
+          <p className="text-muted-foreground">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -71,7 +75,7 @@ const OpportunityTracking: React.FC = () => {
         <div className="flex gap-3">
           <OpportunityFilter
             onFilterChange={handleFilterChange}
-            donors={donors}
+            donors={donorNames}
             sectors={sectors}
           />
           <Button
@@ -84,12 +88,16 @@ const OpportunityTracking: React.FC = () => {
         </div>
       </div>
       <div className="mt-4">
-        <KanbanBoard opportunities={filteredOpportunities} onCardClick={handleCardClick} />
+        <KanbanBoard 
+          opportunities={filteredOpportunities} 
+          onCardClick={handleCardClick}
+          isLoading={isLoading}
+          onCreateOpportunity={() => setShowAddDialog(true)}
+        />
       </div>
       <AddOpportunityDialog
         isOpen={showAddDialog}
         onClose={() => setShowAddDialog(false)}
-        onAddOpportunity={handleAddOpportunity}
         donors={donorsForDropdown}
       />
       <OpportunityDetailDialog
@@ -101,7 +109,7 @@ const OpportunityTracking: React.FC = () => {
       <OpportunityPipelineDialog
         isOpen={showPipelineDialog}
         onClose={() => setShowPipelineDialog(false)}
-        allOpportunities={mockOpportunities}
+        allOpportunities={opportunities}
         month={selectedMonth}
         year={selectedYear}
         setMonth={setSelectedMonth}

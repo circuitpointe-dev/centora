@@ -8,27 +8,16 @@ import {
   SideDialogHeader,
   SideDialogTitle,
 } from "@/components/ui/side-dialog";
-import { Opportunity } from "@/types/opportunity";
-import { useToast } from "@/hooks/use-toast";
+import { useCreateOpportunity, CreateOpportunityData } from "@/hooks/useOpportunities";
+import { useNavigate } from "react-router-dom";
 import OpportunityForm from "./OpportunityForm";
 
 interface AddOpportunityDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddOpportunity: (opportunity: Opportunity) => void;
   donors: Array<{ id: string; name: string }>;
 }
 
-interface OpportunityFormData {
-  title: string;
-  donorId: string;
-  amount: string;
-  currency: string;
-  type: "RFP" | "LOI" | "CFP";
-  deadline: Date | undefined;
-  assignedTo: string;
-  sector: string;
-}
 
 const TYPE_OPTIONS = [
   { value: "RFP", label: "RFP - Request for Proposal" },
@@ -50,52 +39,43 @@ const CURRENCY_OPTIONS = [
 const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
   isOpen,
   onClose,
-  onAddOpportunity,
   donors,
 }) => {
-  const { toast } = useToast();
+  const navigate = useNavigate();
+  const createOpportunityMutation = useCreateOpportunity();
   
-  const form = useForm<OpportunityFormData>({
+  const form = useForm<CreateOpportunityData>({
     defaultValues: {
       title: "",
-      donorId: "",
-      amount: "",
+      donor_id: "",
+      contact_email: "",
+      contact_phone: "",
+      amount: undefined,
       currency: "USD",
       type: "RFP",
-      deadline: undefined,
-      assignedTo: "",
+      deadline: "",
+      assigned_to: "",
       sector: "",
     },
   });
 
-  const handleSubmit = (data: OpportunityFormData) => {
-    if (!data.title || !data.donorId || !data.type || !data.deadline) {
-      toast({
-        title: "Missing required fields",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
+  const handleSubmit = async (data: CreateOpportunityData) => {
+    if (!data.title || !data.donor_id || !data.type || !data.deadline) {
       return;
     }
 
-    const newOpportunity: Opportunity = {
-      id: `opp-${Date.now()}`,
-      title: data.title,
-      donorId: data.donorId,
-      donorName: donors.find((d) => d.id === data.donorId)?.name || "",
-      amount: parseFloat(data.amount) || 0,
-      type: data.type,
-      deadline: data.deadline.toISOString(),
-      status: "To Review",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      assignedTo: data.assignedTo,
-      sector: data.sector,
-    };
+    try {
+      await createOpportunityMutation.mutateAsync(data);
+      onClose();
+      form.reset();
+    } catch (error) {
+      // Error is handled by the mutation
+    }
+  };
 
-    onAddOpportunity(newOpportunity);
+  const handleCreateDonor = () => {
     onClose();
-    form.reset();
+    navigate('/dashboard/fundraising/donors');
   };
 
   return (
@@ -113,6 +93,7 @@ const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
             donors={donors}
             typeOptions={TYPE_OPTIONS}
             currencyOptions={CURRENCY_OPTIONS}
+            onCreateDonor={handleCreateDonor}
           />
           
           <div className="flex justify-end gap-2 pt-6">
@@ -122,8 +103,9 @@ const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
             <Button
               type="submit"
               className="bg-black text-white hover:bg-gray-900"
+              disabled={createOpportunityMutation.isPending}
             >
-              Add Opportunity
+              {createOpportunityMutation.isPending ? "Adding..." : "Add Opportunity"}
             </Button>
           </div>
         </form>

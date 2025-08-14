@@ -34,6 +34,7 @@ interface OpportunityFormProps {
   donors: Array<{ id: string; name: string }>;
   typeOptions: Array<{ value: string; label: string }>;
   currencyOptions: Array<{ value: string; label: string }>;
+  onCreateDonor?: () => void;
 }
 
 const OpportunityForm: React.FC<OpportunityFormProps> = ({
@@ -41,6 +42,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({
   donors,
   typeOptions,
   currencyOptions,
+  onCreateDonor,
 }) => {
   return (
     <div className="px-6 space-y-4">

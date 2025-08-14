@@ -1,16 +1,23 @@
 
 import React from "react";
-import { Opportunity, OpportunityStatus } from "@/types/opportunity";
+import { DatabaseOpportunity } from "@/hooks/useOpportunities";
 import OpportunityCard from "./OpportunityCard";
+import { EmptyOpportunityColumn } from "./EmptyOpportunityColumn";
 
 interface KanbanBoardProps {
-  opportunities: Opportunity[];
-  onCardClick: (opportunity: Opportunity) => void;
+  opportunities: DatabaseOpportunity[];
+  onCardClick: (opportunity: DatabaseOpportunity) => void;
+  isLoading?: boolean;
+  onCreateOpportunity?: () => void;
 }
+
+type OpportunityStatus = 'To Review' | 'In Progress' | 'Submitted' | 'Awarded' | 'Declined';
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({
   opportunities,
   onCardClick,
+  isLoading = false,
+  onCreateOpportunity,
 }) => {
   const columns: OpportunityStatus[] = [
     "To Review",
@@ -62,9 +69,13 @@ const STATUS_COLORS: Record<string, string> = {
               </div>
             </div>
 
-            {/* Opportunities List - removed overflow-y-auto */}
+            {/* Opportunities List */}
             <div className="mt-2 space-y-2 flex-1">
-              {columnOpportunities.length > 0 ? (
+              {isLoading ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Loading opportunities...
+                </div>
+              ) : columnOpportunities.length > 0 ? (
                 columnOpportunities.map((opportunity) => (
                   <OpportunityCard
                     key={opportunity.id}
@@ -73,9 +84,10 @@ const STATUS_COLORS: Record<string, string> = {
                   />
                 ))
               ) : (
-                <div className="p-4 text-center text-sm text-gray-500 bg-gray-50 rounded-lg">
-                  No opportunities
-                </div>
+                <EmptyOpportunityColumn 
+                  status={status} 
+                  onCreateOpportunity={onCreateOpportunity}
+                />
               )}
             </div>
           </div>

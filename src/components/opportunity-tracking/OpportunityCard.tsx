@@ -1,7 +1,7 @@
 
 import React from "react";
 import { format, differenceInDays } from "date-fns";
-import { Opportunity } from "@/types/opportunity";
+import { DatabaseOpportunity } from "@/hooks/useOpportunities";
 import {
   Tooltip,
   TooltipContent,
@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/tooltip";
 
 interface OpportunityCardProps {
-  opportunity: Opportunity;
-  onClick: (opportunity: Opportunity) => void;
+  opportunity: DatabaseOpportunity;
+  onClick: (opportunity: DatabaseOpportunity) => void;
 }
 
 // Helper to get days remaining until deadline
@@ -74,7 +74,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
               {opportunity.title}
             </div>
             <div className="text-sm text-gray-600 line-clamp-2 h-10">
-              {opportunity.donorName}
+              {opportunity.donor?.name || 'Unknown Donor'}
             </div>
 
             <div
@@ -83,17 +83,19 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
               <span className="text-md font-bold">{formattedDeadline}</span>
             </div>
 
-            <div className="flex items-center mt-4 pt-3 border-t border-gray-300">
-              <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center text-violet-800 text-xs font-medium">
-                {opportunity.assignedTo
-                  .split(" ")
-                  .map((name) => name[0])
-                  .join("")}
+            {opportunity.assigned_to && (
+              <div className="flex items-center mt-4 pt-3 border-t border-gray-300">
+                <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center text-violet-800 text-xs font-medium">
+                  {opportunity.assigned_to
+                    .split(" ")
+                    .map((name) => name[0])
+                    .join("")}
+                </div>
+                <span className="text-sm text-gray-700 ml-2 font-semibold">
+                  {opportunity.assigned_to}
+                </span>
               </div>
-              <span className="text-sm text-gray-700 ml-2 font-semibold">
-                {opportunity.assignedTo}
-              </span>
-            </div>
+            )}
           </div>
         </TooltipTrigger>
         <TooltipContent>

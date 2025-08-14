@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import AddNoteDialog from "./AddNoteDialog";
 import AddFileDialog from "./AddFileDialog";
 import AddTaskDialog from "./AddTaskDialog";
-import { Opportunity } from "@/types/opportunity";
+import { DatabaseOpportunity } from "@/hooks/useOpportunities";
 import { useToast } from "@/hooks/use-toast";
 
 // Section subcomponents
@@ -25,7 +25,7 @@ import QuickActionsCard from "./QuickActionsCard";
 const SECTION_HEIGHT = "h-72";
 
 interface OpportunityDetailDialogProps {
-  opportunity: Opportunity | null;
+  opportunity: DatabaseOpportunity | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -62,12 +62,12 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
   const statusTimeline = [
     {
       status: "Opportunity Identified",
-      date: opportunity.createdAt,
+      date: opportunity.created_at,
       completed: true,
     },
     {
       status: "Proposal Submitted",
-      date: opportunity.updatedAt,
+      date: opportunity.updated_at,
       completed:
         opportunity.status === "Submitted" ||
         opportunity.status === "Awarded" ||
@@ -136,10 +136,10 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
               {/* Left Column */}
               <div className="col-span-2 space-y-6">
                 <DonorProfileCard
-                  donorName={opportunity.donorName}
-                  contactEmail={opportunity.contactEmail}
-                  contactPhone={opportunity.contactPhone}
-                  createdAt={opportunity.createdAt}
+                  donorName={opportunity.donor?.name || 'Unknown Donor'}
+                  contactEmail={opportunity.contact_email}
+                  contactPhone={opportunity.contact_phone}
+                  createdAt={opportunity.created_at}
                   deadline={opportunity.deadline}
                   sector={opportunity.sector}
                   sectionHeight={SECTION_HEIGHT}
