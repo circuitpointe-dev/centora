@@ -42,6 +42,15 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
     setDeleteConfirm(false);
   };
 
+  const renderWithLineBreaks = (text) => {
+  return text.split('\n').map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      {index < text.split('\n').length - 1 && <br />}
+    </React.Fragment>
+  ));
+};
+  
   return (
     <>
       <TableRow 
@@ -98,15 +107,15 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
         open={deleteConfirm}
         onOpenChange={setDeleteConfirm}
         title="⚠️ Permanently Delete Donor"
-        description={`You are about to permanently delete "${donor.name}" and ALL associated data. This action cannot be undone and will remove:
-
-• Complete donor profile and contact information
-• All uploaded files from the donor-documents storage
-• Complete engagement and communication history
-• All donation and giving records
-• All notes and comments
-
-Are you absolutely certain you want to proceed? This data cannot be recovered.`}
+        description={renderWithLineBreaks(`You are about to permanently delete "${donor.name}" and ALL associated data. This action cannot be undone and will remove:
+      
+      • Complete donor profile and contact information
+      • All uploaded files from the donor-documents storage
+      • Complete engagement and communication history
+      • All donation and giving records
+      • All notes and comments
+      
+      Are you absolutely certain you want to proceed? This data cannot be recovered.`)}
         onConfirm={handleConfirmDelete}
         confirmText="Yes, Delete Everything"
         cancelText="Cancel"
