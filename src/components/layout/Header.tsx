@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import UserProfileDialog from "./UserProfileDialog";
 import SettingsDialog from "./SettingsDialog";
 import NotificationDropdown from "./NotificationDropdown";
+import AnnouncementDropdown from "./AnnouncementDropdown";
 
 interface HeaderProps {
   sidebarCollapsed: boolean;
@@ -77,13 +78,16 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
           <h2 className="text-md text-gray-700">
             Welcome,{" "}
             <span className="font-semibold text-gray-900">
-              {currentUser.name}
+              {user?.name} of {user?.organization}
             </span>
           </h2>
         </div>
 
-        {/* Right Side - Notifications and User Menu */}
+        {/* Right Side - Announcements, Notifications and User Menu */}
         <div className="flex items-center space-x-4 ml-auto md:ml-0">
+          {/* Announcements */}
+          <AnnouncementDropdown />
+          
           {/* Notifications */}
           <NotificationDropdown />
 
