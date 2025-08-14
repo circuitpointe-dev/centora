@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Trash2, MessageSquare } from "lucide-react";
 import { AddNotesDialog } from "@/components/fundraising/AddNotesDialog";
@@ -84,15 +84,20 @@ export const CommunicationsSection: React.FC<CommunicationsSectionProps> = ({ do
                   <div key={note.id} className="flex gap-3 w-full group">
                     <div className="pt-1">
                       <Avatar className="w-10 h-10">
+                        <AvatarImage 
+                          src="/placeholder.svg" 
+                          alt={note.created_by || "User"}
+                          className="object-cover"
+                        />
                         <AvatarFallback className="bg-gray-200 text-gray-600">
-                          {getUserInitials(note.created_by)}
+                          {getUserInitials(note.created_by || "User")}
                         </AvatarFallback>
                       </Avatar>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-medium text-gray-700">
-                          {note.created_by}
+                          {note.created_by || "Unknown User"}
                         </h3>
                         <span className="text-xs text-gray-500">
                           {format(new Date(note.created_at), "MMM dd, yyyy 'at' h:mm a")}
