@@ -2,104 +2,44 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Trash2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Trash2, MessageSquare } from "lucide-react";
 import { AddNotesDialog } from "@/components/fundraising/AddNotesDialog";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { EmptyState } from "@/components/ui/empty-state";
+import { useDonorNotes, useCreateDonorNote, useDeleteDonorNote } from "@/hooks/useDonorNotes";
+import { format } from "date-fns";
 
-interface Message {
-  id: number;
-  author: string;
-  timestamp: string;
-  content: string;
-  avatar: string;
+interface CommunicationsSectionProps {
+  donorId: string;
 }
 
-export const CommunicationsSection: React.FC = () => {
-  const { user } = useAuth();
+export const CommunicationsSection: React.FC<CommunicationsSectionProps> = ({ donorId }) => {
   const [addNotesOpen, setAddNotesOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [messageToDelete, setMessageToDelete] = useState<number | null>(null);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      author: "John Doe",
-      timestamp: "April 10th, 2:13 AM",
-      content:
-        "Lorem ipsum dolor sit amet consectetur. Nibh sit enim sagittis in duis non dolor sagittis eu.",
-      avatar: "https://c.animaapp.com/LmQp0a9i/img/profile-picture-2-5@2x.png",
-    },
-    {
-      id: 2,
-      author: "Jane Smith",
-      timestamp: "April 11th, 10:45 AM",
-      content:
-        "Please review the documents I shared yesterday and let me know your feedback.",
-      avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    },
-    {
-      id: 3,
-      author: "Mike Johnson",
-      timestamp: "April 12th, 4:30 PM",
-      content:
-        "The project timeline has been updated. Check the shared spreadsheet for details.",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    },
-    {
-      id: 4,
-      author: "Sarah Wilson",
-      timestamp: "April 13th, 9:20 AM",
-      content:
-        "Great progress on the fundraising campaign! We've reached 75% of our goal.",
-      avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-    },
-    {
-      id: 5,
-      author: "David Brown",
-      timestamp: "April 14th, 1:15 PM",
-      content:
-        "Meeting scheduled for next week to discuss the new partnership opportunities.",
-      avatar: "https://randomuser.me/api/portraits/men/46.jpg",
-    },
-    {
-      id: 6,
-      author: "Emily Davis",
-      timestamp: "April 15th, 11:30 AM",
-      content:
-        "The quarterly report is ready for review. Please let me know if you need any additional information.",
-      avatar: "https://randomuser.me/api/portraits/women/32.jpg",
-    },
-  ]);
+  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
+  
+  const { data: notes, isLoading } = useDonorNotes(donorId);
+  const createNoteMutation = useCreateDonorNote();
+  const deleteNoteMutation = useDeleteDonorNote();
 
   const handleAddNote = (noteContent: string) => {
-    const newMessage: Message = {
-      id: Date.now(),
-      author: user?.name || "Current User",
-      timestamp: new Date().toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      }),
+    createNoteMutation.mutate({
+      donorId,
       content: noteContent,
-      avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
-    };
-
-    setMessages(prev => [...prev, newMessage]);
+    });
   };
 
-  const handleDeleteClick = (messageId: number) => {
-    setMessageToDelete(messageId);
+  const handleDeleteClick = (noteId: string) => {
+    setNoteToDelete(noteId);
     setDeleteConfirmOpen(true);
   };
 
   const handleDeleteConfirm = () => {
-    if (messageToDelete) {
-      setMessages(prev => prev.filter(msg => msg.id !== messageToDelete));
-      setMessageToDelete(null);
+    if (noteToDelete) {
+      deleteNoteMutation.mutate(noteToDelete);
+      setNoteToDelete(null);
     }
     setDeleteConfirmOpen(false);
   };
@@ -121,59 +61,76 @@ export const CommunicationsSection: React.FC = () => {
         </h2>
 
         <Card className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full w-full">
-            <CardContent className="p-6 space-y-6">
-              {messages.map((message) => (
-                <div key={message.id} className="flex gap-3 w-full group">
-                  <div className="pt-1">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage
-                        src={message.avatar}
-                        alt={`${message.author}'s avatar`}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="bg-gray-200 text-gray-600">
-                        {getUserInitials(message.author)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-medium text-gray-700">
-                        {message.author}
-                      </h3>
-                      <span className="text-xs text-gray-500">
-                        {message.timestamp}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {message.content}
-                    </p>
-                  </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteClick(message.id)}
-                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+          {isLoading ? (
+            <CardContent className="p-6 flex items-center justify-center">
+              <div className="text-sm text-gray-500">Loading notes...</div>
             </CardContent>
-            <ScrollBar orientation="vertical" />
-          </ScrollArea>
+          ) : !notes?.length ? (
+            <CardContent className="p-6">
+              <EmptyState
+                icon={MessageSquare}
+                title="No notes yet"
+                description="Start the conversation by adding your first note about this donor."
+                action={{
+                  label: "Add First Note",
+                  onClick: () => setAddNotesOpen(true),
+                }}
+              />
+            </CardContent>
+          ) : (
+            <ScrollArea className="h-full w-full">
+              <CardContent className="p-6 space-y-6">
+                {notes.map((note) => (
+                  <div key={note.id} className="flex gap-3 w-full group">
+                    <div className="pt-1">
+                      <Avatar className="w-10 h-10">
+                        <AvatarFallback className="bg-gray-200 text-gray-600">
+                          {getUserInitials(note.created_by)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-medium text-gray-700">
+                          {note.created_by}
+                        </h3>
+                        <span className="text-xs text-gray-500">
+                          {format(new Date(note.created_at), "MMM dd, yyyy 'at' h:mm a")}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {note.content}
+                      </p>
+                    </div>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(note.id)}
+                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        disabled={deleteNoteMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+              <ScrollBar orientation="vertical" />
+            </ScrollArea>
+          )}
         </Card>
 
-        <Button
-          variant="outline"
-          className="w-full py-3 border-violet-600 text-violet-600 hover:bg-violet-50 hover:text-violet-700"
-          onClick={() => setAddNotesOpen(true)}
-        >
-          Add Notes
-        </Button>
+        {notes?.length ? (
+          <Button
+            variant="outline"
+            className="w-full py-3 border-violet-600 text-violet-600 hover:bg-violet-50 hover:text-violet-700"
+            onClick={() => setAddNotesOpen(true)}
+            disabled={createNoteMutation.isPending}
+          >
+            {createNoteMutation.isPending ? "Adding..." : "Add Notes"}
+          </Button>
+        ) : null}
       </div>
 
       <AddNotesDialog
