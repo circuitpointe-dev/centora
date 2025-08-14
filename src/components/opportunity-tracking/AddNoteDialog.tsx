@@ -97,7 +97,7 @@ const AddNoteDialog: React.FC<AddNoteDialogProps> = ({
               </Button>
               <Button
                 type="submit"
-                className="bg-black text-white hover:bg-gray-900"
+                className="bg-violet-600 text-white shadow-sm hover:bg-violet-700"
               >
                 Add Note
               </Button>
