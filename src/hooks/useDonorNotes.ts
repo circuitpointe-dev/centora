@@ -19,20 +19,39 @@ export const useDonorNotes = (donorId: string) => {
   return useQuery({
     queryKey: ["donor-notes", donorId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First, fetch all donor notes
+      const { data: notesData, error: notesError } = await supabase
         .from("donor_notes")
-        .select(`
-          *,
-          profiles:created_by (
-            full_name,
-            email
-          )
-        `)
+        .select("*")
         .eq("donor_id", donorId)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data as DonorNote[];
+      if (notesError) throw notesError;
+      if (!notesData || notesData.length === 0) return [];
+
+      // Get unique created_by IDs
+      const userIds = [...new Set(notesData.map(note => note.created_by))];
+
+      // Fetch profiles for these users
+      const { data: profilesData, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of profiles for quick lookup
+      const profilesMap = new Map(
+        (profilesData || []).map(profile => [profile.id, profile])
+      );
+
+      // Combine notes with profile data
+      const notesWithProfiles = notesData.map(note => ({
+        ...note,
+        profiles: profilesMap.get(note.created_by) || null
+      }));
+
+      return notesWithProfiles as DonorNote[];
     },
     enabled: !!donorId,
   });
