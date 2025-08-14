@@ -549,6 +549,14 @@ export type Database = {
         }
         Returns: string
       }
+      get_last_donation_info: {
+        Args: { donor_uuid: string }
+        Returns: {
+          amount: number
+          currency: string
+          donation_date: string
+        }[]
+      }
       get_org_member_count: {
         Args: { _org_id: string }
         Returns: number
