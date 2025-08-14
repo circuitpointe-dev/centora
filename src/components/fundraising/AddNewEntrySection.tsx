@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { MONTH_FULL_NAMES } from '@/utils/monthConversion';
 
 interface AddNewEntrySectionProps {
   onAddRecord: (month: string, year: number, amount: number) => void;
@@ -31,20 +32,9 @@ export const AddNewEntrySection: React.FC<AddNewEntrySectionProps> = ({
     }
   };
 
-  const months = [
-    { value: "Jan", label: "January" },
-    { value: "Feb", label: "February" },
-    { value: "Mar", label: "March" },
-    { value: "Apr", label: "April" },
-    { value: "May", label: "May" },
-    { value: "Jun", label: "June" },
-    { value: "Jul", label: "July" },
-    { value: "Aug", label: "August" },
-    { value: "Sep", label: "September" },
-    { value: "Oct", label: "October" },
-    { value: "Nov", label: "November" },
-    { value: "Dec", label: "December" },
-  ];
+  // Generate year options (current year and previous 10 years)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 11 }, (_, i) => currentYear - i);
 
   return (
     <div className="flex flex-col gap-4">
@@ -62,13 +52,13 @@ export const AddNewEntrySection: React.FC<AddNewEntrySectionProps> = ({
                   <SelectTrigger className="h-12 border-[#d2d2d2]">
                     <SelectValue placeholder="Select month" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month.value} value={month.value}>
-                        {month.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                          <SelectContent>
+                            {MONTH_FULL_NAMES.map((month) => (
+                              <SelectItem key={month.value} value={month.value}>
+                                {month.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
                 </Select>
               </div>
 
@@ -80,12 +70,11 @@ export const AddNewEntrySection: React.FC<AddNewEntrySectionProps> = ({
                   <SelectTrigger className="h-12 border-[#d2d2d2]">
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="2024">2024</SelectItem>
-                    <SelectItem value="2023">2023</SelectItem>
-                    <SelectItem value="2022">2022</SelectItem>
-                    <SelectItem value="2021">2021</SelectItem>
-                  </SelectContent>
+                          <SelectContent>
+                            {yearOptions.map(year => (
+                              <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                            ))}
+                          </SelectContent>
                 </Select>
               </div>
             </div>

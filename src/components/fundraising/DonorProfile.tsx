@@ -168,7 +168,7 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
           </div>
 
           {/* Row 3: Giving History (full width) */}
-          <GivingHistorySection />
+          <GivingHistorySection donorId={donor.id} />
         </div>
 
         <Separator className="w-full" />

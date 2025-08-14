@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,10 +13,14 @@ import {
 import { GivingRecordsChart } from './GivingRecordsChart';
 import { ExistingRecordsSection } from './ExistingRecordsSection';
 import { AddNewEntrySection } from './AddNewEntrySection';
+import { useDonorGivingRecords, useCreateDonorGivingRecord, useUpdateDonorGivingRecord, useDeleteDonorGivingRecord } from '@/hooks/useDonorGivingRecords';
+import { getMonthNumber } from '@/utils/monthConversion';
+import { useToast } from '@/hooks/use-toast';
 
 interface ManageGivingRecordsDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  donorId: string;
 }
 
 export interface GivingRecord {
@@ -29,40 +33,92 @@ export interface GivingRecord {
 export const ManageGivingRecordsDialog: React.FC<ManageGivingRecordsDialogProps> = ({
   isOpen,
   onClose,
+  donorId,
 }) => {
-  const [selectedYear, setSelectedYear] = useState<number>(2024);
-  const [records, setRecords] = useState<GivingRecord[]>([
-    { id: '1', month: 'Jan', year: 2024, amount: 25000 },
-    { id: '2', month: 'Feb', year: 2024, amount: 35000 },
-    { id: '3', month: 'Mar', year: 2024, amount: 20000 },
-    { id: '4', month: 'Apr', year: 2024, amount: 40000 },
-    { id: '5', month: 'May', year: 2024, amount: 15000 },
-    { id: '6', month: 'Jun', year: 2024, amount: 30000 },
-  ]);
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const { toast } = useToast();
 
-  const handleAddRecord = (month: string, year: number, amount: number) => {
-    const newRecord: GivingRecord = {
-      id: Date.now().toString(),
-      month,
-      year,
-      amount,
-    };
-    setRecords(prev => [...prev, newRecord]);
+  // Fetch giving records
+  const { data: allRecords = [], isLoading } = useDonorGivingRecords(donorId);
+  const { data: records = [] } = useDonorGivingRecords(donorId, selectedYear);
+
+  // Mutations
+  const createMutation = useCreateDonorGivingRecord();
+  const updateMutation = useUpdateDonorGivingRecord();
+  const deleteMutation = useDeleteDonorGivingRecord();
+
+  // Get available years from all records
+  const availableYears = useMemo(() => {
+    const years = Array.from(new Set(allRecords.map(record => record.year)));
+    return years.sort((a, b) => b - a); // Sort descending
+  }, [allRecords]);
+
+  // Set default year to the most recent year with data
+  React.useEffect(() => {
+    if (availableYears.length > 0 && !availableYears.includes(selectedYear)) {
+      setSelectedYear(availableYears[0]);
+    }
+  }, [availableYears, selectedYear]);
+
+  const handleAddRecord = async (month: string, year: number, amount: number) => {
+    try {
+      await createMutation.mutateAsync({
+        donorId,
+        month: getMonthNumber(month),
+        year,
+        amount,
+        currency: 'USD'
+      });
+      toast({
+        title: "Success",
+        description: "Giving record added successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add giving record",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditRecord = (id: string, month: string, year: number, amount: number) => {
-    setRecords(prev =>
-      prev.map(record =>
-        record.id === id ? { ...record, month, year, amount } : record
-      )
-    );
+  const handleEditRecord = async (id: string, month: string, year: number, amount: number) => {
+    try {
+      await updateMutation.mutateAsync({
+        id,
+        month: getMonthNumber(month),
+        year,
+        amount,
+        currency: 'USD'
+      });
+      toast({
+        title: "Success",
+        description: "Giving record updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update giving record",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteRecord = (id: string) => {
-    setRecords(prev => prev.filter(record => record.id !== id));
+  const handleDeleteRecord = async (id: string) => {
+    try {
+      await deleteMutation.mutateAsync(id);
+      toast({
+        title: "Success",
+        description: "Giving record deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete giving record",
+        variant: "destructive",
+      });
+    }
   };
-
-  const filteredRecords = records.filter(record => record.year === selectedYear);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -81,27 +137,32 @@ export const ManageGivingRecordsDialog: React.FC<ManageGivingRecordsDialogProps>
               <Select 
                 value={selectedYear.toString()} 
                 onValueChange={(value) => setSelectedYear(parseInt(value))}
+                disabled={availableYears.length === 0}
               >
                 <SelectTrigger className="w-[113px] border-violet-600 text-violet-600">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="2024">2024</SelectItem>
-                  <SelectItem value="2023">2023</SelectItem>
-                  <SelectItem value="2022">2022</SelectItem>
+                  {availableYears.map(year => (
+                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                  ))}
+                  {availableYears.length === 0 && (
+                    <SelectItem value={selectedYear.toString()}>{selectedYear}</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
-            <GivingRecordsChart records={filteredRecords} />
+            <GivingRecordsChart records={records} />
           </div>
 
           {/* Records Management Section */}
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="flex-1">
               <ExistingRecordsSection 
-                records={filteredRecords}
+                records={records}
                 onEditRecord={handleEditRecord}
                 onDeleteRecord={handleDeleteRecord}
+                isLoading={isLoading}
               />
             </div>
             <div className="flex-1">
