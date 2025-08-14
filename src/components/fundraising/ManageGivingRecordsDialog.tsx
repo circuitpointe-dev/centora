@@ -159,7 +159,7 @@ export const ManageGivingRecordsDialog: React.FC<ManageGivingRecordsDialogProps>
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="flex-1">
               <ExistingRecordsSection 
-                records={records}
+                records={allRecords}
                 onEditRecord={handleEditRecord}
                 onDeleteRecord={handleDeleteRecord}
                 isLoading={isLoading}
