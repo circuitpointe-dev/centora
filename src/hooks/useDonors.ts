@@ -365,15 +365,109 @@ export const useDeleteDonor = () => {
   
   return useMutation({
     mutationFn: async (donorId: string) => {
-      const { error } = await supabase
+      // Get the donor and organization info for storage path
+      const { data: donor, error: donorError } = await supabase
+        .from('donors')
+        .select('org_id')
+        .eq('id', donorId)
+        .single();
+
+      if (donorError) throw donorError;
+
+      // Delete all files from storage first
+      const { data: documents, error: documentsError } = await supabase
+        .from('donor_documents')
+        .select('file_path')
+        .eq('donor_id', donorId);
+
+      if (documentsError) throw documentsError;
+
+      // Delete files from storage bucket
+      if (documents && documents.length > 0) {
+        const filePaths = documents.map(doc => doc.file_path);
+        const { error: storageError } = await supabase.storage
+          .from('donor-documents')
+          .remove(filePaths);
+
+        if (storageError) {
+          console.error('Error deleting files from storage:', storageError);
+          // Continue with deletion even if storage deletion fails
+        }
+      }
+
+      // Delete all related data in the correct order (child tables first)
+      // Delete donor documents records
+      const { error: documentsDeleteError } = await supabase
+        .from('donor_documents')
+        .delete()
+        .eq('donor_id', donorId);
+
+      if (documentsDeleteError) throw documentsDeleteError;
+
+      // Delete donor notes
+      const { error: notesError } = await supabase
+        .from('donor_notes')
+        .delete()
+        .eq('donor_id', donorId);
+
+      if (notesError) throw notesError;
+
+      // Delete donor engagements
+      const { error: engagementsError } = await supabase
+        .from('donor_engagements')
+        .delete()
+        .eq('donor_id', donorId);
+
+      if (engagementsError) throw engagementsError;
+
+      // Delete donor giving records
+      const { error: givingError } = await supabase
+        .from('donor_giving_records')
+        .delete()
+        .eq('donor_id', donorId);
+
+      if (givingError) throw givingError;
+
+      // Delete donor funding cycles
+      const { error: fundingCyclesError } = await supabase
+        .from('donor_funding_cycles')
+        .delete()
+        .eq('donor_id', donorId);
+
+      if (fundingCyclesError) throw fundingCyclesError;
+
+      // Delete donor contacts
+      const { error: contactsError } = await supabase
+        .from('donor_contacts')
+        .delete()
+        .eq('donor_id', donorId);
+
+      if (contactsError) throw contactsError;
+
+      // Delete donor focus areas
+      const { error: focusAreasError } = await supabase
+        .from('donor_focus_areas')
+        .delete()
+        .eq('donor_id', donorId);
+
+      if (focusAreasError) throw focusAreasError;
+
+      // Finally, delete the donor
+      const { error: donorDeleteError } = await supabase
         .from('donors')
         .delete()
         .eq('id', donorId);
 
-      if (error) throw error;
+      if (donorDeleteError) throw donorDeleteError;
     },
     onSuccess: () => {
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['donors'] });
+      queryClient.invalidateQueries({ queryKey: ['donor-notes'] });
+      queryClient.invalidateQueries({ queryKey: ['donor-engagements'] });
+      queryClient.invalidateQueries({ queryKey: ['donor-giving-records'] });
+      queryClient.invalidateQueries({ queryKey: ['donor-funding-cycles'] });
+      queryClient.invalidateQueries({ queryKey: ['donor-documents'] });
     },
   });
 };

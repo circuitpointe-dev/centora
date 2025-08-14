@@ -3,12 +3,9 @@ import React, { useState } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, MoreHorizontal } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Trash2 } from "lucide-react";
 import { type Donor } from "@/hooks/useDonors";
-import { getFocusAreaColor } from "@/data/focusAreaData";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import EditDonorDialog from "./EditDonorDialog";
 
 interface DonorTableRowProps {
   donor: Donor;
@@ -84,36 +81,15 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
         </TableCell>
         <TableCell className="text-right">
           <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-gray-500 hover:text-gray-700 p-1 h-auto"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-white">
-                <EditDonorDialog donor={donor} trigger={
-                  <DropdownMenuItem className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-gray-100">
-                    <Edit className="w-4 h-4" />
-                    <span className="text-[#38383899] text-sm font-normal">
-                      Edit
-                    </span>
-                  </DropdownMenuItem>
-                } />
-                <DropdownMenuItem
-                  onClick={handleDeleteClick}
-                  className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-gray-100"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span className="text-[#38383899] text-sm font-normal">
-                    Delete
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDeleteClick}
+              className="flex items-center gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
           </div>
         </TableCell>
       </TableRow>
@@ -121,9 +97,20 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
       <ConfirmationDialog
         open={deleteConfirm}
         onOpenChange={setDeleteConfirm}
-        title="Delete Donor"
-        description={`Are you sure you want to delete "${donor.name}"? This action cannot be undone.`}
+        title="⚠️ Permanently Delete Donor"
+        description={`You are about to permanently delete "${donor.name}" and ALL associated data. This action cannot be undone and will remove:
+
+• Complete donor profile and contact information
+• All uploaded files from the donor-documents storage
+• Complete engagement and communication history
+• All donation and giving records
+• All notes and comments
+
+Are you absolutely certain you want to proceed? This data cannot be recovered.`}
         onConfirm={handleConfirmDelete}
+        confirmText="Yes, Delete Everything"
+        cancelText="Cancel"
+        variant="destructive"
       />
     </>
   );
