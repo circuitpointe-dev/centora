@@ -23,7 +23,7 @@ const DonorTablePagination: React.FC<DonorTablePaginationProps> = ({
   return (
     <div className="flex items-center justify-between mt-6">
       <p className="text-sm text-gray-700">
-        Showing {startIndex + 1} to {Math.min(endIndex, totalDonors)} of {totalDonors} donors
+        Showing {startIndex + 1} to {Math.min(endIndex, totalDonors)} of {totalDonors} Donors
       </p>
       <div className="flex gap-2">
         <Button
