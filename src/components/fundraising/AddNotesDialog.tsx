@@ -54,7 +54,7 @@ export const AddNotesDialog: React.FC<AddNotesDialogProps> = ({
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={!note.trim()}>
+            <Button onClick={handleSave} className="bg-violet-600 text-white hover:bg-violet-700" disabled={!note.trim()}>
               Save Note
             </Button>
           </div>
