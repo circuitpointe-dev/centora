@@ -472,7 +472,15 @@ export type Database = {
           type?: Database["public"]["Enums"]["opportunity_type"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_opportunities_donor_id"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "donors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       organization_modules: {
         Row: {

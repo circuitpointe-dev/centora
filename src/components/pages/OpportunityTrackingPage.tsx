@@ -23,7 +23,13 @@ const OpportunityTracking: React.FC = () => {
   const { toast } = useToast();
 
   // Extract unique donors and sectors for filters
-  const donorNames = useMemo(() => Array.from(new Set(opportunities.map((opp) => opp.donor?.name).filter(Boolean))), [opportunities]);
+  const donorNames = useMemo(() => {
+    return Array.from(new Set(
+      opportunities
+        .map((opp) => opp.donor?.name)
+        .filter((name): name is string => Boolean(name))
+    ));
+  }, [opportunities]);
   const sectors = useMemo(
     () => Array.from(new Set(opportunities.filter((opp) => opp.sector).map((opp) => opp.sector as string))),
     [opportunities]

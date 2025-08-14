@@ -146,7 +146,6 @@ const FundraisingDashboard = () => {
       <AddOpportunityDialog
         isOpen={showAddOpportunityDialog}
         onClose={() => setShowAddOpportunityDialog(false)}
-        onAddOpportunity={handleAddOpportunity}
         donors={mockDonors}
       />
 
