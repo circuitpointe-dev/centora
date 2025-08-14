@@ -92,13 +92,12 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
   };
 
   return (
-    <div className="bg-[#f4f6f9] flex flex-row justify-center w-full">
-      <div className="bg-[#f4f6f9] w-[900px] relative">
-        <Separator className="w-full" />
-
-        <div className="w-full py-6">
-          <div className="flex items-center justify-between px-6 mb-4">
-            <h1 className="font-medium text-[22px] text-[#383839] flex-1 min-w-0 mr-4">
+    <div className="bg-white w-full">
+      <div className="w-full">
+        {/* Header */}
+        <div className="px-4 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h1 className="font-medium text-xl text-black flex-1 min-w-0 mr-4">
               {isEditing ? "Edit" : ""} Donor Profile -{" "}
               <span className="font-light truncate">{donor.name}</span>
             </h1>
@@ -115,8 +114,9 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
                   <Button
                     onClick={handleSave}
                     className="bg-violet-600 hover:bg-violet-700 text-white border-violet-600"
+                    disabled={updateDonorMutation.isPending}
                   >
-                    Save Changes
+                    {updateDonorMutation.isPending ? "Saving..." : "Save Changes"}
                   </Button>
                 </>
               ) : (
@@ -131,39 +131,32 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
               )}
             </div>
           </div>
-
-          <Separator className="w-full" />
         </div>
 
-          <div className="flex flex-col gap-6">
-            {/* Row 1: Profile Information and Engagement History */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 items-start">
-              <div className="h-full">
-                <ProfileInformationSection
-                  isEditing={isEditing}
-                  formData={formData}
-                  onInputChange={handleInputChange}
-                  interestTags={donor.focus_areas?.map(fa => fa.focus_areas?.name || "") || []}
-                  contacts={donor.contacts || []}
-                />
-              </div>
+        {/* Content */}
+        <div className="flex flex-col gap-4 p-4">
+          {/* Row 1: Profile Information and Engagement History */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+            <div className="h-full">
+              <ProfileInformationSection
+                isEditing={isEditing}
+                formData={formData}
+                onInputChange={handleInputChange}
+                interestTags={donor.focus_areas?.map(fa => fa.focus_areas?.name || "") || []}
+                contacts={donor.contacts || []}
+              />
+            </div>
             <div className="h-full">
               <EngagementHistorySection donorId={donor.id} />
             </div>
           </div>
+
           {/* Row 2: Communications & Notes and Files */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6">
-            {/* Communications Section */}
-            <div className="flex flex-col gap-4 h-[500px]">
-              {" "}
-              {/* Fixed height */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4 min-h-[350px]">
               <CommunicationsSection donorId={donor.id} />
             </div>
-
-            {/* Files Section */}
-            <div className="flex flex-col gap-4 h-[500px]">
-              {" "}
-              {/* Same fixed height */}
+            <div className="flex flex-col gap-4 min-h-[350px]">
               <FilesSection donorId={donor.id} />
             </div>
           </div>
@@ -171,8 +164,6 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
           {/* Row 3: Giving History (full width) */}
           <GivingHistorySection donorId={donor.id} />
         </div>
-
-        <Separator className="w-full" />
       </div>
     </div>
   );

@@ -102,7 +102,7 @@ export const FilesSection: React.FC<FilesSectionProps> = ({ donorId }) => {
       <div className="flex flex-col gap-4 h-full">
         <h2 className="font-medium text-base text-gray-900">Files</h2>
         <Card className="h-full">
-          <CardContent className="p-4 h-full flex items-center justify-center">
+          <CardContent className="p-3 h-full flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin" />
           </CardContent>
         </Card>
@@ -116,9 +116,9 @@ export const FilesSection: React.FC<FilesSectionProps> = ({ donorId }) => {
         <h2 className="font-medium text-base text-gray-900">Files</h2>
 
         <Card className="h-full">
-          <CardContent className="p-4 h-full flex flex-col">
+          <CardContent className="p-3 h-full flex flex-col">
             {documents.length > 0 && (
-              <div className="space-y-2 mb-4">
+              <div className="space-y-2 mb-3">
                 {documents.map((doc) => (
                   <div
                     key={doc.id}
@@ -175,7 +175,7 @@ export const FilesSection: React.FC<FilesSectionProps> = ({ donorId }) => {
 
             <div 
               className={cn(
-                "border-2 border-dashed rounded-md p-8 flex-1 flex items-center justify-center transition-colors",
+                "border-2 border-dashed rounded-md p-6 flex-1 flex items-center justify-center transition-colors",
                 isDragOver 
                   ? "border-violet-300 bg-violet-50" 
                   : "border-gray-300 bg-gray-50/50"

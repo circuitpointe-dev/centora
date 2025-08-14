@@ -61,7 +61,7 @@ export const EngagementHistorySection: React.FC<EngagementHistorySectionProps> =
       </h2>
 
       <Card className="w-full flex-1">
-        <CardContent className="p-6 h-full flex flex-col">
+        <CardContent className="p-4 h-full flex flex-col">
           <div className="flex-1 overflow-y-auto">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
@@ -146,7 +146,7 @@ export const EngagementHistorySection: React.FC<EngagementHistorySectionProps> =
 
           <Button
             variant="outline"
-            className="mt-6 text-violet-600 border-violet-600"
+            className="mt-4 text-violet-600 border-violet-600"
             onClick={() => setIsDialogOpen(true)}
           >
             Add Engagement Entry

@@ -41,8 +41,8 @@ export const ProfileInformationSection: React.FC<ProfileInformationSectionProps>
       <h2 className="font-medium text-black text-base">Profile Information</h2>
 
       <Card className="w-full flex-1">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-start gap-6 w-full">
+        <CardContent className="p-4">
+          <div className="flex flex-col items-start gap-4 w-full">
             {/* Organization Name */}
             <div className="flex flex-col items-start gap-2 w-full">
               <Label className="text-sm text-muted-foreground">Name of Organization</Label>

@@ -107,7 +107,7 @@ const DonorList: React.FC = () => {
 
       {/* Donor Profile Centralized Dialog */}
       <Dialog open={showProfile} onOpenChange={setShowProfile}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-auto p-0">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0">
           {selectedDonor && (
             <DonorProfile 
               donor={selectedDonor}

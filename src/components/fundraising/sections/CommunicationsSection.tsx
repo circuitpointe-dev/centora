@@ -62,7 +62,7 @@ export const CommunicationsSection: React.FC<CommunicationsSectionProps> = ({ do
               <div className="text-sm text-gray-500">Loading notes...</div>
             </CardContent>
           ) : !notes?.length ? (
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               <EmptyState
                 icon={MessageSquare}
                 title="No notes yet"
@@ -75,7 +75,7 @@ export const CommunicationsSection: React.FC<CommunicationsSectionProps> = ({ do
             </CardContent>
           ) : (
             <ScrollArea className="h-full w-full">
-              <CardContent className="p-6 space-y-6">
+              <CardContent className="p-4 space-y-4">
                 {notes.map((note) => (
                   <div key={note.id} className="flex gap-3 w-full group">
                     <div className="pt-1">
