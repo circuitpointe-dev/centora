@@ -9,6 +9,10 @@ export interface DonorNote {
   created_by: string;
   created_at: string;
   updated_at: string;
+  profiles?: {
+    display_name?: string;
+    email?: string;
+  };
 }
 
 export const useDonorNotes = (donorId: string) => {
@@ -17,7 +21,13 @@ export const useDonorNotes = (donorId: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("donor_notes")
-        .select("*")
+        .select(`
+          *,
+          profiles:created_by (
+            display_name,
+            email
+          )
+        `)
         .eq("donor_id", donorId)
         .order("created_at", { ascending: false });
 
