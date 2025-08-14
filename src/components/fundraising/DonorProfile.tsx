@@ -95,7 +95,7 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
     <div className="bg-white w-full">
       <div className="w-full">
         {/* Header */}
-        <div className="px-4 py-4 border-b border-gray-200">
+        <div className="px-4 py-4 pr-12 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h1 className="font-medium text-xl text-black flex-1 min-w-0 mr-4">
               {isEditing ? "Edit" : ""} Donor Profile -{" "}
