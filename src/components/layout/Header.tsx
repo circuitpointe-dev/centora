@@ -75,12 +75,15 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
       >
         {/* Welcome Message - Hidden on mobile */}
         <div className="hidden md:flex items-center">
-          <h2 className="text-md text-gray-700">
+          <h3 className="text-md text-gray-700">
             Welcome,{" "}
-            <span className="font-semibold text-gray-900">
-              {user?.name} of {user?.organization}
+            <span className="text-md text-gray-700">
+              {user?.name} of {" "}
             </span>
-          </h2>
+            <span className="font-semibold text-gray-900">
+              {user?.organization}
+            </span>
+          </h3>
         </div>
 
         {/* Right Side - Announcements, Notifications and User Menu */}
