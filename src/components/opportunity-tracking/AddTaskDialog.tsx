@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { X, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { useCreateOpportunityTask } from "@/hooks/useOpportunityTasks";
 
 import {
   Dialog,
@@ -44,7 +45,6 @@ import StaffSelect from "./StaffSelect";
 interface AddTaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTask: (task: any) => void;
   opportunityId: string;
 }
 
@@ -59,9 +59,10 @@ const formSchema = z.object({
 const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
   isOpen,
   onClose,
-  onAddTask,
   opportunityId
 }) => {
+  const createTaskMutation = useCreateOpportunityTask();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,17 +73,22 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
     },
   });
 
-  const handleSubmit = (data: z.infer<typeof formSchema>) => {
-    onAddTask({
-      ...data,
-      opportunityId,
-      id: `task-${Date.now()}`,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    });
-    
-    form.reset();
-    onClose();
+  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      await createTaskMutation.mutateAsync({
+        opportunityId,
+        title: data.title,
+        description: data.description,
+        dueDate: data.dueDate.toISOString().split('T')[0],
+        assignedTo: data.assignedTo,
+        priority: data.priority,
+      });
+      
+      form.reset();
+      onClose();
+    } catch (error) {
+      console.error("Error creating task:", error);
+    }
   };
 
   return (
@@ -218,7 +224,9 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button type="submit">Create Task</Button>
+              <Button type="submit" disabled={createTaskMutation.isPending}>
+                {createTaskMutation.isPending ? "Creating..." : "Create Task"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

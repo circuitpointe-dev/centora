@@ -21,11 +21,11 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateOpportunityNote } from "@/hooks/useOpportunityNotes";
 
 interface AddNoteDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddNote: (note: any) => void;
   opportunityId: string;
 }
 
@@ -36,9 +36,10 @@ const formSchema = z.object({
 const AddNoteDialog: React.FC<AddNoteDialogProps> = ({
   isOpen,
   onClose,
-  onAddNote,
   opportunityId,
 }) => {
+  const createNoteMutation = useCreateOpportunityNote();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,17 +47,18 @@ const AddNoteDialog: React.FC<AddNoteDialogProps> = ({
     },
   });
 
-  const handleSubmit = (data: z.infer<typeof formSchema>) => {
-    onAddNote({
-      ...data,
-      opportunityId,
-      id: `note-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      createdBy: "Chioma Ike", // Updated to show actual user name
-    });
-
-    form.reset();
-    onClose();
+  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      await createNoteMutation.mutateAsync({
+        opportunityId,
+        content: data.content,
+      });
+      
+      form.reset();
+      onClose();
+    } catch (error) {
+      console.error("Error creating note:", error);
+    }
   };
 
   return (
@@ -97,9 +99,10 @@ const AddNoteDialog: React.FC<AddNoteDialogProps> = ({
               </Button>
               <Button
                 type="submit"
+                disabled={createNoteMutation.isPending}
                 className="bg-violet-600 text-white shadow-sm hover:bg-violet-700"
               >
-                Add Note
+                {createNoteMutation.isPending ? "Adding..." : "Add Note"}
               </Button>
             </DialogFooter>
           </form>

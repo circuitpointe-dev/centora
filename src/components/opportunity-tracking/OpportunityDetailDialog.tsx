@@ -168,7 +168,6 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
       <AddNoteDialog
         isOpen={showAddNoteDialog}
         onClose={() => setShowAddNoteDialog(false)}
-        onAddNote={handleAddNote}
         opportunityId={opportunity.id}
       />
 
@@ -176,7 +175,6 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
       <AddFileDialog
         isOpen={showAddFileDialog}
         onClose={() => setShowAddFileDialog(false)}
-        onAddFile={handleAddFile}
         opportunityId={opportunity.id}
       />
 
@@ -184,7 +182,6 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
       <AddTaskDialog
         isOpen={showAddTaskDialog}
         onClose={() => setShowAddTaskDialog(false)}
-        onAddTask={handleAddTask}
         opportunityId={opportunity.id}
       />
     </>

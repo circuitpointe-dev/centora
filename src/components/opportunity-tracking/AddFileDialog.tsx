@@ -14,23 +14,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useUploadOpportunityAttachment } from "@/hooks/useOpportunityAttachments";
 
 interface AddFileDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddFile: (file: any) => void;
   opportunityId: string;
 }
 
 const AddFileDialog: React.FC<AddFileDialogProps> = ({
   isOpen,
   onClose,
-  onAddFile,
   opportunityId
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileDescription, setFileDescription] = useState("");
   const { toast } = useToast();
+  const uploadMutation = useUploadOpportunityAttachment();
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -38,7 +38,7 @@ const AddFileDialog: React.FC<AddFileDialogProps> = ({
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!selectedFile) {
@@ -50,27 +50,19 @@ const AddFileDialog: React.FC<AddFileDialogProps> = ({
       return;
     }
     
-    // In a real app, we would upload the file to a server here
-    // For now, we'll just simulate adding the file metadata
-    onAddFile({
-      id: `file-${Date.now()}`,
-      opportunityId,
-      name: selectedFile.name,
-      size: selectedFile.size,
-      type: selectedFile.type,
-      description: fileDescription,
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: "Current User",
-    });
-    
-    toast({
-      title: "File uploaded",
-      description: `${selectedFile.name} has been uploaded successfully.`,
-    });
-    
-    setSelectedFile(null);
-    setFileDescription("");
-    onClose();
+    try {
+      await uploadMutation.mutateAsync({
+        opportunityId,
+        file: selectedFile,
+        description: fileDescription,
+      });
+      
+      setSelectedFile(null);
+      setFileDescription("");
+      onClose();
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
   };
 
   return (
@@ -116,9 +108,9 @@ const AddFileDialog: React.FC<AddFileDialogProps> = ({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" disabled={uploadMutation.isPending}>
               <Upload className="h-4 w-4 mr-2" />
-              Upload
+              {uploadMutation.isPending ? "Uploading..." : "Upload"}
             </Button>
           </DialogFooter>
         </form>
