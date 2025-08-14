@@ -163,7 +163,7 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
             <div className="flex flex-col gap-4 h-[500px]">
               {" "}
               {/* Same fixed height */}
-              <FilesSection />
+              <FilesSection donorId={donor.id} />
             </div>
           </div>
 
