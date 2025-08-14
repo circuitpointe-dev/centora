@@ -8,8 +8,8 @@ import { format } from "date-fns";
 interface Task {
   id: string;
   title: string;
-  dueDate: string;
-  assignedTo: string;
+  due_date: string | null;
+  assigned_to: string | null;
   priority: "low" | "medium" | "high";
   completed?: boolean;
 }
@@ -59,9 +59,14 @@ const TasksCard: React.FC<TasksCardProps> = ({
                     {task.title}
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
-                    Due:{" "}
-                    {format(new Date(task.dueDate), "MMM dd, yyyy")} •
-                    Assigned to: {task.assignedTo}
+                    {task.due_date ? (
+                      <>Due: {format(new Date(task.due_date), "MMM dd, yyyy")}</>
+                    ) : (
+                      "No due date"
+                    )}
+                    {task.assigned_to && (
+                      <> • Assigned to: {task.assigned_to}</>
+                    )}
                   </div>
                 </div>
                 <Badge

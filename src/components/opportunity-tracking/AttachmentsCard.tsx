@@ -7,9 +7,9 @@ import { format } from "date-fns";
 
 interface FileItem {
   id: string;
-  name: string;
-  size: number;
-  uploadedAt: string;
+  file_name: string;
+  file_size: number | null;
+  uploaded_at: string;
 }
 
 interface AttachmentsCardProps {
@@ -48,14 +48,14 @@ const AttachmentsCard: React.FC<AttachmentsCardProps> = ({
               <FileIcon className="h-4 w-4 mr-2 text-blue-500" />
               <div className="flex-1">
                 <div className="font-medium text-sm">
-                  {file.name}
+                  {file.file_name}
                 </div>
                 <div className="text-xs text-gray-500">
                   {format(
-                    new Date(file.uploadedAt),
+                    new Date(file.uploaded_at),
                     "MMM dd, yyyy"
                   )}{" "}
-                  • {(file.size / 1024).toFixed(2)} KB
+                  • {file.file_size ? (file.file_size / 1024).toFixed(2) : 0} KB
                 </div>
               </div>
             </div>

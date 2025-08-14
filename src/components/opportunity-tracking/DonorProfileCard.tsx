@@ -5,22 +5,20 @@ import { format } from "date-fns";
 
 interface DonorProfileCardProps {
   donorName: string;
-  contactEmail?: string;
-  contactPhone?: string;
   createdAt: string;
   deadline: string;
   sector?: string;
-  sectionHeight?: string; // for consistent heights with siblings
+  sectionHeight?: string;
+  onViewProfile?: () => void;
 }
 
 const DonorProfileCard: React.FC<DonorProfileCardProps> = ({
   donorName,
-  contactEmail,
-  contactPhone,
   createdAt,
   deadline,
   sector,
   sectionHeight = "h-72",
+  onViewProfile,
 }) => {
   const formattedCreatedAt = format(new Date(createdAt), "MMM dd, yyyy");
   const formattedDeadline = format(new Date(deadline), "MMMM dd, yyyy");
@@ -34,18 +32,14 @@ const DonorProfileCard: React.FC<DonorProfileCardProps> = ({
       </div>
       <div className="flex flex-col gap-1 mt-1">
         <h4 className="font-lg">{donorName}</h4>
-        <div className="flex items-center text-sm text-gray-600">
-          <Mail className="h-4 w-4 mr-1" />
-          <span>
-            {contactEmail || "No email provided"}
-          </span>
-        </div>
-        <div className="flex items-center text-sm text-gray-600">
-          <Phone className="h-4 w-4 mr-1" />
-          <span>
-            {contactPhone || "No phone provided"}
-          </span>
-        </div>
+        {onViewProfile && (
+          <button
+            onClick={onViewProfile}
+            className="text-left text-sm text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            View Full Donor Profile →
+          </button>
+        )}
       </div>
       <div className="flex flex-col gap-2 mt-2">
         <div className="flex items-center text-xs text-gray-500">

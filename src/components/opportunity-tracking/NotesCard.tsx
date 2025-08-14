@@ -7,8 +7,8 @@ import { format } from "date-fns";
 interface Note {
   id: string;
   content: string;
-  createdAt: string;
-  createdBy: string;
+  created_at: string;
+  created_by: string;
 }
 
 interface NotesCardProps {
@@ -46,9 +46,9 @@ const NotesCard: React.FC<NotesCardProps> = ({
             >
               <div className="text-sm">{note.content}</div>
               <div className="mt-2 text-xs text-gray-500">
-                Added by {note.createdBy} on{" "}
+                Added on{" "}
                 {format(
-                  new Date(note.createdAt),
+                  new Date(note.created_at),
                   "MMM dd, yyyy h:mm a"
                 )}
               </div>

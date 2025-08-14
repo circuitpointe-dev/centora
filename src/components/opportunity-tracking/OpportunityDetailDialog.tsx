@@ -6,12 +6,15 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 import AddNoteDialog from "./AddNoteDialog";
 import AddFileDialog from "./AddFileDialog";
 import AddTaskDialog from "./AddTaskDialog";
 import { DatabaseOpportunity } from "@/hooks/useOpportunities";
 import { useToast } from "@/hooks/use-toast";
+import { useOpportunityNotes } from "@/hooks/useOpportunityNotes";
+import { useOpportunityTasks } from "@/hooks/useOpportunityTasks";
+import { useOpportunityAttachments } from "@/hooks/useOpportunityAttachments";
 
 // Section subcomponents
 import DonorProfileCard from "./DonorProfileCard";
@@ -35,29 +38,29 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
   isOpen,
   onClose,
 }) => {
+  const navigate = useNavigate();
   const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
   const [showAddFileDialog, setShowAddFileDialog] = useState(false);
   const [showAddTaskDialog, setShowAddTaskDialog] = useState(false);
-  const [notes, setNotes] = useState<any[]>([]);
-  const [files, setFiles] = useState<any[]>([]);
-  const [tasks, setTasks] = useState<any[]>([]);
   const { toast } = useToast();
+  
+  // Fetch data from backend
+  const { data: notes = [] } = useOpportunityNotes(opportunity?.id || "");
+  const { data: tasks = [] } = useOpportunityTasks(opportunity?.id || "");
+  const { data: attachments = [] } = useOpportunityAttachments(opportunity?.id || "");
 
   if (!opportunity) return null;
 
-  // Status color mapping matching Kanban headers
-  const getStatusColor = (status: string) => {
+  const getStatusTextColor = (status: string) => {
     const colors = {
-      "To Review": { bg: "bg-[#e0d8e6]", text: "text-[#938b97]" },
-      "In Progress": { bg: "bg-[#f9dfc8]", text: "text-[#e59346]" },
-      Submitted: { bg: "bg-[#dcd6f7]", text: "text-[#4f46e5]" },
-      Awarded: { bg: "bg-[#dbfae7]", text: "text-[#09c127]" },
-      Declined: { bg: "bg-[#fddddd]", text: "text-[#fa2d2d]" },
+      "To Review": "text-yellow-600",
+      "In Progress": "text-orange-600",
+      Submitted: "text-blue-600",
+      Awarded: "text-green-600",
+      Declined: "text-red-600",
     };
-    return colors[status] || { bg: "bg-gray-200", text: "text-gray-800" };
+    return colors[status] || "text-gray-600";
   };
-
-  const statusColor = getStatusColor(opportunity.status);
 
   const statusTimeline = [
     {
@@ -88,27 +91,20 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
   ];
 
   const handleAddNote = (note: any) => {
-    setNotes([...notes, note]);
-    toast({
-      title: "Note Added",
-      description: "Your note has been added successfully.",
-    });
+    // Backend integration will handle the update via React Query
   };
 
   const handleAddFile = (file: any) => {
-    setFiles([...files, file]);
-    toast({
-      title: "File Uploaded",
-      description: "Your file has been uploaded successfully.",
-    });
+    // Backend integration will handle the update via React Query
   };
 
   const handleAddTask = (task: any) => {
-    setTasks([...tasks, task]);
-    toast({
-      title: "Task Created",
-      description: "New task has been created successfully.",
-    });
+    // Backend integration will handle the update via React Query
+  };
+
+  const handleViewDonorProfile = () => {
+    navigate(`/dashboard/fundraising/donor-management?donor=${opportunity.donor?.id}`);
+    onClose();
   };
 
   return (
@@ -120,15 +116,11 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
           }
         >
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold mb-4 text-black">
+            <DialogTitle className="text-xl font-bold mb-2 text-black">
               {opportunity.title}
             </DialogTitle>
-            <div className="flex items-center gap-3">
-              <Badge
-                className={`${statusColor.bg} ${statusColor.text} rounded-md flex items-center justify-center p-2 px-5`}
-              >
-                {opportunity.status}
-              </Badge>
+            <div className={`text-sm font-medium ${getStatusTextColor(opportunity.status)}`}>
+              {opportunity.status}
             </div>
           </DialogHeader>
           <div className="mt-6">
@@ -137,12 +129,11 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
               <div className="col-span-2 space-y-6">
                 <DonorProfileCard
                   donorName={opportunity.donor?.name || 'Unknown Donor'}
-                  contactEmail={opportunity.contact_email}
-                  contactPhone={opportunity.contact_phone}
                   createdAt={opportunity.created_at}
                   deadline={opportunity.deadline}
                   sector={opportunity.sector}
                   sectionHeight={SECTION_HEIGHT}
+                  onViewProfile={handleViewDonorProfile}
                 />
                 <NotesCard
                   notes={notes}
@@ -163,7 +154,7 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
                   sectionHeight={SECTION_HEIGHT}
                 />
                 <AttachmentsCard
-                  files={files}
+                  files={attachments}
                   onAddFile={() => setShowAddFileDialog(true)}
                   sectionHeight={SECTION_HEIGHT}
                 />
