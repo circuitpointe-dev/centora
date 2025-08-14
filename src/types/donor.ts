@@ -1,13 +1,4 @@
-export interface FundingCycle {
-  name: string;
-  width: string;
-  position: number;
-  color: string;
-  status: string;
-  startMonth: number;
-  endMonth: number;
-  description: string;
-}
+// FundingCycle interface moved to src/types/fundingCycle.ts
 
 export interface Donor {
   id: string;

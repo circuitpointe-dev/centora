@@ -1,20 +1,73 @@
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FundingCycle } from "@/types/donor";
-import { allFundingData, availableYears, statusLegend, months } from "@/data/fundingCyclesData";
+import { FundingCycle } from "@/types/fundingCycle";
+import { getMonthName, MONTH_NAMES } from "@/utils/monthConversion";
 import { EmptyFundingCycles } from "./EmptyFundingCycles";
+import { useDonorFundingCycles } from "@/hooks/useDonorFundingCycles";
 
 const FundingCycles: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
-  // Filter funding data by selected year
-  const fundingData = []; // Clear static data - will be replaced with backend data
-  const availableYears: number[] = []; // Clear static years - will be populated from backend
-  const statusLegend: any[] = []; // Clear static legend - will be populated from backend
+  // Fetch funding cycles data
+  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles();
+
+  // Process data and compute derived values
+  const { fundingData, availableYears, filteredData } = useMemo(() => {
+    if (!rawFundingCycles.length) {
+      return { fundingData: [], availableYears: [], filteredData: [] };
+    }
+
+    // Transform database data to component format
+    const transformed = rawFundingCycles.map((cycle): FundingCycle => ({
+      id: cycle.id,
+      name: cycle.name,
+      startMonth: cycle.start_month,
+      endMonth: cycle.end_month,
+      year: cycle.year,
+      status: cycle.status,
+      description: cycle.description || '',
+      color: getStatusColor(cycle.status),
+      width: '',
+      position: 0,
+      donorId: cycle.donor_id,
+      orgId: cycle.org_id
+    }));
+
+    // Get unique years for filter
+    const years = [...new Set(transformed.map(cycle => cycle.year))].sort((a, b) => b - a);
+    
+    // Filter by selected year if one is selected
+    const filtered = selectedYear 
+      ? transformed.filter(cycle => cycle.year === selectedYear)
+      : transformed;
+
+    return {
+      fundingData: transformed,
+      availableYears: years,
+      filteredData: filtered
+    };
+  }, [rawFundingCycles, selectedYear]);
+
+  // Status color mapping
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'ongoing': return 'bg-green-500';
+      case 'upcoming': return 'bg-yellow-500';
+      case 'closed': return 'bg-gray-400';
+      default: return 'bg-blue-500';
+    }
+  };
+
+  // Status legend
+  const statusLegend = [
+    { status: 'Ongoing', color: 'bg-green-500' },
+    { status: 'Upcoming', color: 'bg-yellow-500' },
+    { status: 'Closed', color: 'bg-gray-400' }
+  ];
 
   const getPositionStyle = (cycle: FundingCycle) => {
     // Calculate position based on actual start month (0-indexed)
@@ -57,7 +110,11 @@ const FundingCycles: React.FC = () => {
       
       {/* Main content with fixed months header */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {fundingData.length === 0 ? (
+        {isLoading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-sm text-gray-500">Loading funding cycles...</div>
+          </div>
+        ) : filteredData.length === 0 ? (
           <EmptyFundingCycles />
         ) : (
           <>
@@ -67,13 +124,13 @@ const FundingCycles: React.FC = () => {
               <div className="w-[140px] min-w-[140px] pr-4"></div>
               {/* Months labels - fixed position */}
               <div className="flex-1 pl-4">
-                <div className="flex justify-between px-2">
-                  {months.map((month) => (
-                    <div key={month} className="text-sm text-gray-500 font-medium">
-                      {month}
-                    </div>
-                  ))}
-                </div>
+                 <div className="flex justify-between px-2">
+                   {MONTH_NAMES.map((month) => (
+                     <div key={month} className="text-sm text-gray-500 font-medium">
+                       {month}
+                     </div>
+                   ))}
+                 </div>
               </div>
             </div>
 
@@ -83,8 +140,8 @@ const FundingCycles: React.FC = () => {
                 <div className="flex">
                   {/* Left side for donor names */}
                   <div className="w-[140px] min-w-[140px] pr-4 border-r border-gray-200">
-                    {fundingData.map((fund, index) => (
-                      <div key={index} className="h-14 flex items-center">
+                    {filteredData.map((fund, index) => (
+                      <div key={fund.id || index} className="h-14 flex items-center">
                         <span className="text-sm text-gray-600 font-medium">{fund.name}</span>
                       </div>
                     ))}
@@ -93,8 +150,8 @@ const FundingCycles: React.FC = () => {
                   {/* Right side for funding cycle bars */}
                   <div className="flex-1 overflow-hidden pl-4">
                     <div className="relative">
-                      {fundingData.map((fund, index) => (
-                        <div key={index} className="h-14 flex items-center relative">
+                      {filteredData.map((fund, index) => (
+                        <div key={fund.id || index} className="h-14 flex items-center relative">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -107,11 +164,11 @@ const FundingCycles: React.FC = () => {
                                 <p className="font-medium text-sm">{fund.name}</p>
                                 <p className="text-xs mt-1 text-gray-500">{fund.description}</p>
                                 <p className="text-xs mt-1 font-medium">Status: {fund.status}</p>
-                                {fund.startMonth && fund.endMonth && (
-                                  <p className="text-xs mt-1">
-                                    Period: {months[fund.startMonth-1]} - {months[fund.endMonth-1]} {selectedYear}
-                                  </p>
-                                )}
+                                 {fund.startMonth && fund.endMonth && (
+                                   <p className="text-xs mt-1">
+                                     Period: {MONTH_NAMES[fund.startMonth-1]} - {MONTH_NAMES[fund.endMonth-1]} {fund.year}
+                                   </p>
+                                 )}
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>

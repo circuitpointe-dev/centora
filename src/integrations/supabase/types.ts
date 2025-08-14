@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
@@ -194,6 +194,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      donor_funding_cycles: {
+        Row: {
+          color: string
+          created_at: string
+          created_by: string
+          description: string | null
+          donor_id: string
+          end_month: number
+          id: string
+          name: string
+          org_id: string
+          start_month: number
+          status: Database["public"]["Enums"]["funding_cycle_status"]
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          donor_id: string
+          end_month: number
+          id?: string
+          name: string
+          org_id: string
+          start_month: number
+          status?: Database["public"]["Enums"]["funding_cycle_status"]
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          donor_id?: string
+          end_month?: number
+          id?: string
+          name?: string
+          org_id?: string
+          start_month?: number
+          status?: Database["public"]["Enums"]["funding_cycle_status"]
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
       }
       donor_giving_records: {
         Row: {
@@ -488,16 +536,16 @@ export type Database = {
       }
       create_donor_with_details: {
         Args: {
-          _org_id: string
-          _created_by: string
-          _name: string
           _affiliation?: string
-          _organization_url?: string
-          _funding_start_date?: string
-          _funding_end_date?: string
-          _notes?: string
           _contacts?: string
+          _created_by: string
           _focus_area_ids?: string[]
+          _funding_end_date?: string
+          _funding_start_date?: string
+          _name: string
+          _notes?: string
+          _org_id: string
+          _organization_url?: string
         }
         Returns: string
       }
@@ -508,10 +556,10 @@ export type Database = {
       get_org_member_list: {
         Args: { _org_id: string }
         Returns: {
-          id: string
-          full_name: string
-          role: Database["public"]["Enums"]["app_role"]
           created_at: string
+          full_name: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
         }[]
       }
       is_org_admin: {
@@ -526,6 +574,7 @@ export type Database = {
     Enums: {
       app_role: "org_admin" | "org_member"
       donor_status: "active" | "inactive" | "potential"
+      funding_cycle_status: "ongoing" | "upcoming" | "closed"
       module_key:
         | "fundraising"
         | "grants"
@@ -667,6 +716,7 @@ export const Constants = {
     Enums: {
       app_role: ["org_admin", "org_member"],
       donor_status: ["active", "inactive", "potential"],
+      funding_cycle_status: ["ongoing", "upcoming", "closed"],
       module_key: [
         "fundraising",
         "grants",
