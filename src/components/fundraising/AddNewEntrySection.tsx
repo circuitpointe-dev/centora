@@ -13,7 +13,7 @@ import {
 import { MONTH_FULL_NAMES } from '@/utils/monthConversion';
 
 interface AddNewEntrySectionProps {
-  onAddRecord: (month: string, year: number, amount: number) => void;
+  onAddRecord: (month: string, year: number, amount: number, currency: string) => void;
 }
 
 export const AddNewEntrySection: React.FC<AddNewEntrySectionProps> = ({
@@ -22,13 +22,15 @@ export const AddNewEntrySection: React.FC<AddNewEntrySectionProps> = ({
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('USD');
 
   const handleAddEntry = () => {
-    if (selectedMonth && selectedYear && amount) {
-      onAddRecord(selectedMonth, parseInt(selectedYear), parseInt(amount));
+    if (selectedMonth && selectedYear && amount && currency) {
+      onAddRecord(selectedMonth, parseInt(selectedYear), parseInt(amount), currency);
       setSelectedMonth('');
       setSelectedYear('');
       setAmount('');
+      setCurrency('USD');
     }
   };
 
@@ -79,17 +81,37 @@ export const AddNewEntrySection: React.FC<AddNewEntrySectionProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="font-medium text-[#707070] text-sm">
-                Amount
-              </label>
-              <Input
-                className="h-12 border-[#d2d2d2]"
-                placeholder="Enter amount"
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="flex flex-col gap-2 flex-1">
+                <label className="font-medium text-[#707070] text-sm">
+                  Amount
+                </label>
+                <Input
+                  className="h-12 border-[#d2d2d2]"
+                  placeholder="Enter amount"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2 flex-1">
+                <label className="font-medium text-[#707070] text-sm">
+                  Currency
+                </label>
+                <Select value={currency} onValueChange={setCurrency}>
+                  <SelectTrigger className="h-12 border-[#d2d2d2]">
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">USD</SelectItem>
+                    <SelectItem value="EUR">EUR</SelectItem>
+                    <SelectItem value="GBP">GBP</SelectItem>
+                    <SelectItem value="CAD">CAD</SelectItem>
+                    <SelectItem value="AUD">AUD</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="flex justify-end">
@@ -97,7 +119,7 @@ export const AddNewEntrySection: React.FC<AddNewEntrySectionProps> = ({
                 variant="outline"
                 className="text-violet-600 border-violet-600 h-auto py-3"
                 onClick={handleAddEntry}
-                disabled={!selectedMonth || !selectedYear || !amount}
+                disabled={!selectedMonth || !selectedYear || !amount || !currency}
               >
                 Add New Entry
               </Button>

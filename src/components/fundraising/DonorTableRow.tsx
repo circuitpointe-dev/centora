@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Trash2 } from "lucide-react";
 import { type Donor } from "@/hooks/useDonors";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { formatLastDonation, formatCurrency } from "@/utils/donorFormatters";
 
 interface DonorTableRowProps {
   donor: Donor;
@@ -16,22 +17,6 @@ interface DonorTableRowProps {
 const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDelete }) => {
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const handleDeleteClick = () => {
     setDeleteConfirm(true);
@@ -72,12 +57,12 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
           </div>
         </TableCell>
         <TableCell>
-          {donor.last_donation_date ? formatDate(donor.last_donation_date) : 'No donations'}
+          {formatLastDonation(donor)}
         </TableCell>
         <TableCell>
           <div className="flex flex-wrap gap-1">
             {donor.focus_areas?.slice(0, 2).map((fa, index) => (
-              <Badge key={index} className={`text-xs rounded-sm ${fa.focus_areas?.color || 'bg-gray-100'}`}>
+              <Badge key={index} className={`text-xs rounded-sm ${fa.focus_areas?.color || 'bg-gray-100'} pointer-events-none`}>
                 {fa.focus_areas?.name || 'Unknown'}
               </Badge>
             ))}

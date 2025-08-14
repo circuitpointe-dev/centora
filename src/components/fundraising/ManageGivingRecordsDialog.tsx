@@ -60,14 +60,14 @@ export const ManageGivingRecordsDialog: React.FC<ManageGivingRecordsDialogProps>
     }
   }, [availableYears, selectedYear]);
 
-  const handleAddRecord = async (month: string, year: number, amount: number) => {
+  const handleAddRecord = async (month: string, year: number, amount: number, currency: string) => {
     try {
       await createMutation.mutateAsync({
         donorId,
         month: getMonthNumber(month),
         year,
         amount,
-        currency: 'USD'
+        currency
       });
       toast({
         title: "Success",
@@ -82,14 +82,14 @@ export const ManageGivingRecordsDialog: React.FC<ManageGivingRecordsDialogProps>
     }
   };
 
-  const handleEditRecord = async (id: string, month: string, year: number, amount: number) => {
+  const handleEditRecord = async (id: string, month: string, year: number, amount: number, currency: string) => {
     try {
       await updateMutation.mutateAsync({
         id,
         month: getMonthNumber(month),
         year,
         amount,
-        currency: 'USD'
+        currency
       });
       toast({
         title: "Success",

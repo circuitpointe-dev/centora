@@ -91,7 +91,22 @@ export const useDonors = () => {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as Donor[];
+
+      // Get last donation info for each donor
+      const donorsWithLastDonation = await Promise.all(
+        (data || []).map(async (donor) => {
+          const { data: lastDonation } = await supabase.rpc('get_last_donation_info', {
+            donor_uuid: donor.id
+          });
+
+          return {
+            ...donor,
+            lastDonationInfo: lastDonation?.[0] || null
+          };
+        })
+      );
+
+      return donorsWithLastDonation as Donor[];
     },
     enabled: !!user?.org_id,
   });

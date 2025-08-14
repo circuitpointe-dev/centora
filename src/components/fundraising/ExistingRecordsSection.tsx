@@ -24,7 +24,7 @@ import { getMonthName, getMonthNumber, MONTH_NAMES, formatCurrency } from '@/uti
 
 interface ExistingRecordsSectionProps {
   records: DonorGivingRecord[];
-  onEditRecord: (id: string, month: string, year: number, amount: number) => void;
+  onEditRecord: (id: string, month: string, year: number, amount: number, currency: string) => void;
   onDeleteRecord: (id: string) => void;
   isLoading?: boolean;
 }
@@ -39,17 +39,19 @@ export const ExistingRecordsSection: React.FC<ExistingRecordsSectionProps> = ({
   const [editMonth, setEditMonth] = useState('');
   const [editYear, setEditYear] = useState('');
   const [editAmount, setEditAmount] = useState('');
+  const [editCurrency, setEditCurrency] = useState('');
 
   const handleEdit = (record: DonorGivingRecord) => {
     setEditingId(record.id);
     setEditMonth(getMonthName(record.month));
     setEditYear(record.year.toString());
     setEditAmount(record.amount.toString());
+    setEditCurrency(record.currency);
   };
 
   const handleSave = () => {
-    if (editingId && editMonth && editYear && editAmount) {
-      onEditRecord(editingId, editMonth, parseInt(editYear), parseInt(editAmount));
+    if (editingId && editMonth && editYear && editAmount && editCurrency) {
+      onEditRecord(editingId, editMonth, parseInt(editYear), parseInt(editAmount), editCurrency);
       setEditingId(null);
     }
   };
@@ -59,6 +61,7 @@ export const ExistingRecordsSection: React.FC<ExistingRecordsSectionProps> = ({
     setEditMonth('');
     setEditYear('');
     setEditAmount('');
+    setEditCurrency('');
   };
 
   // Get available years from records
@@ -96,6 +99,7 @@ export const ExistingRecordsSection: React.FC<ExistingRecordsSectionProps> = ({
                   <TableHead className="text-[#a273f2] font-medium">Month</TableHead>
                   <TableHead className="text-[#a273f2] font-medium">Year</TableHead>
                   <TableHead className="text-[#a273f2] font-medium">Amount</TableHead>
+                  <TableHead className="text-[#a273f2] font-medium">Currency</TableHead>
                   <TableHead className="text-[#a273f2] font-medium text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -153,6 +157,24 @@ export const ExistingRecordsSection: React.FC<ExistingRecordsSectionProps> = ({
                         />
                       ) : (
                         formatCurrency(Number(record.amount), record.currency)
+                      )}
+                    </TableCell>
+                    <TableCell className="font-normal text-[#232323]">
+                      {editingId === record.id ? (
+                        <Select value={editCurrency} onValueChange={setEditCurrency}>
+                          <SelectTrigger className="h-8">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USD">USD</SelectItem>
+                            <SelectItem value="EUR">EUR</SelectItem>
+                            <SelectItem value="GBP">GBP</SelectItem>
+                            <SelectItem value="CAD">CAD</SelectItem>
+                            <SelectItem value="AUD">AUD</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        record.currency
                       )}
                     </TableCell>
                     <TableCell className="text-right">
