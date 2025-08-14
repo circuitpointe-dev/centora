@@ -46,7 +46,7 @@ export const CommunicationsSection: React.FC<CommunicationsSectionProps> = ({ do
 
   // Get user display name
   const getUserDisplayName = (note: any) => {
-    return note.profiles?.display_name || note.profiles?.email || "Unknown User";
+    return note.profiles?.full_name || note.profiles?.email || "Unknown User";
   };
 
   return (

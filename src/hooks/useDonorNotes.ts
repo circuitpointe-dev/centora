@@ -10,7 +10,7 @@ export interface DonorNote {
   created_at: string;
   updated_at: string;
   profiles?: {
-    display_name?: string;
+    full_name?: string;
     email?: string;
   };
 }
@@ -24,7 +24,7 @@ export const useDonorNotes = (donorId: string) => {
         .select(`
           *,
           profiles:created_by (
-            display_name,
+            full_name,
             email
           )
         `)
