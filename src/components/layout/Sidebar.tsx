@@ -77,13 +77,13 @@ const Sidebar = ({
         />
       )}
 
-      {/* Mobile Toggle Button */}
+        {/* Mobile Toggle Button */}
       <Button
         variant="ghost"
         size="sm"
         onClick={() => setIsMobileOpen(true)}
         className={cn(
-          "fixed top-4 left-4 z-30 h-8 w-8 p-0 md:hidden",
+          "fixed top-4 left-4 z-30 h-8 w-8 p-0 lg:hidden",
           isMobileOpen && "hidden"
         )}
       >
@@ -96,16 +96,16 @@ const Sidebar = ({
           "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
           // Mobile: hidden by default, full screen when open
           "fixed left-0 top-0 h-screen z-50",
-          // Mobile behavior
-          "hidden md:flex",
+          // Mobile behavior - hidden until large screens
+          "hidden lg:flex",
           isMobileOpen ? "flex w-full" : "",
-          // Desktop behavior
-          !isCollapsed ? "md:w-16 lg:w-64" : "md:w-16"
+          // Desktop behavior - collapsed by default, expanded only on large screens when not collapsed
+          !isCollapsed ? "lg:w-16 xl:w-64" : "lg:w-16"
         )}
       >
         {/* Mobile Close Button */}
         {isMobileOpen && (
-          <div className="md:hidden p-4 border-b border-gray-200">
+          <div className="lg:hidden p-4 border-b border-gray-200">
             <div className="flex justify-end">
               <Button
                 variant="ghost"
@@ -123,7 +123,7 @@ const Sidebar = ({
         <div
           className={cn(
             "p-4 border-b border-gray-200 shrink-0",
-            isMobileOpen ? "block" : "hidden md:block"
+            isMobileOpen ? "block" : "hidden lg:block"
           )}
         >
           <div className="flex items-center justify-between">
@@ -132,7 +132,7 @@ const Sidebar = ({
                 "flex items-center space-x-3",
                 isCollapsed &&
                   !isMobileOpen &&
-                  "justify-center md:block lg:flex"
+                  "justify-center lg:block xl:flex"
               )}
             >
               {(!isCollapsed || isMobileOpen) && (
@@ -148,7 +148,7 @@ const Sidebar = ({
                 </div>
               )}
             </div>
-            <div className="hidden md:flex">
+            <div className="hidden lg:flex">
               <Button
                 variant="ghost"
                 size="sm"
@@ -162,7 +162,7 @@ const Sidebar = ({
         </div>
 
         {/* Current Module Header */}
-        <div className={cn(isMobileOpen ? "block" : "hidden md:block")}>
+        <div className={cn(isMobileOpen ? "block" : "hidden lg:block")}>
           <SidebarHeader
             currentModule={currentModule}
             isCollapsed={isCollapsed && !isMobileOpen}
@@ -173,7 +173,7 @@ const Sidebar = ({
         <div
           className={cn(
             "flex-1 overflow-auto min-h-0",
-            isMobileOpen ? "block" : "hidden md:block"
+            isMobileOpen ? "block" : "hidden lg:block"
           )}
         >
           {!showModuleSwitcher ? (
@@ -196,7 +196,7 @@ const Sidebar = ({
           <div
             className={cn(
               "border-t border-gray-200 p-4 shrink-0",
-              isMobileOpen ? "block" : "hidden md:block"
+              isMobileOpen ? "block" : "hidden lg:block"
             )}
           >
             <Button
