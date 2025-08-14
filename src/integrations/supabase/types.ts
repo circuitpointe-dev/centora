@@ -405,6 +405,75 @@ export type Database = {
         }
         Relationships: []
       }
+      opportunities: {
+        Row: {
+          amount: number | null
+          assigned_to: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string
+          currency: string
+          deadline: string
+          donor_id: string
+          end_date: string | null
+          id: string
+          notes: string | null
+          org_id: string
+          pipeline: string | null
+          sector: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["opportunity_status"]
+          title: string
+          type: Database["public"]["Enums"]["opportunity_type"]
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          assigned_to?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by: string
+          currency?: string
+          deadline: string
+          donor_id: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          org_id: string
+          pipeline?: string | null
+          sector?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["opportunity_status"]
+          title: string
+          type: Database["public"]["Enums"]["opportunity_type"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          assigned_to?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string
+          currency?: string
+          deadline?: string
+          donor_id?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          org_id?: string
+          pipeline?: string | null
+          sector?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["opportunity_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["opportunity_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       organization_modules: {
         Row: {
           created_at: string
@@ -594,6 +663,13 @@ export type Database = {
         | "learning"
         | "hr"
         | "users"
+      opportunity_status:
+        | "To Review"
+        | "In Progress"
+        | "Submitted"
+        | "Awarded"
+        | "Declined"
+      opportunity_type: "RFP" | "LOI" | "CFP"
       organization_type: "NGO" | "DONOR"
     }
     CompositeTypes: {
@@ -737,6 +813,14 @@ export const Constants = {
         "hr",
         "users",
       ],
+      opportunity_status: [
+        "To Review",
+        "In Progress",
+        "Submitted",
+        "Awarded",
+        "Declined",
+      ],
+      opportunity_type: ["RFP", "LOI", "CFP"],
       organization_type: ["NGO", "DONOR"],
     },
   },
