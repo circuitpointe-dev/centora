@@ -70,7 +70,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({
 
           <FormField
             control={form.control}
-            name="donorId"
+            name="donor_id"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium text-gray-700">
@@ -83,6 +83,19 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
+                    {onCreateDonor && (
+                      <>
+                        <div className="px-2 py-1.5 border-b">
+                          <Button
+                            variant="ghost"
+                            onClick={onCreateDonor}
+                            className="w-full justify-start text-sm text-primary hover:text-primary-foreground"
+                          >
+                            + Add New Donor
+                          </Button>
+                        </div>
+                      </>
+                    )}
                     {donors.map((donor) => (
                       <SelectItem key={donor.id} value={donor.id}>
                         {donor.name}
@@ -214,9 +227,9 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({
             />
           </div>
 
-          <FormField
+           <FormField
             control={form.control}
-            name="assignedTo"
+            name="assigned_to"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium text-gray-700">

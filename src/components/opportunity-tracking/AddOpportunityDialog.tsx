@@ -102,7 +102,7 @@ const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
             </Button>
             <Button
               type="submit"
-              className="bg-black text-white hover:bg-gray-900"
+              variant="brand-purple"
               disabled={createOpportunityMutation.isPending}
             >
               {createOpportunityMutation.isPending ? "Adding..." : "Add Opportunity"}
