@@ -12,7 +12,6 @@ export interface Donor {
   funding_end_date?: string;
   notes?: string;
   status: 'active' | 'inactive' | 'potential';
-  currency: string;
   total_donations: number;
   last_donation_date?: string;
   created_by: string;
@@ -21,12 +20,6 @@ export interface Donor {
   contacts?: DonorContact[];
   focus_areas?: DonorFocusArea[];
   documents?: DonorDocument[];
-  funding_periods?: DonorFundingPeriod[];
-  lastDonationInfo?: {
-    amount: number;
-    currency: string;
-    donation_date: string;
-  };
 }
 
 export interface DonorContact {
@@ -63,30 +56,12 @@ export interface DonorDocument {
   uploaded_at: string;
 }
 
-export interface DonorFundingPeriod {
-  id: string;
-  donor_id: string;
-  name?: string;
-  start_date: string;
-  end_date: string;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface FundingPeriod {
-  name?: string;
-  start_date: string;
-  end_date: string;
-}
-
 export interface CreateDonorData {
   name: string;
-  status: 'potential' | 'active';
-  currency?: string;
   affiliation?: string;
   organization_url?: string;
-  funding_periods: FundingPeriod[];
+  funding_start_date?: string;
+  funding_end_date?: string;
   notes?: string;
   contacts: Omit<DonorContact, 'id' | 'donor_id' | 'created_at' | 'updated_at'>[];
   focus_area_ids: string[];
@@ -110,8 +85,7 @@ export const useDonors = () => {
             *,
             focus_areas(id, name, color)
           ),
-          documents:donor_documents(*),
-          funding_periods:donor_funding_periods(*)
+          documents:donor_documents(*)
         `)
         .eq('org_id', user.org_id)
         .order('created_at', { ascending: false });
@@ -132,7 +106,7 @@ export const useDonors = () => {
         })
       );
 
-      return donorsWithLastDonation as any[];
+      return donorsWithLastDonation as Donor[];
     },
     enabled: !!user?.org_id,
   });
@@ -159,14 +133,13 @@ export const useCreateDonor = () => {
             _org_id: user.org_id,
             _created_by: user.id,
             _name: donorData.name,
-            _status: donorData.status,
             _affiliation: donorData.affiliation,
             _organization_url: donorData.organization_url,
-            _funding_periods: JSON.stringify(donorData.funding_periods),
+            _funding_start_date: donorData.funding_start_date,
+            _funding_end_date: donorData.funding_end_date,
             _notes: donorData.notes,
             _contacts: JSON.stringify(donorData.contacts),
             _focus_area_ids: donorData.focus_area_ids,
-            _currency: donorData.currency || 'USD',
           }
         );
 
@@ -336,10 +309,10 @@ export const useUpdateDonor = () => {
         .from('donors')
         .update({
           name: donorData.name,
-          status: donorData.status,
-          currency: donorData.currency,
           affiliation: donorData.affiliation,
           organization_url: donorData.organization_url,
+          funding_start_date: donorData.funding_start_date,
+          funding_end_date: donorData.funding_end_date,
           notes: donorData.notes,
         })
         .eq('id', id)
@@ -391,32 +364,6 @@ export const useUpdateDonor = () => {
             );
 
           if (focusAreasError) throw focusAreasError;
-        }
-      }
-
-      // Update funding periods if provided
-      if (donorData.funding_periods) {
-        // Delete existing funding periods
-        await supabase
-          .from('donor_funding_periods')
-          .delete()
-          .eq('donor_id', id);
-
-        // Insert new funding periods
-        if (donorData.funding_periods.length > 0) {
-          const { error: fundingPeriodsError } = await supabase
-            .from('donor_funding_periods')
-            .insert(
-              donorData.funding_periods.map(period => ({
-                donor_id: id,
-                name: period.name,
-                start_date: period.start_date,
-                end_date: period.end_date,
-                created_by: user.id,
-              }))
-            );
-
-          if (fundingPeriodsError) throw fundingPeriodsError;
         }
       }
 
@@ -504,14 +451,6 @@ export const useDeleteDonor = () => {
 
       if (fundingCyclesError) throw fundingCyclesError;
 
-      // Delete donor funding periods
-      const { error: fundingPeriodsError } = await supabase
-        .from('donor_funding_periods')
-        .delete()
-        .eq('donor_id', donorId);
-
-      if (fundingPeriodsError) throw fundingPeriodsError;
-
       // Delete donor contacts
       const { error: contactsError } = await supabase
         .from('donor_contacts')
@@ -543,7 +482,6 @@ export const useDeleteDonor = () => {
       queryClient.invalidateQueries({ queryKey: ['donor-engagements'] });
       queryClient.invalidateQueries({ queryKey: ['donor-giving-records'] });
       queryClient.invalidateQueries({ queryKey: ['donor-funding-cycles'] });
-      queryClient.invalidateQueries({ queryKey: ['donor-funding-periods'] });
       queryClient.invalidateQueries({ queryKey: ['donor-documents'] });
     },
   });

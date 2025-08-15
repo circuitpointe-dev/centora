@@ -10,21 +10,11 @@ import { useToast } from "@/hooks/use-toast";
 interface EditDonorDialogProps {
   donor: Donor;
   trigger?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
 }
 
-const EditDonorDialog: React.FC<EditDonorDialogProps> = ({ 
-  donor, 
-  trigger, 
-  open: externalOpen, 
-  onOpenChange: externalOnOpenChange 
-}) => {
-  const [internalOpen, setInternalOpen] = useState(false);
+const EditDonorDialog: React.FC<EditDonorDialogProps> = ({ donor, trigger }) => {
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
-
-  const open = externalOpen !== undefined ? externalOpen : internalOpen;
-  const setOpen = externalOnOpenChange || setInternalOpen;
 
   const handleEditSubmit = () => {
     // Form submission is now handled internally by NewDonorForm
@@ -43,11 +33,9 @@ const EditDonorDialog: React.FC<EditDonorDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {trigger && (
-        <DialogTrigger asChild>
-          {trigger}
-        </DialogTrigger>
-      )}
+      <DialogTrigger asChild>
+        {trigger || defaultTrigger}
+      </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto bg-white">
         <DialogHeader>
           <DialogTitle className="text-black">Edit Donor</DialogTitle>

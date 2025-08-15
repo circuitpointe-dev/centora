@@ -1,138 +1,203 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Clock } from 'lucide-react';
-import { useFundingCyclesData, FundingCycleData } from '@/hooks/useFundingCyclesData';
+
+import React, { useState, useMemo } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FundingCycle } from "@/types/fundingCycle";
+import { getMonthName, MONTH_NAMES } from "@/utils/monthConversion";
+import { EmptyFundingCycles } from "./EmptyFundingCycles";
+import { useDonorFundingCycles } from "@/hooks/useDonorFundingCycles";
 
 const FundingCycles: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const { data, isLoading, error } = useFundingCyclesData(selectedYear || undefined);
 
+  // Fetch funding cycles data
+  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles();
+
+  // Process data and compute derived values
+  const { fundingData, availableYears, filteredData } = useMemo(() => {
+    if (!rawFundingCycles.length) {
+      return { fundingData: [], availableYears: [], filteredData: [] };
+    }
+
+    // Transform database data to component format
+    const transformed = rawFundingCycles.map((cycle): FundingCycle => ({
+      id: cycle.id,
+      name: cycle.name,
+      startMonth: cycle.start_month,
+      endMonth: cycle.end_month,
+      year: cycle.year,
+      status: cycle.status,
+      description: cycle.description || '',
+      color: getStatusColor(cycle.status),
+      width: '',
+      position: 0,
+      donorId: cycle.donor_id,
+      orgId: cycle.org_id
+    }));
+
+    // Get unique years for filter
+    const years = [...new Set(transformed.map(cycle => cycle.year))].sort((a, b) => b - a);
+    
+    // Filter by selected year if one is selected
+    const filtered = selectedYear 
+      ? transformed.filter(cycle => cycle.year === selectedYear)
+      : transformed;
+
+    return {
+      fundingData: transformed,
+      availableYears: years,
+      filteredData: filtered
+    };
+  }, [rawFundingCycles, selectedYear]);
+
+  // Status color mapping
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ongoing': return 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100';
-      case 'upcoming': return 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100';
-      case 'closed': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100';
+      case 'ongoing': return 'bg-green-500';
+      case 'upcoming': return 'bg-yellow-500';
+      case 'closed': return 'bg-gray-400';
+      default: return 'bg-blue-500';
     }
   };
 
-  const getMonthName = (monthNum: number) => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months[monthNum - 1] || '';
+  // Status legend
+  const statusLegend = [
+    { status: 'Ongoing', color: 'bg-green-500' },
+    { status: 'Upcoming', color: 'bg-yellow-500' },
+    { status: 'Closed', color: 'bg-gray-400' }
+  ];
+
+  const getPositionStyle = (cycle: FundingCycle) => {
+    // Calculate position based on actual start month (0-indexed)
+    const startMonthIndex = cycle.startMonth - 1;
+    const endMonthIndex = cycle.endMonth - 1;
+    const width = (endMonthIndex - startMonthIndex + 1) * (100/12);
+    
+    return {
+      left: `${(startMonthIndex / 12) * 100}%`,
+      width: `${width}%`
+    };
   };
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Funding Cycles</CardTitle>
-          <CardDescription>Overview of funding cycles for your donors</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-64 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Funding Cycles</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-destructive">Error loading funding cycles data</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const fundingCycles = data?.fundingCycles || [];
-  const availableYears = data?.availableYears || [];
-
-  if (fundingCycles.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Funding Cycles</CardTitle>
-          <CardDescription>Overview of funding cycles for your donors</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <EmptyState
-            icon={Clock}
-            title="No funding cycles found"
-            description="Create funding cycles to track donor funding periods and commitments."
-          />
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Funding Cycles</CardTitle>
-        <CardDescription>
-          {fundingCycles.length} funding cycle{fundingCycles.length !== 1 ? 's' : ''} found
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {availableYears.length > 0 && (
-          <div className="flex items-center space-x-2">
-            <label htmlFor="year-select" className="text-sm font-medium">
-              Filter by year:
-            </label>
-            <Select 
-              value={selectedYear?.toString() || "all"} 
-              onValueChange={(value) => setSelectedYear(value === "all" ? null : Number(value))}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="All years" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All years</SelectItem>
-                {availableYears.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+    <section className="bg-white rounded-lg p-6 shadow-sm h-[450px] flex flex-col">
+      <div className="flex justify-between items-center mb-6 flex-shrink-0">
+        <h2 className="text-base font-medium text-gray-900">Funding Cycles</h2>
         
-        <div className="space-y-4">
-          {fundingCycles.map((cycle) => (
-            <div
-              key={cycle.id}
-              className="flex items-center justify-between p-4 border border-border rounded-lg bg-card"
-            >
-              <div className="flex items-center space-x-4">
-                <div
-                  className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: cycle.color }}
-                />
-                <div>
-                  <h4 className="font-medium">{cycle.name}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {getMonthName(cycle.startMonth)} - {getMonthName(cycle.endMonth)} {cycle.year}
-                  </p>
-                </div>
+        {/* Year selector dropdown - only show if years available */}
+        {availableYears.length > 0 && (
+          <Select
+            value={selectedYear?.toString() || ""}
+            onValueChange={(value) => setSelectedYear(parseInt(value))}
+          >
+            <SelectTrigger className="w-28 h-9">
+              <SelectValue placeholder="Select Year">
+                {selectedYear || "Select Year"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {availableYears.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+      
+      {/* Main content with fixed months header */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {isLoading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-sm text-gray-500">Loading funding cycles...</div>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <EmptyFundingCycles />
+        ) : (
+          <>
+            {/* Fixed months header */}
+            <div className="flex border-b border-gray-200 pb-2 mb-4 flex-shrink-0">
+              {/* Spacer for donor names column */}
+              <div className="w-[140px] min-w-[140px] pr-4"></div>
+              {/* Months labels - fixed position */}
+              <div className="flex-1 pl-4">
+                 <div className="flex justify-between px-2">
+                   {MONTH_NAMES.map((month) => (
+                     <div key={month} className="text-sm text-gray-500 font-medium">
+                       {month}
+                     </div>
+                   ))}
+                 </div>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(cycle.status)}`}>
-                {cycle.status}
-              </span>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+
+            {/* Scrollable content area */}
+            <div className="flex-1 overflow-hidden">
+              <ScrollArea className="h-full">
+                <div className="flex">
+                  {/* Left side for donor names */}
+                  <div className="w-[140px] min-w-[140px] pr-4 border-r border-gray-200">
+                    {filteredData.map((fund, index) => (
+                      <div key={fund.id || index} className="h-14 flex items-center">
+                        <span className="text-sm text-gray-600 font-medium">{fund.name}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Right side for funding cycle bars */}
+                  <div className="flex-1 overflow-hidden pl-4">
+                    <div className="relative">
+                      {filteredData.map((fund, index) => (
+                        <div key={fund.id || index} className="h-14 flex items-center relative">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div 
+                                  className={`h-8 ${fund.color} rounded transition-opacity duration-200 absolute hover:opacity-90 cursor-pointer`}
+                                  style={getPositionStyle(fund)}
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="max-w-xs p-3">
+                                <p className="font-medium text-sm">{fund.name}</p>
+                                <p className="text-xs mt-1 text-gray-500">{fund.description}</p>
+                                <p className="text-xs mt-1 font-medium">Status: {fund.status}</p>
+                                 {fund.startMonth && fund.endMonth && (
+                                   <p className="text-xs mt-1">
+                                     Period: {MONTH_NAMES[fund.startMonth-1]} - {MONTH_NAMES[fund.endMonth-1]} {fund.year}
+                                   </p>
+                                 )}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </ScrollArea>
+            </div>
+          </>
+        )}
+      </div>
+      
+      {statusLegend.length > 0 && (
+        <>
+          <Separator className="my-6 flex-shrink-0" />
+          
+          <div className="flex gap-8 flex-shrink-0">
+            {statusLegend.map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div className={`w-3 h-3 ${item.color} rounded-sm`} />
+                <span className="text-sm text-gray-700">{item.status}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </section>
   );
 };
 

@@ -4,24 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Plus, Upload, X, AlertCircle } from "lucide-react";
 import { ContactPersonForm, ContactPerson } from "./ContactPersonForm";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from "@/components/ui/side-dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-const CURRENCY_OPTIONS = [
-  { value: 'USD', label: 'USD - US Dollar' },
-  { value: 'EUR', label: 'EUR - Euro' },
-  { value: 'GBP', label: 'GBP - British Pound' },
-  { value: 'CAD', label: 'CAD - Canadian Dollar' },
-  { value: 'AUD', label: 'AUD - Australian Dollar' },
-  { value: 'JPY', label: 'JPY - Japanese Yen' },
-];
 import { FocusAreaForm } from "./FocusAreaForm";
 import { FocusArea, useFocusAreas } from "@/hooks/useFocusAreas";
-import { useCreateDonor, useUpdateDonor, type Donor, type CreateDonorData, type FundingPeriod } from "@/hooks/useDonors";
+import { useCreateDonor, useUpdateDonor, type Donor, type CreateDonorData } from "@/hooks/useDonors";
 import { useToast } from "@/hooks/use-toast";
 import { validateFiles, formatFileSize, getFileValidationSummary, type FileValidationError } from "@/utils/fileValidation";
 
@@ -45,24 +34,20 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   
   const [formData, setFormData] = useState({
     organization: initialData?.name || "",
-    status: (initialData?.status as 'potential' | 'active') || 'potential',
-    currency: initialData?.currency || 'USD',
     affiliation: initialData?.affiliation || "",
     organizationUrl: initialData?.organization_url || "",
+    fundingStartDate: initialData?.funding_start_date || "",
+    fundingEndDate: initialData?.funding_end_date || "",
     note: initialData?.notes || "",
   });
 
-  const [fundingPeriods, setFundingPeriods] = useState<Array<{ id: string; name: string; startDate: string; endDate: string }>>([]);
-
   const [contacts, setContacts] = useState<ContactPerson[]>(
-    initialData?.contacts && initialData.contacts.length > 0 
-      ? initialData.contacts.map((contact, index) => ({
-          id: contact.id || index.toString(),
-          fullName: contact.full_name,
-          email: contact.email,
-          phone: contact.phone
-        })) 
-      : []
+    initialData?.contacts ? initialData.contacts.map((contact, index) => ({
+      id: contact.id || index.toString(),
+      fullName: contact.full_name,
+      email: contact.email,
+      phone: contact.phone
+    })) : [{ id: "1", fullName: "", email: "", phone: "" }]
   );
 
   const [selectedFocusAreas, setSelectedFocusAreas] = useState<string[]>(
@@ -103,27 +88,9 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   };
 
   const handleDeleteContact = (id: string) => {
-    setDeleteConfirm({ show: true, contactId: id });
-  };
-
-  const addFundingPeriod = () => {
-    const newPeriod = {
-      id: Date.now().toString(),
-      name: "",
-      startDate: "",
-      endDate: ""
-    };
-    setFundingPeriods(prev => [...prev, newPeriod]);
-  };
-
-  const updateFundingPeriod = (id: string, field: string, value: string) => {
-    setFundingPeriods(prev => prev.map(period => 
-      period.id === id ? { ...period, [field]: value } : period
-    ));
-  };
-
-  const deleteFundingPeriod = (id: string) => {
-    setFundingPeriods(prev => prev.filter(period => period.id !== id));
+    if (contacts.length > 1) {
+      setDeleteConfirm({ show: true, contactId: id });
+    }
   };
 
   const toggleFocusArea = (areaId: string) => {
@@ -136,6 +103,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
 
   const handleFocusAreaSave = () => {
     setFocusAreaOpen(false);
+    // Refresh focus areas to show the newly created one
     refetch();
   };
 
@@ -145,6 +113,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
       const newFiles = Array.from(files);
       const allFiles = [...uploadedFiles, ...newFiles];
       
+      // Validate all files together
       const validation = validateFiles(allFiles);
       
       if (validation.errors.length > 0) {
@@ -158,9 +127,11 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
         setFileValidationErrors([]);
       }
       
+      // Always update files, but user will see validation errors
       setUploadedFiles(allFiles);
     }
     
+    // Reset the input
     event.target.value = '';
   };
 
@@ -168,6 +139,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     const newFiles = uploadedFiles.filter((_, i) => i !== index);
     setUploadedFiles(newFiles);
     
+    // Re-validate remaining files
     const validation = validateFiles(newFiles);
     setFileValidationErrors(validation.errors);
   };
@@ -175,7 +147,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation - only organization name is required
+    // Validation
     if (!formData.organization.trim()) {
       toast({
         title: "Validation Error",
@@ -185,20 +157,17 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
       return;
     }
 
-    // Validate funding periods if any exist
-    const validFundingPeriods = fundingPeriods.filter(period => 
-      period.startDate && period.endDate
+    const validContacts = contacts.filter(contact => 
+      contact.fullName.trim() && contact.email.trim() && contact.phone.trim()
     );
 
-    for (const period of validFundingPeriods) {
-      if (new Date(period.startDate) >= new Date(period.endDate)) {
-        toast({
-          title: "Validation Error",
-          description: "Funding period start date must be before end date",
-          variant: "destructive",
-        });
-        return;
-      }
+    if (validContacts.length === 0) {
+      toast({
+        title: "Validation Error", 
+        description: "At least one complete contact person is required",
+        variant: "destructive",
+      });
+      return;
     }
 
     // Validate files before submission
@@ -214,21 +183,12 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
       }
     }
 
-    const validContacts = contacts.filter(contact => 
-      contact.fullName.trim() && contact.email.trim() && contact.phone.trim()
-    );
-
     const donorData: CreateDonorData = {
       name: formData.organization,
-      status: formData.status,
-      currency: formData.currency,
       affiliation: formData.affiliation,
       organization_url: formData.organizationUrl,
-      funding_periods: validFundingPeriods.map(period => ({
-        name: period.name || undefined,
-        start_date: period.startDate,
-        end_date: period.endDate,
-      })),
+      funding_start_date: formData.fundingStartDate,
+      funding_end_date: formData.fundingEndDate,
       notes: formData.note,
       contacts: validContacts.map(contact => ({
         full_name: contact.fullName,
@@ -261,14 +221,13 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
       // Clear form after successful submission
       setFormData({
         organization: "",
-        status: 'potential',
-        currency: 'USD',
         affiliation: "",
         organizationUrl: "",
+        fundingStartDate: "",
+        fundingEndDate: "",
         note: ""
       });
-      setContacts([]);
-      setFundingPeriods([]);
+      setContacts([{ id: "1", fullName: "", email: "", phone: "" }]);
       setSelectedFocusAreas([]);
       setUploadedFiles([]);
       setFileValidationErrors([]);
@@ -276,29 +235,14 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
       onCancel(); // Close the form
       onSubmit?.(donorData); // Call optional callback
     } catch (error: any) {
-      const errorMessage = error.message || "Failed to save donor";
-      
-      // Check for duplicate name error
-      if (errorMessage.includes("already exists")) {
-        toast({
-          title: "Duplicate Organization",
-          description: "An organization with this name already exists. Please use a different name.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save donor",
+        variant: "destructive",
+      });
     }
   };
 
-  // helper to check if a contact row has any data
-  const hasContactData = (c: ContactPerson) =>
-    !!c.fullName.trim() || !!c.email.trim() || !!c.phone.trim();
-  
   return (
     <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(100vh-120px)]">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -315,42 +259,6 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
               className="mt-1"
               required
             />
-          </div>
-
-          {/* Donor Status */}
-          <div>
-            <Label className="text-sm text-gray-600">Donor Status</Label>
-            <RadioGroup
-              value={formData.status}
-              onValueChange={(value) => handleInputChange('status', value)}
-              className="flex flex-row gap-6 mt-2"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="potential" id="potential" />
-                <Label htmlFor="potential" className="text-sm">Potential</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="active" id="active" />
-                <Label htmlFor="active" className="text-sm">Active</Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          {/* Currency Selection */}
-          <div>
-            <Label className="text-sm text-gray-600">Preferred Currency *</Label>
-            <Select value={formData.currency} onValueChange={(value) => handleInputChange('currency', value)}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select currency" />
-              </SelectTrigger>
-              <SelectContent>
-                {CURRENCY_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -380,9 +288,9 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
         {/* Contact Persons */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="font-medium text-gray-900">Contact Persons (Optional)</h3>
+            <h3 className="font-medium text-gray-900">Contact Persons</h3>
             <Button
-              type="button" // ensure not a submit
+              type="button"
               variant="outline"
               size="sm"
               onClick={addContact}
@@ -392,20 +300,18 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
               Add Contact
             </Button>
           </div>
-        
-          {contacts.length > 0 && (
-            <div className="space-y-4">
-              {contacts.map((contact) => (
-                <ContactPersonForm
-                  key={contact.id}
-                  contact={contact}
-                  onUpdate={(updatedContact) => updateContact(contact.id, updatedContact)}
-                  onDelete={() => handleDeleteContact(contact.id)}
-                  canDelete={hasContactData(contact)} // only show delete when row has data
-                />
-              ))}
-            </div>
-          )}
+
+          <div className="space-y-4">
+            {contacts.map((contact) => (
+              <ContactPersonForm
+                key={contact.id}
+                contact={contact}
+                onUpdate={(updatedContact) => updateContact(contact.id, updatedContact)}
+                onDelete={() => handleDeleteContact(contact.id)}
+                canDelete={contacts.length > 1}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Focus Areas */}
@@ -445,6 +351,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
             ) : (
                focusAreas.map(area => {
                 const isSelected = selectedFocusAreas.includes(area.id);
+                // Extract background and text colors from the area.color string
                 const colorClasses = area.color.split(' ');
                 const bgColor = colorClasses.find(c => c.startsWith('bg-'));
                 const textColor = colorClasses.find(c => c.startsWith('text-'));
@@ -483,74 +390,30 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
           </div>
         </div>
 
-        {/* Funding Periods */}
+        {/* Funding Dates */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium text-gray-900">Funding Periods (Optional)</h3>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={addFundingPeriod}
-              className="flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Add Period
-            </Button>
-          </div>
-
-          {fundingPeriods.length > 0 && (
-            <div className="space-y-4">
-              {fundingPeriods.map((period) => (
-                <div key={period.id} className="p-4 border rounded-lg space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-sm font-medium">Funding Period</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteFundingPeriod(period.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  
-                  <div>
-                    <Label className="text-sm text-gray-600">Period Name (Optional)</Label>
-                    <Input
-                      value={period.name}
-                      onChange={(e) => updateFundingPeriod(period.id, 'name', e.target.value)}
-                      placeholder="e.g., Q1 2024, Annual Grant"
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm text-gray-600">Start Date</Label>
-                      <Input
-                        type="date"
-                        value={period.startDate}
-                        onChange={(e) => updateFundingPeriod(period.id, 'startDate', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label className="text-sm text-gray-600">End Date</Label>
-                      <Input
-                        type="date"
-                        value={period.endDate}
-                        onChange={(e) => updateFundingPeriod(period.id, 'endDate', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
+          <h3 className="font-medium text-gray-900">Funding Period</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm text-gray-600">Funding Start Date</Label>
+              <Input
+                type="date"
+                value={formData.fundingStartDate}
+                onChange={(e) => handleInputChange('fundingStartDate', e.target.value)}
+                className="mt-1"
+              />
             </div>
-          )}
+            
+            <div>
+              <Label className="text-sm text-gray-600">Funding End Date</Label>
+              <Input
+                type="date"
+                value={formData.fundingEndDate}
+                onChange={(e) => handleInputChange('fundingEndDate', e.target.value)}
+                className="mt-1"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Notes */}
@@ -569,12 +432,14 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
         <div className="space-y-4">
           <h3 className="font-medium text-gray-900">Documents</h3>
           
+          {/* File Validation Summary */}
           {(uploadedFiles.length > 0 || fileValidationErrors.length > 0) && (
             <div className="text-sm text-gray-600">
               {getFileValidationSummary(validateFiles(uploadedFiles))}
             </div>
           )}
           
+          {/* File Validation Errors */}
           {fileValidationErrors.length > 0 && (
             <div className="space-y-2">
               {fileValidationErrors.map((error, index) => (
@@ -666,7 +531,6 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
           </Button>
           <Button 
             type="submit" 
-            className="bg-violet-600 hover:bg-violet-700 text-white"
             disabled={
               createDonorMutation.isPending || 
               updateDonorMutation.isPending || 
@@ -686,9 +550,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
         onOpenChange={(open) => setDeleteConfirm({ show: open, contactId: "" })}
         title="Delete Contact Person"
         description="Are you sure you want to delete this contact person? This action cannot be undone."
-        onConfirm={() => {
-          deleteContact(deleteConfirm.contactId);
-        }}
+        onConfirm={() => deleteContact(deleteConfirm.contactId)}
       />
     </div>
   );

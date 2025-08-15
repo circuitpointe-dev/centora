@@ -243,39 +243,6 @@ export type Database = {
         }
         Relationships: []
       }
-      donor_funding_periods: {
-        Row: {
-          created_at: string
-          created_by: string
-          donor_id: string
-          end_date: string
-          id: string
-          name: string | null
-          start_date: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          created_by: string
-          donor_id: string
-          end_date: string
-          id?: string
-          name?: string | null
-          start_date: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string
-          donor_id?: string
-          end_date?: string
-          id?: string
-          name?: string | null
-          start_date?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       donor_giving_records: {
         Row: {
           amount: number
@@ -344,7 +311,6 @@ export type Database = {
           affiliation: string | null
           created_at: string
           created_by: string
-          currency: string
           funding_end_date: string | null
           funding_start_date: string | null
           id: string
@@ -361,7 +327,6 @@ export type Database = {
           affiliation?: string | null
           created_at?: string
           created_by: string
-          currency?: string
           funding_end_date?: string | null
           funding_start_date?: string | null
           id?: string
@@ -378,7 +343,6 @@ export type Database = {
           affiliation?: string | null
           created_at?: string
           created_by?: string
-          currency?: string
           funding_end_date?: string | null
           funding_start_date?: string | null
           id?: string
@@ -774,44 +738,18 @@ export type Database = {
         Returns: boolean
       }
       create_donor_with_details: {
-        Args:
-          | {
-              _affiliation?: string
-              _contacts?: string
-              _created_by: string
-              _currency?: string
-              _focus_area_ids?: string[]
-              _funding_periods?: string
-              _name: string
-              _notes?: string
-              _org_id: string
-              _organization_url?: string
-              _status?: Database["public"]["Enums"]["donor_status"]
-            }
-          | {
-              _affiliation?: string
-              _contacts?: string
-              _created_by: string
-              _focus_area_ids?: string[]
-              _funding_end_date?: string
-              _funding_start_date?: string
-              _name: string
-              _notes?: string
-              _org_id: string
-              _organization_url?: string
-            }
-          | {
-              _affiliation?: string
-              _contacts?: string
-              _created_by: string
-              _focus_area_ids?: string[]
-              _funding_periods?: string
-              _name: string
-              _notes?: string
-              _org_id: string
-              _organization_url?: string
-              _status?: Database["public"]["Enums"]["donor_status"]
-            }
+        Args: {
+          _affiliation?: string
+          _contacts?: string
+          _created_by: string
+          _focus_area_ids?: string[]
+          _funding_end_date?: string
+          _funding_start_date?: string
+          _name: string
+          _notes?: string
+          _org_id: string
+          _organization_url?: string
+        }
         Returns: string
       }
       get_last_donation_info: {

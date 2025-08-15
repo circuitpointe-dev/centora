@@ -19,12 +19,12 @@ export const useDonorNotes = (donorId: string) => {
   return useQuery({
     queryKey: ["donor-notes", donorId],
     queryFn: async () => {
-      // First, fetch all donor notes (excluding initial notes created from donor.notes field)
+      // First, fetch all donor notes
       const { data: notesData, error: notesError } = await supabase
         .from("donor_notes")
         .select("*")
         .eq("donor_id", donorId)
-        .order("created_at", { ascending: true }); // Order by creation time to show initial note first
+        .order("created_at", { ascending: false });
 
       if (notesError) throw notesError;
       if (!notesData || notesData.length === 0) return [];

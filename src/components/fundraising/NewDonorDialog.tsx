@@ -32,7 +32,7 @@ const NewDonorDialog: React.FC<NewDonorDialogProps> = ({ triggerButton, open: ex
     <SideDialog open={open} onOpenChange={setOpen}>
       <SideDialogTrigger asChild>
         {triggerButton || (
-          <Button size="sm" className="flex items-center gap-2 bg-violet-600 text-white hover:bg-violet-700">
+          <Button size="sm" className="flex items-center gap-2 bg-violet-600 text-primary-foreground hover:bg-violet-700">
             <Plus className="h-4 w-4" />
             New Donor
           </Button>
