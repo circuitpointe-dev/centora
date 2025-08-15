@@ -56,12 +56,18 @@ export interface DonorDocument {
   uploaded_at: string;
 }
 
+export interface FundingPeriod {
+  name?: string;
+  start_date: string;
+  end_date: string;
+}
+
 export interface CreateDonorData {
   name: string;
+  status: 'potential' | 'active';
   affiliation?: string;
   organization_url?: string;
-  funding_start_date?: string;
-  funding_end_date?: string;
+  funding_periods: FundingPeriod[];
   notes?: string;
   contacts: Omit<DonorContact, 'id' | 'donor_id' | 'created_at' | 'updated_at'>[];
   focus_area_ids: string[];
@@ -133,10 +139,10 @@ export const useCreateDonor = () => {
             _org_id: user.org_id,
             _created_by: user.id,
             _name: donorData.name,
+            _status: donorData.status,
             _affiliation: donorData.affiliation,
             _organization_url: donorData.organization_url,
-            _funding_start_date: donorData.funding_start_date,
-            _funding_end_date: donorData.funding_end_date,
+            _funding_periods: JSON.stringify(donorData.funding_periods),
             _notes: donorData.notes,
             _contacts: JSON.stringify(donorData.contacts),
             _focus_area_ids: donorData.focus_area_ids,
@@ -309,10 +315,9 @@ export const useUpdateDonor = () => {
         .from('donors')
         .update({
           name: donorData.name,
+          status: donorData.status,
           affiliation: donorData.affiliation,
           organization_url: donorData.organization_url,
-          funding_start_date: donorData.funding_start_date,
-          funding_end_date: donorData.funding_end_date,
           notes: donorData.notes,
         })
         .eq('id', id)
