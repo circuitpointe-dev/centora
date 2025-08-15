@@ -282,6 +282,10 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     }
   };
 
+  // helper to check if a contact row has any data
+  const hasContactData = (c: ContactPerson) =>
+    !!c.fullName.trim() || !!c.email.trim() || !!c.phone.trim();
+  
   return (
     <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(100vh-120px)]">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -348,7 +352,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
           <div className="flex justify-between items-center">
             <h3 className="font-medium text-gray-900">Contact Persons (Optional)</h3>
             <Button
-              type="button"
+              type="button" // ensure not a submit
               variant="outline"
               size="sm"
               onClick={addContact}
@@ -358,7 +362,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
               Add Contact
             </Button>
           </div>
-
+        
           {contacts.length > 0 && (
             <div className="space-y-4">
               {contacts.map((contact) => (
@@ -367,7 +371,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
                   contact={contact}
                   onUpdate={(updatedContact) => updateContact(contact.id, updatedContact)}
                   onDelete={() => handleDeleteContact(contact.id)}
-                  canDelete={true}
+                  canDelete={hasContactData(contact)} // only show delete when row has data
                 />
               ))}
             </div>
@@ -652,7 +656,9 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
         onOpenChange={(open) => setDeleteConfirm({ show: open, contactId: "" })}
         title="Delete Contact Person"
         description="Are you sure you want to delete this contact person? This action cannot be undone."
-        onConfirm={() => deleteContact(deleteConfirm.contactId)}
+        onConfirm={() => {
+          deleteContact(deleteConfirm.contactId);
+        }}
       />
     </div>
   );
