@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useDonorFundingPeriods } from "@/hooks/useDonorFundingPeriods";
+import { useDonorFundingCycles } from "@/hooks/useDonorFundingCycles";
 import { formatCurrency } from "@/utils/donorFormatters";
 
 const CURRENCY_OPTIONS = [
@@ -28,7 +28,7 @@ export const ProfileInformationSection: React.FC<ProfileInformationSectionProps>
   formData,
   setFormData,
 }) => {
-  const { data: fundingPeriods, isLoading: fundingPeriodsLoading } = useDonorFundingPeriods(donor.id);
+  const { data: fundingPeriods, isLoading: fundingPeriodsLoading } = useDonorFundingCycles(donor.id);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -149,7 +149,7 @@ export const ProfileInformationSection: React.FC<ProfileInformationSectionProps>
                       <p className="text-sm font-medium text-gray-900">{period.name}</p>
                     )}
                     <p className="text-sm text-gray-600">
-                      {new Date(period.start_date).toLocaleDateString()} - {new Date(period.end_date).toLocaleDateString()}
+                      {period.start_month}/{period.year} - {period.end_month}/{period.year}
                     </p>
                   </div>
                 </div>
