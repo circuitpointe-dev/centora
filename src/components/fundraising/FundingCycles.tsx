@@ -1,151 +1,138 @@
-import React, { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Calendar } from "lucide-react";
-import { useFundingCyclesData } from "@/hooks/useFundingCyclesData";
-import { formatCurrency } from "@/utils/monthConversion";
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Clock } from 'lucide-react';
+import { useFundingCyclesData, FundingCycleData } from '@/hooks/useFundingCyclesData';
 
 const FundingCycles: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
-
-  // Fetch funding cycles data
   const { data, isLoading, error } = useFundingCyclesData(selectedYear || undefined);
 
-  // Custom tooltip for chart
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-background p-3 border border-border rounded-lg shadow-md">
-          <p className="font-medium text-sm text-foreground">{label}</p>
-          <p className="text-sm text-muted-foreground">
-            Total: {formatCurrency(data.amount)}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {data.count} donation{data.count !== 1 ? 's' : ''}
-          </p>
-        </div>
-      );
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'ongoing': return 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100';
+      case 'upcoming': return 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100';
+      case 'closed': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100';
     }
-    return null;
+  };
+
+  const getMonthName = (monthNum: number) => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[monthNum - 1] || '';
   };
 
   if (isLoading) {
     return (
-      <section className="bg-background rounded-sm p-6 shadow-sm h-[450px] flex flex-col">
-        <div className="flex justify-between items-center mb-6">
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-9 w-28" />
-        </div>
-        <div className="flex-1">
-          <Skeleton className="w-full h-full" />
-        </div>
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>Funding Cycles</CardTitle>
+          <CardDescription>Overview of funding cycles for your donors</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </CardContent>
+      </Card>
     );
   }
 
   if (error) {
     return (
-      <section className="bg-background rounded-sm p-6 shadow-sm h-[450px] flex flex-col">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-base font-medium text-foreground">Funding Cycles</h2>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-sm text-destructive">Error loading funding cycles data</div>
-        </div>
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>Funding Cycles</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-destructive">Error loading funding cycles data</p>
+        </CardContent>
+      </Card>
     );
   }
 
-  const monthlyData = data?.monthlyData || [];
+  const fundingCycles = data?.fundingCycles || [];
   const availableYears = data?.availableYears || [];
-  const totalAmount = monthlyData.reduce((sum, item) => sum + item.amount, 0);
 
-  // Check if there's any data at all
-  const hasAnyData = totalAmount > 0;
+  if (fundingCycles.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Funding Cycles</CardTitle>
+          <CardDescription>Overview of funding cycles for your donors</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EmptyState
+            icon={Clock}
+            title="No funding cycles found"
+            description="Create funding cycles to track donor funding periods and commitments."
+          />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <section className="bg-background rounded-sm p-6 shadow-sm h-[450px] flex flex-col">
-      <div className="flex justify-between items-center mb-6 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <h2 className="text-base font-medium text-foreground">Funding Cycles</h2>
-          {selectedYear && hasAnyData && (
-            <span className="text-sm text-muted-foreground">
-              Total: {formatCurrency(totalAmount)}
-            </span>
-          )}
-        </div>
-        
-        {/* Year selector dropdown */}
+    <Card>
+      <CardHeader>
+        <CardTitle>Funding Cycles</CardTitle>
+        <CardDescription>
+          {fundingCycles.length} funding cycle{fundingCycles.length !== 1 ? 's' : ''} found
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
         {availableYears.length > 0 && (
-          <Select
-            value={selectedYear?.toString() || ""}
-            onValueChange={(value) => setSelectedYear(value ? parseInt(value) : null)}
-          >
-            <SelectTrigger className="w-32 h-9">
-              <SelectValue placeholder="All Years">
-                {selectedYear || "All Years"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">All Years</SelectItem>
-              {availableYears.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
-      
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {!hasAnyData ? (
-          <EmptyState
-            icon={Calendar}
-            title="No Funding Data"
-            description={selectedYear 
-              ? `No donations recorded for ${selectedYear}. Try selecting a different year or add giving records.`
-              : "No donations have been recorded yet. Start by adding giving records for your donors."
-            }
-            className="flex-1"
-          />
-        ) : (
-          <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={monthlyData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis 
-                  dataKey="monthName" 
-                  axisLine={false}
-                  tickLine={false}
-                  className="text-xs text-muted-foreground"
-                />
-                <YAxis 
-                  axisLine={false}
-                  tickLine={false}
-                  className="text-xs text-muted-foreground"
-                  tickFormatter={(value) => formatCurrency(value, 'USD').replace('$', '$')}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="amount" 
-                  fill="hsl(var(--primary))"
-                  radius={[2, 2, 0, 0]}
-                  className="hover:opacity-80 transition-opacity"
-                />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="flex items-center space-x-2">
+            <label htmlFor="year-select" className="text-sm font-medium">
+              Filter by year:
+            </label>
+            <Select 
+              value={selectedYear?.toString() || "all"} 
+              onValueChange={(value) => setSelectedYear(value === "all" ? null : Number(value))}
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="All years" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All years</SelectItem>
+                {availableYears.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
-      </div>
-    </section>
+        
+        <div className="space-y-4">
+          {fundingCycles.map((cycle) => (
+            <div
+              key={cycle.id}
+              className="flex items-center justify-between p-4 border border-border rounded-lg bg-card"
+            >
+              <div className="flex items-center space-x-4">
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: cycle.color }}
+                />
+                <div>
+                  <h4 className="font-medium">{cycle.name}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {getMonthName(cycle.startMonth)} - {getMonthName(cycle.endMonth)} {cycle.year}
+                  </p>
+                </div>
+              </div>
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(cycle.status)}`}>
+                {cycle.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
