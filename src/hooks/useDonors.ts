@@ -12,6 +12,7 @@ export interface Donor {
   funding_end_date?: string;
   notes?: string;
   status: 'active' | 'inactive' | 'potential';
+  currency: string;
   total_donations: number;
   last_donation_date?: string;
   created_by: string;
@@ -20,6 +21,11 @@ export interface Donor {
   contacts?: DonorContact[];
   focus_areas?: DonorFocusArea[];
   documents?: DonorDocument[];
+  lastDonationInfo?: {
+    amount: number;
+    currency: string;
+    donation_date: string;
+  };
 }
 
 export interface DonorContact {
@@ -65,6 +71,7 @@ export interface FundingPeriod {
 export interface CreateDonorData {
   name: string;
   status: 'potential' | 'active';
+  currency?: string;
   affiliation?: string;
   organization_url?: string;
   funding_periods: FundingPeriod[];
@@ -146,6 +153,7 @@ export const useCreateDonor = () => {
             _notes: donorData.notes,
             _contacts: JSON.stringify(donorData.contacts),
             _focus_area_ids: donorData.focus_area_ids,
+            _currency: donorData.currency || 'USD',
           }
         );
 
@@ -316,6 +324,7 @@ export const useUpdateDonor = () => {
         .update({
           name: donorData.name,
           status: donorData.status,
+          currency: donorData.currency,
           affiliation: donorData.affiliation,
           organization_url: donorData.organization_url,
           notes: donorData.notes,

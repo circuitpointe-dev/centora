@@ -4,14 +4,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { TrendingUp } from "lucide-react";
-import { useAggregatedGivingData } from "@/hooks/useAggregatedGivingData";
+import { useAggregatedFundingPeriods } from "@/hooks/useAggregatedFundingPeriods";
 import { formatCurrency } from "@/utils/monthConversion";
 
 const GivingChart: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
-  // Fetch aggregated giving data
-  const { data, isLoading, error } = useAggregatedGivingData(selectedYear || undefined);
+  // Fetch aggregated funding periods data
+  const { data, isLoading, error } = useAggregatedFundingPeriods(selectedYear || undefined);
 
   // Custom tooltip for chart
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -24,7 +24,7 @@ const GivingChart: React.FC = () => {
             Total: {formatCurrency(data.amount)}
           </p>
           <p className="text-xs text-muted-foreground">
-            {data.donationCount} donation{data.donationCount !== 1 ? 's' : ''}
+            {data.count} funding period{data.count !== 1 ? 's' : ''}
           </p>
         </div>
       );
@@ -59,7 +59,9 @@ const GivingChart: React.FC = () => {
     );
   }
 
-  const { monthlyData = [], totalAmount = 0, availableYears = [] } = data || {};
+  const monthlyData = data || [];
+  const totalAmount = monthlyData.reduce((sum, item) => sum + item.amount, 0);
+  const availableYears = [...new Set(monthlyData.map(item => item.year))].sort((a, b) => b - a);
 
   // Check if there's any data at all
   const hasAnyData = totalAmount > 0;
@@ -120,7 +122,7 @@ const GivingChart: React.FC = () => {
               >
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                 <XAxis 
-                  dataKey="month" 
+                  dataKey="monthName" 
                   axisLine={false}
                   tickLine={false}
                   className="text-xs text-muted-foreground"

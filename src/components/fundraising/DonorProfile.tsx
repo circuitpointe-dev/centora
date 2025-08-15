@@ -26,8 +26,7 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
     organization: "",
     affiliation: "",
     companyUrl: "",
-    fundingStartDate: "",
-    fundingEndDate: "",
+    currency: "",
   });
   
   const { toast } = useToast();
@@ -40,8 +39,7 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
         organization: donor.name || "",
         affiliation: donor.affiliation || "",
         companyUrl: donor.organization_url || "",
-        fundingStartDate: donor.funding_start_date || "",
-        fundingEndDate: donor.funding_end_date || "",
+        currency: donor.currency || "USD",
       });
     }
   }, [donor]);
@@ -54,18 +52,15 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
     if (!donor) return;
     
     try {
-      const updateData = {
-        name: formData.organization,
-        affiliation: formData.affiliation || undefined,
-        organization_url: formData.companyUrl || undefined,
-        funding_start_date: formData.fundingStartDate || undefined,
-        funding_end_date: formData.fundingEndDate || undefined,
-        focus_area_ids: donor.focus_areas?.map(fa => fa.focus_area_id) || [],
-      };
-      
       await updateDonorMutation.mutateAsync({
         id: donor.id,
-        donorData: updateData,
+        donorData: {
+          name: formData.organization,
+          affiliation: formData.affiliation,
+          organization_url: formData.companyUrl,
+          currency: formData.currency,
+          status: donor.status === 'inactive' ? 'potential' : donor.status as 'active' | 'potential'
+        }
       });
       
       setIsEditing(false);
@@ -139,11 +134,10 @@ export const DonorProfile: React.FC<DonorProfileProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
             <div className="h-full">
               <ProfileInformationSection
+                donor={donor}
                 isEditing={isEditing}
                 formData={formData}
-                onInputChange={handleInputChange}
-                interestTags={donor.focus_areas?.map(fa => fa.focus_areas?.name || "") || []}
-                contacts={donor.contacts || []}
+                setFormData={setFormData}
               />
             </div>
             <div className="h-full">

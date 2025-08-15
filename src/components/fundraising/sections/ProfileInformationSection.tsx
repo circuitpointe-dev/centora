@@ -1,161 +1,165 @@
-
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { getFocusAreaColor } from "@/data/focusAreaData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useDonorFundingPeriods } from "@/hooks/useDonorFundingPeriods";
+import { formatCurrency } from "@/utils/donorFormatters";
 
-interface ContactPerson {
-  id: string;
-  full_name: string;
-  email: string;
-  phone: string;
-  is_primary: boolean;
-}
+const CURRENCY_OPTIONS = [
+  { value: 'USD', label: 'USD - US Dollar' },
+  { value: 'EUR', label: 'EUR - Euro' },
+  { value: 'GBP', label: 'GBP - British Pound' },
+  { value: 'CAD', label: 'CAD - Canadian Dollar' },
+  { value: 'AUD', label: 'AUD - Australian Dollar' },
+  { value: 'JPY', label: 'JPY - Japanese Yen' },
+];
 
 interface ProfileInformationSectionProps {
+  donor: any;
   isEditing: boolean;
-  formData: {
-    organization: string;
-    affiliation: string;
-    companyUrl: string;
-    fundingStartDate: string;
-    fundingEndDate: string;
-  };
-  onInputChange: (field: string, value: string) => void;
-  interestTags: string[];
-  contacts: ContactPerson[];
+  formData: any;
+  setFormData: (data: any) => void;
 }
 
 export const ProfileInformationSection: React.FC<ProfileInformationSectionProps> = ({
+  donor,
   isEditing,
   formData,
-  onInputChange,
-  interestTags,
-  contacts
+  setFormData,
 }) => {
+  const { data: fundingPeriods, isLoading: fundingPeriodsLoading } = useDonorFundingPeriods(donor.id);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
+  };
+
   return (
-    <div className="flex flex-col items-start gap-4 h-full">
-      <h2 className="font-medium text-black text-base">Profile Information</h2>
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium text-gray-900">Profile Information</h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label className="text-sm font-medium text-gray-600">Organization</Label>
+          {isEditing ? (
+            <Input
+              value={formData.organization}
+              onChange={(e) => handleInputChange('organization', e.target.value)}
+              className="mt-1"
+            />
+          ) : (
+            <p className="mt-1 text-sm text-gray-900">{donor.name}</p>
+          )}
+        </div>
 
-      <Card className="w-full flex-1">
-        <CardContent className="p-4">
-          <div className="flex flex-col items-start gap-4 w-full">
-            {/* Organization Name */}
-            <div className="flex flex-col items-start gap-2 w-full">
-              <Label className="text-sm text-muted-foreground">Name of Organization</Label>
-              <Input
-                value={formData.organization}
-                onChange={(e) => onInputChange('organization', e.target.value)}
-                disabled={!isEditing}
-                className="w-full"
-              />
-            </div>
-
-            {/* Contact Persons */}
-            <div className="flex flex-col items-start gap-2 w-full">
-              <Label className="text-sm text-muted-foreground">Contact Persons</Label>
-              <div className="w-full space-y-3">
-                {contacts && contacts.length > 0 ? (
-                  contacts.map((contact) => (
-                    <div key={contact.id} className="p-3 border border-border rounded-md bg-muted/50">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-sm">{contact.full_name}</span>
-                            {contact.is_primary && (
-                              <Badge variant="outline" className="text-xs">Primary</Badge>
-                            )}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {contact.email} • {contact.phone}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-sm text-muted-foreground py-2">
-                    No contact persons added
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Affiliation */}
-            <div className="flex flex-col items-start gap-2 w-full">
-              <Label className="text-sm text-muted-foreground">Affiliation</Label>
-              <Input
-                value={formData.affiliation}
-                onChange={(e) => onInputChange('affiliation', e.target.value)}
-                disabled={!isEditing}
-                className="w-full"
-              />
-            </div>
-
-            {/* Company URL */}
-            <div className="flex flex-col items-start gap-2 w-full">
-              <Label className="text-sm text-muted-foreground">Company URL</Label>
-              <Input
-                value={formData.companyUrl}
-                onChange={(e) => onInputChange('companyUrl', e.target.value)}
-                disabled={!isEditing}
-                className="w-full"
-              />
-            </div>
-
-            {/* Funding Dates */}
-            <div className="flex items-center gap-4 w-full">
-              <div className="flex flex-col flex-1 items-start gap-2">
-                <Label className="text-sm text-muted-foreground">Funding Start Date</Label>
-                <Input
-                  type={isEditing ? "date" : "text"}
-                  value={isEditing ? formData.fundingStartDate : 
-                    formData.fundingStartDate ? new Date(formData.fundingStartDate).toLocaleDateString() : "Not specified"}
-                  onChange={(e) => onInputChange('fundingStartDate', e.target.value)}
-                  disabled={!isEditing}
-                  className="w-full"
-                />
-              </div>
-
-              <div className="flex flex-col flex-1 items-start gap-2">
-                <Label className="text-sm text-muted-foreground">Funding End Date</Label>
-                <Input
-                  type={isEditing ? "date" : "text"}
-                  value={isEditing ? formData.fundingEndDate : 
-                    formData.fundingEndDate ? new Date(formData.fundingEndDate).toLocaleDateString() : "Not specified"}
-                  onChange={(e) => onInputChange('fundingEndDate', e.target.value)}
-                  disabled={!isEditing}
-                  className="w-full"
-                />
-              </div>
-            </div>
-
-            {/* Interest Tags */}
-            <div className="flex flex-col items-start gap-2 w-full">
-              <Label className="text-sm text-muted-foreground">Interest Tags</Label>
-              <div className="flex flex-wrap gap-2 w-full">
-                {interestTags.map((tag, index) => (
-                  <Badge
-                    key={index}
-                    className={`text-xs rounded-sm ${getFocusAreaColor(tag)} pointer-events-none`}
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {isEditing && (
-              <Button variant="outline" className="text-violet-600 border-violet-600">
-                Add Tag
-              </Button>
-            )}
+        <div>
+          <Label className="text-sm font-medium text-gray-600">Status</Label>
+          <div className="mt-1">
+            <Badge 
+              variant={donor.status === 'active' ? 'default' : 'outline'}
+              className="text-xs rounded-sm"
+            >
+              {donor.status === 'active' ? 'Active' : 'Potential'}
+            </Badge>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium text-gray-600">Preferred Currency</Label>
+          {isEditing ? (
+            <Select 
+              value={formData.currency} 
+              onValueChange={(value) => handleInputChange('currency', value)}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CURRENCY_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <p className="mt-1 text-sm text-gray-900">{donor.currency || 'USD'}</p>
+          )}
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium text-gray-600">Total Donations</Label>
+          <p className="mt-1 text-sm text-gray-900">
+            {formatCurrency(donor.total_donations || 0, donor.currency)}
+          </p>
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium text-gray-600">Affiliation</Label>
+          {isEditing ? (
+            <Input
+              value={formData.affiliation}
+              onChange={(e) => handleInputChange('affiliation', e.target.value)}
+              className="mt-1"
+            />
+          ) : (
+            <p className="mt-1 text-sm text-gray-900">{donor.affiliation || 'Not provided'}</p>
+          )}
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium text-gray-600">Organization URL</Label>
+          {isEditing ? (
+            <Input
+              value={formData.companyUrl}
+              onChange={(e) => handleInputChange('companyUrl', e.target.value)}
+              className="mt-1"
+            />
+          ) : (
+            <p className="mt-1 text-sm text-gray-900">
+              {donor.organization_url ? (
+                <a 
+                  href={donor.organization_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  {donor.organization_url}
+                </a>
+              ) : (
+                'Not provided'
+              )}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Funding Periods Section */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium text-gray-600">Funding Periods</Label>
+        {fundingPeriodsLoading ? (
+          <p className="text-sm text-gray-500">Loading funding periods...</p>
+        ) : fundingPeriods && fundingPeriods.length > 0 ? (
+          <div className="space-y-2">
+            {fundingPeriods.map((period) => (
+              <div key={period.id} className="p-3 bg-gray-50 rounded-md border">
+                <div className="flex justify-between items-start">
+                  <div>
+                    {period.name && (
+                      <p className="text-sm font-medium text-gray-900">{period.name}</p>
+                    )}
+                    <p className="text-sm text-gray-600">
+                      {new Date(period.start_date).toLocaleDateString()} - {new Date(period.end_date).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">No funding periods defined</p>
+        )}
+      </div>
     </div>
   );
 };

@@ -344,6 +344,7 @@ export type Database = {
           affiliation: string | null
           created_at: string
           created_by: string
+          currency: string
           funding_end_date: string | null
           funding_start_date: string | null
           id: string
@@ -360,6 +361,7 @@ export type Database = {
           affiliation?: string | null
           created_at?: string
           created_by: string
+          currency?: string
           funding_end_date?: string | null
           funding_start_date?: string | null
           id?: string
@@ -376,6 +378,7 @@ export type Database = {
           affiliation?: string | null
           created_at?: string
           created_by?: string
+          currency?: string
           funding_end_date?: string | null
           funding_start_date?: string | null
           id?: string
@@ -772,6 +775,19 @@ export type Database = {
       }
       create_donor_with_details: {
         Args:
+          | {
+              _affiliation?: string
+              _contacts?: string
+              _created_by: string
+              _currency?: string
+              _focus_area_ids?: string[]
+              _funding_periods?: string
+              _name: string
+              _notes?: string
+              _org_id: string
+              _organization_url?: string
+              _status?: Database["public"]["Enums"]["donor_status"]
+            }
           | {
               _affiliation?: string
               _contacts?: string

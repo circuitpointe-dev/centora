@@ -7,6 +7,7 @@ import { Trash2 } from "lucide-react";
 import { type Donor } from "@/hooks/useDonors";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { formatLastDonation, formatCurrency } from "@/utils/donorFormatters";
+import { useDonorTotalGiving } from "@/hooks/useDonorTotalGiving";
 
 interface DonorTableRowProps {
   donor: Donor;
@@ -16,6 +17,7 @@ interface DonorTableRowProps {
 
 const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDelete }) => {
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const { data: givingData } = useDonorTotalGiving(donor.id);
 
 
   const handleDeleteClick = () => {
@@ -46,7 +48,7 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
           <div>
             <p className="font-semibold text-gray-900">{donor.name}</p>
             <p className="text-sm text-gray-500">
-              Total: {formatCurrency(donor.total_donations)}
+              Total: {formatCurrency(givingData?.total || 0, givingData?.currency || donor.currency)}
             </p>
           </div>
         </TableCell>
@@ -55,6 +57,14 @@ const DonorTableRow: React.FC<DonorTableRowProps> = ({ donor, onRowClick, onDele
             <p className="text-sm">{donor.contacts?.[0]?.email || 'No email'}</p>
             <p className="text-sm text-gray-500">{donor.contacts?.[0]?.phone || 'No phone'}</p>
           </div>
+        </TableCell>
+        <TableCell>
+          <Badge 
+            variant={donor.status === 'active' ? 'default' : 'outline'} 
+            className="text-xs rounded-sm"
+          >
+            {donor.status === 'active' ? 'Active' : 'Potential'}
+          </Badge>
         </TableCell>
         <TableCell>
           {formatLastDonation(donor)}

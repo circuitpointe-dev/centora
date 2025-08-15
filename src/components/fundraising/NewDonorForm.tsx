@@ -9,6 +9,16 @@ import { Plus, Upload, X, AlertCircle } from "lucide-react";
 import { ContactPersonForm, ContactPerson } from "./ContactPersonForm";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from "@/components/ui/side-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const CURRENCY_OPTIONS = [
+  { value: 'USD', label: 'USD - US Dollar' },
+  { value: 'EUR', label: 'EUR - Euro' },
+  { value: 'GBP', label: 'GBP - British Pound' },
+  { value: 'CAD', label: 'CAD - Canadian Dollar' },
+  { value: 'AUD', label: 'AUD - Australian Dollar' },
+  { value: 'JPY', label: 'JPY - Japanese Yen' },
+];
 import { FocusAreaForm } from "./FocusAreaForm";
 import { FocusArea, useFocusAreas } from "@/hooks/useFocusAreas";
 import { useCreateDonor, useUpdateDonor, type Donor, type CreateDonorData, type FundingPeriod } from "@/hooks/useDonors";
@@ -36,6 +46,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
   const [formData, setFormData] = useState({
     organization: initialData?.name || "",
     status: (initialData?.status as 'potential' | 'active') || 'potential',
+    currency: initialData?.currency || 'USD',
     affiliation: initialData?.affiliation || "",
     organizationUrl: initialData?.organization_url || "",
     note: initialData?.notes || "",
@@ -210,6 +221,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     const donorData: CreateDonorData = {
       name: formData.organization,
       status: formData.status,
+      currency: formData.currency,
       affiliation: formData.affiliation,
       organization_url: formData.organizationUrl,
       funding_periods: validFundingPeriods.map(period => ({
@@ -250,6 +262,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
       setFormData({
         organization: "",
         status: 'potential',
+        currency: 'USD',
         affiliation: "",
         organizationUrl: "",
         note: ""
@@ -321,6 +334,23 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
                 <Label htmlFor="active" className="text-sm">Active</Label>
               </div>
             </RadioGroup>
+          </div>
+
+          {/* Currency Selection */}
+          <div>
+            <Label className="text-sm text-gray-600">Preferred Currency *</Label>
+            <Select value={formData.currency} onValueChange={(value) => handleInputChange('currency', value)}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
+              <SelectContent>
+                {CURRENCY_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

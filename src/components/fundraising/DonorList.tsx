@@ -69,6 +69,7 @@ const DonorList: React.FC = () => {
                   <TableRow>
                     <TableHead>Donor Name</TableHead>
                     <TableHead>Contact Info</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Last Donation</TableHead>
                     <TableHead>Interest Tags</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
