@@ -8,6 +8,7 @@ import DonorProfile from "./DonorProfile";
 import DonorTableRow from "./DonorTableRow";
 import DonorTablePagination from "./DonorTablePagination";
 import NewDonorDialog from "./NewDonorDialog";
+import EditDonorDialog from "./EditDonorDialog";
 import { EmptyDonorList } from "./EmptyDonorList";
 
 const DonorList: React.FC = () => {
@@ -17,6 +18,7 @@ const DonorList: React.FC = () => {
   const { toast } = useToast();
   const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [showNewDonorDialog, setShowNewDonorDialog] = useState(false);
   const itemsPerPage = 5;
   
@@ -113,14 +115,24 @@ const DonorList: React.FC = () => {
             <DonorProfile 
               donor={selectedDonor}
               onEdit={() => {
-                // Handle edit action - could open edit dialog or inline editing
-                console.log('Edit donor:', selectedDonor.id);
+                setShowProfile(false);
+                setShowEditDialog(true);
               }}
               onClose={() => setShowProfile(false)}
             />
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Edit Donor Dialog */}
+      {selectedDonor && (
+        <EditDonorDialog
+          donor={selectedDonor}
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          trigger={null}
+        />
+      )}
     </>
   );
 };
