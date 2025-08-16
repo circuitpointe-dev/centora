@@ -6,7 +6,7 @@ const StepModules = ({ formData, onChange }: {
   onChange: (field: string, value: any) => void 
 }) => {
   const moduleEntries = Object.entries(moduleConfigs);
-  const enabledKeys = new Set(['fundraising', 'documents']);
+  const enabledKeys = new Set(['fundraising', 'documents', 'users']);
   const [openKey, setOpenKey] = React.useState<string | null>(null);
   const handleToggle = (moduleKey: string, enabled: boolean, checked: boolean) => {
     if (!enabled) return;

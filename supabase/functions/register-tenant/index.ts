@@ -236,9 +236,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 4) Insert modules
-    if (selectedModules.length > 0) {
-      const rows = selectedModules.map((m) => ({ org_id: createdOrgId, module: m }));
+    // 4) Insert modules (always include 'users' module)
+    const modulesToInsert = [...new Set([...selectedModules, 'users'])];
+    if (modulesToInsert.length > 0) {
+      const rows = modulesToInsert.map((m) => ({ org_id: createdOrgId, module: m }));
       const { error: modulesError } = await adminClient.from("organization_modules").insert(rows);
       if (modulesError) {
         console.error("modulesError", modulesError);
