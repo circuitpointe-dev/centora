@@ -29,15 +29,15 @@ const Index = () => {
             <div className="flex items-center">
               {/* Logo + "Orbit ERP" text */}
               <Link to="/" className="flex items-center space-x-2">
-                {/* Logo image (height = 2rem by default—h-8) */}
+                {/* Logo image (height = 2rem by default—h-12) */}
                 <img
                   src={violet_logo}
-                  alt="Orbit ERP Logo"
-                  className="h-8 w-auto"
+                  alt="Centora ERP Logo"
+                  className="h-12 w-auto"
                 />
-                {/* The "Orbit ERP" text only appears on sm and up */}
+                {/* The "Centora ERP" text only appears on sm and up */}
                 <span className="text-xl font-bold text-gray-900 hidden sm:inline-block bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                  Orbit
+                  Centora
                 </span>
               </Link>
             </div>
