@@ -59,21 +59,6 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
     return null;
   }
 
-  // ✅ Fix the “defaults to old dashboard” on mount/refresh:
-  // If someone lands on /dashboard/:module or /dashboard/:module/dashboard,
-  // redirect to the *mode-aware* first feature.
-  useEffect(() => {
-    const parts = location.pathname.split("?")[0].split("/").filter(Boolean); // ['dashboard', ':module', ':feature?']
-    const mod = parts[1];
-    const feat = parts[2];
-    if (mod === currentModule && (!feat || feat === "dashboard")) {
-      const def = getDefaultFeatureForModule(currentModule, user);
-      if (def !== "dashboard") {
-        navigate(`/dashboard/${currentModule}/${def}`, { replace: true });
-      }
-    }
-  }, [location.pathname, currentModule, user, navigate]);
-
   const canSwitchModules = subscribedModules.length > 1;
 
   return (

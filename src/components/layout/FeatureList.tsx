@@ -1,11 +1,16 @@
 // src/components/layout/FeatureList.tsx
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { moduleConfigs } from "@/config/moduleConfigs";
 import { useAuth } from "@/contexts/AuthContext";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { EnhancedTooltip } from "@/components/ui/enhanced-tooltip";
 import { Info } from "lucide-react";
 
@@ -15,47 +20,97 @@ interface FeatureListProps {
   onFeatureClick: (featureId: string) => void;
 }
 
-const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureListProps) => {
+const FeatureList = ({
+  currentModule,
+  isCollapsed,
+  onFeatureClick,
+}: FeatureListProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const userType = user?.userType;
-  const currentModuleConfig = moduleConfigs[currentModule as keyof typeof moduleConfigs];
+
+  const currentModuleConfig =
+    moduleConfigs[currentModule as keyof typeof moduleConfigs];
 
   if (!currentModuleConfig || !user) return null;
 
-  const getFeatures = () => {
+  /** Mode-aware features */
+  const features = useMemo(() => {
     if (currentModule === "grants") {
       const isDonor = userType === "Donor";
-      return isDonor ? currentModuleConfig.donorFeatures : currentModuleConfig.ngoFeatures;
+      return isDonor
+        ? currentModuleConfig.donorFeatures
+        : currentModuleConfig.ngoFeatures;
     }
     if (currentModule === "users") {
-      const isSuperAdmin = user?.is_super_admin;
-      return isSuperAdmin ? currentModuleConfig.superAdminFeatures : currentModuleConfig.adminFeatures;
+      const isSuperAdmin = !!user?.is_super_admin;
+      return isSuperAdmin
+        ? currentModuleConfig.superAdminFeatures
+        : currentModuleConfig.adminFeatures;
     }
     return currentModuleConfig.features;
-  };
+  }, [currentModule, currentModuleConfig, user, userType]);
 
-  const features = getFeatures();
+  /** Mode-aware default feature id */
+  const defaultFeatureId = useMemo(() => {
+    return features?.[0]?.id ?? "dashboard";
+  }, [features]);
 
-  // Grab :feature segment from the URL safely
-  const pathParts = location.pathname.split("?")[0].split("/").filter(Boolean); // ['dashboard', ':module', ':feature?']
-  const activeFeature = pathParts[2] || ""; // if missing, Sidebar effect will redirect
+  /** Grab :feature from the current path */
+  const pathParts = location.pathname
+    .split("?")[0]
+    .split("/")
+    .filter(Boolean); // ['dashboard', ':module', ':feature?']
+  const activeFeature = pathParts[2] || "";
 
+  /** Redirect to default feature if missing or pointing at legacy 'dashboard' */
+  useEffect(() => {
+    // only handle the current module
+    const urlModule = pathParts[1];
+    const urlFeature = pathParts[2];
+    const isDashboardish =
+      !urlFeature || urlFeature === "dashboard" || urlFeature === "";
+
+    if (urlModule === currentModule && isDashboardish && defaultFeatureId) {
+      // If default is actually 'dashboard', do nothing to avoid loops.
+      if (defaultFeatureId !== "dashboard") {
+        navigate(`/dashboard/${currentModule}/${defaultFeatureId}`, {
+          replace: true,
+        });
+      }
+    }
+  }, [currentModule, defaultFeatureId, navigate, pathParts]);
+
+  /** Descriptions for tooltips */
   const getFeatureDescription = (featureId: string) => {
-    const map: Record<string, string> = {
-      "user-accounts": "Manage user accounts, profiles, and access within your organization",
-      "roles-permissions": "Define and assign user roles with specific permissions and access levels",
-      "subscription-billing": "View and manage your organization's subscription plans and billing information",
-      "super-admin-users": "Manage system administrator accounts with elevated privileges",
-      "announcements": "Create and manage system-wide announcements for all users",
-      "client-directory": "View and manage all client organizations using the platform",
-      "module-settings": "Configure and manage system modules and their availability",
-      "audit-logs": "View comprehensive system activity logs and security events",
-      "integrations": "Manage third-party integrations and API connections",
-      "subscriptions-billing": "Oversee all client subscriptions, billing, and payment processing",
-      "support-tickets": "Manage customer support requests and technical issues",
+    const descriptions: Record<string, string> = {
+      // Admin
+      "user-accounts":
+        "Manage user accounts, profiles, and access within your organization",
+      "roles-permissions":
+        "Define and assign user roles with specific permissions and access levels",
+      "subscription-billing":
+        "View and manage your organization's subscription plans and billing information",
+
+      // Super Admin
+      "super-admin-users":
+        "Manage system administrator accounts with elevated privileges",
+      announcements:
+        "Create and manage system-wide announcements for all users",
+      "client-directory":
+        "View and manage all client organizations using the platform",
+      "module-settings":
+        "Configure and manage system modules and their availability",
+      "audit-logs":
+        "View comprehensive system activity logs and security events",
+      integrations: "Manage third-party integrations and API connections",
+      "subscriptions-billing":
+        "Oversee all client subscriptions, billing, and payment processing",
+      "support-tickets":
+        "Manage customer support requests and technical issues",
     };
-    return map[featureId];
+    return descriptions[featureId];
   };
 
   return (
@@ -72,12 +127,18 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
                 className={cn(
                   "w-full justify-start text-left font-light transition-colors",
                   isCollapsed ? "px-2" : "px-3",
-                  isActive ? "bg-violet-700 text-white hover:bg-violet-800" : "hover:bg-violet-100 hover:text-violet-900"
+                  isActive
+                    ? "bg-violet-700 text-white hover:bg-violet-800"
+                    : "hover:bg-violet-100 hover:text-violet-900"
                 )}
                 onClick={() => onFeatureClick(feature.id)}
               >
                 <feature.icon
-                  className={cn("h-4 w-4", isCollapsed ? "" : "mr-3", isActive ? "text-white" : "")}
+                  className={cn(
+                    "h-4 w-4",
+                    isCollapsed ? "" : "mr-3",
+                    isActive ? "text-white" : ""
+                  )}
                 />
                 {!isCollapsed && (
                   <div className="flex items-center justify-between w-full">

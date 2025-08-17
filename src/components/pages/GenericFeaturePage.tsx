@@ -31,16 +31,6 @@ const GenericFeaturePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const userType = user?.userType;
-
-  // Redirect to first feature if user lands on users module without a specific feature
-  useEffect(() => {
-    if (module && (!feature || feature === "dashboard")) {
-      const def = getDefaultFeatureForModule(module, user || undefined);
-      if (def !== "dashboard") {
-        navigate(`/dashboard/${module}/${def}`, { replace: true });
-      }
-    }
-  }, [module, feature, user, navigate]);
   
   // Render specific page components for fundraising routes
   if (module === 'fundraising' && feature === 'donor-management') {
