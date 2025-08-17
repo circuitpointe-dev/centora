@@ -29,6 +29,14 @@ import {
   ClipboardCheck,
   Calendar,
   UserCircle,
+  Bell,
+  Building2,
+  Settings2,
+  History,
+  Plug,
+  CreditCard,
+  MessageCircle,
+  Info,
 } from 'lucide-react';
 
 interface ModuleFeature {
@@ -44,6 +52,8 @@ interface ModuleConfig {
   features: ModuleFeature[];
   ngoFeatures?: ModuleFeature[];
   donorFeatures?: ModuleFeature[];
+  adminFeatures?: ModuleFeature[];
+  superAdminFeatures?: ModuleFeature[];
 }
 
 export const moduleConfigs: Record<string, ModuleConfig> = {
@@ -57,7 +67,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'opportunity-tracking', name: 'Opportunity Tracking', icon: Target },
       { id: 'proposal-management', name: 'Proposal Management', icon: FileText },
       { id: 'fundraising-analytics', name: 'Analytics', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   grants: {
@@ -74,7 +83,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'grantee-submissions', name: 'Grantee Submissions', icon: FileCheck },
       { id: 'templates', name: 'Templates', icon: FileImage },
       { id: 'grants-archive', name: 'Grants Archive', icon: Archive },
-      { id: 'settings', name: 'Settings/Admin', icon: Settings },
     ],
     ngoFeatures: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
@@ -82,7 +90,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'compliance-checklist', name: 'Compliance Checklist', icon: ClipboardCheck },
       { id: 'disbursement-schedule', name: 'Disbursement Schedule', icon: Calendar },
       { id: 'profile', name: 'Profile', icon: UserCircle },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ],
     donorFeatures: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
@@ -90,7 +97,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'grantee-submissions', name: 'Grantee Submissions', icon: FileCheck },
       { id: 'templates', name: 'Templates', icon: FileImage },
       { id: 'grants-archive', name: 'Grants Archive', icon: Archive },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   documents: {
@@ -103,7 +109,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'e-signature', name: 'E-Signature', icon: FileSignature },
       { id: 'compliance', name: 'Compliance', icon: Shield },
       { id: 'templates', name: 'Templates', icon: File },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   programme: {
@@ -129,7 +134,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'purchase-orders', name: 'Purchase Orders', icon: ShoppingCart },
       { id: 'vendor-management', name: 'Vendor Management', icon: Users },
       { id: 'procurement-analytics', name: 'Analytics', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   inventory: {
@@ -141,7 +145,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'stock-management', name: 'Stock Management', icon: Package },
       { id: 'warehouse-management', name: 'Warehouse Management', icon: Package },
       { id: 'inventory-analytics', name: 'Analytics', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   finance: {
@@ -153,7 +156,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'accounting', name: 'Accounting', icon: Calculator },
       { id: 'budgeting', name: 'Budgeting', icon: Calculator },
       { id: 'financial-reporting', name: 'Financial Reporting', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   learning: {
@@ -165,7 +167,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'course-management', name: 'Course Management', icon: BookOpen },
       { id: 'training-records', name: 'Training Records', icon: FileText },
       { id: 'learning-analytics', name: 'Analytics', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   hr: {
@@ -177,7 +178,6 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'employee-management', name: 'Employee Management', icon: Users },
       { id: 'payroll', name: 'Payroll', icon: Calculator },
       { id: 'hr-analytics', name: 'Analytics', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
     ]
   },
   users: {
@@ -186,10 +186,24 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     color: 'text-cyan-600',
     features: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'user-accounts', name: 'User Accounts', icon: User },
-      { id: 'roles-permissions', name: 'Roles & Permissions', icon: User },
-      { id: 'user-analytics', name: 'Analytics', icon: BarChart3 },
-      { id: 'settings', name: 'Settings', icon: Settings },
+    ],
+    adminFeatures: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'user-accounts', name: 'Users', icon: Users },
+      { id: 'roles-permissions', name: 'Roles & Permissions', icon: Shield },
+      { id: 'subscription-billing', name: 'Subscription & Billing', icon: CreditCard },
+    ],
+    superAdminFeatures: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'super-admin-users', name: 'Super Admin Users', icon: UserCheck },
+      { id: 'announcements', name: 'Announcements', icon: Bell },
+      { id: 'client-directory', name: 'Client Directory', icon: Building2 },
+      { id: 'roles-permissions', name: 'Roles & Permissions', icon: Shield },
+      { id: 'module-settings', name: 'Module Settings', icon: Settings2 },
+      { id: 'audit-logs', name: 'Audit Logs', icon: History },
+      { id: 'integrations', name: 'Integrations', icon: Plug },
+      { id: 'subscriptions-billing', name: 'Subscriptions & Billing', icon: CreditCard },
+      { id: 'support-tickets', name: 'Support Tickets', icon: MessageCircle },
     ]
   },
 };

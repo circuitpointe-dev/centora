@@ -107,15 +107,45 @@ const GenericFeaturePage = () => {
     return <ReportSubmissionsPage />;
   }
 
-  if (module === 'fundraising' && feature === 'opportunity-tracking') {
-      return <OpportunityTrackingPage />;
+  // User Management module routes
+  if (module === 'users' && feature === 'super-admin-users') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Super Admin Users" />;
   }
-  
-  if (module === 'fundraising' && feature === 'proposal-management') {
-      return <ProposalManagementPage />;
+
+  if (module === 'users' && feature === 'announcements') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Announcements" />;
   }
-  if (module === 'fundraising' && feature === 'fundraising-analytics') {
-      return <FundraisingAnalyticsPage />;
+
+  if (module === 'users' && feature === 'client-directory') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Client Directory" />;
+  }
+
+  if (module === 'users' && feature === 'module-settings') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Module Settings" />;
+  }
+
+  if (module === 'users' && feature === 'audit-logs') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Audit Logs" />;
+  }
+
+  if (module === 'users' && feature === 'integrations') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Integrations" />;
+  }
+
+  if (module === 'users' && feature === 'subscription-billing' || module === 'users' && feature === 'subscriptions-billing') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Subscriptions & Billing" />;
+  }
+
+  if (module === 'users' && feature === 'support-tickets') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Support Tickets" />;
+  }
+
+  if (module === 'users' && feature === 'user-accounts') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Users" />;
+  }
+
+  if (module === 'users' && feature === 'roles-permissions') {
+    return <GenericFeatureUI moduleName="User Management" featureName="Roles & Permissions" />;
   }
 
   return (
