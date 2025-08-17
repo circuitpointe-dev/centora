@@ -47,6 +47,44 @@ export type Database = {
         }
         Relationships: []
       }
+      departments: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "departments_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       donor_contacts: {
         Row: {
           created_at: string
@@ -721,40 +759,244 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          department_id: string | null
           email: string
           full_name: string | null
           id: string
           is_super_admin: boolean
           org_id: string
           role: Database["public"]["Enums"]["app_role"]
+          status: Database["public"]["Enums"]["user_status"]
           updated_at: string
         }
         Insert: {
           created_at?: string
+          department_id?: string | null
           email: string
           full_name?: string | null
           id: string
           is_super_admin?: boolean
           org_id: string
           role: Database["public"]["Enums"]["app_role"]
+          status?: Database["public"]["Enums"]["user_status"]
           updated_at?: string
         }
         Update: {
           created_at?: string
+          department_id?: string | null
           email?: string
           full_name?: string | null
           id?: string
           is_super_admin?: boolean
           org_id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          status?: Database["public"]["Enums"]["user_status"]
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_permissions: {
+        Row: {
+          created_at: string
+          feature_id: string
+          id: string
+          module_key: string
+          org_id: string
+          permissions: Database["public"]["Enums"]["feature_permission"][]
+          role_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          feature_id: string
+          id?: string
+          module_key: string
+          org_id: string
+          permissions?: Database["public"]["Enums"]["feature_permission"][]
+          role_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          feature_id?: string
+          id?: string
+          module_key?: string
+          org_id?: string
+          permissions?: Database["public"]["Enums"]["feature_permission"][]
+          role_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roles_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_invitations: {
+        Row: {
+          access: Json | null
+          created_at: string
+          department_id: string | null
+          email: string
+          expires_at: string
+          full_name: string
+          id: string
+          invited_by: string
+          org_id: string
+          redeemed_at: string | null
+          role_ids: string[]
+          status: Database["public"]["Enums"]["invitation_status"]
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          access?: Json | null
+          created_at?: string
+          department_id?: string | null
+          email: string
+          expires_at?: string
+          full_name: string
+          id?: string
+          invited_by: string
+          org_id: string
+          redeemed_at?: string | null
+          role_ids?: string[]
+          status?: Database["public"]["Enums"]["invitation_status"]
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          access?: Json | null
+          created_at?: string
+          department_id?: string | null
+          email?: string
+          expires_at?: string
+          full_name?: string
+          id?: string
+          invited_by?: string
+          org_id?: string
+          redeemed_at?: string | null
+          role_ids?: string[]
+          status?: Database["public"]["Enums"]["invitation_status"]
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_invitations_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_invitations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          id: string
+          profile_id: string
+          role_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          id?: string
+          profile_id: string
+          role_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          id?: string
+          profile_id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
             referencedColumns: ["id"]
           },
         ]
@@ -817,6 +1059,10 @@ export type Database = {
             }
         Returns: string
       }
+      current_org_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_last_donation_info: {
         Args: { donor_uuid: string }
         Returns: {
@@ -846,11 +1092,21 @@ export type Database = {
         Args: { _org_id: string }
         Returns: boolean
       }
+      is_super_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      org_match: {
+        Args: { check_org_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "org_admin" | "org_member"
       donor_status: "active" | "inactive" | "potential"
+      feature_permission: "read" | "write" | "admin"
       funding_cycle_status: "ongoing" | "upcoming" | "closed"
+      invitation_status: "pending" | "accepted" | "rejected" | "expired"
       module_key:
         | "fundraising"
         | "grants"
@@ -871,6 +1127,7 @@ export type Database = {
       opportunity_type: "RFP" | "LOI" | "CFP"
       organization_type: "NGO" | "DONOR"
       task_priority: "low" | "medium" | "high"
+      user_status: "active" | "inactive" | "deactivated"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1000,7 +1257,9 @@ export const Constants = {
     Enums: {
       app_role: ["org_admin", "org_member"],
       donor_status: ["active", "inactive", "potential"],
+      feature_permission: ["read", "write", "admin"],
       funding_cycle_status: ["ongoing", "upcoming", "closed"],
+      invitation_status: ["pending", "accepted", "rejected", "expired"],
       module_key: [
         "fundraising",
         "grants",
@@ -1023,6 +1282,7 @@ export const Constants = {
       opportunity_type: ["RFP", "LOI", "CFP"],
       organization_type: ["NGO", "DONOR"],
       task_priority: ["low", "medium", "high"],
+      user_status: ["active", "inactive", "deactivated"],
     },
   },
 } as const
