@@ -137,7 +137,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
                     className="h-8 w-auto transition-opacity duration-300"
                   />
                   <h1 className="text-lg font-bold text-gray-900 transition-opacity duration-300 bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                    Orbit
+                    Centora
                   </h1>
                 </div>
               )}
