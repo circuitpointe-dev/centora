@@ -22,6 +22,7 @@ import ESignaturePage from '@/components/documents/e-signature/ESignaturePage';
 import CompliancePage from '@/components/documents/compliance/CompliancePage';
 import TemplatesPage from '@/components/documents/templates/TemplatesPage';
 import ReportSubmissionsPage from './ReportSubmissionsPage';
+import { AdminUsersPage } from '@/components/users/AdminUsersPage';
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
@@ -111,6 +112,10 @@ const GenericFeaturePage = () => {
   }
 
   // User Management module routes
+  if (module === 'users' && feature === 'users') {
+    return <AdminUsersPage />;
+  }
+
   if (module === 'users' && feature === 'super-admin-users') {
     return <GenericFeatureUI moduleName="User Management" featureName="Super Admin Users" />;
   }
