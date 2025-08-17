@@ -10,7 +10,6 @@ import FeatureList from "./FeatureList";
 import ModuleSwitcher from "./ModuleSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDefaultFeatureForModule } from "@/utils/defaultFeature";
-import black_logo from "@/assets/images/black_logo.png";
 import violet_logo from "@/assets/images/logo_violet.png";
 
 interface SidebarProps {
@@ -133,12 +132,9 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
                 <div className="flex items-center space-x-3 animate-fade-in">
                   <img
                     src={violet_logo}
-                    alt="Orbit ERP Logo"
+                    alt="Centora ERP Logo"
                     className="h-8 w-auto transition-opacity duration-300"
                   />
-                  <h1 className="text-lg font-bold text-gray-900 transition-opacity duration-300 bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                    Centora
-                  </h1>
                 </div>
               )}
             </div>

@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import black_logo from "@/assets/images/black_logo.png";
 import violet_logo from "@/assets/images/logo_violet.png";
-import white_logo from "@/assets/images/white_logo.png";
 import {
   ArrowRight,
   Heart,
@@ -35,10 +34,6 @@ const Index = () => {
                   alt="Centora ERP Logo"
                   className="h-10 w-auto"
                 />
-                {/* The "Centora ERP" text only appears on sm and up */}
-                <span className="text-xl font-bold text-gray-900 hidden sm:inline-block bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                  Centora
-                </span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -185,7 +180,6 @@ const Index = () => {
                   alt="Orbit ERP Logo"
                   className="h-8 w-auto filter invert"
                 />
-                <span className="text-xl font-bold">Centora ERP</span>
               </div>
               <p className="text-gray-400 text-sm">
                 Empowering NGOs worldwide with comprehensive management

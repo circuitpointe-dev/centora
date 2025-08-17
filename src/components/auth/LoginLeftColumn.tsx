@@ -59,13 +59,13 @@ const LoginLeftColumn = () => {
         {/* Transparent blurred rectangle with logo and text */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-30 backdrop-blur-md px-8 py-4 rounded-xl z-30 w-5/6">
           <div className="flex justify-center mb-2">
-            <img src={blackLogo} alt="Orbit ERP Logo" className="w-12 h-10" />
+            <img src={blackLogo} alt="Centora ERP Logo" className="w-auto h-10" />
           </div>
           <h2 className="text-black text-lg font-semibold text-center">
-            Orbit ERP
+            Your NGO's Digital Partner
           </h2>
           <p className="text-black text-sm text-center mt-1">
-            Your fundraising command center
+            Built for Purpose. By NGOs, For NGOs.
           </p>
         </div>
       </div>
