@@ -185,7 +185,7 @@ const Index = () => {
                   alt="Orbit ERP Logo"
                   className="h-8 w-auto filter invert"
                 />
-                <span className="text-xl font-bold">Orbit ERP</span>
+                <span className="text-xl font-bold">Centora ERP</span>
               </div>
               <p className="text-gray-400 text-sm">
                 Empowering NGOs worldwide with comprehensive management
@@ -279,7 +279,7 @@ const Index = () => {
               <div className="space-y-3 text-gray-400">
                 <div className="flex items-center space-x-2">
                   <Mail className="h-4 w-4" />
-                  <span className="text-sm">support@orbiterp.com</span>
+                  <span className="text-sm">support@centoraerp.com</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Phone className="h-4 w-4" />
@@ -301,7 +301,7 @@ const Index = () => {
           <div className="border-t border-gray-800 mt-12 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-gray-400 text-sm">
-                © {new Date().getFullYear()} Orbit ERP. All rights reserved.
+                © {new Date().getFullYear()} Centora ERP. All rights reserved.
               </p>
 
               <div className="flex space-x-6 mt-4 md:mt-0">
