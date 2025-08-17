@@ -33,7 +33,7 @@ const Index = () => {
                 <img
                   src={violet_logo}
                   alt="Centora ERP Logo"
-                  className="h-12 w-auto"
+                  className="h-10 w-auto"
                 />
                 {/* The "Centora ERP" text only appears on sm and up */}
                 <span className="text-xl font-bold text-gray-900 hidden sm:inline-block bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
