@@ -21,7 +21,7 @@ export const UserTableToolbar: React.FC<UserTableToolbarProps> = ({
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-4">
-        <h2 className="text-xl font-semibold text-gray-900">User Directory</h2>
+        <h2 className="text-lg font-medium text-gray-900">User Directory</h2>
         
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
