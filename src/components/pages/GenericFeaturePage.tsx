@@ -112,7 +112,7 @@ const GenericFeaturePage = () => {
   }
 
   // User Management module routes
-  if (module === 'users' && feature === 'users') {
+  if (module === 'users' && feature === 'user-accounts') {
     return <AdminUsersPage />;
   }
 
@@ -148,9 +148,6 @@ const GenericFeaturePage = () => {
     return <GenericFeatureUI moduleName="User Management" featureName="Support Tickets" />;
   }
 
-  if (module === 'users' && feature === 'user-accounts') {
-    return <GenericFeatureUI moduleName="User Management" featureName="Users" />;
-  }
 
   if (module === 'users' && feature === 'roles-permissions') {
     return <GenericFeatureUI moduleName="User Management" featureName="Roles & Permissions" />;
