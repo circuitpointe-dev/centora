@@ -42,14 +42,7 @@ export const UserTableToolbar: React.FC<UserTableToolbarProps> = ({
           Filter
         </Button>
 
-        <AddUserDialog
-          triggerButton={
-            <Button className="bg-brand-purple hover:bg-brand-purple/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Add New User
-            </Button>
-          }
-        />
+        <AddUserDialog />
       </div>
     </div>
   );
