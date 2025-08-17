@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import DonorManagementPage from './DonorManagementPage';
 import OpportunityTrackingPage from './OpportunityTrackingPage';
 import ProposalManagementPage from './ProposalManagementPage';
@@ -27,7 +27,17 @@ import { useAuth } from '@/contexts/AuthContext';
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const userType = user?.userType;
+
+  // Redirect to first feature if user lands on users module without a specific feature
+  useEffect(() => {
+    if (module === 'users' && (!feature || feature === 'dashboard')) {
+      const isSuperAdmin = user?.is_super_admin;
+      const defaultFeature = isSuperAdmin ? 'super-admin-users' : 'user-accounts';
+      navigate(`/dashboard/users/${defaultFeature}`, { replace: true });
+    }
+  }, [module, feature, user, navigate]);
   
   // Render specific page components for fundraising routes
   if (module === 'fundraising' && feature === 'donor-management') {

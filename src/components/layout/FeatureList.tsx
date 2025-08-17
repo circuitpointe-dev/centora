@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { moduleConfigs } from '@/config/moduleConfigs';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { EnhancedTooltip } from '@/components/ui/enhanced-tooltip';
 import { Info } from 'lucide-react';
 
 interface FeatureListProps {
@@ -104,7 +105,17 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
                 {!isCollapsed && (
                   <div className="flex items-center justify-between w-full">
                     <span className="text-sm font-light">{feature.name}</span>
-                    {description && (
+                    {description && currentModule === 'users' && (
+                      <EnhancedTooltip content={description}>
+                        <button className="flex items-center">
+                          <Info className={cn(
+                            "h-3 w-3 ml-2 opacity-60 hover:opacity-100 transition-opacity",
+                            isActive ? "text-white" : "text-gray-500"
+                          )} />
+                        </button>
+                      </EnhancedTooltip>
+                    )}
+                    {description && currentModule !== 'users' && (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button className="flex items-center">
