@@ -43,7 +43,7 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
       'roles-permissions': 'Define and assign user roles with specific permissions and access levels',
       'subscription-billing': 'View and manage your organization\'s subscription plans and billing information',
       
-      // Super Admin features
+      // Super Admin features  
       'super-admin-users': 'Manage system administrator accounts with elevated privileges',
       'announcements': 'Create and manage system-wide announcements for all users',
       'client-directory': 'View and manage all client organizations using the platform',
@@ -107,10 +107,12 @@ const FeatureList = ({ currentModule, isCollapsed, onFeatureClick }: FeatureList
                     {description && (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Info className={cn(
-                            "h-3 w-3 ml-2 opacity-60 hover:opacity-100 transition-opacity",
-                            isActive ? "text-white" : "text-gray-500"
-                          )} />
+                          <button className="flex items-center">
+                            <Info className={cn(
+                              "h-3 w-3 ml-2 opacity-60 hover:opacity-100 transition-opacity",
+                              isActive ? "text-white" : "text-gray-500"
+                            )} />
+                          </button>
                         </TooltipTrigger>
                         <TooltipContent side="right" className="max-w-xs">
                           <p className="text-sm">{description}</p>

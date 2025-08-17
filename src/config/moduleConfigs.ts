@@ -188,13 +188,11 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
     ],
     adminFeatures: [
-      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
       { id: 'user-accounts', name: 'Users', icon: Users },
       { id: 'roles-permissions', name: 'Roles & Permissions', icon: Shield },
       { id: 'subscription-billing', name: 'Subscription & Billing', icon: CreditCard },
     ],
     superAdminFeatures: [
-      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
       { id: 'super-admin-users', name: 'Super Admin Users', icon: UserCheck },
       { id: 'announcements', name: 'Announcements', icon: Bell },
       { id: 'client-directory', name: 'Client Directory', icon: Building2 },
