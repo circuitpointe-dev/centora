@@ -9,7 +9,7 @@ const StepModules = ({ formData, onChange }: {
   const enabledKeys = new Set(['fundraising', 'documents', 'users']);
   const [openKey, setOpenKey] = React.useState<string | null>(null);
   const handleToggle = (moduleKey: string, enabled: boolean, checked: boolean) => {
-    if (!enabled) return;
+    if (!enabled || moduleKey === 'users') return; // Prevent unchecking users module
     const updated = checked
       ? [...formData.modules, moduleKey]
       : formData.modules.filter((m: string) => m !== moduleKey);
@@ -23,7 +23,8 @@ const StepModules = ({ formData, onChange }: {
         {moduleEntries.map(([key, cfg]) => {
           const enabled = enabledKeys.has(key);
           const name = cfg.name;
-          const checked = formData.modules.includes(key);
+          const checked = formData.modules.includes(key) || key === 'users'; // Always check users module
+          const isUsersModule = key === 'users';
           return (
             <Tooltip key={key} open={openKey === key}>
               <TooltipTrigger asChild>
@@ -56,15 +57,15 @@ const StepModules = ({ formData, onChange }: {
             type="checkbox"
             id={`module-${key}`}
             checked={checked}
-            disabled={!enabled}
+            disabled={!enabled || isUsersModule} // Disable users module checkbox
             onChange={(e) => handleToggle(key, enabled, e.target.checked)}
             className="h-3.5 w-3.5 text-violet-600 rounded border-gray-300 focus:ring-violet-500 disabled:opacity-50"
           />
                   <label
                     htmlFor={`module-${key}`}
-                    className={`ml-2 text-xs ${enabled ? 'text-gray-700' : 'text-gray-400'}`}
+                    className={`ml-2 text-xs ${enabled ? 'text-gray-700' : 'text-gray-400'} ${isUsersModule ? 'font-medium' : ''}`}
                   >
-                    {name}
+                    {name} {isUsersModule && '(Required)'}
                   </label>
                 </div>
               </TooltipTrigger>
