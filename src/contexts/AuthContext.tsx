@@ -70,77 +70,83 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [authMode, setAuthMode] = useState<"dev" | "supabase" | null>(null);
 
-  // Load profile + org + modules for Supabase users
-  const fetchProfileAndModules = async (userId: string) => {
+  // Load profile + org + modules for Supabase users
+  const fetchProfileAndModules = async (userId: string) => {
     try {
-      // Fetch profile data, including the new `is_super_admin` column
+      // Fetch profile data, including role for org admin check
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('id, email, full_name, org_id, is_super_admin')
+        .select('id, email, full_name, org_id, is_super_admin, role')
         .eq('id', userId)
         .single();
 
-      if (profileError || !profile) {
-        console.error('Error loading profile:', profileError);
-        return;
-      }
+      if (profileError || !profile) {
+        console.error('Error loading profile:', profileError);
+        return;
+      }
 
       // If the user is a Super Admin, their org-related data is null
-      const isSuperAdmin = profile?.is_super_admin || false;
-      let orgName = '';
-      let orgType: 'NGO' | 'Donor' | 'SuperAdmin' = 'NGO';
-      let subscribedModules: string[] = [];
+      const isSuperAdmin = profile.is_super_admin || false;
+      const isOrgAdmin = profile.role === 'org_admin';
+      let orgName = '';
+      let orgType: 'NGO' | 'Donor' | 'SuperAdmin' = 'NGO';
+      let subscribedModules: string[] = [];
 
-      if (isSuperAdmin) {
-        orgName = 'Orbit ERP';
-        orgType = 'SuperAdmin';
-        // Super Admins have access to all modules
-        subscribedModules = Object.values(allModules);
-      } else if (profile?.org_id) {
-        // Regular user, fetch organization and subscribed modules
-        const [{ data: org, error: orgError }, { data: modulesData, error: modulesError }] = await Promise.all([
-          supabase.from('organizations').select('name, type').eq('id', profile?.org_id).single(),
-          supabase.from('organization_modules').select('module').eq('org_id', profile?.org_id),
-        ]);
+      if (isSuperAdmin) {
+        orgName = 'Orbit ERP';
+        orgType = 'SuperAdmin';
+        // Super Admins have access to all modules
+        subscribedModules = Object.values(allModules);
+      } else if (profile.org_id) {
+        // Regular user, fetch organization and subscribed modules
+        const [{ data: org, error: orgError }, { data: modulesData, error: modulesError }] = await Promise.all([
+          supabase.from('organizations').select('name, type').eq('id', profile.org_id).single(),
+          supabase.from('organization_modules').select('module').eq('org_id', profile.org_id),
+        ]);
 
-        if (orgError) console.error('Error loading organization:', orgError);
-        if (modulesError) console.error('Error loading modules:', modulesError);
+        if (orgError) console.error('Error loading organization:', orgError);
+        if (modulesError) console.error('Error loading modules:', modulesError);
 
-        orgName = org?.name || '';
-        orgType = (org?.type as 'NGO' | 'Donor' | undefined) ?? 'NGO';
-        
-        const normalizedModules = (modulesData || [])
-          .map((m: any) => String(m.module).toLowerCase())
-          .filter((m: string) => allModules.includes(m));
+        orgName = org?.name || '';
+        orgType = (org?.type as 'NGO' | 'Donor' | undefined) ?? 'NGO';
+        
+        const normalizedModules = (modulesData || [])
+          .map((m: any) => String(m.module).toLowerCase())
+          .filter((m: string) => allModules.includes(m));
 
-        // Ensure 'users' module is always present for NGOs
-        if (orgType === 'NGO' && !normalizedModules.includes('users')) {
-          normalizedModules.push('users');
-        }
+        // Ensure 'users' module is always present for org admins (both NGO and Donor)
+        if (isOrgAdmin && !normalizedModules.includes('users')) {
+          normalizedModules.push('users');
+        }
 
-        subscribedModules = normalizedModules.length > 0
-          ? normalizedModules
-          : ['fundraising', 'documents'].filter((m) => allModules.includes(m));
-      } else {
-        // Handle users with no org_id (not a Super Admin)
-        console.warn("User has no org_id or is not a Super Admin. Subscribing to base modules.");
-        subscribedModules = ['fundraising', 'documents'].filter((m) => allModules.includes(m));
-      }
+        subscribedModules = normalizedModules.length > 0
+          ? normalizedModules
+          : ['fundraising', 'documents'].filter((m) => allModules.includes(m));
+        
+        // Fallback: if no subscribed modules and user is org admin, always include users
+        if (subscribedModules.length === 0 && isOrgAdmin) {
+          subscribedModules.push('users');
+        }
+      } else {
+        // Handle users with no org_id (not a Super Admin)
+        console.warn("User has no org_id or is not a Super Admin. Subscribing to base modules.");
+        subscribedModules = ['fundraising', 'documents'].filter((m) => allModules.includes(m));
+      }
 
       setUser({
-        id: profile?.id || '',
-        email: profile?.email || '',
-        name: profile?.full_name || profile?.email || '',
+        id: profile.id,
+        email: profile.email,
+        name: profile.full_name || profile.email,
         organization: orgName,
-        org_id: profile?.org_id,
-        userType: orgType,
-        is_super_admin: isSuperAdmin,
-        subscribedModules: subscribedModules,
-      });
-    } catch (error) {
-      console.error('Auth profile load error:', error);
-    }
-  };
+        org_id: profile.org_id,
+        userType: orgType,
+        is_super_admin: isSuperAdmin,
+        subscribedModules: subscribedModules,
+      });
+    } catch (error) {
+      console.error('Auth profile load error:', error);
+    }
+  };
 
   // Initialize auth listeners and existing session
   useEffect(() => {
