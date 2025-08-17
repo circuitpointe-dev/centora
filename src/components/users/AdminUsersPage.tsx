@@ -5,6 +5,11 @@ import { UserDirectoryTable } from './UserDirectoryTable';
 export const AdminUsersPage: React.FC = () => {
   return (
     <div className="p-6 space-y-8">
+      {/* Page Header */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-xl font-medium text-gray-900">Users Dashboard</h1>
+      </div>
+
       {/* Statistics Cards Section */}
       <UserStatsCards />
       
