@@ -530,7 +530,8 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
             Cancel
           </Button>
           <Button 
-            type="submit" 
+            type="submit"
+            variant="brand-purple"
             disabled={
               createDonorMutation.isPending || 
               updateDonorMutation.isPending || 
