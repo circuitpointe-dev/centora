@@ -1006,6 +1006,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_invitation: {
+        Args: { _token: string }
+        Returns: boolean
+      }
       admin_update_member_role: {
         Args: {
           _member_id: string
@@ -1017,6 +1021,14 @@ export type Database = {
       can_access_donor_document: {
         Args: { file_path: string }
         Returns: boolean
+      }
+      count_org_users: {
+        Args: { _search?: string }
+        Returns: number
+      }
+      create_department: {
+        Args: { _description?: string; _name: string }
+        Returns: string
       }
       create_donor_with_details: {
         Args:
@@ -1059,9 +1071,35 @@ export type Database = {
             }
         Returns: string
       }
+      create_role: {
+        Args: { _description?: string; _name: string }
+        Returns: string
+      }
+      create_user_invitation: {
+        Args: {
+          _access?: Json
+          _department_id?: string
+          _email: string
+          _full_name: string
+          _role_ids?: string[]
+        }
+        Returns: {
+          id: string
+          token: string
+        }[]
+      }
       current_org_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_departments: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+        }[]
       }
       get_last_donation_info: {
         Args: { donor_uuid: string }
@@ -1084,6 +1122,19 @@ export type Database = {
           role: Database["public"]["Enums"]["app_role"]
         }[]
       }
+      get_roles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+        }[]
+      }
+      get_user_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       is_org_admin: {
         Args: { _org_id: string }
         Returns: boolean
@@ -1095,6 +1146,18 @@ export type Database = {
       is_super_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      list_org_users: {
+        Args: { _page?: number; _page_size?: number; _search?: string }
+        Returns: {
+          department: string
+          email: string
+          full_name: string
+          id: string
+          modules: string[]
+          roles: string[]
+          status: Database["public"]["Enums"]["user_status"]
+        }[]
       }
       org_match: {
         Args: { check_org_id: string }

@@ -14,24 +14,34 @@ import {
   type AddUserPayload
 } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
+import { useCreateInvitation } from "@/hooks/useInvitations";
 
 export const AddUserDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [pendingInvite, setPendingInvite] = useState<AddUserPayload | null>(null);
   const { toast } = useToast();
+  const createInvitation = useCreateInvitation();
 
   const handleSubmit = (payload: AddUserPayload) => setPendingInvite(payload);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!pendingInvite) return;
-    // TODO: wire to Supabase invite endpoint
-    console.log("Confirmed invite:", pendingInvite);
-    toast({
-      title: "Invite sent (mock)",
-      description: `Invitation prepared for ${pendingInvite.email}`,
-    });
-    setPendingInvite(null);
-    setOpen(false);
+    
+    try {
+      await createInvitation.mutateAsync({
+        email: pendingInvite.email,
+        full_name: pendingInvite.fullName,
+        department_id: pendingInvite.department || undefined,
+        role_ids: pendingInvite.roles || [],
+        access: pendingInvite.access,
+      });
+      
+      setPendingInvite(null);
+      setOpen(false);
+    } catch (error) {
+      // Error is handled by the hook
+      console.error('Failed to send invitation:', error);
+    }
   };
 
   return (

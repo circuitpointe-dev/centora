@@ -10,13 +10,12 @@ import { MoreVertical, Eye, Edit, UserCheck, UserX } from 'lucide-react';
 
 interface User {
   id: string;
-  name: string;
+  full_name: string;
   email: string;
+  status: 'active' | 'inactive' | 'deactivated';
+  department: string;
   modules: string[];
   roles: string[];
-  status: 'active' | 'inactive' | 'deactivated';
-  lastActive: string;
-  joinedDate: string;
 }
 
 interface UserActionMenuProps {
