@@ -1,6 +1,8 @@
 
-import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+// src/components/generic/GenericFeaturePage.tsx
+import React, { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getDefaultFeatureForModule } from "@/utils/defaultFeature";
 import DonorManagementPage from './DonorManagementPage';
 import OpportunityTrackingPage from './OpportunityTrackingPage';
 import ProposalManagementPage from './ProposalManagementPage';
@@ -32,10 +34,11 @@ const GenericFeaturePage = () => {
 
   // Redirect to first feature if user lands on users module without a specific feature
   useEffect(() => {
-    if (module === 'users' && (!feature || feature === 'dashboard')) {
-      const isSuperAdmin = user?.is_super_admin;
-      const defaultFeature = isSuperAdmin ? 'super-admin-users' : 'user-accounts';
-      navigate(`/dashboard/users/${defaultFeature}`, { replace: true });
+    if (module && (!feature || feature === "dashboard")) {
+      const def = getDefaultFeatureForModule(module, user || undefined);
+      if (def !== "dashboard") {
+        navigate(`/dashboard/${module}/${def}`, { replace: true });
+      }
     }
   }, [module, feature, user, navigate]);
   

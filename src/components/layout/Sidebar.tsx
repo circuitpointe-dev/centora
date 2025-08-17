@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/components/layout/Sidebar.tsx
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Grid3X3, ChevronUp, ArrowRight, Menu, X } from "lucide-react";
@@ -8,6 +9,7 @@ import SidebarHeader from "./SidebarHeader";
 import FeatureList from "./FeatureList";
 import ModuleSwitcher from "./ModuleSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
+import { getDefaultFeatureForModule } from "@/utils/defaultFeature";
 import black_logo from "@/assets/images/black_logo.png";
 import violet_logo from "@/assets/images/logo_violet.png";
 
@@ -17,12 +19,9 @@ interface SidebarProps {
   onToggleCollapse: () => void;
 }
 
-const Sidebar = ({
-  currentModule,
-  isCollapsed,
-  onToggleCollapse,
-}: SidebarProps) => {
+const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const subscribedModules = user?.subscribedModules || [];
   const [showModuleSwitcher, setShowModuleSwitcher] = useState(false);
@@ -33,37 +32,47 @@ const Sidebar = ({
 
   const handleFeatureClick = (featureId: string) => {
     const [path, query] = featureId.split("?");
-    const url = `/dashboard/${currentModule}/${path}${
-      query ? `?${query}` : ""
-    }`;
+    const url = `/dashboard/${currentModule}/${path}${query ? `?${query}` : ""}`;
     navigate(url);
-    // Close mobile sidebar after navigation
     setIsMobileOpen(false);
   };
 
   const handleModuleSwitch = (moduleId: string) => {
-    navigate(`/dashboard/${moduleId}/dashboard`);
+    const def = getDefaultFeatureForModule(moduleId, user);
+    navigate(`/dashboard/${moduleId}/${def}`);
     setShowModuleSwitcher(false);
-    // Close mobile sidebar after navigation
     setIsMobileOpen(false);
   };
 
-  const toggleModuleSwitcher = () => {
-    setShowModuleSwitcher(!showModuleSwitcher);
-  };
+  const toggleModuleSwitcher = () => setShowModuleSwitcher((v) => !v);
 
   if (!currentModuleConfig || !user) return null;
 
-  // Check if user has access to current module
+  // Guard: if user cannot access current module, kick to first accessible module's default feature
   const hasAccess = subscribedModules.includes(currentModule);
   if (!hasAccess) {
-    // Redirect to first available module
     const firstModule = subscribedModules[0];
     if (firstModule) {
-      navigate(`/dashboard/${firstModule}/dashboard`);
+      const def = getDefaultFeatureForModule(firstModule, user);
+      navigate(`/dashboard/${firstModule}/${def}`);
     }
     return null;
   }
+
+  // ✅ Fix the “defaults to old dashboard” on mount/refresh:
+  // If someone lands on /dashboard/:module or /dashboard/:module/dashboard,
+  // redirect to the *mode-aware* first feature.
+  useEffect(() => {
+    const parts = location.pathname.split("?")[0].split("/").filter(Boolean); // ['dashboard', ':module', ':feature?']
+    const mod = parts[1];
+    const feat = parts[2];
+    if (mod === currentModule && (!feat || feat === "dashboard")) {
+      const def = getDefaultFeatureForModule(currentModule, user);
+      if (def !== "dashboard") {
+        navigate(`/dashboard/${currentModule}/${def}`, { replace: true });
+      }
+    }
+  }, [location.pathname, currentModule, user, navigate]);
 
   const canSwitchModules = subscribedModules.length > 1;
 
@@ -170,27 +179,21 @@ const Sidebar = ({
         </div>
 
         {/* Content Area - Either Features or Module Switcher */}
-        <div
-          className={cn(
-            "flex-1 overflow-auto min-h-0",
-            isMobileOpen ? "block" : "hidden lg:block"
-          )}
-        >
-          {!showModuleSwitcher ? (
-            <FeatureList
-              currentModule={currentModule}
-              isCollapsed={isCollapsed && !isMobileOpen}
-              onFeatureClick={handleFeatureClick}
-            />
-          ) : (
-            <ModuleSwitcher
-              currentModule={currentModule}
-              isCollapsed={isCollapsed && !isMobileOpen}
-              onModuleSwitch={handleModuleSwitch}
-            />
-          )}
-        </div>
-
+        <div className={cn("flex-1 overflow-auto min-h-0", isMobileOpen ? "block" : "hidden lg:block")}>
+        {!showModuleSwitcher ? (
+          <FeatureList
+            currentModule={currentModule}
+            isCollapsed={isCollapsed && !isMobileOpen}
+            onFeatureClick={handleFeatureClick}
+          />
+        ) : (
+          <ModuleSwitcher
+            currentModule={currentModule}
+            isCollapsed={isCollapsed && !isMobileOpen}
+            onModuleSwitch={handleModuleSwitch}
+          />
+        )}
+      </div>
         {/* Module Switcher Toggle - Fixed to bottom */}
         {canSwitchModules && (
           <div
