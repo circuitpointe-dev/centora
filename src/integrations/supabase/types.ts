@@ -1149,6 +1149,14 @@ export type Database = {
           role: Database["public"]["Enums"]["app_role"]
         }[]
       }
+      get_org_modules_with_features: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          features: Json
+          module: string
+          module_name: string
+        }[]
+      }
       get_roles: {
         Args: Record<PropertyKey, never>
         Returns: {
