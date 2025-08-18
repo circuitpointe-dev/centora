@@ -49,7 +49,7 @@ export const UserInvitePreview: React.FC<{
             {accessModules.map((moduleId) => {
               const module = modules.find(m => m.module === moduleId);
               const moduleName = module?.module_name || moduleId;
-              const features = Object.keys(invite.access[moduleId] || {});
+              const features = Object.keys(invite.access[moduleId] || {}).filter(f => f !== '_module');
               
               return (
                 <div key={moduleId} className="border rounded-lg p-3 bg-gray-50">
@@ -61,16 +61,21 @@ export const UserInvitePreview: React.FC<{
                       {features.map((featureId) => {
                         const feature = module?.features.find(f => f.id === featureId);
                         const featureName = feature?.name || featureId;
-                        const permissions = invite.access[moduleId][featureId];
-                        
-                        return (
-                          <li key={featureId} className="text-xs">
-                            <span className="font-medium text-gray-700">{featureName}:</span>{" "}
-                            <span className="text-gray-600">
-                              {permissions.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(", ")}
-                            </span>
-                          </li>
-                        );
+                         const permissions = invite.access[moduleId][featureId];
+                         
+                         if (featureId === '_module') return null; // Skip module toggle
+                         
+                         return (
+                           <li key={featureId} className="text-xs">
+                             <span className="font-medium text-gray-700">{featureName}:</span>{" "}
+                             <span className="text-gray-600">
+                               {Array.isArray(permissions) 
+                                 ? permissions.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(", ")
+                                 : String(permissions)
+                               }
+                             </span>
+                           </li>
+                         );
                       })}
                     </ul>
                   )}

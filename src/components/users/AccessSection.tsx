@@ -14,22 +14,13 @@ import { cn } from "@/lib/utils";
 import { useOrgModulesWithFeatures } from "@/hooks/useOrgModulesWithFeatures";
 import { moduleConfigs } from "@/config/moduleConfigs";
 import { useAuth } from "@/contexts/AuthContext";
-import { featurePermissions, type Permission } from "@/utils/permissions";
+import { featurePermissions, PERMISSION_LABELS, type Permission } from "@/utils/permissions";
 
-// UI labels for permissions
-const PERMISSION_LABELS: Record<Permission, string> = {
-  create: "Create",
-  read: "Read",
-  update: "Update",
-  delete: "Delete",
-  export: "Export",
-  upload: "Upload",
-};
-
-// Access map type your form expects
+// Access map type your form expects with module-level access
 export type AccessMap = {
   [moduleId: string]: {
-    [featureId: string]: Permission[];
+    _module?: boolean;
+    [featureId: string]: Permission[] | boolean;
   };
 };
 
@@ -89,12 +80,29 @@ export const AccessSection: React.FC<AccessSectionProps> = ({ value, onChange })
   }, [subscribed, orgType]);
 
   // helpers for AccessMap
-  const isPermChecked = (moduleId: string, featureId: string, perm: Permission) =>
-    Boolean(value?.[moduleId]?.[featureId]?.includes(perm));
+  const isModuleEnabled = (moduleId: string) =>
+    Boolean(value?.[moduleId]?._module);
+
+  const toggleModule = (moduleId: string, checked: boolean) => {
+    onChange({
+      ...value,
+      [moduleId]: {
+        ...(value?.[moduleId] ?? {}),
+        _module: checked,
+      },
+    });
+  };
+
+  const isPermChecked = (moduleId: string, featureId: string, perm: Permission) => {
+    const featurePerms = value?.[moduleId]?.[featureId];
+    return Array.isArray(featurePerms) && featurePerms.includes(perm);
+  };
 
   const togglePerm = (moduleId: string, featureId: string, perm: Permission) => {
     const current = value?.[moduleId]?.[featureId] ?? ([] as Permission[]);
-    const next = current.includes(perm) ? current.filter((p) => p !== perm) : [...current, perm];
+    const next = Array.isArray(current) 
+      ? (current.includes(perm) ? current.filter((p) => p !== perm) : [...current, perm])
+      : [perm];
 
     onChange({
       ...value,
@@ -164,11 +172,25 @@ export const AccessSection: React.FC<AccessSectionProps> = ({ value, onChange })
         {modulesToRender.map((mod) => (
           <AccordionItem key={mod.moduleKey} value={mod.moduleKey} className="border-b">
             <AccordionTrigger className="px-4">
-              <span className="text-sm font-medium">{mod.moduleName}</span>
+              <div className="flex items-center justify-between w-full mr-4">
+                <span className="text-sm font-medium">{mod.moduleName}</span>
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                    checked={isModuleEnabled(mod.moduleKey)}
+                    onCheckedChange={(checked) => toggleModule(mod.moduleKey, Boolean(checked))}
+                    aria-label={`Enable ${mod.moduleName} module`}
+                  />
+                  <span className="text-xs text-muted-foreground">Enable Module</span>
+                </div>
+              </div>
             </AccordionTrigger>
 
             <AccordionContent>
-              {mod.features.length === 0 ? (
+              {!isModuleEnabled(mod.moduleKey) ? (
+                <div className="p-4 text-sm text-muted-foreground">
+                  Enable the module above to configure feature permissions.
+                </div>
+              ) : mod.features.length === 0 ? (
                 <div className="p-4 text-sm text-gray-500">
                   No features defined in <code>moduleConfig.ts</code> for <b>{mod.moduleKey}</b>.
                 </div>
@@ -177,8 +199,9 @@ export const AccessSection: React.FC<AccessSectionProps> = ({ value, onChange })
                   {mod.features.map((feat) => {
                     const supported = feat.permissions;
                     const granted = value?.[mod.moduleKey]?.[feat.id] ?? [];
+                    const grantedArray = Array.isArray(granted) ? granted : [];
                     const allChecked =
-                      granted.length > 0 && supported.every((p) => granted.includes(p));
+                      grantedArray.length > 0 && supported.every((p) => grantedArray.includes(p));
 
                     return (
                       <Card key={feat.id} className="shadow-none">

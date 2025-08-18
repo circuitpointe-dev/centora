@@ -989,6 +989,75 @@ export type Database = {
           },
         ]
       }
+      user_module_access: {
+        Row: {
+          created_at: string
+          created_by: string
+          has_access: boolean
+          id: string
+          module_key: string
+          org_id: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          has_access?: boolean
+          id?: string
+          module_key: string
+          org_id: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          has_access?: boolean
+          id?: string
+          module_key?: string
+          org_id?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_permissions: {
+        Row: {
+          created_at: string
+          created_by: string
+          feature_id: string
+          id: string
+          module_key: string
+          org_id: string
+          permissions: string[]
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          feature_id: string
+          id?: string
+          module_key: string
+          org_id: string
+          permissions?: string[]
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          feature_id?: string
+          id?: string
+          module_key?: string
+          org_id?: string
+          permissions?: string[]
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           assigned_at: string
@@ -1128,6 +1197,10 @@ export type Database = {
           name: string
         }[]
       }
+      get_effective_permissions: {
+        Args: { _profile_id: string }
+        Returns: Json
+      }
       get_last_donation_info: {
         Args: { donor_uuid: string }
         Returns: {
@@ -1196,6 +1269,19 @@ export type Database = {
       }
       org_match: {
         Args: { check_org_id: string }
+        Returns: boolean
+      }
+      set_user_access_map: {
+        Args: { _access_map: Json; _profile_id: string }
+        Returns: boolean
+      }
+      user_has_permission: {
+        Args: {
+          _feature_id?: string
+          _module_key: string
+          _permission?: string
+          _profile_id: string
+        }
         Returns: boolean
       }
     }

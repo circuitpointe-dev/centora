@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DepartmentSelect } from "./DepartmentSelect";
 import { RoleMultiSelect } from "./RoleMultiSelect";
 import { AccessSection, type AccessMap } from "./AccessSection";
+import { useSetUserAccess } from "@/hooks/usePermissions";
 
 /* ---------- Types ---------- */
 export type AddUserPayload = {
@@ -136,7 +137,7 @@ export const UserInvitePreview: React.FC<{
               <ul className="list-disc ml-5">
                 {features.map((featId) => (
                   <li key={featId}>
-                    <span className="font-medium">{featId}</span>: {invite.access[modId][featId].join(", ")}
+                    <span className="font-medium">{featId}</span>: {Array.isArray(invite.access[modId][featId]) ? invite.access[modId][featId].join(", ") : String(invite.access[modId][featId])}
                   </li>
                 ))}
               </ul>
