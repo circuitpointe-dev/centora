@@ -1,3 +1,5 @@
+// src/hooks/useOrgModulesWithFeatures.ts
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -18,16 +20,15 @@ export const useOrgModulesWithFeatures = () => {
     queryKey: ['org-modules-with-features'],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_org_modules_with_features');
-      
       if (error) {
-        throw new Error(`Failed to fetch organization modules with features: ${error.message}`);
+        // Logs will help if the function exists but throws
+        console.error('get_org_modules_with_features error:', error);
+        throw new Error(error.message);
       }
-
-      // Transform the JSONB features array to proper TypeScript types
       return (data || []).map((module: any) => ({
         module: module.module,
         module_name: module.module_name,
-        features: module.features as Feature[]
+        features: module.features as Feature[],
       })) as ModuleWithFeatures[];
     },
   });

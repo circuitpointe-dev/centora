@@ -1,3 +1,5 @@
+// src/components/users/UserInvitePreview.tsx
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { AddUserPayload } from "./AddUserForm";

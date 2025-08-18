@@ -1,3 +1,5 @@
+// src/components/users/AccessSection.tsx
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -76,15 +78,16 @@ export const AccessSection: React.FC<AccessSectionProps> = ({
   }
 
   if (error) {
-    return (
-      <div className="space-y-4">
-        <h3 className="font-medium text-gray-900">Access</h3>
-        <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-          <p className="text-sm text-red-600">Failed to load modules and features</p>
-        </div>
+  return (
+    <div className="space-y-4">
+      <h3 className="font-medium text-gray-900">Access</h3>
+      <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+        <p className="text-sm text-red-600">Failed to load modules and features</p>
+        <p className="text-xs text-red-500 mt-1">{String((error as any)?.message || '')}</p>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (modules.length === 0) {
     return (
