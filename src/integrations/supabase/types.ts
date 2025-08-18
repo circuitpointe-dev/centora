@@ -1103,8 +1103,8 @@ export type Database = {
     }
     Functions: {
       accept_invitation: {
-        Args: { _token: string }
-        Returns: boolean
+        Args: { _token: string } | { _token: string; _user_id?: string }
+        Returns: string
       }
       admin_update_member_role: {
         Args: {
@@ -1172,13 +1172,33 @@ export type Database = {
         Returns: string
       }
       create_user_invitation: {
-        Args: {
-          _access?: Json
-          _department_id?: string
-          _email: string
-          _full_name: string
-          _role_ids?: string[]
-        }
+        Args:
+          | {
+              _access: Json
+              _department_id: string
+              _email: string
+              _full_name: string
+              _invited_by: string
+              _org_id: string
+              _role_ids: string[]
+            }
+          | {
+              _access?: Json
+              _department_id?: string
+              _email: string
+              _full_name: string
+              _invited_by?: string
+              _org_id: string
+              _role_ids?: string[]
+              _ttl?: unknown
+            }
+          | {
+              _access?: Json
+              _department_id?: string
+              _email: string
+              _full_name: string
+              _role_ids?: string[]
+            }
         Returns: {
           id: string
           token: string

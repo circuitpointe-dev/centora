@@ -11,7 +11,8 @@ export const UserInvitePreview: React.FC<{
   invite: AddUserPayload;
   onBack: () => void;
   onConfirm: () => void;
-}> = ({ invite, onBack, onConfirm }) => {
+  isLoading?: boolean;
+}> = ({ invite, onBack, onConfirm, isLoading = false }) => {
   const { data: departments = [] } = useDepartments();
   const { data: roles = [] } = useRoles();
   const { data: modules = [] } = useOrgModulesWithFeatures();
@@ -49,13 +50,19 @@ export const UserInvitePreview: React.FC<{
             {accessModules.map((moduleId) => {
               const module = modules.find(m => m.module === moduleId);
               const moduleName = module?.module_name || moduleId;
-              const features = Object.keys(invite.access[moduleId] || {}).filter(f => f !== '_module');
+              const moduleAccess = invite.access[moduleId];
+              const hasModuleAccess = moduleAccess?._module === true;
+              const features = Object.keys(moduleAccess || {}).filter(f => f !== '_module');
               
               return (
                 <div key={moduleId} className="border rounded-lg p-3 bg-gray-50">
-                  <div className="font-medium text-sm text-gray-900 mb-2">{moduleName}</div>
-                  {features.length === 0 ? (
-                    <p className="text-xs text-gray-500">No features selected</p>
+                  <div className="font-medium text-sm text-gray-900 mb-2">
+                    {moduleName} {hasModuleAccess ? "✓" : "✗"}
+                  </div>
+                  {!hasModuleAccess ? (
+                    <p className="text-xs text-red-500">Module access disabled</p>
+                  ) : features.length === 0 ? (
+                    <p className="text-xs text-gray-500">Module enabled, no specific features configured</p>
                   ) : (
                     <ul className="space-y-1">
                       {features.map((featureId) => {
@@ -87,9 +94,15 @@ export const UserInvitePreview: React.FC<{
       </div>
 
       <div className="flex justify-end gap-3 border-t pt-4">
-        <Button variant="outline" onClick={onBack}>Back</Button>
-        <Button className="bg-violet-600 text-white hover:bg-violet-700" onClick={onConfirm}>
-          Confirm & Send Invite
+        <Button variant="outline" onClick={onBack} disabled={isLoading}>
+          Back
+        </Button>
+        <Button 
+          className="bg-violet-600 text-white hover:bg-violet-700" 
+          onClick={onConfirm}
+          disabled={isLoading}
+        >
+          {isLoading ? "Creating Account..." : "Create User Account"}
         </Button>
       </div>
     </div>

@@ -10,6 +10,15 @@ interface CreateInvitationParams {
   access?: any;
 }
 
+interface CreateUserImmediatelyParams {
+  org_id: string;
+  email: string;
+  full_name: string;
+  department_id?: string;
+  role_ids?: string[];
+  access?: any;
+}
+
 export const useCreateInvitation = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -72,6 +81,51 @@ export const useAcceptInvitation = () => {
     onError: (error) => {
       toast({
         title: 'Error accepting invitation',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+};
+
+export const useCreateUserImmediately = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ org_id, email, full_name, department_id, role_ids = [], access }: CreateUserImmediatelyParams) => {
+      const { data, error } = await supabase.functions.invoke('create-user-immediately', {
+        body: {
+          org_id,
+          email,
+          full_name,
+          department_id: department_id || null,
+          role_ids,
+          access: access || {},
+        },
+      });
+      
+      if (error) {
+        throw new Error(`Failed to create user: ${error.message}`);
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users'] });
+      toast({
+        title: 'User created successfully',
+        description: 'The user account has been created and is ready to use with default password "P@$$w0rd".',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error creating user',
         description: error.message,
         variant: 'destructive',
       });

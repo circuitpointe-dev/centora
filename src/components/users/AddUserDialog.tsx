@@ -14,21 +14,52 @@ import {
   type AddUserPayload
 } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
-import { useCreateInvitation } from "@/hooks/useInvitations";
+import { useCreateUserImmediately } from "@/hooks/useInvitations";
+import { supabase } from "@/integrations/supabase/client";
 
 export const AddUserDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [pendingInvite, setPendingInvite] = useState<AddUserPayload | null>(null);
+  const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
   const { toast } = useToast();
-  const createInvitation = useCreateInvitation();
+  const createUserImmediately = useCreateUserImmediately();
+
+  // Get current org ID when dialog opens
+  React.useEffect(() => {
+    if (open && !currentOrgId) {
+      const fetchOrgId = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('org_id')
+            .eq('id', user.id)
+            .single();
+          
+          if (profile?.org_id) {
+            setCurrentOrgId(profile.org_id);
+          }
+        }
+      };
+      fetchOrgId();
+    }
+  }, [open, currentOrgId]);
 
   const handleSubmit = (payload: AddUserPayload) => setPendingInvite(payload);
 
   const handleConfirm = async () => {
-    if (!pendingInvite) return;
+    if (!pendingInvite || !currentOrgId) {
+      toast({
+        title: 'Error',
+        description: 'Unable to determine organization context',
+        variant: 'destructive',
+      });
+      return;
+    }
     
     try {
-      await createInvitation.mutateAsync({
+      await createUserImmediately.mutateAsync({
+        org_id: currentOrgId,
         email: pendingInvite.email,
         full_name: pendingInvite.fullName,
         department_id: pendingInvite.department || undefined,
@@ -40,7 +71,7 @@ export const AddUserDialog: React.FC = () => {
       setOpen(false);
     } catch (error) {
       // Error is handled by the hook
-      console.error('Failed to send invitation:', error);
+      console.error('Failed to create user:', error);
     }
   };
 
@@ -56,7 +87,7 @@ export const AddUserDialog: React.FC = () => {
       <SideDialogContent className="w-full sm:w-[720px]">
         <SideDialogHeader>
           <SideDialogTitle>
-            {pendingInvite ? "Review & Confirm Invite" : "Add New User"}
+            {pendingInvite ? "Review & Create User Account" : "Add New User"}
           </SideDialogTitle>
         </SideDialogHeader>
 
@@ -67,6 +98,7 @@ export const AddUserDialog: React.FC = () => {
             invite={pendingInvite}
             onBack={() => setPendingInvite(null)}
             onConfirm={handleConfirm}
+            isLoading={createUserImmediately.isPending}
           />
         )}
       </SideDialogContent>
