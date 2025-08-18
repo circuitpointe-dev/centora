@@ -431,6 +431,33 @@ export type Database = {
         }
         Relationships: []
       }
+      features: {
+        Row: {
+          created_at: string | null
+          feature_key: string
+          feature_name: string
+          id: string
+          module: string
+          permissions: string[]
+        }
+        Insert: {
+          created_at?: string | null
+          feature_key: string
+          feature_name: string
+          id?: string
+          module: string
+          permissions?: string[]
+        }
+        Update: {
+          created_at?: string | null
+          feature_key?: string
+          feature_name?: string
+          id?: string
+          module?: string
+          permissions?: string[]
+        }
+        Relationships: []
+      }
       focus_areas: {
         Row: {
           amount: number
