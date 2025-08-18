@@ -88,7 +88,7 @@ export const UserInvitePreview: React.FC<{
 
       <div className="flex justify-end gap-3 border-t pt-4">
         <Button variant="outline" onClick={onBack}>Back</Button>
-        <Button className="bg-violet-600 text-white" onClick={onConfirm}>
+        <Button className="bg-violet-600 text-white hover:bg-violet-700" onClick={onConfirm}>
           Confirm & Send Invite
         </Button>
       </div>
