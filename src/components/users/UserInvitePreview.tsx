@@ -94,17 +94,15 @@ export const UserInvitePreview: React.FC<{
       </div>
 
       <div className="flex justify-end gap-3 border-t pt-4">
-        <Button variant="outline" type="button" onClick={onBack} disabled={isLoading}>
+        <Button variant="outline" onClick={onBack} disabled={isLoading}>
           Back
         </Button>
         <Button 
-          variant="default"
-          type="button"
+          className="bg-violet-600 text-white hover:bg-violet-700" 
           onClick={onConfirm}
           disabled={isLoading}
-          aria-label={isLoading ? "Creating Account" : "Confirm and Create"}
         >
-          {isLoading ? "Creating Account..." : "Confirm & Create"}
+          {isLoading ? "Creating Account..." : "Create User Account"}
         </Button>
       </div>
     </div>
