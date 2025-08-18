@@ -27,19 +27,13 @@ Deno.serve(async (req) => {
       throw new Error('Service role key not configured');
     }
 
-    // Create admin client with service role key
+    // Create admin client with service role key and forward caller auth for RPC
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      serviceRoleKey
-    );
-
-    // Create regular client for RPC calls
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      serviceRoleKey,
       {
         global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
+          headers: { Authorization: req.headers.get('Authorization') ?? '' },
         },
       }
     );
@@ -64,7 +58,7 @@ Deno.serve(async (req) => {
     console.log('Auth user created:', authUser.user.id);
 
     // Step 2: Create invitation record
-    const { data: invitation, error: inviteError } = await supabase.rpc('create_user_invitation', {
+    const { data: invitation, error: inviteError } = await supabaseAdmin.rpc('create_user_invitation', {
       _org_id: org_id,
       _email: email,
       _full_name: full_name,
@@ -84,7 +78,7 @@ Deno.serve(async (req) => {
     console.log('Invitation created:', invitation);
 
     // Step 3: Accept the invitation immediately with the new user's ID
-    const { data: acceptResult, error: acceptError } = await supabase.rpc('accept_invitation', {
+    const { data: acceptResult, error: acceptError } = await supabaseAdmin.rpc('accept_invitation', {
       _token: invitation.token,
       _user_id: authUser.user.id,
     });
