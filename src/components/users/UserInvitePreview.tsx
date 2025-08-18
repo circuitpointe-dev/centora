@@ -6,6 +6,8 @@ import { AddUserPayload } from "./AddUserForm";
 import { useDepartments } from "@/hooks/useDepartments";
 import { useRoles } from "@/hooks/useRoles";
 import { useOrgModulesWithFeatures } from "@/hooks/useOrgModulesWithFeatures";
+import { moduleConfigs } from "@/config/moduleConfigs";
+import { getFeatureName } from "@/utils/nameUtils";
 
 export const UserInvitePreview: React.FC<{
   invite: AddUserPayload;
@@ -48,8 +50,8 @@ export const UserInvitePreview: React.FC<{
         ) : (
           <div className="space-y-3">
             {accessModules.map((moduleId) => {
-              const module = modules.find(m => m.module === moduleId);
-              const moduleName = module?.module_name || moduleId;
+              const moduleConfig = moduleConfigs[moduleId];
+              const moduleName = moduleConfig?.name || moduleId;
               const moduleAccess = invite.access[moduleId];
               const hasModuleAccess = moduleAccess?._module === true;
               const features = Object.keys(moduleAccess || {}).filter(f => f !== '_module');
@@ -66,8 +68,7 @@ export const UserInvitePreview: React.FC<{
                   ) : (
                     <ul className="space-y-1">
                       {features.map((featureId) => {
-                        const feature = module?.features.find(f => f.id === featureId);
-                        const featureName = feature?.name || featureId;
+                        const featureName = getFeatureName(featureId);
                          const permissions = invite.access[moduleId][featureId];
                          
                          if (featureId === '_module') return null; // Skip module toggle

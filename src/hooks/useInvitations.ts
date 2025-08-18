@@ -94,7 +94,16 @@ export const useCreateUserImmediately = () => {
 
   return useMutation({
     mutationFn: async ({ org_id, email, full_name, department_id, role_ids = [], access }: CreateUserImmediatelyParams) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('You must be signed in to create users.');
+      }
+
       const { data, error } = await supabase.functions.invoke('create-user-immediately', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: {
           org_id,
           email,
