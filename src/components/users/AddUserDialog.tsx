@@ -14,7 +14,7 @@ import {
   type AddUserPayload
 } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
-import { useCreateUserImmediately } from "@/hooks/useInvitations";
+import { useCreateAndActivateUser } from "@/hooks/useCreateAndActivateUser";
 import { supabase } from "@/integrations/supabase/client";
 
 export const AddUserDialog: React.FC = () => {
@@ -22,7 +22,7 @@ export const AddUserDialog: React.FC = () => {
   const [pendingInvite, setPendingInvite] = useState<AddUserPayload | null>(null);
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
   const { toast } = useToast();
-  const createUserImmediately = useCreateUserImmediately();
+  const createUser = useCreateAndActivateUser();
 
   // Get current org ID when dialog opens
   React.useEffect(() => {
@@ -58,13 +58,14 @@ export const AddUserDialog: React.FC = () => {
     }
     
     try {
-      await createUserImmediately.mutateAsync({
+      await createUser.mutateAsync({
         org_id: currentOrgId,
         email: pendingInvite.email,
-        full_name: pendingInvite.fullName,
-        department_id: pendingInvite.department || undefined,
-        role_ids: pendingInvite.roles || [],
-        access: pendingInvite.access,
+        fullName: pendingInvite.fullName,
+        department: pendingInvite.department || undefined,
+        roles: pendingInvite.roles || [],
+        access: pendingInvite.access || {},
+        message: pendingInvite.message || undefined,
       });
       
       setPendingInvite(null);
@@ -98,7 +99,7 @@ export const AddUserDialog: React.FC = () => {
             invite={pendingInvite}
             onBack={() => setPendingInvite(null)}
             onConfirm={handleConfirm}
-            isLoading={createUserImmediately.isPending}
+            isLoading={createUser.isPending}
           />
         )}
       </SideDialogContent>

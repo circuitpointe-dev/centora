@@ -54,8 +54,8 @@ export const AccessSection: React.FC<AccessSectionProps> = ({ value, onChange })
 
         if (m.module === "grants" && orgType) {
           // If you prefer to show only org-specific feature set, uncomment one of the following:
-          // if (orgType === 'NGO' && config.ngoFeatures?.length) featureDefs = config.ngoFeatures;
-          // if (orgType === 'Donor' && config.donorFeatures?.length) featureDefs = config.donorFeatures;
+          if (orgType === 'NGO' && config.ngoFeatures?.length) featureDefs = config.ngoFeatures;
+          if (orgType === 'Donor' && config.donorFeatures?.length) featureDefs = config.donorFeatures;
           // For now we keep the general `features` so Admin can grant across the full surface.
         }
 
