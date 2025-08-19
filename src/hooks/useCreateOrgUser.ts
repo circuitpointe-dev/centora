@@ -26,27 +26,20 @@ export function useCreateOrgUser() {
 
       console.log('Creating user with payload:', input);
 
-      // Call the Edge Function
-      const response = await fetch(
-        `https://kspzfifdwfpirgqstzhz.supabase.co/functions/v1/admin-create-org-user`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(input),
+      // Call the Edge Function using Supabase client
+      const { data, error: functionError } = await supabase.functions.invoke('admin-create-org-user', {
+        body: input,
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
         }
-      );
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+      if (functionError) {
+        throw new Error(functionError.message || 'Failed to call function');
       }
 
-      const result = await response.json();
-      console.log('User creation result:', result);
-      return result;
+      console.log('User creation result:', data);
+      return data;
     },
 
     onSuccess: async (data) => {
