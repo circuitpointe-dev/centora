@@ -15,7 +15,7 @@ import { AddUserForm, type AddUserPayload } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
 import { useCreateOrgUser } from "@/hooks/useCreateOrgUser";
 import { supabase } from "@/integrations/supabase/client";
-import { typedSupabase } from "@/lib/superbase-client";
+import { typedSupabase } from "@/lib/supabase-client";
 
 export const AddUserDialog: React.FC = () => {
   const [open, setOpen] = useState(false);

@@ -1,6 +1,6 @@
 // src/hooks/useCreateOrgUser.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { typedSupabase } from "@/lib/superbase-client";
+import { typedSupabase } from "@/lib/supabase-client";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 
