@@ -14,7 +14,7 @@ import {
   type AddUserPayload
 } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
-import { useCreateAndActivateUser } from "@/hooks/useCreateAndActivateUser";
+import { useCreateOrgUser } from "@/hooks/useCreateOrgUser";
 import { supabase } from "@/integrations/supabase/client";
 
 export const AddUserDialog: React.FC = () => {
@@ -22,7 +22,7 @@ export const AddUserDialog: React.FC = () => {
   const [pendingInvite, setPendingInvite] = useState<AddUserPayload | null>(null);
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
   const { toast } = useToast();
-  const createUser = useCreateAndActivateUser();
+  const createUser = useCreateOrgUser();
 
   // Get current org ID when dialog opens
   React.useEffect(() => {
@@ -61,11 +61,10 @@ export const AddUserDialog: React.FC = () => {
       await createUser.mutateAsync({
         org_id: currentOrgId,
         email: pendingInvite.email,
-        fullName: pendingInvite.fullName,
-        department: pendingInvite.department || undefined,
-        roles: pendingInvite.roles || [],
-        access: pendingInvite.access || {},
-        message: pendingInvite.message || undefined,
+        full_name: pendingInvite.fullName,
+        department_id: pendingInvite.department || null,
+        role_ids: pendingInvite.roles || [],
+        access_json: pendingInvite.access || {},
       });
       
       setPendingInvite(null);

@@ -3,5 +3,5 @@ project_id = "kspzfifdwfpirgqstzhz"
 [functions.register-tenant]
 verify_jwt = false
 
-[functions.create-user-immediately]
+[functions.admin-create-org-user]
 verify_jwt = true

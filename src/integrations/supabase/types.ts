@@ -785,6 +785,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          access_json: Json
           created_at: string
           department_id: string | null
           email: string
@@ -797,6 +798,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          access_json?: Json
           created_at?: string
           department_id?: string | null
           email: string
@@ -809,6 +811,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          access_json?: Json
           created_at?: string
           department_id?: string | null
           email?: string
@@ -1102,10 +1105,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      accept_invitation: {
-        Args: { _token: string } | { _token: string; _user_id?: string }
-        Returns: string
-      }
       admin_update_member_role: {
         Args: {
           _member_id: string
@@ -1172,33 +1171,13 @@ export type Database = {
         Returns: string
       }
       create_user_invitation: {
-        Args:
-          | {
-              _access: Json
-              _department_id: string
-              _email: string
-              _full_name: string
-              _invited_by: string
-              _org_id: string
-              _role_ids: string[]
-            }
-          | {
-              _access?: Json
-              _department_id?: string
-              _email: string
-              _full_name: string
-              _invited_by?: string
-              _org_id: string
-              _role_ids?: string[]
-              _ttl?: unknown
-            }
-          | {
-              _access?: Json
-              _department_id?: string
-              _email: string
-              _full_name: string
-              _role_ids?: string[]
-            }
+        Args: {
+          _access?: Json
+          _department_id?: string
+          _email: string
+          _full_name: string
+          _role_ids?: string[]
+        }
         Returns: {
           id: string
           token: string
