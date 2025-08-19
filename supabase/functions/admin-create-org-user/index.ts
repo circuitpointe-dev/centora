@@ -79,13 +79,14 @@ serve(async (req) => {
 
     console.log('Creating user for org:', org_id, 'email:', email)
 
-    // 1. Create auth user with a temporary password
+    // 1. Create auth user with the standard password
     const { data: authUser, error: createUserError } = await supabase.auth.admin.createUser({
       email,
-      password: 'TempPassword123!', // User should reset this on first login
+      password: 'P@$$w0rd', // Standard password for new users
       email_confirm: true,
       user_metadata: {
-        full_name
+        full_name,
+        org_id
       }
     })
 
@@ -142,6 +143,32 @@ serve(async (req) => {
         // Continue anyway, roles can be assigned later
       } else {
         console.log('Roles assigned successfully:', role_ids)
+      }
+    }
+
+    // 4. Create user module access records based on access_json
+    if (access_json && typeof access_json === 'object' && Object.keys(access_json).length > 0) {
+      const moduleAccessRecords = Object.entries(access_json as Record<string, any>)
+        .filter(([_, moduleData]) => moduleData && typeof moduleData === 'object' && '_module' in moduleData)
+        .map(([moduleKey, moduleData]) => ({
+          profile_id: authUser.user.id,
+          org_id,
+          module_key: moduleKey,
+          has_access: Boolean(moduleData._module),
+          created_by: user.id
+        }))
+
+      if (moduleAccessRecords.length > 0) {
+        const { error: moduleAccessError } = await supabase
+          .from('user_module_access')
+          .insert(moduleAccessRecords)
+
+        if (moduleAccessError) {
+          console.error('Failed to create module access records:', moduleAccessError)
+          // Continue anyway, module access can be set later
+        } else {
+          console.log('Module access records created successfully:', moduleAccessRecords.length)
+        }
       }
     }
 
