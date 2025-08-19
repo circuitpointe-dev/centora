@@ -1,3 +1,5 @@
+// src/components/users/AdminUsersPage.tsx
+
 import React from 'react';
 import { UserStatsCards } from './UserStatsCards';
 import { UserDirectoryTable } from './UserDirectoryTable';

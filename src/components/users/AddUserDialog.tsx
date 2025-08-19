@@ -1,3 +1,5 @@
+// src/components/users/AddUserDialog.tsx
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -9,33 +11,35 @@ import {
   SideDialogTrigger,
 } from "@/components/ui/side-dialog";
 import { useToast } from "@/hooks/use-toast";
-import {
-  AddUserForm,
-  type AddUserPayload
-} from "./AddUserForm";
+import { AddUserForm, type AddUserPayload } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
 import { useCreateOrgUser } from "@/hooks/useCreateOrgUser";
 import { supabase } from "@/integrations/supabase/client";
+import { typedSupabase } from "@/lib/supabase-client";
 
 export const AddUserDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const [pendingInvite, setPendingInvite] = useState<AddUserPayload | null>(null);
+  const [pendingInvite, setPendingInvite] = useState<AddUserPayload | null>(
+    null
+  );
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
   const { toast } = useToast();
   const createUser = useCreateOrgUser();
 
   // Get current org ID when dialog opens
   React.useEffect(() => {
-    if (open && !currentOrgId) {
+    if (open) {
       const fetchOrgId = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await typedSupabase.auth.getUser();
         if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('org_id')
-            .eq('id', user.id)
+          const { data: profile } = await typedSupabase
+            .from("profiles")
+            .select("org_id")
+            .eq("id", user.id)
             .single();
-          
+
           if (profile?.org_id) {
             setCurrentOrgId(profile.org_id);
           }
@@ -43,20 +47,19 @@ export const AddUserDialog: React.FC = () => {
       };
       fetchOrgId();
     }
-  }, [open, currentOrgId]);
-
+  }, [open]);
   const handleSubmit = (payload: AddUserPayload) => setPendingInvite(payload);
 
   const handleConfirm = async () => {
     if (!pendingInvite || !currentOrgId) {
       toast({
-        title: 'Error',
-        description: 'Unable to determine organization context',
-        variant: 'destructive',
+        title: "Error",
+        description: "Unable to determine organization context",
+        variant: "destructive",
       });
       return;
     }
-    
+
     try {
       await createUser.mutateAsync({
         org_id: currentOrgId,
@@ -66,12 +69,12 @@ export const AddUserDialog: React.FC = () => {
         role_ids: pendingInvite.roles || [],
         access_json: pendingInvite.access || {},
       });
-      
+
       setPendingInvite(null);
       setOpen(false);
     } catch (error) {
       // Error is handled by the hook
-      console.error('Failed to create user:', error);
+      console.error("Failed to create user:", error);
     }
   };
 
@@ -92,7 +95,10 @@ export const AddUserDialog: React.FC = () => {
         </SideDialogHeader>
 
         {!pendingInvite ? (
-          <AddUserForm onSubmit={handleSubmit} onCancel={() => setOpen(false)} />
+          <AddUserForm
+            onSubmit={handleSubmit}
+            onCancel={() => setOpen(false)}
+          />
         ) : (
           <UserInvitePreview
             invite={pendingInvite}
@@ -104,4 +110,4 @@ export const AddUserDialog: React.FC = () => {
       </SideDialogContent>
     </SideDialog>
   );
-}
+};

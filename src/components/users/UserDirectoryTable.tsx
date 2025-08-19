@@ -1,3 +1,5 @@
+// src/components/users/UserDirectoryTable.tsx
+
 import React, { useState } from 'react';
 import { UserTableToolbar } from './UserTableToolbar';
 import { UserTablePagination } from './UserTablePagination';
