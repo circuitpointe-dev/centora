@@ -84,6 +84,7 @@ export const RoleMembersTable: React.FC<RoleMembersTableProps> = ({ users }) => 
         <Button
           variant="outline"
           size="sm"
+          className="hover:bg-brand-purple hover:text-brand-purple-foreground hover:border-brand-purple"
           onClick={() => console.log('filter-users')}
         >
           <Filter className="h-4 w-4 mr-2" />

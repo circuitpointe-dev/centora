@@ -54,8 +54,8 @@ export const RoleCardsRow: React.FC<RoleCardsRowProps> = ({
             key={role.id}
             className={`cursor-pointer transition-all hover:shadow-md ${
               isSelected 
-                ? 'ring-2 ring-primary border-primary bg-primary/5' 
-                : 'border hover:bg-gray-50'
+                ? 'ring-2 ring-brand-purple border-brand-purple bg-brand-purple/5' 
+                : 'border hover:bg-brand-purple/5'
             }`}
             onClick={() => onSelect(role.id)}
           >
@@ -88,7 +88,7 @@ export const RoleCardsRow: React.FC<RoleCardsRowProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 text-xs"
+                    className="flex-1 text-xs hover:bg-brand-purple hover:text-brand-purple-foreground hover:border-brand-purple"
                     onClick={(e) => {
                       e.stopPropagation();
                       console.log('edit-role', role.id);
@@ -100,7 +100,7 @@ export const RoleCardsRow: React.FC<RoleCardsRowProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 text-xs"
+                    className="flex-1 text-xs hover:bg-brand-purple hover:text-brand-purple-foreground hover:border-brand-purple"
                     onClick={(e) => {
                       e.stopPropagation();
                       console.log('view-permission', role.id);

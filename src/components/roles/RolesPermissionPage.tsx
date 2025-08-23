@@ -24,7 +24,7 @@ export const RolesPermissionPage: React.FC = () => {
             Manage user roles and permissions across your organization's modules and features.
           </p>
         </div>
-        <Button onClick={handleCreateNewRole}>
+        <Button variant="brand-purple" onClick={handleCreateNewRole}>
           <Plus className="h-4 w-4 mr-2" />
           Create New Role
         </Button>

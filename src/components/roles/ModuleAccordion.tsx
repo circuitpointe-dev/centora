@@ -70,7 +70,7 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
                 return (
                   <div key={feature.id} className="border rounded-lg">
                     <div
-                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-brand-purple/5 transition-colors"
                       onClick={() => toggleFeature(feature.id)}
                     >
                       <div className="flex items-center gap-3">
