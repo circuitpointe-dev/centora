@@ -23,6 +23,7 @@ import CompliancePage from '@/components/documents/compliance/CompliancePage';
 import TemplatesPage from '@/components/documents/templates/TemplatesPage';
 import ReportSubmissionsPage from './ReportSubmissionsPage';
 import { AdminUsersPage } from '@/components/users/users/AdminUsersPage';
+import { RolesPermissionPage } from '@/components/roles/RolesPermissionPage';
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
@@ -150,7 +151,7 @@ const GenericFeaturePage = () => {
 
 
   if (module === 'users' && feature === 'roles-permissions') {
-    return <GenericFeatureUI moduleName="User Management" featureName="Roles & Permissions" />;
+    return <RolesPermissionPage />;
   }
 
   return (
