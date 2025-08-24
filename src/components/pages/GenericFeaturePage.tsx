@@ -29,6 +29,7 @@ import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
+import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -120,7 +121,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'users' && feature === 'super-admin-users') {
-    return <GenericFeatureUI moduleName="User Management" featureName="Super Admin Users" />;
+    return <SuperAdminUserPage />;
   }
 
   if (module === 'users' && feature === 'announcements') {
