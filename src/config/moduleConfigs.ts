@@ -191,6 +191,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'user-accounts', name: 'Users', icon: Users },
       { id: 'roles-permissions', name: 'Roles & Permissions', icon: Shield },
       { id: 'subscription-billing', name: 'Subscription & Billing', icon: CreditCard },
+      { id: 'role-requests', name: 'Role Requests', icon: UserCheck },
     ],
     superAdminFeatures: [
       { id: 'super-admin-users', name: 'Super Admin Users', icon: UserCheck },

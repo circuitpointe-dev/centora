@@ -23,10 +23,12 @@ import CompliancePage from '@/components/documents/compliance/CompliancePage';
 import TemplatesPage from '@/components/documents/templates/TemplatesPage';
 import ReportSubmissionsPage from './ReportSubmissionsPage';
 import { AdminUsersPage } from '@/components/users/users/AdminUsersPage';
-import { RolesPermissionPage } from '@/components/roles/RolesPermissionPage';
+import { RolesPermissionPage } from '@/components/users/roles/RolesPermissionPage';
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
+import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
+import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -141,8 +143,8 @@ const GenericFeaturePage = () => {
     return <GenericFeatureUI moduleName="User Management" featureName="Integrations" />;
   }
 
-  if (module === 'users' && feature === 'subscription-billing' || module === 'users' && feature === 'subscriptions-billing') {
-    return <GenericFeatureUI moduleName="User Management" featureName="Subscriptions & Billing" />;
+  if (module === 'users' && feature === 'subscription-billing') {
+    return <SubscriptionAndBillingsPage />;
   }
 
   if (module === 'users' && feature === 'support-tickets') {
@@ -152,6 +154,10 @@ const GenericFeaturePage = () => {
 
   if (module === 'users' && feature === 'roles-permissions') {
     return <RolesPermissionPage />;
+  }
+
+  if (module === 'users' && feature === 'role-requests') {
+    return <RoleRequestPage />;
   }
 
   return (

@@ -92,6 +92,8 @@ const FeatureList = ({
         "Define and assign user roles with specific permissions and access levels",
       "subscription-billing":
         "View and manage your organization's subscription plans and billing information",
+      "role-requests":
+        "Status of your requests for new roles or permission changes",
 
       // Super Admin
       "super-admin-users":
