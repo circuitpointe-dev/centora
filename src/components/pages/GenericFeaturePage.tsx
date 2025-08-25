@@ -31,6 +31,7 @@ import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
 import SuperAdminAnnouncementPage from "../users/announcements/SuperAdminAnnouncementPage";
+import ClientDirectoryPage from "../users/clients/ClientDirectoryPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -130,7 +131,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'users' && feature === 'client-directory') {
-    return <GenericFeatureUI moduleName="User Management" featureName="Client Directory" />;
+    return <ClientDirectoryPage />;
   }
 
   if (module === 'users' && feature === 'module-settings') {
