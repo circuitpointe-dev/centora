@@ -23,6 +23,9 @@ export interface Client {
   usage: {
     storageGB: number;
     users: number;
+    emailAccounts?: number;
+    projects?: number;
+    apiCallsThisMonth?: number;
   };
   customSettings?: {
     domain?: string;
@@ -41,14 +44,14 @@ export interface ClientActivity {
 }
 
 export const ALL_MODULES: string[] = [
-  'User Management',
-  'Finance & Control',
-  'Grant Management',
+  'Fundraising',
+  'Grants Management',
+  'Documents Manager',
   'Program Management',
+  'Procurement',
   'Inventory Management',
+  'Finance & Control',
+  'Learning Management',
   'HR Management',
-  'Document Management',
-  'Budget Planning',
-  'Monitoring & Evaluation',
-  'Donor Relations',
+  'User Management', 
 ];
