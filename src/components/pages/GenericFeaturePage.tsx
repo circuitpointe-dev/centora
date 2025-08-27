@@ -34,6 +34,7 @@ import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
 import SuperAdminAnnouncementPage from "../users/announcements/SuperAdminAnnouncementPage";
 import ClientDirectoryPage from "../users/clients/ClientDirectoryPage";
 import ModuleSettingsPage from "../users/modules/ModuleSettingsPage";
+import SuperAdminAuditLogsPage from "../users/modules/audit/SuperAdminAuditLogsPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -141,7 +142,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'users' && feature === 'audit-logs') {
-    return <GenericFeatureUI moduleName="User Management" featureName="Audit Logs" />;
+    return <SuperAdminAuditLogsPage />;
   }
 
   if (module === 'users' && feature === 'integrations') {
