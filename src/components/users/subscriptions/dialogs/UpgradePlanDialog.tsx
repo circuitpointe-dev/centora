@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Check } from "lucide-react";
-import type { Plan } from "./mock/subscriptions-data";
+import type { Plan } from "../mock/subscriptions-data";
 
 type Props = {
   plan: Plan;

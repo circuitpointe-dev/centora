@@ -2,13 +2,14 @@
 
 import React, { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Client } from './types';
+import { Client, ClientFilters } from './types';
 import { ClientStatusPill } from './ClientStatusPill';
 import { Eye } from 'lucide-react';
 
 interface Props {
   clients: Client[];
   search: string;
+  filters: ClientFilters;
   page: number;
   pageSize: number;
   onPageChange: (p: number) => void;
@@ -16,15 +17,32 @@ interface Props {
 }
 
 export const ClientTable: React.FC<Props> = ({
-  clients, search, page, pageSize, onPageChange, onView,
+  clients, search, filters, page, pageSize, onPageChange, onView,
 }) => {
   const filtered = useMemo(() => {
+    let result = clients;
+    
+    // Apply search filter
     const q = search.trim().toLowerCase();
-    if (!q) return clients;
-    return clients.filter((c) =>
-      [c.name, c.organizationType, c.contactName, c.contactEmail].some((f) => f?.toLowerCase().includes(q)),
-    );
-  }, [clients, search]);
+    if (q) {
+      result = result.filter((c) =>
+        [c.name, c.organizationType, c.contactName, c.contactEmail].some((f) => f?.toLowerCase().includes(q)),
+      );
+    }
+    
+    // Apply other filters
+    if (filters.status !== "all") {
+      result = result.filter((c) => c.status === filters.status);
+    }
+    if (filters.organizationType !== "all") {
+      result = result.filter((c) => c.organizationType === filters.organizationType);
+    }
+    if (filters.pricingTier !== "all") {
+      result = result.filter((c) => c.pricingTier === filters.pricingTier);
+    }
+    
+    return result;
+  }, [clients, search, filters]);
 
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));

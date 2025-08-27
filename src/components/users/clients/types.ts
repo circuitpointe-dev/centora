@@ -43,6 +43,12 @@ export interface ClientActivity {
   module: string;
 }
 
+export type ClientFilters = {
+  status: "all" | ClientStatus;
+  organizationType: "all" | OrganizationType;
+  pricingTier: "all" | PricingTier;
+};
+
 export const ALL_MODULES: string[] = [
   'Fundraising',
   'Grants Management',

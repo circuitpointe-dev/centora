@@ -7,11 +7,16 @@ import { AddClientDialog } from './AddClientDialog';
 import { ClientDetailsDialog } from './ClientDetailsDialog';
 import { ClientActivityLogDialog } from './ClientActivityLogDialog';
 import { MOCK_CLIENTS, MOCK_ACTIVITIES } from './mock/clients';
-import type { Client } from './types';
+import type { Client, ClientFilters } from './types';
 
 export default function ClientDirectoryPage() {
   const [clients, setClients] = React.useState<Client[]>(MOCK_CLIENTS);
   const [search, setSearch] = React.useState('');
+  const [filters, setFilters] = React.useState<ClientFilters>({
+    status: "all",
+    organizationType: "all", 
+    pricingTier: "all"
+  });
   const [page, setPage] = React.useState(1);
   const pageSize = 10;
 
@@ -33,18 +38,27 @@ export default function ClientDirectoryPage() {
       prev.map((x) => (x.id === id ? { ...x, status: x.status === 'active' ? 'suspended' : 'active' } : x)),
     );
 
+  const handleResetAll = () => {
+    setSearch('');
+    setFilters({ status: "all", organizationType: "all", pricingTier: "all" });
+    setPage(1);
+  };
+
   return (
     <div className="p-6 space-y-6">
       <ClientTableToolbar
         search={search}
         setSearch={setSearch}
         onOpenAdd={() => setAddOpen(true)}
-        onOpenFilter={() => alert('Filter drawer TBD')}
+        filters={filters}
+        onFiltersChange={setFilters}
+        onResetAll={handleResetAll}
       />
 
       <ClientTable
         clients={clients}
         search={search}
+        filters={filters}
         page={page}
         pageSize={pageSize}
         onPageChange={setPage}
