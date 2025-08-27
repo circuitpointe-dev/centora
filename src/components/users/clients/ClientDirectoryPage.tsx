@@ -63,6 +63,8 @@ export default function ClientDirectoryPage() {
         pageSize={pageSize}
         onPageChange={setPage}
         onView={openView}
+        onDelete={handleDelete}
+        onToggleStatus={handleToggleStatus}
       />
 
       {/* Add Dialog */}
@@ -74,8 +76,6 @@ export default function ClientDirectoryPage() {
         client={selected}
         onOpenChange={setDetailsOpen}
         onUpdate={handleUpdate}
-        onDelete={handleDelete}
-        onToggleStatus={handleToggleStatus}
         onOpenActivity={(c) => {
           setSelected(c);
           setActivityOpen(true);

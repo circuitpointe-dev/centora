@@ -46,8 +46,6 @@ interface Props {
   client: Client | null;
   onOpenChange: (v: boolean) => void;
   onUpdate: (c: Client) => void;
-  onDelete: (clientId: string) => void;
-  onToggleStatus: (clientId: string) => void; // suspend/activate/reactivate
   onOpenActivity: (client: Client) => void;
 }
 
@@ -56,13 +54,10 @@ export const ClientDetailsDialog: React.FC<Props> = ({
   client,
   onOpenChange,
   onUpdate,
-  onDelete,
-  onToggleStatus,
   onOpenActivity,
 }) => {
   const [edit, setEdit] = useState(false);
   const [local, setLocal] = useState<LocalClient | null>((client as LocalClient) || null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
 
   React.useEffect(() => {
     setLocal((client as LocalClient) || null);
@@ -71,7 +66,6 @@ export const ClientDetailsDialog: React.FC<Props> = ({
 
   if (!local) return null;
 
-  const statusActionLabel = local.status === 'active' ? 'Suspend' : 'Activate';
   const handleSave = () => { onUpdate(local); setEdit(false); };
 
   return (
@@ -115,22 +109,6 @@ export const ClientDetailsDialog: React.FC<Props> = ({
                       </Button>
                     </>
                   )}
-                  <Button
-                    variant="outline"
-                    onClick={() => onToggleStatus(local.id)}
-                    className={local.status === 'active'
-                      ? 'border-rose-600 text-rose-600 hover:bg-rose-50'
-                      : 'border-green-600 text-green-600 hover:bg-green-50'}
-                  >
-                    {statusActionLabel}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-rose-600 text-rose-600 hover:bg-rose-50"
-                    onClick={() => setConfirmDelete(true)}
-                  >
-                    Delete
-                  </Button>
                 </div>
               </div>
             </div>
@@ -373,27 +351,6 @@ export const ClientDetailsDialog: React.FC<Props> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Strict Delete Warning */}
-      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Client</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action is irreversible. It will permanently remove <strong>{local.name}</strong> and all associated records.
-              Please confirm you understand the consequences.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-rose-600 hover:bg-rose-700"
-              onClick={() => { onDelete(local.id); setConfirmDelete(false); onOpenChange(false); }}
-            >
-              Yes, Delete Permanently
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
