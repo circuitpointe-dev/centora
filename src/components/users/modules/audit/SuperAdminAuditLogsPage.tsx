@@ -61,40 +61,47 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
           <h2 className="text-sm font-medium text-zinc-700">
             Current Alert Rules
           </h2>
-          <Button
-            variant="outline"
-            disabled={!selectedCount}
-            onClick={() => setDeleteOpen(true)}
-            className={
-              !selectedCount
-                ? ""
-                : "border-red-600 text-red-600 hover:bg-red-50"
-            }
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="brand-purple"
+              className="bg-brand-purple text-brand-purple-foreground hover:bg-brand-purple/90"
+            >
+              Export Report
+            </Button>
+            <Button
+              variant="outline"
+              disabled={!selectedCount}
+              onClick={() => setDeleteOpen(true)}
+              className={
+                !selectedCount
+                  ? ""
+                  : "border-red-600 text-red-600 hover:bg-red-50"
+              }
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </Button>
+          </div>
         </div>
 
-        {/* Mobile: horizontal scroll with visible scrollbar, showing ALL rules */}
-        {/* Mobile: horizontal scroll with slim, rounded scrollbar */}
-<div className="block md:hidden overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded">
-  <div className="flex gap-3 pr-2">
-    {rules.map((r) => (
-      <AuditRuleCard
-        key={r.id}
-        rule={r}
-        onToggleActive={onToggleActive}
-        onSelect={onSelect}
-        className="min-w-[280px]"
-      />
-    ))}
-  </div>
-</div>
+        {/* Mobile: horizontal scroll with auto-scroll behavior */}
+        <div className="block md:hidden overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded max-h-screen">
+          <div className="flex gap-3 pr-2">
+            {rules.map((r) => (
+              <AuditRuleCard
+                key={r.id}
+                rule={r}
+                onToggleActive={onToggleActive}
+                onSelect={onSelect}
+                className="min-w-[280px]"
+              />
+            ))}
+          </div>
+        </div>
 
 
-        {/* md+: tidy grid, capped at 3 columns */}
-        <div className="hidden md:grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {/* md+: tidy grid with auto-scroll, capped at 3 columns */}
+        <div className="hidden md:grid gap-3 md:grid-cols-2 xl:grid-cols-3 max-h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded">
           {rules.map((r) => (
             <AuditRuleCard
               key={r.id}
@@ -107,12 +114,12 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
       </section>
 
       <Tabs defaultValue="Activity" className="space-y-3">
-        <TabsList className="w-full justify-start overflow-x-auto">
-          <TabsTrigger value="Activity">Activity Logs</TabsTrigger>
-          <TabsTrigger value="Login">Login</TabsTrigger>
-          <TabsTrigger value="CRUD">CRUD Events</TabsTrigger>
-          <TabsTrigger value="Roles">Role &amp; Access Changes</TabsTrigger>
-          <TabsTrigger value="Export">Data Export</TabsTrigger>
+        <TabsList className="w-full justify-start overflow-x-auto gap-2">
+          <TabsTrigger value="Activity" className="px-6">Activity Logs</TabsTrigger>
+          <TabsTrigger value="Login" className="px-6">Login</TabsTrigger>
+          <TabsTrigger value="CRUD" className="px-6">CRUD Events</TabsTrigger>
+          <TabsTrigger value="Roles" className="px-6">Role &amp; Access Changes</TabsTrigger>
+          <TabsTrigger value="Export" className="px-6">Data Export</TabsTrigger>
         </TabsList>
 
         <TabsContent value="Activity">
