@@ -33,7 +33,7 @@ import { SubscriptionAndBillingsPage } from "../users/subscriptions/Subscription
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
 import SuperAdminAnnouncementPage from "../users/announcements/SuperAdminAnnouncementPage";
 import ClientDirectoryPage from "../users/clients/ClientDirectoryPage";
-import { ModuleSettingsPage } from "../users/modules/ModuleSettingsPage";
+import ModuleSettingsPage from "../users/modules/ModuleSettingsPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
