@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ROLE_MEMBERS, Member } from './mock/members';
 import { toast } from 'sonner';
+import { ChevronDown } from 'lucide-react';
 
 interface RoleMembersDialogProps {
   open: boolean;
@@ -51,12 +53,27 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({ open, onOp
     setSelected(prev => ({ ...prev, [id]: checked }));
   };
 
-  const handleRemove = () => {
+  const handleRemoveSelected = () => {
     const ids = Object.keys(selected).filter(k => selected[k]);
     if (!ids.length) return;
     setRows(prev => prev.filter(r => !ids.includes(r.id)));
     setSelected({});
     toast.success(`Removed ${ids.length} member(s) from ${roleName}.`);
+  };
+
+  const handleRemoveSingle = (id: string) => {
+    setRows(prev => prev.filter(r => r.id !== id));
+    setSelected(prev => {
+      const copy = { ...prev };
+      delete copy[id];
+      return copy;
+    });
+    toast.success(`Removed member from ${roleName}.`);
+  };
+
+  const updateStatus = (id: string, status: Member['status']) => {
+    setRows(prev => prev.map(r => (r.id === id ? { ...r, status } : r)));
+    toast.message(`Status set to ${status}.`);
   };
 
   const handleAdd = () => {
@@ -78,6 +95,10 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({ open, onOp
     onOpenChange(false);
   };
 
+  const StatusBadge: React.FC<{ value: Member['status'] }> = ({ value }) => (
+    <Badge variant={value === 'Active' ? 'default' : 'secondary'}>{value}</Badge>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl">
@@ -87,12 +108,20 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({ open, onOp
         </DialogHeader>
 
         <div className="space-y-3">
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input placeholder="Search members..." value={query} onChange={e => setQuery(e.target.value)} />
-            <Button variant="outline" onClick={handleRemove} disabled={!Object.values(selected).some(Boolean)}>Remove Selected</Button>
+            {/* Delete button in red fonts */}
+            <Button
+              variant="ghost"
+              onClick={handleRemoveSelected}
+              disabled={!Object.values(selected).some(Boolean)}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50 disabled:text-red-300"
+            >
+              Delete Selected
+            </Button>
           </div>
 
-          <div className="rounded-lg border">
+          <div className="rounded-lg border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -105,7 +134,8 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({ open, onOp
                   </TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[170px]">Status</TableHead>
+                  <TableHead className="w-[120px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -120,14 +150,45 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({ open, onOp
                     </TableCell>
                     <TableCell className="font-medium">{r.fullName}</TableCell>
                     <TableCell>{r.email}</TableCell>
+
+                    {/* Inline status change */}
                     <TableCell>
-                      <Badge variant={r.status === 'Active' ? 'default' : 'secondary'}>{r.status}</Badge>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="flex items-center gap-2">
+                            <StatusBadge value={r.status} />
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          {r.status !== 'Active' && (
+                            <DropdownMenuItem onClick={() => updateStatus(r.id, 'Active')}>Activate</DropdownMenuItem>
+                          )}
+                          {r.status !== 'Suspended' && (
+                            <DropdownMenuItem onClick={() => updateStatus(r.id, 'Suspended')}>Suspend</DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+
+                    {/* Row actions incl. red Delete */}
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveSingle(r.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
                 {!filtered.length && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground py-6">
+                    <TableCell colSpan={5} className="text-center text-muted-foreground py-6">
                       No members found.
                     </TableCell>
                   </TableRow>
