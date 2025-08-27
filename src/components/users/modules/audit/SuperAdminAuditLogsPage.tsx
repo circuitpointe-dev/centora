@@ -62,10 +62,7 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
             Current Alert Rules
           </h2>
           <div className="flex items-center gap-2">
-            <Button
-              variant="brand-purple"
-              className="bg-brand-purple text-brand-purple-foreground hover:bg-brand-purple/90"
-            >
+            <Button className="bg-brand-purple text-white hover:bg-brand-purple/90">
               Export Report
             </Button>
             <Button
@@ -84,8 +81,8 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile: horizontal scroll with auto-scroll behavior */}
-        <div className="block md:hidden overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded max-h-screen">
+        {/* Mobile: horizontal scroll */}
+        <div className="block md:hidden overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded">
           <div className="flex gap-3 pr-2">
             {rules.map((r) => (
               <AuditRuleCard
@@ -100,21 +97,24 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
         </div>
 
 
-        {/* md+: tidy grid with auto-scroll, capped at 3 columns */}
-        <div className="hidden md:grid gap-3 md:grid-cols-2 xl:grid-cols-3 max-h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded">
-          {rules.map((r) => (
-            <AuditRuleCard
-              key={r.id}
-              rule={r}
-              onToggleActive={onToggleActive}
-              onSelect={onSelect}
-            />
-          ))}
+        {/* md+: horizontal scroll */}
+        <div className="hidden md:block overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded">
+          <div className="flex gap-3 pr-2">
+            {rules.map((r) => (
+              <AuditRuleCard
+                key={r.id}
+                rule={r}
+                onToggleActive={onToggleActive}
+                onSelect={onSelect}
+                className="min-w-[280px]"
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       <Tabs defaultValue="Activity" className="space-y-3">
-        <TabsList className="w-full justify-start overflow-x-auto gap-2">
+        <TabsList className="w-full justify-start overflow-x-auto gap-4">
           <TabsTrigger value="Activity" className="px-6">Activity Logs</TabsTrigger>
           <TabsTrigger value="Login" className="px-6">Login</TabsTrigger>
           <TabsTrigger value="CRUD" className="px-6">CRUD Events</TabsTrigger>
