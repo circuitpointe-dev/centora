@@ -8,8 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Plus, Shield, Users, Building2, Settings } from "lucide-react";
-import { useOrgModulesWithFeatures } from "@/hooks/useOrgModulesWithFeatures";
-import { useSetUserAccess } from "@/hooks/usePermissions";
+import { modules as mockModules } from "@/components/users/roles/mock/roles-permission-data";
 import { toast } from "sonner";
 
 // Mock data for super admin roles
@@ -63,21 +62,26 @@ export const SuperAdminRolesPermissionPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [rolePermissions, setRolePermissions] = useState<Record<string, boolean>>({});
   
-  const { data: modulesWithFeatures, isLoading } = useOrgModulesWithFeatures();
-  const setUserAccess = useSetUserAccess();
+  const modulesWithFeatures = mockModules;
+  const isLoading = false;
+  const setUserAccess = async (_profileId: string, _accessMap: Record<string, any>) => {
+    await new Promise((res) => setTimeout(res, 300));
+    return true;
+  };
 
   // Transform modules and features into permissions structure
   const permissions = useMemo(() => {
     if (!modulesWithFeatures) return [];
-    
+
+    const ACTIONS = ["view", "create", "edit", "delete"] as const;
     const perms: Array<{ id: string; name: string; category: string }> = [];
-    for (const module of modulesWithFeatures) {
+    for (const module of modulesWithFeatures as Array<{ id: string; name: string; features: Array<{ id: string; name: string }> }>) {
       for (const feature of module.features) {
-        for (const permission of feature.permissions) {
+        for (const action of ACTIONS) {
           perms.push({
-            id: `${module.module}.${feature.id}.${permission}`,
-            name: `${permission} - ${feature.name}`,
-            category: module.module_name,
+            id: `${module.id}.${feature.id}.${action}`,
+            name: `${action} - ${feature.name}`,
+            category: module.name,
           });
         }
       }
