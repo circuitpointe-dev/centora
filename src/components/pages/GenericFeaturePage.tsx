@@ -24,6 +24,7 @@ import TemplatesPage from '@/components/documents/templates/TemplatesPage';
 import ReportSubmissionsPage from './ReportSubmissionsPage';
 import { AdminUsersPage } from '@/components/users/users/AdminUsersPage';
 import { RolesPermissionPage } from '@/components/users/roles/RolesPermissionPage';
+import { SuperAdminRolesPermissionPage } from '@/components/users/roles/SuperAdminRolesPermissionPage';
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
@@ -156,7 +157,16 @@ const GenericFeaturePage = () => {
 
 
   if (module === 'users' && feature === 'roles-permissions') {
-    return <RolesPermissionPage />;
+    // Differentiate between tenant admin and super admin roles & permissions
+    const isSuperAdmin = !!user?.is_super_admin;
+    
+    if (isSuperAdmin) {
+      // Super admin sees system-wide role management
+      return <SuperAdminRolesPermissionPage />;
+    } else {
+      // Tenant admin sees organization-specific role management
+      return <RolesPermissionPage />;
+    }
   }
 
   if (module === 'users' && feature === 'role-requests') {
