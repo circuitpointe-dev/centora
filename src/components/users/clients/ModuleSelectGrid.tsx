@@ -31,7 +31,11 @@ export const ModuleSelectGrid: React.FC<Props> = ({ value, onChange, required = 
             <Label className="font-medium">{m}</Label>
             <div className="flex items-center gap-2">
               {isRequired && <span className="text-xs text-purple-600 border border-purple-600 px-2 py-0.5 rounded-full">Required</span>}
-              <Switch checked={checked} onCheckedChange={(v) => !isRequired && toggle(m, Boolean(v))} />
+              <Switch 
+                checked={checked} 
+                onCheckedChange={(v) => !isRequired && toggle(m, Boolean(v))}
+                className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600 focus-visible:ring-purple-600"
+              />
             </div>
           </div>
         );
