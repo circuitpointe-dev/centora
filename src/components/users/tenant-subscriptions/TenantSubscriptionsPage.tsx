@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BillingSummaryTable } from "./BillingSummaryTable";
 
 const sideTabClass =
-  "flex h-auto items-start justify-start w-[240px] flex-col gap-1 px-2 pb-2 pt-0 rounded-xl border bg-white/70 backdrop-blur";
+  "flex w-[240px] flex-col gap-1 p-2 rounded-xl border bg-white/70 backdrop-blur";
 
 const triggerClass =
   "justify-start rounded-lg data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700";
