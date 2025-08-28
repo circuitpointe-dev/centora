@@ -44,7 +44,7 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 overflow-x-hidden">
+    <div className="p-6 space-y-6 overflow-x-hidden max-w-full">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold tracking-tight">Audit Logs</h1>
         <CreateRuleDialog onCreate={onCreate} />
