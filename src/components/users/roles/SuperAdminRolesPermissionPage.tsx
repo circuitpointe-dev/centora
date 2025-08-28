@@ -133,7 +133,7 @@ export const SuperAdminRolesPermissionPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>

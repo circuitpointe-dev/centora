@@ -188,7 +188,7 @@ export const SuperAdminUserPage: React.FC = () => {
   }, [query, filters]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Title (per your spec) */}
       <h1 className="text-lg font-semibold tracking-tight">Super Admin Users</h1>
 

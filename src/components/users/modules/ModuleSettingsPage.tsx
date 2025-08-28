@@ -70,7 +70,7 @@ export default function ModuleSettingsPage() {
     }));
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div>
         <h1 className="text-lg font-semibold tracking-tight">Module Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">Manage Module Configurations And Access Controls</p>

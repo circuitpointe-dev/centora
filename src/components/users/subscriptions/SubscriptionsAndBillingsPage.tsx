@@ -128,7 +128,7 @@ export const SubscriptionAndBillingsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="space-y-6">
       <h1 className="text-xl font-medium text-gray-900">Subscription & Billings</h1>
       <p className="text-sm text-gray-500 mt-1">
         Manage Your Centora Plan, Modules, Invoices, Payment Method, And Billing Contacts.

@@ -117,7 +117,7 @@ export default function SuperAdminAnnouncementPage() {
     a.audienceType === "all" ? AUDIENCE_LABEL.all : tenantNameResolver(a.tenantIds);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Title + Controls */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold tracking-tight">Announcements</h1>

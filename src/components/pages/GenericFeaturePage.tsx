@@ -34,7 +34,7 @@ import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
 import SuperAdminAnnouncementPage from "../users/announcements/SuperAdminAnnouncementPage";
 import ClientDirectoryPage from "../users/clients/ClientDirectoryPage";
 import ModuleSettingsPage from "../users/modules/ModuleSettingsPage";
-import SuperAdminAuditLogsPage from "../users/modules/audit/SuperAdminAuditLogsPage";
+import SuperAdminAuditLogsPage from "../users/audit/SuperAdminAuditLogsPage";
 import TenantSubscriptionsPage from "../users/tenant-subscriptions/TenantSubscriptionsPage";
 
 const GenericFeaturePage = () => {
