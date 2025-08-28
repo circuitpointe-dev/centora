@@ -45,7 +45,7 @@ export const AuditFilterBar: React.FC<Props> = ({
       <div className="flex items-center gap-2">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
+            <Button variant="outline" className="border-brand-purple text-brand-purple hover:bg-brand-purple/10">
               <Filter className="mr-2 h-4 w-4" />
               Filter
             </Button>
@@ -126,22 +126,31 @@ export const AuditFilterBar: React.FC<Props> = ({
             </div>
 
             <div className="mt-3 flex justify-end">
-              <Button variant="ghost" onClick={() => setFilter(() => ({
-                q: "",
-                category: "All",
-                users: [],
-                organizations: [],
-                actions: [],
-                dateFrom: undefined,
-                dateTo: undefined,
-              }))}>
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  setFilter(() => ({
+                    q: "",
+                    category: "All",
+                    users: [],
+                    organizations: [],
+                    actions: [],
+                    dateFrom: undefined,
+                    dateTo: undefined,
+                  }))
+                }
+              >
                 Clear
               </Button>
             </div>
           </PopoverContent>
         </Popover>
 
-        <Button variant="outline" onClick={onExport}>
+        {/* Keep this Export, style with brand purple */}
+        <Button
+          onClick={onExport}
+          className="bg-brand-purple text-brand-purple-foreground hover:bg-brand-purple/90"
+        >
           <Download className="mr-2 h-4 w-4" />
           Export Report
         </Button>
@@ -149,3 +158,4 @@ export const AuditFilterBar: React.FC<Props> = ({
     </div>
   );
 };
+

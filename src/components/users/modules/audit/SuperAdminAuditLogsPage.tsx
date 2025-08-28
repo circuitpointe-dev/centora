@@ -33,11 +33,8 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
   const onToggleActive = (id: string, active: boolean) =>
     setRules((rs) => rs.map((r) => (r.id === id ? { ...r, active } : r)));
 
-  // NEW: click anywhere on the card to toggle selection
   const onSelect = (id: string) =>
-    setRules((rs) =>
-      rs.map((r) => (r.id === id ? { ...r, selected: !r.selected } : r))
-    );
+    setRules((rs) => rs.map((r) => (r.id === id ? { ...r, selected: !r.selected } : r)));
 
   const onCreate = (rule: AuditRule) => setRules((rs) => [rule, ...rs]);
 
@@ -46,11 +43,8 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
     setDeleteOpen(false);
   };
 
-  // Show at most 3 cards in “Current Alert Rules”
-  const RECENT = rules.slice(0, 3);
-
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 overflow-x-hidden">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold tracking-tight">Audit Logs</h1>
         <CreateRuleDialog onCreate={onCreate} />
@@ -58,58 +52,39 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-zinc-700">
-            Current Alert Rules
-          </h2>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="brand-purple"
-              className="bg-brand-purple text-brand-purple-foreground hover:bg-brand-purple/90"
-            >
-              Export Report
-            </Button>
-            <Button
-              variant="outline"
-              disabled={!selectedCount}
-              onClick={() => setDeleteOpen(true)}
-              className={
-                !selectedCount
-                  ? ""
-                  : "border-red-600 text-red-600 hover:bg-red-50"
-              }
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </Button>
-          </div>
+          <h2 className="text-sm font-medium text-zinc-700">Current Alert Rules</h2>
+
+          {/* Only Delete remains here */}
+          <Button
+            variant="outline"
+            disabled={!selectedCount}
+            onClick={() => setDeleteOpen(true)}
+            className={!selectedCount ? "" : "border-red-600 text-red-600 hover:bg-red-50"}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </Button>
         </div>
 
-        {/* Mobile: horizontal scroll with auto-scroll behavior */}
-        <div className="block md:hidden overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded max-h-screen">
-          <div className="flex gap-3 pr-2">
+        {/* Confined horizontal scroller just for the cards row */}
+        <div
+          className="
+            relative w-full max-w-full overflow-x-auto pb-2
+            scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded
+          "
+          style={{ scrollbarGutter: "stable" }}
+        >
+          <div className="flex flex-nowrap gap-3 pr-2">
             {rules.map((r) => (
               <AuditRuleCard
                 key={r.id}
                 rule={r}
                 onToggleActive={onToggleActive}
                 onSelect={onSelect}
-                className="min-w-[280px]"
+                className="w-[320px] flex-shrink-0"
               />
             ))}
           </div>
-        </div>
-
-
-        {/* md+: tidy grid with auto-scroll, capped at 3 columns */}
-        <div className="hidden md:grid gap-3 md:grid-cols-2 xl:grid-cols-3 max-h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded">
-          {rules.map((r) => (
-            <AuditRuleCard
-              key={r.id}
-              rule={r}
-              onToggleActive={onToggleActive}
-              onSelect={onSelect}
-            />
-          ))}
         </div>
       </section>
 
