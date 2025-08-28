@@ -8,13 +8,13 @@ export default function TenantSubscriptionsPage() {
   const [tab, setTab] = useState("summary");
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Page Title (separate row) */}
-      <div className="flex items-start justify-between">
+    <div className="p-6 space-y-8">
+      {/* Page Title (separate row with explicit bottom margin) */}
+      <div className="flex items-start justify-between mb-6">
         <h1 className="text-lg font-semibold tracking-tight">Subscriptions & Billings</h1>
       </div>
 
-      {/* Tabs contained inside their own grid so they *cannot* overlap the title */}
+      {/* Tabs with proper spacing from title */}
       <Tabs value={tab} onValueChange={setTab}>
         <div className="grid grid-cols-12 gap-6 items-start">
           {/* Left column: stacked, top-aligned list */}
