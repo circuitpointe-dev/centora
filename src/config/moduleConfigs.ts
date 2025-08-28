@@ -201,7 +201,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'module-settings', name: 'Module Settings', icon: Settings2 },
       { id: 'audit-logs', name: 'Audit Logs', icon: History },
       { id: 'integrations', name: 'Integrations', icon: Plug },
-      { id: 'subscriptions-billing', name: 'Subscriptions & Billing', icon: CreditCard },
+      { id: 'tenant-subscriptions', name: 'Subscriptions & Billing', icon: CreditCard },
       { id: 'support-tickets', name: 'Support Tickets', icon: MessageCircle },
     ]
   },

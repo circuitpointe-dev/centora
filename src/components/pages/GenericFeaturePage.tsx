@@ -35,6 +35,7 @@ import SuperAdminAnnouncementPage from "../users/announcements/SuperAdminAnnounc
 import ClientDirectoryPage from "../users/clients/ClientDirectoryPage";
 import ModuleSettingsPage from "../users/modules/ModuleSettingsPage";
 import SuperAdminAuditLogsPage from "../users/modules/audit/SuperAdminAuditLogsPage";
+import TenantSubscriptionsPage from "../users/tenant-subscriptions/TenantSubscriptionsPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -151,6 +152,10 @@ const GenericFeaturePage = () => {
 
   if (module === 'users' && feature === 'subscription-billing') {
     return <SubscriptionAndBillingsPage />;
+  }
+
+  if (module === 'users' && feature === 'tenant-subscriptions') {
+    return <TenantSubscriptionsPage />;
   }
 
   if (module === 'users' && feature === 'support-tickets') {
