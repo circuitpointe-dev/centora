@@ -5,7 +5,7 @@ import { Eye, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BillingTableToolbar } from "./BillingTableToolbar";
 import { BillingStatus, OrgType, PlanTier } from "./types";
-import { tenants } from "./mock/tenants";
+import { tenants} from "./mock/tenants";
 
 function StatusPill({ value }: { value: BillingStatus }) {
   const map: Record<BillingStatus, string> = {
@@ -32,7 +32,11 @@ export const BillingSummaryTable: React.FC = () => {
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
     const out = tenants.filter((t) => {
-      const matchesSearch = !s || t.tenant.toLowerCase().includes(s) || t.plan.toLowerCase().includes(s);
+      const matchesSearch =
+        !s ||
+        t.tenant.toLowerCase().includes(s) ||
+        t.plan.toLowerCase().includes(s) ||
+        t.type.toLowerCase().includes(s);
       const matchesStatus = !status || t.status === status;
       const matchesPlan = !plan || t.plan === plan;
       const matchesType = !type || t.type === type;
@@ -66,42 +70,48 @@ export const BillingSummaryTable: React.FC = () => {
       </div>
 
       <div className="overflow-x-auto rounded-xl border bg-white">
-        <table className="w-full min-w-[1100px] text-sm">
+        <table className="w-full min-w-[980px] text-sm">
           <thead className="bg-slate-50 text-slate-600">
             <tr className="text-left">
-              <th className="px-4 py-3 font-medium">Tenant</th>
-              <th className="px-4 py-3 font-medium">Type</th>
-              <th className="px-4 py-3 font-medium">Plan</th>
-              <th className="px-4 py-3 font-medium">Users</th>
-              <th className="px-4 py-3 font-medium">Storage</th>
-              <th className="px-4 py-3 font-medium">Api</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Action</th>
+              <th className="px-3 py-2 font-medium">Tenant</th>
+              <th className="px-3 py-2 font-medium">Type • Plan</th>
+              <th className="px-3 py-2 font-medium">Users</th>
+              <th className="px-3 py-2 font-medium">Storage</th>
+              <th className="px-3 py-2 font-medium">Api</th>
+              <th className="px-3 py-2 font-medium">Status</th>
+              <th className="px-3 py-2 font-medium">Action</th>
             </tr>
           </thead>
           <tbody>
             {pageRows.map((r) => (
               <tr key={r.id} className="border-t">
-                <td className="px-4 py-3">
+                <td className="px-3 py-2">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex size-5 items-center justify-center rounded border bg-white">
                       <Users className="h-3.5 w-3.5" />
                     </span>
-                    <div className="font-medium">{r.tenant}</div>
+                    <span className="font-medium">{r.tenant}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3">{r.type}</td>
-                <td className="px-4 py-3">{r.plan}</td>
-                <td className="px-4 py-3">{`${r.users.used}/${r.users.limit}`}</td>
-                <td className="px-4 py-3">{`${r.storage.used}GB/${r.storage.limit}GB`}</td>
-                <td className="px-4 py-3">{`${r.api.used.toLocaleString()}/${r.api.limit.toLocaleString()}`}</td>
-                <td className="px-4 py-3">
+
+                <td className="px-3 py-2">
+                  <span className="text-slate-700">{r.type}</span>
+                  <span className="px-1 text-slate-400">•</span>
+                  <span className="text-slate-700">{r.plan}</span>
+                </td>
+
+                <td className="px-3 py-2 whitespace-nowrap">{`${r.users.used}/${r.users.limit}`}</td>
+                <td className="px-3 py-2 whitespace-nowrap">{`${r.storage.used}GB/${r.storage.limit}GB`}</td>
+                <td className="px-3 py-2 whitespace-nowrap">{`${r.api.used.toLocaleString()}/${r.api.limit.toLocaleString()}`}</td>
+
+                <td className="px-3 py-2">
                   <StatusPill value={r.status} />
                 </td>
-                <td className="px-4 py-3">
+
+                <td className="px-3 py-2">
                   <Button
                     variant="outline"
-                    className="border-purple-600 text-purple-600 hover:bg-purple-50 active:bg-purple-100"
+                    className="h-8 border-purple-600 text-purple-600 hover:bg-purple-50 active:bg-purple-100"
                     onClick={() => console.log("View tenant", r.id)}
                   >
                     <Eye className="mr-2 h-4 w-4" /> View
@@ -112,7 +122,7 @@ export const BillingSummaryTable: React.FC = () => {
 
             {pageRows.length === 0 && (
               <tr>
-                <td className="px-4 py-10 text-center text-slate-500" colSpan={8}>
+                <td className="px-3 py-10 text-center text-slate-500" colSpan={7}>
                   No results match your filters.
                 </td>
               </tr>
@@ -121,7 +131,7 @@ export const BillingSummaryTable: React.FC = () => {
         </table>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-slate-600">
+      <div className="flex items-center justify-between text-xs md:text-sm text-slate-600">
         <div>
           {total === 0
             ? "Showing 0"

@@ -3,21 +3,23 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BillingSummaryTable } from "./BillingSummaryTable";
+import { InvoiceManagementTable } from "./InvoiceManagementTable";
+import AvailablePlansTab from "./AvailablePlansTab";
 
 const sideTabClass =
-  "flex h-auto items-start justify-start w-[240px] flex-col gap-1 px-2 pb-2 pt-0 rounded-xl border bg-white/70 backdrop-blur"
+  "flex h-auto items-start justify-start w-[200px] flex-col gap-1 p-0 rounded-xl border bg-white/70 backdrop-blur"
 
 const triggerClass =
-  "justify-start rounded-lg data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700";
+  "w-full justify-start rounded-lg data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700";
 
 export default function TenantSubscriptionsPage() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold tracking-tight">Subscriptions & Billings</h1>
       </div>
 
-      <Tabs defaultValue="billing" className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4">
+      <Tabs defaultValue="billing" className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4">
         <TabsList className={sideTabClass}>
           <TabsTrigger className={triggerClass} value="billing">
             Tenant Billing Summary
@@ -30,18 +32,16 @@ export default function TenantSubscriptionsPage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="billing" className="space-y-4">
+        <TabsContent value="billing" className="space-y-4 p-0 m-0">
           <BillingSummaryTable />
         </TabsContent>
 
         <TabsContent value="invoices" className="space-y-4">
-          {/* Placeholder: we'll build this after billing summary */}
-          <div className="rounded-xl border bg-white p-6">Coming up next…</div>
+          <InvoiceManagementTable />
         </TabsContent>
 
         <TabsContent value="plans" className="space-y-4">
-          {/* Placeholder: we'll build this after billing summary */}
-          <div className="rounded-xl border bg-white p-6">Coming up next…</div>
+          <AvailablePlansTab />
         </TabsContent>
       </Tabs>
     </div>

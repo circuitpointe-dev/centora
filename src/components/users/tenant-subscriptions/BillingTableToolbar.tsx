@@ -3,7 +3,14 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Filter } from "lucide-react";
 import { BillingStatus, OrgType, PlanTier } from "./types";
 
@@ -37,8 +44,8 @@ export const BillingTableToolbar: React.FC<Props> = ({
         className="h-9 w-[220px]"
       />
 
-      <Sheet>
-        <SheetTrigger asChild>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
             className="h-9 border-purple-600 text-purple-600 hover:bg-purple-50 active:bg-purple-100"
@@ -46,15 +53,16 @@ export const BillingTableToolbar: React.FC<Props> = ({
             <Filter className="mr-2 h-4 w-4" />
             Filter
           </Button>
-        </SheetTrigger>
-        <SheetContent className="sm:max-w-[380px]">
-          <SheetHeader>
-            <SheetTitle>Filter Tenants</SheetTitle>
-          </SheetHeader>
+        </DropdownMenuTrigger>
 
-          <div className="mt-4 space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Status</label>
+        <DropdownMenuContent align="end" className="w-72">
+          <DropdownMenuLabel>Filter Tenants</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+
+          <div className="p-2 space-y-3">
+            {/* Status */}
+            <div className="space-y-1.5">
+              <div className="text-xs font-medium text-slate-600">Status</div>
               <select
                 className="w-full rounded-md border px-3 py-2 text-sm"
                 value={status}
@@ -69,8 +77,9 @@ export const BillingTableToolbar: React.FC<Props> = ({
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Plan</label>
+            {/* Plan */}
+            <div className="space-y-1.5">
+              <div className="text-xs font-medium text-slate-600">Plan</div>
               <select
                 className="w-full rounded-md border px-3 py-2 text-sm"
                 value={plan}
@@ -85,8 +94,9 @@ export const BillingTableToolbar: React.FC<Props> = ({
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Type</label>
+            {/* Type */}
+            <div className="space-y-1.5">
+              <div className="text-xs font-medium text-slate-600">Type</div>
               <select
                 className="w-full rounded-md border px-3 py-2 text-sm"
                 value={type}
@@ -100,9 +110,10 @@ export const BillingTableToolbar: React.FC<Props> = ({
               </select>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-1 flex items-center justify-between">
               <Button
-                className="w-full bg-purple-600 hover:bg-purple-700 active:bg-purple-800"
+                variant="ghost"
+                className="h-8"
                 onClick={() => {
                   onStatus("");
                   onPlan("");
@@ -110,12 +121,27 @@ export const BillingTableToolbar: React.FC<Props> = ({
                   onSearch("");
                 }}
               >
-                Clear Filters
+                Clear
+              </Button>
+              <Button className="h-8 bg-purple-600 hover:bg-purple-700 active:bg-purple-800">
+                Apply
               </Button>
             </div>
           </div>
-        </SheetContent>
-      </Sheet>
+
+          {/* Optional: quick “show all” item for mouse-only flows */}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => {
+              onStatus("");
+              onPlan("");
+              onType("");
+            }}
+          >
+            Show All
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };
