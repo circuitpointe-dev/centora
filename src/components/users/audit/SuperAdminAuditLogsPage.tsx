@@ -66,7 +66,7 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
           </Button>
         </div>
 
-        {/* 4-column grid with horizontal scroll */}
+        {/* 4-column layout with smart horizontal scroll */}
         <div
           className="
             relative w-full max-w-full overflow-x-auto pb-2
@@ -74,23 +74,41 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
           "
           style={{ scrollbarGutter: "stable" }}
         >
-          <div 
-            className="grid grid-rows-4 gap-3 pr-2"
-            style={{ 
-              gridTemplateColumns: `repeat(${Math.ceil(rules.length / 4)}, 320px)`,
-              gridAutoFlow: 'column'
-            }}
-          >
-            {rules.map((r) => (
-              <AuditRuleCard
-                key={r.id}
-                rule={r}
-                onToggleActive={onToggleActive}
-                onSelect={onSelect}
-                className="w-[320px]"
-              />
-            ))}
-          </div>
+          {rules.length > 4 ? (
+            <div
+              className="grid gap-3 pr-2"
+              style={{
+                gridAutoFlow: "column",
+                gridAutoColumns: "320px",
+                gridTemplateRows: "repeat(4, minmax(0, auto))",
+              }}
+            >
+              {rules.map((r) => (
+                <AuditRuleCard
+                  key={r.id}
+                  rule={r}
+                  onToggleActive={onToggleActive}
+                  onSelect={onSelect}
+                  className="w-[320px]"
+                />
+              ))}
+            </div>
+          ) : (
+            <div
+              className="grid gap-3 pr-2"
+              style={{ gridTemplateColumns: "repeat(4, 320px)" }}
+            >
+              {rules.map((r) => (
+                <AuditRuleCard
+                  key={r.id}
+                  rule={r}
+                  onToggleActive={onToggleActive}
+                  onSelect={onSelect}
+                  className="w-[320px]"
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
