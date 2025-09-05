@@ -8,10 +8,14 @@ export function PlanCard({
   plan,
   cycle,
   onOpen,
+  onEdit,
+  onDuplicate,
 }: {
   plan: PlanModel;
   cycle: PlanBillingCycle;
   onOpen: () => void;
+  onEdit: () => void;
+  onDuplicate: () => void;
 }) {
   const price = cycle === "monthly" ? plan.priceMonthly : plan.priceYearly;
 
@@ -46,14 +50,28 @@ export function PlanCard({
 
       <div className="space-y-2">
         <div className="text-sm text-slate-500">Description</div>
-        <p className="text-sm">{plan.description}</p>
+        <p className="text-sm">{plan.description || "—"}</p>
       </div>
 
       <div className="mt-4 flex items-center gap-2">
-        <Button variant="outline" className="h-8" onClick={(e) => e.stopPropagation()}>
+        <Button
+          variant="outline"
+          className="h-8"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
+        >
           Edit
         </Button>
-        <Button variant="outline" className="h-8" onClick={(e) => e.stopPropagation()}>
+        <Button
+          variant="outline"
+          className="h-8"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate();
+          }}
+        >
           Duplicate
         </Button>
       </div>
