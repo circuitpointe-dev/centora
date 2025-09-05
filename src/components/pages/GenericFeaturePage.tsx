@@ -36,6 +36,7 @@ import ClientDirectoryPage from "../users/clients/ClientDirectoryPage";
 import ModuleSettingsPage from "../users/modules/ModuleSettingsPage";
 import SuperAdminAuditLogsPage from "../users/audit/SuperAdminAuditLogsPage";
 import TenantSubscriptionsPage from "../users/tenant-subscriptions/TenantSubscriptionsPage";
+import SupportTicketsPage from "../users/support/tickets/SupportTicketsPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -159,7 +160,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'users' && feature === 'support-tickets') {
-    return <GenericFeatureUI moduleName="User Management" featureName="Support Tickets" />;
+    return <SupportTicketsPage />;
   }
 
 
