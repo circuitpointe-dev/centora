@@ -66,49 +66,25 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
           </Button>
         </div>
 
-        {/* 4-column layout with smart horizontal scroll */}
+        {/* Horizontal card layout with section scrolling */}
         <div
           className="
-            relative w-full max-w-full overflow-x-auto pb-2
+            relative w-full overflow-x-auto overflow-y-hidden pb-2
             scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded
           "
           style={{ scrollbarGutter: "stable" }}
         >
-          {rules.length > 4 ? (
-            <div
-              className="grid gap-3 pr-2"
-              style={{
-                gridAutoFlow: "column",
-                gridAutoColumns: "320px",
-                gridTemplateRows: "repeat(4, minmax(0, auto))",
-              }}
-            >
-              {rules.map((r) => (
-                <AuditRuleCard
-                  key={r.id}
-                  rule={r}
-                  onToggleActive={onToggleActive}
-                  onSelect={onSelect}
-                  className="w-[320px]"
-                />
-              ))}
-            </div>
-          ) : (
-            <div
-              className="grid gap-3 pr-2"
-              style={{ gridTemplateColumns: "repeat(4, 320px)" }}
-            >
-              {rules.map((r) => (
-                <AuditRuleCard
-                  key={r.id}
-                  rule={r}
-                  onToggleActive={onToggleActive}
-                  onSelect={onSelect}
-                  className="w-[320px]"
-                />
-              ))}
-            </div>
-          )}
+          <div className="flex gap-4 min-w-max pr-4">
+            {rules.map((r) => (
+              <AuditRuleCard
+                key={r.id}
+                rule={r}
+                onToggleActive={onToggleActive}
+                onSelect={onSelect}
+                className="w-[280px] flex-shrink-0"
+              />
+            ))}
+          </div>
         </div>
       </section>
 
