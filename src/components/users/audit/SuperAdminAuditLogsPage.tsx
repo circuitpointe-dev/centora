@@ -66,22 +66,22 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
           </Button>
         </div>
 
-        {/* Confined horizontal scroller just for the cards row */}
+        {/* Horizontal card layout with section scrolling */}
         <div
           className="
-            relative w-full max-w-full overflow-x-auto pb-2
+            relative w-full overflow-x-auto overflow-y-hidden pb-2
             scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent scrollbar-thumb-rounded
           "
           style={{ scrollbarGutter: "stable" }}
         >
-          <div className="flex flex-nowrap gap-3 pr-2">
+          <div className="flex gap-4 min-w-max pr-4">
             {rules.map((r) => (
               <AuditRuleCard
                 key={r.id}
                 rule={r}
                 onToggleActive={onToggleActive}
                 onSelect={onSelect}
-                className="w-[320px] flex-shrink-0"
+                className="w-[280px] flex-shrink-0"
               />
             ))}
           </div>
