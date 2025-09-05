@@ -66,7 +66,7 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
           </Button>
         </div>
 
-        {/* 3-column grid with horizontal scroll */}
+        {/* 4-column grid with horizontal scroll */}
         <div
           className="
             relative w-full max-w-full overflow-x-auto pb-2
@@ -75,9 +75,9 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
           style={{ scrollbarGutter: "stable" }}
         >
           <div 
-            className="grid grid-rows-3 gap-3 pr-2"
+            className="grid grid-rows-4 gap-3 pr-2"
             style={{ 
-              gridTemplateColumns: `repeat(${Math.ceil(rules.length / 3)}, 320px)`,
+              gridTemplateColumns: `repeat(${Math.ceil(rules.length / 4)}, 320px)`,
               gridAutoFlow: 'column'
             }}
           >
