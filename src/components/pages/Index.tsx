@@ -2,7 +2,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import black_logo from "@/assets/images/black_logo.png";
-import violet_logo from "@/assets/images/logo_violet.png";
+import violet_logo from "@/assets/images/centora_logo.png";
 import {
   ArrowRight,
   Heart,

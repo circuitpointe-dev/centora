@@ -2,6 +2,7 @@ import React from "react";
 import womanImage from "@/assets/images/woman.png";
 import blackLogo from "@/assets/images/black_logo.png";
 import starAsset from "@/assets/images/four_star.png";
+import violet_logo from "@/assets/images/centora_logo.png";
 
 const LoginLeftColumn = () => {
   // Stars configuration for the left column
@@ -59,7 +60,7 @@ const LoginLeftColumn = () => {
         {/* Transparent blurred rectangle with logo and text */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-30 backdrop-blur-md px-8 py-4 rounded-xl z-30 w-5/6">
           <div className="flex justify-center mb-2">
-            <img src={blackLogo} alt="Centora ERP Logo" className="w-auto h-10" />
+            <img src={violet_logo} alt="Centora ERP Logo" className="w-auto h-10" />
           </div>
           <h2 className="text-black text-lg font-semibold text-center">
             Your NGO's Digital Partner
