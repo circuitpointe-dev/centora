@@ -47,9 +47,9 @@ export default function TenantIntegrationsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Integrations</h1>
+        <h1 className="text-xl font-semibold tracking-tight">Integrations</h1>
         <p className="text-muted-foreground">
           Connect Centora with your favorite third-party applications to streamline your workflow.
         </p>
