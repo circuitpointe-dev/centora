@@ -1,19 +1,21 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { IntegrationCategory } from './mock/types';
-import { icons } from 'lucide-react';
+import { IntegrationCategory, IntegrationProvider } from './mock/types';
+import { icons, CheckCircle, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface IntegrationCategoryCardProps {
   category: IntegrationCategory;
   isSelected: boolean;
   onClick: () => void;
+  providers: IntegrationProvider[];
 }
 
 export default function IntegrationCategoryCard({
   category,
   isSelected,
-  onClick
+  onClick,
+  providers
 }: IntegrationCategoryCardProps) {
   const IconComponent = icons[category.icon as keyof typeof icons];
 
@@ -43,9 +45,28 @@ export default function IntegrationCategoryCard({
                 {category.providerCount} providers
               </span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {category.description}
-            </p>
+            <div className="space-y-1">
+              {providers.slice(0, 3).map((provider) => (
+                <div key={provider.id} className="flex items-center space-x-2 text-sm">
+                  {provider.isConnected ? (
+                    <CheckCircle className="h-3 w-3 text-green-600" />
+                  ) : (
+                    <Circle className="h-3 w-3 text-muted-foreground" />
+                  )}
+                  <span className={cn(
+                    "text-xs",
+                    provider.isConnected ? "text-green-600" : "text-muted-foreground"
+                  )}>
+                    {provider.name} - {provider.isConnected ? 'Connected' : 'Disconnected'}
+                  </span>
+                </div>
+              ))}
+              {providers.length > 3 && (
+                <div className="text-xs text-muted-foreground">
+                  +{providers.length - 3} more providers
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>

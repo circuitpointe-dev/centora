@@ -87,7 +87,7 @@ export default function IntegrationProviderCard({
             )}
             
             <Button
-              variant={provider.isConnected ? "outline" : "brand-purple"}
+              variant={provider.isConnected ? "destructive" : "brand-purple"}
               size="sm"
               onClick={onConnect}
               className="h-8"

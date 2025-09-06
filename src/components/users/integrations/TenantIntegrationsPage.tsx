@@ -57,14 +57,24 @@ export default function TenantIntegrationsPage() {
 
       {/* Integration Categories */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {integrationCategories.map((category) => (
-          <IntegrationCategoryCard
-            key={category.id}
-            category={category}
-            isSelected={selectedCategoryId === category.id}
-            onClick={() => setSelectedCategoryId(category.id)}
-          />
-        ))}
+        {integrationCategories.map((category) => {
+          const categoryProviders = integrationProviders.filter(provider => 
+            provider.categoryId === category.id
+          ).map(provider => ({
+            ...provider,
+            isConnected: providerConnections[provider.id] || provider.isConnected
+          }));
+          
+          return (
+            <IntegrationCategoryCard
+              key={category.id}
+              category={category}
+              isSelected={selectedCategoryId === category.id}
+              onClick={() => setSelectedCategoryId(category.id)}
+              providers={categoryProviders}
+            />
+          );
+        })}
       </div>
 
       {/* Selected Category Providers */}
