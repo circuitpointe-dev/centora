@@ -24,7 +24,7 @@ export default function IntegrationCategoryCard({
       className={cn(
         "cursor-pointer transition-all duration-200 hover:shadow-md",
         isSelected 
-          ? "ring-2 ring-brand-purple bg-brand-purple/5" 
+          ? "ring-2 ring-brand-purple" 
           : "hover:bg-muted/50"
       )}
       onClick={onClick}
@@ -45,24 +45,24 @@ export default function IntegrationCategoryCard({
                 {category.providerCount} providers
               </span>
             </div>
-            <div className="space-y-1">
+            <div className="border rounded-lg p-3 bg-muted/30 space-y-2">
               {providers.slice(0, 3).map((provider) => (
-                <div key={provider.id} className="flex items-center space-x-2 text-sm">
-                  {provider.isConnected ? (
-                    <CheckCircle className="h-3 w-3 text-green-600" />
-                  ) : (
-                    <Circle className="h-3 w-3 text-muted-foreground" />
-                  )}
-                  <span className={cn(
-                    "text-xs",
-                    provider.isConnected ? "text-green-600" : "text-muted-foreground"
-                  )}>
-                    {provider.name} - {provider.isConnected ? 'Connected' : 'Disconnected'}
-                  </span>
+                <div key={provider.id} className="flex items-center justify-between text-sm">
+                  <span className="text-sm font-medium">{provider.name}</span>
+                  <div className="flex items-center space-x-1">
+                    {provider.isConnected ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span className="text-sm text-green-600 font-medium">Connected</span>
+                      </>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Disconnected</span>
+                    )}
+                  </div>
                 </div>
               ))}
               {providers.length > 3 && (
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground text-center pt-1 border-t">
                   +{providers.length - 3} more providers
                 </div>
               )}
