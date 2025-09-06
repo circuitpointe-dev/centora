@@ -40,7 +40,7 @@ export default function IntegrationCategoryCard({
             </div>
             
             <div className="flex-1">
-              <h3 className="text-lg font-semibold tracking-tight">{category.name}</h3>
+              <h3 className="text-sm font-semibold tracking-tight">{category.name}</h3>
             </div>
           </div>
           
