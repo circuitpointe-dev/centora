@@ -1,4 +1,4 @@
-// src/components/users/tenants-subscriptions/TenantSubscriptionsPage.tsx
+// src/components/users/integrations/TenantIntegrationsPage.tsx
 
 import React from "react";
 
