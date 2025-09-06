@@ -37,6 +37,7 @@ import ModuleSettingsPage from "../users/modules/ModuleSettingsPage";
 import SuperAdminAuditLogsPage from "../users/audit/SuperAdminAuditLogsPage";
 import TenantSubscriptionsPage from "../users/tenant-subscriptions/TenantSubscriptionsPage";
 import SupportTicketsPage from "../users/support/tickets/SupportTicketsPage";
+import TenantIntegrationsPage from "../users/integrations/TenantIntegrationsPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -148,7 +149,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'users' && feature === 'integrations') {
-    return <GenericFeatureUI moduleName="User Management" featureName="Integrations" />;
+    return <TenantIntegrationsPage />;
   }
 
   if (module === 'users' && feature === 'subscription-billing') {
