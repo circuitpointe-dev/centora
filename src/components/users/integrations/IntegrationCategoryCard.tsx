@@ -30,43 +30,46 @@ export default function IntegrationCategoryCard({
       onClick={onClick}
     >
       <CardContent className="p-6">
-        <div className="flex items-start space-x-4">
-          <div className={cn(
-            "rounded-lg p-3",
-            isSelected ? "bg-brand-purple text-brand-purple-foreground" : "bg-muted"
-          )}>
-            {IconComponent && <IconComponent className="h-6 w-6" />}
+        <div className="space-y-4">
+          <div className="flex items-start space-x-4">
+            <div className={cn(
+              "rounded-lg p-3",
+              isSelected ? "bg-brand-purple text-brand-purple-foreground" : "bg-muted"
+            )}>
+              {IconComponent && <IconComponent className="h-6 w-6" />}
+            </div>
+            
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-base">{category.name}</h3>
+                <span className="text-sm text-muted-foreground">
+                  {category.providerCount} providers
+                </span>
+              </div>
+            </div>
           </div>
           
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-base">{category.name}</h3>
-              <span className="text-sm text-muted-foreground">
-                {category.providerCount} providers
-              </span>
-            </div>
-            <div className="border rounded-lg p-3 bg-muted/30 space-y-2">
-              {providers.slice(0, 3).map((provider) => (
-                <div key={provider.id} className="flex items-center justify-between text-sm">
-                  <span className="text-sm font-medium">{provider.name}</span>
-                  <div className="flex items-center space-x-1">
-                    {provider.isConnected ? (
-                      <>
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm text-green-600 font-medium">Connected</span>
-                      </>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">Disconnected</span>
-                    )}
-                  </div>
+          <div className="border rounded-lg p-3 bg-muted/30 space-y-2">
+            {providers.slice(0, 3).map((provider) => (
+              <div key={provider.id} className="flex items-center justify-between text-sm">
+                <span className="text-sm font-medium">{provider.name}</span>
+                <div className="flex items-center space-x-1">
+                  {provider.isConnected ? (
+                    <>
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm text-green-600 font-medium">Connected</span>
+                    </>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">Disconnected</span>
+                  )}
                 </div>
-              ))}
-              {providers.length > 3 && (
-                <div className="text-xs text-muted-foreground text-center pt-1 border-t">
-                  +{providers.length - 3} more providers
-                </div>
-              )}
-            </div>
+              </div>
+            ))}
+            {providers.length > 3 && (
+              <div className="text-xs text-muted-foreground text-center pt-1 border-t">
+                +{providers.length - 3} more providers
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
