@@ -40,12 +40,7 @@ export default function IntegrationCategoryCard({
             </div>
             
             <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-base">{category.name}</h3>
-                <span className="text-sm text-muted-foreground">
-                  {category.providerCount} providers
-                </span>
-              </div>
+              <h3 className="text-lg font-semibold tracking-tight">{category.name}</h3>
             </div>
           </div>
           
