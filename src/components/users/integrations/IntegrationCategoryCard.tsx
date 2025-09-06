@@ -22,7 +22,7 @@ export default function IntegrationCategoryCard({
       className={cn(
         "cursor-pointer transition-all duration-200 hover:shadow-md",
         isSelected 
-          ? "ring-2 ring-primary bg-primary/5" 
+          ? "ring-2 ring-brand-purple bg-brand-purple/5" 
           : "hover:bg-muted/50"
       )}
       onClick={onClick}
@@ -31,7 +31,7 @@ export default function IntegrationCategoryCard({
         <div className="flex items-start space-x-4">
           <div className={cn(
             "rounded-lg p-3",
-            isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
+            isSelected ? "bg-brand-purple text-brand-purple-foreground" : "bg-muted"
           )}>
             {IconComponent && <IconComponent className="h-6 w-6" />}
           </div>

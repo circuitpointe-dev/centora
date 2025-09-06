@@ -89,7 +89,7 @@ export default function IntegrationDetailsDialog({
             <ul className="space-y-1">
               {provider.features.map((feature) => (
                 <li key={feature} className="text-sm text-muted-foreground flex items-center">
-                  <div className="w-1 h-1 bg-primary rounded-full mr-2" />
+                  <div className="w-1 h-1 bg-brand-purple rounded-full mr-2" />
                   {feature}
                 </li>
               ))}
@@ -111,7 +111,7 @@ export default function IntegrationDetailsDialog({
             <Button variant="outline" onClick={onClose} className="flex-1">
               Cancel
             </Button>
-            <Button onClick={onConnect} className="flex-1">
+            <Button onClick={onConnect} className="flex-1 bg-brand-purple hover:bg-brand-purple/90">
               {provider.isConnected ? 'Disconnect' : 'Connect'}
             </Button>
           </div>

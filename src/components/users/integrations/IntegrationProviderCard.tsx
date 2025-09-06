@@ -48,7 +48,7 @@ export default function IntegrationProviderCard({
               <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                 <div className="flex items-center space-x-1">
                   {provider.isConnected ? (
-                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <CheckCircle className="h-3 w-3 text-brand-purple" />
                   ) : (
                     <Circle className="h-3 w-3" />
                   )}
@@ -64,7 +64,7 @@ export default function IntegrationProviderCard({
                 {provider.features.slice(0, 3).map((feature) => (
                   <span 
                     key={feature}
-                    className="text-xs bg-secondary/50 text-secondary-foreground px-2 py-1 rounded"
+                    className="text-xs bg-brand-purple/10 text-brand-purple px-2 py-1 rounded"
                   >
                     {feature}
                   </span>
@@ -87,7 +87,7 @@ export default function IntegrationProviderCard({
             )}
             
             <Button
-              variant={provider.isConnected ? "outline" : "default"}
+              variant={provider.isConnected ? "outline" : "brand-purple"}
               size="sm"
               onClick={onConnect}
               className="h-8"
