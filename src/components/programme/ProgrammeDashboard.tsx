@@ -66,7 +66,7 @@ const ProgrammeDashboard = () => {
           </div>
           <Button className="bg-blue-600 hover:bg-blue-700">
             <Download className="h-4 w-4 mr-2" />
-            Download
+            Export
           </Button>
         </div>
       </div>
