@@ -1,20 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
-  Target, 
-  TrendingUp, 
-  Users, 
-  FolderKanban, 
-  DollarSign,
-  CheckCircle,
   Clock,
   AlertTriangle,
   Download,
   Search,
-  Calendar,
-  FileText
+  Calendar
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -24,25 +16,12 @@ import {
   CartesianGrid, 
   Tooltip, 
   Legend, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
+  ResponsiveContainer
 } from 'recharts';
+import { ProgrammeStatsCards } from './ProgrammeStatsCards';
+import { ProgrammeProjectHealthChart } from './ProgrammeProjectHealthChart';
+import { ProgrammeBudgetUtilizationChart } from './ProgrammeBudgetUtilizationChart';
 
-const projectHealthData = [
-  { name: 'Project A', onTrack: 70, atRisk: 20, delayed: 10 },
-  { name: 'Project B', onTrack: 60, atRisk: 30, delayed: 10 },
-  { name: 'Project C', onTrack: 80, atRisk: 15, delayed: 5 },
-  { name: 'Project D', onTrack: 50, atRisk: 25, delayed: 25 },
-];
-
-const budgetData = [
-  { name: 'Planned', value: 40, color: '#22C55E' },
-  { name: 'Committed', value: 25, color: '#3B82F6' },
-  { name: 'Spent', value: 25, color: '#EAB308' },
-  { name: 'Remaining', value: 10, color: '#EF4444' },
-];
 
 const financialAllocationData = [
   { name: 'Project A', value: 350 },
@@ -72,149 +51,34 @@ const pendingActions = [
 
 const ProgrammeDashboard = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search projects, products, reports..."
-                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
-              />
-            </div>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Download className="h-4 w-4 mr-2" />
-              Download
-            </Button>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold text-gray-900">Programme Management Dashboard</h1>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <input
+              type="text"
+              placeholder="Search projects, products, reports..."
+              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+            />
           </div>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <Download className="h-4 w-4 mr-2" />
+            Download
+          </Button>
         </div>
+      </div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Programs</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-2xl font-bold text-blue-600">24</span>
-                    <span className="text-sm text-green-600">+4%</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">from last month</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Statistics Cards */}
+      <ProgrammeStatsCards />
 
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Active Projects</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-2xl font-bold text-green-600">156</span>
-                    <span className="text-sm text-green-600">+12%</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">from last month</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Funds Utilized</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-2xl font-bold text-purple-600">$12.4M</span>
-                    <span className="text-sm text-green-600">+6%</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">of total budget</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Beneficiaries Reached</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-2xl font-bold text-orange-600">456</span>
-                    <span className="text-sm text-green-600">91%</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">of target</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Project Health and Budget Utilization */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Project Health</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={projectHealthData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="onTrack" stackId="a" fill="#22C55E" name="On-Track" style={{ filter: 'none' }} />
-                  <Bar dataKey="atRisk" stackId="a" fill="#EAB308" name="At Risk" style={{ filter: 'none' }} />
-                  <Bar dataKey="delayed" stackId="a" fill="#EF4444" name="Delayed" style={{ filter: 'none' }} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Budget Utilization</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center">
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={budgetData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={120}
-                      dataKey="value"
-                    >
-                      {budgetData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                {budgetData.map((item, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: item.color }}
-                    ></div>
-                    <span className="text-sm text-gray-600">{item.name} ({item.value}%)</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Project Health and Budget Utilization */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ProgrammeProjectHealthChart />
+        <ProgrammeBudgetUtilizationChart />
+      </div>
 
         {/* Financial Allocation */}
         <Card className="bg-white shadow-sm border border-gray-200">
