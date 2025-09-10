@@ -69,12 +69,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send email with verification code
-    const emailResponse = await resend.emails.send({
-      from: "Centora ERP <test@circuitpointe.com>",
-      to: [email],
-      subject: "Verify your email address",
-      html: `
+    // Send email with verification code (with fallback to Resend test sender)
+    const htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #333; text-align: center;">Verify Your Email Address</h1>
           
@@ -96,15 +92,42 @@ const handler = async (req: Request): Promise<Response> => {
             This email was sent from Centora ERP. If you have any questions, please contact our support team.
           </p>
         </div>
-      `,
+      `;
+
+    let fromAddress = "Centora ERP <test@circuitpointe.com>";
+    let emailResponse = await resend.emails.send({
+      from: fromAddress,
+      to: [email],
+      subject: "Verify your email address",
+      html: htmlContent,
     });
 
     if (emailResponse.error) {
-      console.error("Email sending error:", emailResponse.error);
-      return new Response(
-        JSON.stringify({ error: "Failed to send verification email" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.error("Primary email sending error:", emailResponse.error);
+      const errorJson = JSON.stringify(emailResponse.error);
+      const shouldFallback = errorJson.includes("domain is not verified") || errorJson.includes("domain not verified");
+      if (shouldFallback) {
+        console.warn("Falling back to Resend test sender: onboarding@resend.dev");
+        fromAddress = "Centora ERP <onboarding@resend.dev>";
+        const fallbackResponse = await resend.emails.send({
+          from: fromAddress,
+          to: [email],
+          subject: "Verify your email address",
+          html: htmlContent,
+        });
+        if (fallbackResponse.error) {
+          console.error("Fallback email sending error:", fallbackResponse.error);
+          return new Response(
+            JSON.stringify({ error: "Failed to send verification email" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      } else {
+        return new Response(
+          JSON.stringify({ error: "Failed to send verification email" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
 
     console.log("Verification email sent successfully:", emailResponse);
