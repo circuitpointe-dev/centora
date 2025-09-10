@@ -71,7 +71,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email with verification code
     const emailResponse = await resend.emails.send({
-      from: "Centora ERP <onboarding@resend.dev>",
+      from: "Centora ERP <test@circuitpointe.com>",
       to: [email],
       subject: "Verify your email address",
       html: `
