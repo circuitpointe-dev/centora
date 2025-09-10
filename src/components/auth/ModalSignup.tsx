@@ -224,7 +224,43 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
       }
 
       toast({ title: 'Success!', description: 'Account created successfully' });
-      navigate('/login');
+      
+      // Send verification code
+      try {
+        const { data: verificationData, error: verificationError } = await supabase.functions.invoke('send-verification-code', {
+          body: { 
+            email: formData.email, 
+            organizationName: formData.organizationName 
+          }
+        });
+
+        if (verificationError || verificationData?.error) {
+          console.error('Failed to send verification code:', verificationError || verificationData?.error);
+          // Don't block the user if verification email fails
+          toast({ 
+            title: 'Account Created', 
+            description: 'Account created successfully, but verification email could not be sent. Please contact support.',
+            variant: 'default'
+          });
+          navigate('/login');
+          return;
+        }
+
+        // Redirect to verification page
+        const params = new URLSearchParams({
+          email: formData.email,
+          org: formData.organizationName
+        });
+        navigate(`/verify-email?${params.toString()}`);
+      } catch (err) {
+        console.error('Verification email error:', err);
+        toast({ 
+          title: 'Account Created', 
+          description: 'Account created successfully, but verification email could not be sent. Please contact support.',
+          variant: 'default'
+        });
+        navigate('/login');
+      }
     } catch (err: any) {
       showGenericError(err?.message);
     } finally {

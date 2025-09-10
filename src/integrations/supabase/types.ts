@@ -431,6 +431,36 @@ export type Database = {
         }
         Relationships: []
       }
+      email_verifications: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          updated_at: string
+          verification_code: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          updated_at?: string
+          verification_code: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          updated_at?: string
+          verification_code?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       features: {
         Row: {
           created_at: string | null
@@ -1116,6 +1146,10 @@ export type Database = {
       can_access_donor_document: {
         Args: { file_path: string }
         Returns: boolean
+      }
+      cleanup_expired_verifications: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       count_org_users: {
         Args: { _search?: string }
