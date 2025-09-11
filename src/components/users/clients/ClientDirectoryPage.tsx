@@ -6,8 +6,7 @@ import { ClientTable } from './ClientTable';
 import { AddClientDialog } from './AddClientDialog';
 import { ClientDetailsDialog } from './ClientDetailsDialog';
 import { ClientActivityLogDialog } from './ClientActivityLogDialog';
-import { Client, ClientActivity } from './types';
-import type { Client, ClientFilters } from './types';
+import type { Client, ClientActivity, ClientFilters } from './types';
 
 export default function ClientDirectoryPage() {
   const [clients, setClients] = React.useState<Client[]>([]);

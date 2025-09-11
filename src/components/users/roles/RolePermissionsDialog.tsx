@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { MODULES, PermissionMatrix, Crud } from './types';
+import { MODULES, PermissionMatrix, CrudAction } from './types';
 
 interface RolePermissionsDialogProps {
   open: boolean;
@@ -14,7 +14,7 @@ interface RolePermissionsDialogProps {
   roleName: string | null;
 }
 
-const DEFAULT_CRUD: Record<Crud, boolean> = { create: false, read: true, update: false, delete: false };
+const DEFAULT_CRUD: Record<CrudAction, boolean> = { create: false, read: true, update: false, delete: false };
 
 export const RolePermissionsDialog: React.FC<RolePermissionsDialogProps> = ({ open, onOpenChange, roleId, roleName }) => {
   const [enabled, setEnabled] = React.useState<Record<string, boolean>>({});
@@ -38,7 +38,7 @@ export const RolePermissionsDialog: React.FC<RolePermissionsDialogProps> = ({ op
     setEnabled(prev => ({ ...prev, [key]: next }));
   };
 
-  const toggleCrud = (key: string, c: Crud, next: boolean) => {
+  const toggleCrud = (key: string, c: CrudAction, next: boolean) => {
     setMatrix(prev => ({ ...prev, [key]: { ...prev[key], [c]: next } }));
   };
 
@@ -73,7 +73,7 @@ export const RolePermissionsDialog: React.FC<RolePermissionsDialogProps> = ({ op
                   <Switch checked={!!enabled[m.key]} onCheckedChange={(v) => toggleModule(m.key, Boolean(v))} className="data-[state=checked]:bg-purple-600" />
                 </div>
                 <div className="col-span-5 grid grid-cols-4 gap-2">
-                  {(['create','read','update','delete'] as Crud[]).map(c => (
+                  {(['create','read','update','delete'] as CrudAction[]).map(c => (
                     <div key={c} className="flex items-center justify-center gap-2">
                       <Checkbox
                         checked={!!matrix[m.key]?.[c]}

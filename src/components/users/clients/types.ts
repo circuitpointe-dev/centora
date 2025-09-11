@@ -21,8 +21,8 @@ export interface Client {
     projects: number;
     apiCallsThisMonth: number;
   };
-  customSettings: {
-    assignedAdmins: string[];
+  customSettings?: {
+    assignedAdmins?: string[];
     domain?: string;
     theme?: string;
   };
@@ -43,10 +43,7 @@ export interface ClientActivity {
 }
 
 export interface ClientFilters {
-  search: string;
-  tier: string;
   status: string;
-  organization: string;
   organizationType: string;
   pricingTier: string;
 }

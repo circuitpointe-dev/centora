@@ -12,16 +12,17 @@ export type RoleType = 'system' | 'client';
 
 export interface Member {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
+  status: 'Active' | 'Suspended';
   avatar?: string;
 }
 
 export interface PermissionMatrix {
-  [moduleKey: string]: {
-    [featureKey: string]: Crud;
-  };
+  [moduleKey: string]: Record<CrudAction, boolean>;
 }
+
+export type CrudAction = 'create' | 'read' | 'update' | 'delete';
 
 export interface Crud {
   create: boolean;
@@ -31,22 +32,23 @@ export interface Crud {
 }
 
 export const MODULES = [
-  { key: 'users', name: 'User Management' },
-  { key: 'documents', name: 'Document Management' },
-  { key: 'finance', name: 'Finance Management' },
-  { key: 'grants', name: 'Grant Management' },
-  { key: 'hr', name: 'HR Management' },
-  { key: 'procurement', name: 'Procurement' },
-  { key: 'inventory', name: 'Inventory Management' },
-  { key: 'reports', name: 'Analytics & Reporting' },
+  { key: 'users', label: 'User Management', name: 'User Management' },
+  { key: 'documents', label: 'Document Management', name: 'Document Management' },
+  { key: 'finance', label: 'Finance Management', name: 'Finance Management' },
+  { key: 'grants', label: 'Grant Management', name: 'Grant Management' },
+  { key: 'hr', label: 'HR Management', name: 'HR Management' },
+  { key: 'procurement', label: 'Procurement', name: 'Procurement' },
+  { key: 'inventory', label: 'Inventory Management', name: 'Inventory Management' },
+  { key: 'reports', label: 'Analytics & Reporting', name: 'Analytics & Reporting' },
 ];
 
-export const ROLE_MEMBERS: Member[] = [];
+export const ROLE_MEMBERS: Record<string, Member[]> = {};
 
 export const CLIENT_ROLES_SEED: RoleMeta[] = [];
 export const SYSTEM_ROLES_SEED: RoleMeta[] = [];
 
-export const makeRoleId = (name: string) => name.toLowerCase().replace(/\s+/g, '-');
+export const makeRoleId = (name: string, type?: RoleType) => 
+  `${type ? `${type}-` : ''}${name.toLowerCase().replace(/\s+/g, '-')}`;
 
 export const modules = [
   { id: 'users', name: 'User Management', features: [] },
