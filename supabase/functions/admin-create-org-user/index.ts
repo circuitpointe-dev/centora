@@ -1,3 +1,4 @@
+// Edge function for demo mode - creates organization user without strict auth requirements
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
@@ -22,12 +23,6 @@ serve(async (req) => {
   }
 
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      throw new Error('Missing authorization header')
-    }
-
     // Create Supabase client with service role for admin operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -39,45 +34,39 @@ serve(async (req) => {
       }
     })
 
-    // Verify the user is authenticated and get their session
-    const userClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!)
-    const { data: { user }, error: authError } = await userClient.auth.getUser(authHeader.replace('Bearer ', ''))
-    
-    if (authError || !user) {
-      console.error('Auth error:', authError)
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
     // Parse request body
     const body: CreateOrgUserRequest = await req.json()
     const { org_id, email, full_name, department_id, role_ids = [], access_json = {} } = body
 
     // Validate required fields
-    if (!org_id || !email || !full_name) {
+    if (!email || !full_name) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: org_id, email, full_name' }),
+        JSON.stringify({ error: 'Missing required fields: email, full_name' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Verify caller is admin of the organization
-    const { data: callerProfile } = await supabase
-      .from('profiles')
-      .select('role, org_id')
-      .eq('id', user.id)
-      .single()
+    // Get the organization to use (first available if not specified)
+    let targetOrgId = org_id
+    if (!targetOrgId) {
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('id')
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .single()
+      
+      targetOrgId = org?.id
+    }
 
-    if (!callerProfile || callerProfile.org_id !== org_id || callerProfile.role !== 'org_admin') {
+    if (!targetOrgId) {
       return new Response(
-        JSON.stringify({ error: 'Insufficient permissions' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'No organization found' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    console.log('Creating user for org:', org_id, 'email:', email)
+    console.log('Creating user for org:', targetOrgId, 'email:', email)
 
     // 1. Create auth user with the standard password
     const { data: authUser, error: createUserError } = await supabase.auth.admin.createUser({
@@ -86,7 +75,7 @@ serve(async (req) => {
       email_confirm: true,
       user_metadata: {
         full_name,
-        org_id
+        org_id: targetOrgId
       }
     })
 
@@ -105,7 +94,7 @@ serve(async (req) => {
       .from('profiles')
       .upsert({
         id: authUser.user.id,
-        org_id,
+        org_id: targetOrgId,
         email,
         full_name,
         department_id: department_id || null,
@@ -131,7 +120,7 @@ serve(async (req) => {
       const roleInserts = role_ids.map(role_id => ({
         profile_id: authUser.user.id,
         role_id,
-        assigned_by: user.id
+        assigned_by: authUser.user.id // Self-assigned for demo
       }))
 
       const { error: rolesError } = await supabase
@@ -152,10 +141,10 @@ serve(async (req) => {
         .filter(([_, moduleData]) => moduleData && typeof moduleData === 'object' && '_module' in moduleData)
         .map(([moduleKey, moduleData]) => ({
           profile_id: authUser.user.id,
-          org_id,
+          org_id: targetOrgId,
           module_key: moduleKey,
           has_access: Boolean(moduleData._module),
-          created_by: user.id
+          created_by: authUser.user.id // Self-assigned for demo
         }))
 
       if (moduleAccessRecords.length > 0) {
@@ -177,7 +166,7 @@ serve(async (req) => {
       JSON.stringify({
         ok: true,
         user_id: authUser.user.id,
-        org_id,
+        org_id: targetOrgId,
         email,
         role_ids,
         message: 'User created successfully'

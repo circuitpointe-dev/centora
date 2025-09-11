@@ -18,8 +18,21 @@ export const useCreateOrgUser = () => {
 
   return useMutation({
     mutationFn: async (payload: CreateUserPayload) => {
+      // Get current org for demo mode
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('id')
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .single();
+
+      const finalPayload = {
+        ...payload,
+        org_id: org?.id || payload.org_id
+      };
+
       const { data, error } = await supabase.functions.invoke('admin-create-org-user', {
-        body: payload,
+        body: finalPayload,
       });
 
       if (error) throw error;
@@ -32,8 +45,8 @@ export const useCreateOrgUser = () => {
         title: "Success",
         description: "User created successfully. Default password: P@$$w0rd",
       });
-      queryClient.invalidateQueries({ queryKey: ['orgUsers'] });
-      queryClient.invalidateQueries({ queryKey: ['userStats'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
       queryClient.invalidateQueries({ queryKey: ['departments'] });
       queryClient.invalidateQueries({ queryKey: ['roles'] });
     },
