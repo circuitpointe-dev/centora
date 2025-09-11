@@ -18,17 +18,18 @@ export const useCreateOrgUser = () => {
 
   return useMutation({
     mutationFn: async (payload: CreateUserPayload) => {
-      // Get current org for demo mode
-      const { data: org } = await supabase
-        .from('organizations')
-        .select('id')
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .single();
+      // Resolve organization id via RPC (handles demo/no-auth gracefully)
+      const { data: orgIdData } = await supabase.rpc('current_org_id');
+      const resolvedOrgId = (orgIdData as string | null) || payload.org_id || '';
+
+      // Sanitize department_id: must be UUID, otherwise send null
+      const isValidUuid = (s?: string | null) =>
+        typeof s === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(s);
 
       const finalPayload = {
         ...payload,
-        org_id: org?.id || payload.org_id
+        org_id: resolvedOrgId,
+        department_id: isValidUuid(payload.department_id) ? payload.department_id : null,
       };
 
       const { data, error } = await supabase.functions.invoke('admin-create-org-user', {
