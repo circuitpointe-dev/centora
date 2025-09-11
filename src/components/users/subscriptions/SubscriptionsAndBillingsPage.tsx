@@ -23,11 +23,11 @@ export const SubscriptionAndBillingsPage: React.FC = () => {
   const toggleModule = useToggleModule();
   const { user } = useAuth();
 
-  const handleToggleModule = (moduleId: string) => {
-    const moduleObj = modules.find(m => m.module === moduleId);
-    if (moduleObj) {
-      toggleModule.mutate(moduleObj);
-    }
+  const handleToggleModule = (module: string, currentEnabled: boolean) => {
+    toggleModule.mutate({ 
+      module, 
+      enabled: !currentEnabled 
+    });
   };
 
   if (modulesLoading || subscriptionLoading) {
@@ -98,7 +98,7 @@ export const SubscriptionAndBillingsPage: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="font-medium">Active Modules</div>
                     <div className="text-sm text-emerald-700">
-                      {modules.filter(m => m.enabled).length} of {modules.length} enabled
+                      {modules.filter(m => m.is_enabled).length} of {modules.length} enabled
                     </div>
                   </div>
 
@@ -111,7 +111,7 @@ export const SubscriptionAndBillingsPage: React.FC = () => {
                         <span className="text-sm text-gray-700">{m.name}</span>
                         <Switch
                           checked={m.is_enabled}
-                          onCheckedChange={() => handleToggleModule(m.module)}
+                          onCheckedChange={() => handleToggleModule(m.module, m.is_enabled)}
                           disabled={toggleModule.isPending}
                           className="data-[state=checked]:bg-brand-purple focus-visible:ring-brand-purple/40"
                         />
