@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { IntegrationProvider } from './mock/types';
+import { IntegrationProvider } from './types';
 import { icons, ExternalLink, Shield, Zap } from 'lucide-react';
 
 interface IntegrationDetailsDialogProps {

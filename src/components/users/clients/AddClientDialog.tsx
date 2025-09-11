@@ -10,7 +10,7 @@ import { ModuleSelectGrid } from './ModuleSelectGrid';
 import { PlanSelect } from './PlanSelect';
 import { useToast } from '@/hooks/use-toast';
 import type { Client, OrganizationType, PricingTier } from './types';
-import { TIER_OPTIONS } from './mock/clients';
+import { TIER_OPTIONS } from './types';
 
 interface Props {
   open: boolean;
@@ -105,7 +105,7 @@ export const AddClientDialog: React.FC<Props> = ({ open, onOpenChange, onCreate 
       pricingTier,
       lastActiveAt: new Date().toISOString(),
       status: 'onboarding',
-      usage: { storageGB: 0, users: 1 },
+      usage: { storageGB: 0, users: 1, emailAccounts: 1, projects: 0, apiCallsThisMonth: 0 },
       customSettings: { assignedAdmins: [contactEmail] },
     };
     

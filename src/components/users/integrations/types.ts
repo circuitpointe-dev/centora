@@ -1,28 +1,23 @@
+// src/components/users/integrations/types.ts
+
 export interface IntegrationCategory {
   id: string;
   name: string;
   description: string;
   icon: string;
-  providerCount: number;
+  color: string;
 }
 
 export interface IntegrationProvider {
   id: string;
   name: string;
-  categoryId: string;
   description: string;
   icon: string;
-  company: string;
+  categoryId: string;
   isConnected: boolean;
-  lastSync?: string;
+  setupUrl?: string;
   features: string[];
-  connectionType: 'oauth' | 'api-key' | 'webhook';
-}
-
-export interface IntegrationConnection {
-  providerId: string;
-  isConnected: boolean;
-  connectedAt?: string;
+  company?: string;
+  connectionType?: string;
   lastSync?: string;
-  config?: Record<string, any>;
 }

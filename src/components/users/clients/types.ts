@@ -1,11 +1,5 @@
 // src/components/users/clients/types.ts
 
-export type ClientStatus = 'active' | 'onboarding' | 'suspended';
-
-export type OrganizationType = 'NGO' | 'Donor';
-
-export type PricingTier = 'Tier 1' | 'Tier 2' | 'Tier 3';
-
 export interface Client {
   id: string;
   name: string;
@@ -16,48 +10,60 @@ export interface Client {
   contactEmail: string;
   contactPhone: string;
   modules: string[];
-  requiredModules?: string[]; // always includes "User Management"
+  requiredModules: string[];
   pricingTier: PricingTier;
-  lastActiveAt: string; // ISO
-  status: ClientStatus;
+  lastActiveAt: string;
+  status: 'onboarding' | 'active' | 'suspended';
   usage: {
     storageGB: number;
     users: number;
-    emailAccounts?: number;
-    projects?: number;
-    apiCallsThisMonth?: number;
+    emailAccounts: number;
+    projects: number;
+    apiCallsThisMonth: number;
   };
-  customSettings?: {
+  customSettings: {
+    assignedAdmins: string[];
     domain?: string;
     theme?: string;
-    assignedAdmins?: string[];
   };
 }
+
+export type OrganizationType = 'NGO' | 'Donor';
+export type PricingTier = 'Tier 1' | 'Tier 2' | 'Tier 3';
 
 export interface ClientActivity {
   id: string;
   clientId: string;
-  timestamp: string; // ISO
-  user: string;
-  report: string;
-  module: string;
+  action: string;
+  description: string;
+  timestamp: string;
+  user?: string;
+  report?: string;
+  module?: string;
 }
 
-export type ClientFilters = {
-  status: "all" | ClientStatus;
-  organizationType: "all" | OrganizationType;
-  pricingTier: "all" | PricingTier;
-};
+export interface ClientFilters {
+  search: string;
+  tier: string;
+  status: string;
+  organization: string;
+  organizationType: string;
+  pricingTier: string;
+}
 
-export const ALL_MODULES: string[] = [
-  'Fundraising',
-  'Grants Management',
-  'Documents Manager',
-  'Program Management',
+export const TIER_OPTIONS = [
+  { value: 'Tier 1', label: 'Tier 1 - Small Teams', price: '$49/month' },
+  { value: 'Tier 2', label: 'Tier 2 - Growing Organizations', price: '$99/month' },
+  { value: 'Tier 3', label: 'Tier 3 - Large Enterprises', price: '$199/month' },
+];
+
+export const ALL_MODULES = [
+  'User Management',
+  'Document Management', 
+  'Finance Management',
+  'Grant Management',
+  'HR Management',
   'Procurement',
   'Inventory Management',
-  'Finance & Control',
-  'Learning Management',
-  'HR Management',
-  'User Management', 
+  'Analytics & Reporting'
 ];

@@ -11,7 +11,7 @@ import {
   SESSION_TIMEOUTS,
   TIMEZONES,
   WEEK_STARTS,
-} from "../mock/moduleSettings";
+} from "../constants/moduleSettings";
 import { GeneralSettings } from "../types";
 
 type Props = {

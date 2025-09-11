@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { MODULES, PermissionMatrix, Crud } from './mock/roles';
+import { MODULES, PermissionMatrix, Crud } from './types';
 
 interface RolePermissionsDialogProps {
   open: boolean;

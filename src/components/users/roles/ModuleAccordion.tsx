@@ -10,7 +10,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { RoleMembersTable } from './RoleMembersTable';
-import { roleMemberships } from './mock/roles-permission-data';
+import { roleMemberships } from './types';
 import type { ModuleWithFeatures } from '@/types/roles-permission';
 
 interface ModuleAccordionProps {

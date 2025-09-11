@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Search, Plus, Shield, Building2, Settings, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
-import { CLIENT_ROLES_SEED, SYSTEM_ROLES_SEED, RoleMeta, RoleType } from "./mock/roles";
+import { CLIENT_ROLES_SEED, SYSTEM_ROLES_SEED, RoleMeta, RoleType } from "./types";
 import { RoleMembersDialog } from "./RoleMembersDialog";
 import { RolePermissionsDialog } from "./RolePermissionsDialog";
 import { CreateOrEditRoleDialog } from "./CreateOrEditRoleDialog";

@@ -19,13 +19,12 @@ import { AnnouncementFormDialog } from "./AnnouncementFormDialog";
 import { AnnouncementSuccessDialog } from "./AnnouncementSuccessDialog";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { StatusPill } from "./StatusPill";
-import { MOCK_ANNOUNCEMENTS, MOCK_TENANTS } from "./mock/data";
+// Removed mock data - would be loaded from backend
 
 const PAGE_SIZE = 10;
 
 export default function SuperAdminAnnouncementPage() {
-  const [tenants] = React.useState<Tenant[]>(MOCK_TENANTS);
-  const [announcements, setAnnouncements] = React.useState<Announcement[]>(MOCK_ANNOUNCEMENTS);
+  const [announcements, setAnnouncements] = React.useState<Announcement[]>([]);
 
   const [q, setQ] = React.useState("");
   const [page, setPage] = React.useState(1);
@@ -61,8 +60,7 @@ export default function SuperAdminAnnouncementPage() {
 
   const tenantNameResolver = (ids?: string[]) => {
     if (!ids?.length) return AUDIENCE_LABEL.specific;
-    const names = ids.map((id) => tenants.find((t) => t.id === id)?.name).filter(Boolean) as string[];
-    return names.length ? `${names.slice(0, 2).join(", ")}${names.length > 2 ? ` +${names.length - 2}` : ""}` : AUDIENCE_LABEL.specific;
+    return "No tenants available";
   };
 
   const setSelectedOnPage = (checked: boolean) => {
@@ -268,7 +266,7 @@ export default function SuperAdminAnnouncementPage() {
       <AnnouncementFormDialog
         open={formOpen}
         mode={formMode}
-        tenants={tenants}
+        tenants={[]}
         initial={editing ?? undefined}
         onClose={() => setFormOpen(false)}
         onSubmitDraft={(draft) => {

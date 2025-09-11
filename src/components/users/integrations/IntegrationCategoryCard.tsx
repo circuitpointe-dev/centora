@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { IntegrationCategory, IntegrationProvider } from './mock/types';
+import { IntegrationCategory, IntegrationProvider } from './types';
 import { icons, CheckCircle, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

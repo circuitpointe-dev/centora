@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronsUpDown, Check, X, Search, Info } from "lucide-react";
-import { modules as allModules } from "./mock/roles-permission-data";
+import { modules as allModules } from "./types";
 
 type Props = {
   open: boolean;

@@ -7,13 +7,12 @@ import { Trash2 } from "lucide-react";
 import { CreateRuleDialog } from "./CreateRuleDialog";
 import { DeleteRulesDialog } from "./DeleteRulesDialog";
 import { AuditRuleCard } from "./AuditRuleCard";
-import { MOCK_AUDIT_RULES } from "./mock/auditRules";
-import { MOCK_AUDIT_LOGS } from "./mock/auditLogs";
+// Removed mock data - would be loaded from backend
 import type { AuditLog, AuditRule } from "./types";
 import { AuditLogsTable } from "./AuditLogsTable";
 
 export const SuperAdminAuditLogsPage: React.FC = () => {
-  const [rules, setRules] = useState<AuditRule[]>(MOCK_AUDIT_RULES);
+  const [rules, setRules] = useState<AuditRule[]>([]);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const selectedCount = rules.filter((r) => r.selected).length;
@@ -26,7 +25,7 @@ export const SuperAdminAuditLogsPage: React.FC = () => {
       Roles: [],
       Export: [],
     };
-    for (const l of MOCK_AUDIT_LOGS) g[l.category].push(l);
+    // Would be populated from backend audit logs
     return g;
   }, []);
 

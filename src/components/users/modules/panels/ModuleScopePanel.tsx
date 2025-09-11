@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { moduleConfigs } from "@/config/moduleConfigs";
-import { mockLicensingData } from "../mock/moduleSettings";
+import { mockLicensingData } from "../constants/moduleSettings";
 import { ModuleFeatureState, PerModuleSettings } from "../types";
 import { SettingRow } from "../components/SettingRow";
 

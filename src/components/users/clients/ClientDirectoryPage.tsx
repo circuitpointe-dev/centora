@@ -6,11 +6,12 @@ import { ClientTable } from './ClientTable';
 import { AddClientDialog } from './AddClientDialog';
 import { ClientDetailsDialog } from './ClientDetailsDialog';
 import { ClientActivityLogDialog } from './ClientActivityLogDialog';
-import { MOCK_CLIENTS, MOCK_ACTIVITIES } from './mock/clients';
+import { Client, ClientActivity } from './types';
 import type { Client, ClientFilters } from './types';
 
 export default function ClientDirectoryPage() {
-  const [clients, setClients] = React.useState<Client[]>(MOCK_CLIENTS);
+  const [clients, setClients] = React.useState<Client[]>([]);
+  const [activities] = React.useState<ClientActivity[]>([]);
   const [search, setSearch] = React.useState('');
   const [filters, setFilters] = React.useState<ClientFilters>({
     status: "all",
@@ -87,7 +88,7 @@ export default function ClientDirectoryPage() {
         open={activityOpen}
         onOpenChange={setActivityOpen}
         client={selected}
-        activities={MOCK_ACTIVITIES}
+        activities={activities}
       />
     </div>
   );

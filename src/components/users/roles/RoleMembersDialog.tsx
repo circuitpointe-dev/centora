@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ROLE_MEMBERS, Member } from './mock/members';
+import { ROLE_MEMBERS, Member } from './types';
 import { toast } from 'sonner';
 import { ChevronDown } from 'lucide-react';
 
