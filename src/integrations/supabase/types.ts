@@ -1274,7 +1274,12 @@ export type Database = {
       }
       get_user_stats: {
         Args: Record<PropertyKey, never>
-        Returns: Json
+        Returns: {
+          active_users: number
+          deactivated_users: number
+          inactive_users: number
+          pending_invitations: number
+        }[]
       }
       is_org_admin: {
         Args: { _org_id: string }
@@ -1297,7 +1302,7 @@ export type Database = {
           id: string
           modules: string[]
           roles: string[]
-          status: Database["public"]["Enums"]["user_status"]
+          status: string
         }[]
       }
       org_match: {
