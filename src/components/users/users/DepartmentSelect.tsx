@@ -19,32 +19,54 @@ type Props = {
 
 export const DepartmentSelect: React.FC<Props> = ({ value, onChange, error }) => {
   const { toast } = useToast();
-  const { data: departments, isLoading, refetch } = useDepartments();
+  const { data: departments, isLoading, refetch, error: departmentsError } = useDepartments();
 
   const [open, setOpen] = React.useState(false);
   const [newDept, setNewDept] = React.useState("");
 
   const options = departments ?? [];
 
+  // Show error if departments failed to load
+  React.useEffect(() => {
+    if (departmentsError) {
+      console.error('Departments loading error:', departmentsError);
+      toast({ 
+        title: 'Failed to load departments', 
+        description: departmentsError.message, 
+        variant: 'destructive' 
+      });
+    }
+  }, [departmentsError, toast]);
+
   const handleAdd = async () => {
     const name = newDept.trim();
     if (!name) return;
 
-    const { data: newId, error } = await supabase.rpc('create_department', {
-      _name: name,
-      _description: null,
-    });
+    try {
+      const { data: newId, error } = await supabase.rpc('create_department', {
+        _name: name,
+        _description: null,
+      });
 
-    if (error) {
-      toast({ title: 'Failed to add department', description: error.message, variant: 'destructive' });
-      return;
+      if (error) {
+        toast({ title: 'Failed to add department', description: error.message, variant: 'destructive' });
+        return;
+      }
+
+      toast({ title: 'Department added', description: `${name} created successfully.` });
+      onChange(String(newId));
+      setNewDept("");
+      setOpen(false);
+      // Refetch departments to update the list
+      refetch();
+    } catch (err) {
+      console.error('Error adding department:', err);
+      toast({ 
+        title: 'Failed to add department', 
+        description: 'An unexpected error occurred', 
+        variant: 'destructive' 
+      });
     }
-
-    toast({ title: 'Department added', description: `${name} created successfully.` });
-    onChange(String(newId));
-    setNewDept("");
-    setOpen(false);
-    refetch();
   };
 
   return (

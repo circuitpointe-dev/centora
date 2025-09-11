@@ -40,7 +40,7 @@ export const UserDirectoryTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 8;
 
-  const { data: users = [], isLoading: usersLoading } = useUsers({
+  const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useUsers({
     search: searchQuery,
     status: filters.status !== "all" ? filters.status : undefined,
     page: currentPage,
@@ -281,7 +281,10 @@ export const UserDirectoryTable: React.FC = () => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <UserActionMenu user={user as any} />
+                  <UserActionMenu 
+                    user={user as any} 
+                    onStatusChange={refetchUsers}
+                  />
                 </TableCell>
               </TableRow>
             ))}

@@ -35,9 +35,10 @@ interface User {
 
 interface UserActionMenuProps {
   user: User;
+  onStatusChange?: () => void;
 }
 
-export const UserActionMenu: React.FC<UserActionMenuProps> = ({ user }) => {
+export const UserActionMenu: React.FC<UserActionMenuProps> = ({ user, onStatusChange }) => {
   const updateUserMutation = useUpdateUser();
   const updateUserStatusMutation = useUpdateUserStatus();
 
@@ -56,6 +57,11 @@ export const UserActionMenu: React.FC<UserActionMenuProps> = ({ user }) => {
       userId: user.id,
       status: nextStatus,
       reason: isActive ? "Administrative deactivation" : "Administrative reactivation"
+    }, {
+      onSuccess: () => {
+        // Call the callback to refresh the parent component
+        onStatusChange?.();
+      }
     });
     setOpenConfirm(false);
   };
