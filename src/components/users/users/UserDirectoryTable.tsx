@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Users, Download } from "lucide-react";
-import { useMockUsers } from "@/components/users/users/mock/MockUsersProvider";
+import { useOrgUsers } from "@/hooks/useOrgUsers";
 import { Button } from "@/components/ui/button";
 
 const getStatusColor = (status: string) => {
@@ -31,7 +31,6 @@ const getStatusColor = (status: string) => {
 };
 
 export const UserDirectoryTable: React.FC = () => {
-  const { users } = useMockUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<UserFilters>({
     status: "all",
@@ -40,37 +39,33 @@ export const UserDirectoryTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 8;
 
-  const departments = useMemo(
-    () => Array.from(new Set(users.map((u) => u.department))).sort(),
-    [users]
-  );
+  const { data: users = [], isLoading } = useOrgUsers({
+    search: searchQuery || undefined,
+    page: currentPage,
+    pageSize: usersPerPage,
+  });
+
+  const departments = useMemo(() => {
+    if (!users.length) return [];
+    return Array.from(new Set(users.map((u) => u.department))).sort();
+  }, [users]);
 
   const filtered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    return users
-      .filter((u) => {
-        if (filters.status !== "all" && u.status !== filters.status)
-          return false;
-        if (filters.department !== "all" && u.department !== filters.department)
-          return false;
-        return true;
-      })
-      .filter((u) => {
-        if (!q) return true;
-        return (
-          u.full_name.toLowerCase().includes(q) ||
-          u.email.toLowerCase().includes(q) ||
-          u.department.toLowerCase().includes(q) ||
-          u.modules.join(" ").toLowerCase().includes(q) ||
-          u.roles.join(" ").toLowerCase().includes(q)
-        );
-      });
-  }, [users, filters, searchQuery]);
+    return users.filter((u) => {
+      if (filters.status !== "all" && u.status !== filters.status) return false;
+      if (filters.department !== "all" && u.department !== filters.department) return false;
+      return true;
+    });
+  }, [users, filters]);
 
   const totalUsers = filtered.length;
   const startIndex = (currentPage - 1) * usersPerPage;
   const pageItems = filtered.slice(startIndex, startIndex + usersPerPage);
   const endIndex = Math.min(startIndex + usersPerPage, totalUsers);
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center p-8">Loading users...</div>;
+  }
 
   const handleAddUser = () => {
     console.log("Add new user (UI-only)");
@@ -124,7 +119,7 @@ export const UserDirectoryTable: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  if (users.length === 0 && searchQuery === "") {
+  if (users.length === 0 && !searchQuery && !isLoading) {
     return (
       <div className="space-y-6">
         <UserTableToolbar

@@ -2,6 +2,7 @@
 import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, UserX, UserMinus, UserPlus2 } from "lucide-react";
+import { useUserStats } from "@/hooks/useUserStats";
 
 const StatCard: React.FC<{
   icon: React.ReactNode;
@@ -21,11 +22,16 @@ const StatCard: React.FC<{
 );
 
 export const UserStatsCards: React.FC = () => {
-  // Static values on purpose (UI-only)
-  const active = 2;
-  const inactive = 0;
-  const deactivated = 0;
-  const pending = 0;
+  const { data: stats, isLoading } = useUserStats();
+  
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  
+  const active = stats?.active_users || 0;
+  const inactive = stats?.inactive_users || 0; 
+  const deactivated = stats?.deactivated_users || 0;
+  const pending = stats?.pending_invitations || 0;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

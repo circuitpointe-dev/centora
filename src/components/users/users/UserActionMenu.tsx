@@ -21,7 +21,7 @@ import {
 import { MoreVertical, Eye, Edit, UserCheck, UserX } from "lucide-react";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle } from "@/components/ui/side-dialog";
 import { UserProfilePanel } from "./UserProfilePanel";
-import { useMockUsers } from "@/components/users/users/mock/MockUsersProvider";
+import { useUpdateUser } from "@/hooks/useUsers";
 
 interface User {
   id: string;
@@ -38,7 +38,7 @@ interface UserActionMenuProps {
 }
 
 export const UserActionMenu: React.FC<UserActionMenuProps> = ({ user }) => {
-  const { updateUser } = useMockUsers();
+  const updateUserMutation = useUpdateUser();
 
   const [openSheet, setOpenSheet] = React.useState<false | "view" | "edit">(false);
   const [openConfirm, setOpenConfirm] = React.useState(false);
@@ -51,7 +51,10 @@ export const UserActionMenu: React.FC<UserActionMenuProps> = ({ user }) => {
 
   const applyToggle = () => {
     const nextStatus: User["status"] = isActive ? "deactivated" : "active";
-    updateUser({ ...user, status: nextStatus });
+    updateUserMutation.mutate({
+      userId: user.id,
+      data: { status: nextStatus }
+    });
     setOpenConfirm(false);
   };
 

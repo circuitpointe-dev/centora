@@ -13,7 +13,7 @@ import {
 import { AddUserForm, type AddUserPayload } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
 import { UserInviteSuccess } from "./UserInviteSuccess";
-import { useMockUsers } from "@/components/users/users/mock/MockUsersProvider";
+import { useCreateOrgUser } from "@/hooks/useCreateOrgUser";
 
 type Step = "form" | "preview" | "success";
 
@@ -21,8 +21,7 @@ export const AddUserDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
   const [invite, setInvite] = useState<AddUserPayload | null>(null);
-  const [isSimulating, setIsSimulating] = useState(false);
-  const { addUser } = useMockUsers();
+  const createUserMutation = useCreateOrgUser();
 
   const reset = () => {
     setInvite(null);
@@ -37,23 +36,23 @@ export const AddUserDialog: React.FC = () => {
 
   const handleConfirm = async () => {
     if (!invite) return;
-    setIsSimulating(true);
-    console.log("[UI-only] Create user payload:", invite);
-    await new Promise((r) => setTimeout(r, 450));
-    addUser({
-      id: "u_" + Math.random().toString(36).slice(2, 8),
-      full_name: invite.fullName,
-      email: invite.email,
-      department: invite.department || "—",
-      status: "active",
-      // keep modules/roles as simple display; map from access if you like
-      modules: Object.entries(invite.access || {})
-        .filter(([, m]: any) => m?._module)
-        .map(([k]) => k),
-      roles: [], // legacy; your per-module roles live inside access now
-    });
-    setIsSimulating(false);
-    setStep("success");
+    
+    try {
+      // Transform the invite data to match the backend expected format
+      const payload = {
+        org_id: '', // Will be filled by the hook
+        email: invite.email,
+        full_name: invite.fullName,
+        department_id: invite.department || null,
+        role_ids: [], // Add role IDs based on access
+        access_json: invite.access || {},
+      };
+      
+      await createUserMutation.mutateAsync(payload);
+      setStep("success");
+    } catch (error) {
+      console.error('Failed to create user:', error);
+    }
   };
 
   const handleAddAnother = () => {
@@ -108,7 +107,7 @@ export const AddUserDialog: React.FC = () => {
             invite={invite}
             onBack={() => setStep("form")}
             onConfirm={handleConfirm}
-            isLoading={isSimulating}
+            isLoading={createUserMutation.isPending}
           />
         )}
 

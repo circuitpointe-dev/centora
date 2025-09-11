@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DepartmentSelect } from "@/components/users/users/DepartmentSelect";
 import { Users as UsersIcon, Mail, Building2, Shield } from "lucide-react";
-import { useMockUsers } from "@/components/users/users/mock/MockUsersProvider";
+import { useUpdateUser } from "@/hooks/useUsers";
 
 type Mode = "view" | "edit";
 
@@ -27,7 +27,7 @@ interface UserProfilePanelProps {
 }
 
 export const UserProfilePanel: React.FC<UserProfilePanelProps> = ({ mode, user, onClose }) => {
-  const { updateUser } = useMockUsers();
+  const updateUserMutation = useUpdateUser();
   const [editing, setEditing] = React.useState(mode === "edit");
 
   const [fullName, setFullName] = React.useState(user.full_name);
@@ -36,12 +36,12 @@ export const UserProfilePanel: React.FC<UserProfilePanelProps> = ({ mode, user, 
   const [status, setStatus] = React.useState<UserProfilePanelProps["user"]["status"]>(user.status);
 
   const save = () => {
-    updateUser({
-      ...user,
-      full_name: fullName.trim(),
-      email: email.trim(),
-      department: department || user.department,
-      status,
+    updateUserMutation.mutate({
+      userId: user.id,
+      data: {
+        full_name: fullName.trim(),
+        status,
+      }
     });
     onClose();
   };
