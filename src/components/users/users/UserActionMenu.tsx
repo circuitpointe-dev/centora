@@ -21,7 +21,7 @@ import {
 import { MoreVertical, Eye, Edit, UserCheck, UserX } from "lucide-react";
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle } from "@/components/ui/side-dialog";
 import { UserProfilePanel } from "./UserProfilePanel";
-import { useUpdateUser } from "@/hooks/useUsers";
+import { useUpdateUserStatus } from "@/hooks/useUsers";
 
 interface User {
   id: string;
@@ -38,7 +38,7 @@ interface UserActionMenuProps {
 }
 
 export const UserActionMenu: React.FC<UserActionMenuProps> = ({ user }) => {
-  const updateUserMutation = useUpdateUser();
+  const updateUserStatusMutation = useUpdateUserStatus();
 
   const [openSheet, setOpenSheet] = React.useState<false | "view" | "edit">(false);
   const [openConfirm, setOpenConfirm] = React.useState(false);
@@ -51,9 +51,9 @@ export const UserActionMenu: React.FC<UserActionMenuProps> = ({ user }) => {
 
   const applyToggle = () => {
     const nextStatus: User["status"] = isActive ? "deactivated" : "active";
-    updateUserMutation.mutate({
+    updateUserStatusMutation.mutate({
       userId: user.id,
-      data: { status: nextStatus }
+      status: nextStatus
     });
     setOpenConfirm(false);
   };

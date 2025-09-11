@@ -18,7 +18,7 @@ export const useUserStats = () => {
         throw new Error(`Failed to fetch user stats: ${error.message}`);
       }
 
-      // Supabase RPC returns an array of rows; pick the first row
+      // The improved RPC now returns proper rows
       return (data && (data as any[])[0]) as UserStats;
     },
   });
