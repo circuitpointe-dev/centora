@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, CheckCircle2, Mail, Clock } from "lucide-react";
+import { Plus, CheckCircle2, Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { RoleCardsRow } from "./RoleCardsRow";
-import { ModuleAccordion } from "./ModuleAccordion";
-import { roles, modules } from "./mock/roles-permission-data";
-import { CreateRoleRequestDialog } from "./CreateRoleRequestDialog";
+import { useRoles } from "@/hooks/useRoles";
+import { useOrgModulesWithFeatures } from "@/hooks/useRoleManagement";
+import { useCreateRoleRequest } from "@/hooks/useRoleRequests";
+import { useAuth } from "@/contexts/AuthContext";
 
 type RequestPayload = {
   full_name: string;
@@ -18,28 +18,49 @@ type RequestPayload = {
   message: string;
 };
 
-type RequestListItem = RequestPayload & {
-  id: string;
-  status: "pending" | "approved" | "declined";
-  createdAt: string;
-};
-
 export const RolesPermissionPage: React.FC = () => {
-  const [selectedRoleId, setSelectedRoleId] = useState("admin");
-  const [createOpen, setCreateOpen] = useState(false);
+  const [selectedRoleId, setSelectedRoleId] = useState("");
   const [requestSuccess, setRequestSuccess] = useState<RequestPayload | null>(null);
-  const [myRequests, setMyRequests] = useState<RequestListItem[]>([]);
-  const [lastSubmittedAt, setLastSubmittedAt] = useState<number | null>(null);
 
   const { toast } = useToast();
   const createBtnRef = useRef<HTMLButtonElement | null>(null);
+  
+  // Get real data from backend
+  const { data: roles = [], isLoading: rolesLoading } = useRoles();
+  const { data: modules = [], isLoading: modulesLoading } = useOrgModulesWithFeatures();
+  const { user } = useAuth();
+  const createRoleRequest = useCreateRoleRequest();
 
-  // Mock current user context (UI-only)
-  const currentUser = { full_name: "Jane Doe", email: "jane@organization.org" };
+  // Set first role as default when roles load
+  useEffect(() => {
+    if (roles.length > 0 && !selectedRoleId) {
+      setSelectedRoleId(roles[0].id);
+    }
+  }, [roles, selectedRoleId]);
 
-  const handleCreateNewRole = () => setCreateOpen(true);
+  const handleCreateNewRole = () => {
+    if (!user) return;
+    
+    const requestData = {
+      requested_role: "Custom Role",
+      modules: [],
+      message: "Requesting permission to create custom roles for the organization."
+    };
+    
+    createRoleRequest.mutate(requestData, {
+      onSuccess: () => {
+        setRequestSuccess({
+          full_name: user.email,
+          email: user.email,
+          requested_role_name: "Custom Role",
+          requested_modules: [],
+          message: requestData.message
+        });
+      }
+    });
+  };
 
-  const moduleNameById = (id: string) => modules.find((m) => m.id === id)?.name ?? id;
+  const moduleNameById = (id: string) => modules.find((m) => m.module === id)?.module_name ?? id;
 
   // On "Back to Roles", return focus to the Create button
   useEffect(() => {
@@ -60,9 +81,9 @@ export const RolesPermissionPage: React.FC = () => {
             <div className="flex justify-center">
               <CheckCircle2 className="h-12 w-12 text-brand-purple" />
             </div>
-            <CardTitle className="text-2xl">Request sent to Centora</CardTitle>
+            <CardTitle className="text-2xl">Request sent successfully</CardTitle>
             <p className="text-sm text-gray-600">
-              Your message has been sent and will be reviewed by Centora. We’ll get back to you
+              Your role request has been submitted and will be reviewed by an administrator. We'll get back to you
               shortly at <span className="font-medium">{requestSuccess.email}</span>.
             </p>
           </CardHeader>
@@ -111,20 +132,10 @@ export const RolesPermissionPage: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
               <Button
-                variant="outline"
-                onClick={() => {
-                  setRequestSuccess(null);
-                  setCreateOpen(true);
-                }}
-                className="hover:bg-brand-purple hover:text-brand-purple-foreground hover:border-brand-purple"
-              >
-                Submit another request
-              </Button>
-              <Button
                 onClick={() => {
                   setRequestSuccess(null);
                 }}
-                ref={createBtnRef} // focus will be restored after state flips
+                ref={createBtnRef}
                 className="bg-brand-purple text-brand-purple-foreground hover:bg-brand-purple/90"
               >
                 Back to Roles
@@ -136,78 +147,109 @@ export const RolesPermissionPage: React.FC = () => {
     );
   }
 
+  if (rolesLoading || modulesLoading) {
+    return (
+      <div className="p-6 space-y-8">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Main Roles & Permission screen
   return (
     <div className="p-6 space-y-8">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-xl font-medium text-gray-900">Roles & Permission</h1>
+          <h1 className="text-xl font-medium text-gray-900">Roles & Permissions</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage user roles and permissions across your organization&apos;s modules and features.
+            View user roles and permissions across your organization&apos;s modules and features.
           </p>
         </div>
         <Button
           onClick={handleCreateNewRole}
           ref={createBtnRef}
+          disabled={createRoleRequest.isPending}
           className="bg-brand-purple text-brand-purple-foreground hover:bg-brand-purple/90"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Create New Role
+          Request New Role
         </Button>
       </div>
 
-      {/* Role filters */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium text-gray-900">Select Role</h2>
-        <RoleCardsRow
-          roles={roles}
-          selectedRoleId={selectedRoleId}
-          onSelect={setSelectedRoleId}
-        />
-      </div>
-
-      {/* Module accordion */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-medium text-gray-900">Module Features & Members</h2>
-          <div className="text-sm text-gray-500">
-            Showing members with{" "}
-            <span className="font-medium capitalize">
-              {roles.find((r) => r.id === selectedRoleId)?.name}
-            </span>{" "}
-            role
+      {roles.length === 0 ? (
+        <Card>
+          <CardContent className="py-8 text-center">
+            <p className="text-gray-500">No roles found. Contact your administrator to set up roles.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {/* Role filters */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-medium text-gray-900">Available Roles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {roles.map((role) => (
+                <Card 
+                  key={role.id} 
+                  className={`cursor-pointer transition-all ${
+                    selectedRoleId === role.id ? 'ring-2 ring-brand-purple' : 'hover:shadow-md'
+                  }`}
+                  onClick={() => setSelectedRoleId(role.id)}
+                >
+                  <CardHeader>
+                    <CardTitle className="text-base">{role.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-500">{role.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-        <ModuleAccordion modules={modules} selectedRoleId={selectedRoleId} />
-      </div>
 
-      {/* Create Role Request Dialog */}
-      <CreateRoleRequestDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        currentUser={currentUser}
-        cooldownMs={30_000}
-        lastSubmittedAt={lastSubmittedAt}
-        onSuccess={(payload) => {
-          // add to local "My Requests" list
-          const id = crypto?.randomUUID?.() ?? String(Math.random()).slice(2);
-          const createdAt = new Date().toISOString();
-          setMyRequests((prev) => [
-            ...prev,
-            { id, createdAt, status: "pending", ...payload },
-          ]);
-          // cooldown timestamp & success screen
-          const now = Date.now();
-          setLastSubmittedAt(now);
-          setRequestSuccess(payload);
-          // toast confirmation
-          toast({
-            title: "Request sent to Centora",
-            description:
-              "We’ll review your request and follow up at " + payload.email + ".",
-          });
-        }}
-      />
+          {/* Module features */}
+          {selectedRoleId && modules.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-medium text-gray-900">Available Modules & Features</h2>
+                <div className="text-sm text-gray-500">
+                  Showing features for{" "}
+                  <span className="font-medium">
+                    {roles.find((r) => r.id === selectedRoleId)?.name}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="grid gap-4">
+                {modules.map((module) => (
+                  <Card key={module.module}>
+                    <CardHeader>
+                      <CardTitle className="text-base">{module.module_name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {Array.isArray(module.features) && module.features.map((feature: any) => (
+                          <Badge key={feature.id} variant="outline" className="justify-start">
+                            {feature.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
