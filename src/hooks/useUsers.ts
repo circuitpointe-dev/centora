@@ -68,7 +68,7 @@ export const useUsers = ({
   pageSize?: number;
 } = {}) => {
   return useQuery({
-    queryKey: ['users', search, role, status, page, pageSize],
+    queryKey: ['org-users', search, role, status, page, pageSize],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('list_org_users', {
         _search: search || null,
@@ -88,7 +88,7 @@ export const useUsers = ({
 // Hook to get users count (for pagination)
 export const useUsersCount = (search?: string) => {
   return useQuery({
-    queryKey: ['users-count', search],
+    queryKey: ['org-users-count', search],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('count_org_users', {
         _search: search || null,
@@ -125,7 +125,8 @@ export const useCreateUser = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users-count'] });
       queryClient.invalidateQueries({ queryKey: ['user-stats'] });
       toast({
         title: 'User invited',
@@ -159,7 +160,9 @@ export const useUpdateUser = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users-count'] });
+      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
       toast({
         title: 'User updated',
         description: 'The user has been updated successfully.',
@@ -202,11 +205,12 @@ export const useUpdateUserStatus = () => {
       // TODO: Add audit log entry for status change
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users-count'] });
       queryClient.invalidateQueries({ queryKey: ['user-stats'] });
       toast({
         title: 'User status updated',
-        description: `User has been ${variables.status === 'active' ? 'activated' : 'suspended'}.`,
+        description: `User has been ${variables.status === 'active' ? 'activated' : 'deactivated'}.`,
       });
     },
     onError: (error) => {
@@ -248,7 +252,9 @@ export const useAssignUserRoles = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users-count'] });
+      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
       toast({
         title: 'Roles updated',
         description: 'User roles have been updated successfully.',

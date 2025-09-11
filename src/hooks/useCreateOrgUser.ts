@@ -46,7 +46,8 @@ export const useCreateOrgUser = () => {
         title: "Success",
         description: "User created successfully. Default password: P@$$w0rd",
       });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users'] });
+      queryClient.invalidateQueries({ queryKey: ['org-users-count'] });
       queryClient.invalidateQueries({ queryKey: ['user-stats'] });
       queryClient.invalidateQueries({ queryKey: ['departments'] });
       queryClient.invalidateQueries({ queryKey: ['roles'] });
