@@ -14,8 +14,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Users, Download } from "lucide-react";
-import { useOrgUsers } from "@/hooks/useOrgUsers";
 import { Button } from "@/components/ui/button";
+import { useUsers, useUsersCount } from "@/hooks/useUsers";
+import { useDepartments } from "@/hooks/useDepartments";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -39,33 +40,23 @@ export const UserDirectoryTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 8;
 
-  const { data: users = [], isLoading } = useOrgUsers({
-    search: searchQuery || undefined,
+  const { data: users = [], isLoading: usersLoading } = useUsers({
+    search: searchQuery,
+    status: filters.status !== "all" ? filters.status : undefined,
     page: currentPage,
     pageSize: usersPerPage,
   });
 
-  const departments = useMemo(() => {
-    if (!users.length) return [];
-    return Array.from(new Set(users.map((u) => u.department))).sort();
-  }, [users]);
+  const { data: totalUsers = 0 } = useUsersCount(searchQuery);
+  const { data: departmentsData = [] } = useDepartments();
 
-  const filtered = useMemo(() => {
-    return users.filter((u) => {
-      if (filters.status !== "all" && u.status !== filters.status) return false;
-      if (filters.department !== "all" && u.department !== filters.department) return false;
-      return true;
-    });
-  }, [users, filters]);
+  const departments = useMemo(
+    () => departmentsData.map(d => d.name).sort(),
+    [departmentsData]
+  );
 
-  const totalUsers = filtered.length;
   const startIndex = (currentPage - 1) * usersPerPage;
-  const pageItems = filtered.slice(startIndex, startIndex + usersPerPage);
   const endIndex = Math.min(startIndex + usersPerPage, totalUsers);
-
-  if (isLoading) {
-    return <div className="flex items-center justify-center p-8">Loading users...</div>;
-  }
 
   const handleAddUser = () => {
     console.log("Add new user (UI-only)");
@@ -78,27 +69,26 @@ export const UserDirectoryTable: React.FC = () => {
   };
 
   const exportCsv = () => {
-    const rows = filtered; // export the filtered set (not only the current page)
     const headers = [
       "Name",
       "Email",
-      "Department",
+      "Department", 
       "Status",
       "Modules",
       "Roles",
     ];
     const csvRows = [
       headers.join(","),
-      ...rows.map((u) => {
-        const modules = u.modules.join("; ");
-        const roles = u.roles.join("; ");
+      ...users.map((u) => {
+        const modules = u.modules?.join("; ") || "";
+        const roles = u.roles?.join("; ") || "";
         // escape quotes/commas
         const safe = (s: string) =>
           `"${(s ?? "").toString().replace(/"/g, '""')}"`;
         return [
-          safe(u.full_name),
+          safe(u.full_name || u.email),
           safe(u.email),
-          safe(u.department),
+          safe(u.department || ""),
           safe(u.status),
           safe(modules),
           safe(roles),
@@ -119,7 +109,22 @@ export const UserDirectoryTable: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  if (users.length === 0 && !searchQuery && !isLoading) {
+  if (usersLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-10 bg-gray-100 animate-pulse rounded" />
+        <div className="border rounded-lg">
+          <div className="p-4 space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-12 bg-gray-100 animate-pulse rounded" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (users.length === 0 && searchQuery === "") {
     return (
       <div className="space-y-6">
         <UserTableToolbar
@@ -214,24 +219,24 @@ export const UserDirectoryTable: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {pageItems.map((user) => (
+            {users.map((user) => (
               <TableRow key={user.id} className="hover:bg-gray-50">
                 <TableCell>
                   <div>
                     <div className="font-medium text-gray-900">
-                      {user.full_name}
+                      {user.full_name || user.email}
                     </div>
                     <div className="text-sm text-gray-500">{user.email}</div>
                   </div>
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className="text-xs">
-                    {user.department}
+                    {user.department || "No Department"}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    {user.modules.length > 0 ? (
+                    {user.modules && user.modules.length > 0 ? (
                       <>
                         <span className="text-sm text-gray-900">
                           {user.modules[0]}
@@ -249,7 +254,7 @@ export const UserDirectoryTable: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    {user.roles.length > 0 ? (
+                    {user.roles && user.roles.length > 0 ? (
                       <>
                         <span className="text-sm text-gray-900">
                           {user.roles[0]}

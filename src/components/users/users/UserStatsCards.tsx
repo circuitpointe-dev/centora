@@ -25,13 +25,25 @@ export const UserStatsCards: React.FC = () => {
   const { data: stats, isLoading } = useUserStats();
   
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="border rounded-lg">
+            <CardContent className="p-5 flex flex-col items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-gray-100 animate-pulse" />
+              <div className="h-6 w-8 bg-gray-100 animate-pulse rounded" />
+              <div className="h-4 w-20 bg-gray-100 animate-pulse rounded" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
   }
-  
-  const active = stats?.active_users || 0;
-  const inactive = stats?.inactive_users || 0; 
-  const deactivated = stats?.deactivated_users || 0;
-  const pending = stats?.pending_invitations || 0;
+
+  const active = Number(stats?.active_users) || 0;
+  const inactive = Number(stats?.inactive_users) || 0;
+  const deactivated = Number(stats?.deactivated_users) || 0;
+  const pending = Number(stats?.pending_invitations) || 0;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
