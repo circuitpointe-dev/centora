@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useSignatureRequests, useSignatureStats } from '@/hooks/useESignature';
+import { DocumentDetailsDialog } from './DocumentDetailsDialog';
 import { Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 

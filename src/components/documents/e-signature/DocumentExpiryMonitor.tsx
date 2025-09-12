@@ -1,10 +1,41 @@
-import { DocumentExpiryMonitor } from './DocumentExpiryMonitor';
-import { SignatureTracking } from './SignatureTracking';
-import { SignedDocumentHistory } from './SignedDocumentHistory';
-import { useSignatureRequests, useSignatureStats } from '@/hooks/useESignature';
-import { Loader2 } from 'lucide-react';
-
+import React, { useState } from 'react';
+import { Loader2, Search, FileText, MoreHorizontal, Upload, Mail } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { useExpiringDocuments, useDocumentOwners, useSendExpiryReminder, ExpiringDocument } from '@/hooks/useDocumentExpiry';
+import { SendExpiryReminderDialog } from './SendExpiryReminderDialog';
+import { ExpiryConfirmationDialog } from './ExpiryConfirmationDialog';
 
 export const DocumentExpiryMonitor = () => {
   const [searchTerm, setSearchTerm] = useState('');

@@ -210,7 +210,7 @@ export const useExpiredPolicies = (metrics?: string[]) => {
         .select(`
           id,
           expires_date,
-          documents!inner(title)
+          documents(title)
         `)
         .lt('expires_date', new Date().toISOString().split('T')[0])
         .order('expires_date', { ascending: false })
@@ -219,7 +219,7 @@ export const useExpiredPolicies = (metrics?: string[]) => {
       if (error) throw error;
 
       return (expiredPolicies || []).map(policy => ({
-        policyName: policy.documents?.title || 'Untitled Policy',
+        policyName: (policy.documents as any)?.title || 'Untitled Policy',
         expiredDate: policy.expires_date || '',
         status: 'Expired',
       }));
