@@ -210,6 +210,12 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
 
       // Handle other types of errors
       if (error) {
+        const status = (error as any)?.context?.response?.status;
+        if (status === 409) {
+          showDuplicateEmailToast();
+          setCurrentStep(1);
+          return;
+        }
         console.error('Registration error:', error);
         showGenericError('Please try again later');
         return;
