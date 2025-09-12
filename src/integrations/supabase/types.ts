@@ -1143,6 +1143,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      admin_update_user: {
+        Args: {
+          _department_id?: string
+          _full_name?: string
+          _profile_id: string
+          _status?: string
+        }
+        Returns: boolean
+      }
+      admin_update_user_status: {
+        Args: { _profile_id: string; _status: string }
+        Returns: boolean
+      }
       can_access_donor_document: {
         Args: { file_path: string }
         Returns: boolean
@@ -1152,7 +1165,9 @@ export type Database = {
         Returns: undefined
       }
       count_org_users: {
-        Args: { _search?: string }
+        Args:
+          | { _department?: string; _search?: string; _status?: string }
+          | { _search?: string }
         Returns: number
       }
       create_department: {
@@ -1294,7 +1309,15 @@ export type Database = {
         Returns: boolean
       }
       list_org_users: {
-        Args: { _page?: number; _page_size?: number; _search?: string }
+        Args:
+          | {
+              _department?: string
+              _page?: number
+              _page_size?: number
+              _search?: string
+              _status?: string
+            }
+          | { _page?: number; _page_size?: number; _search?: string }
         Returns: {
           department: string
           email: string
