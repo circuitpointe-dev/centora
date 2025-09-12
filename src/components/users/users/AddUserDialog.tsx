@@ -38,9 +38,9 @@ export const AddUserDialog: React.FC = () => {
     if (!invite) return;
     
     try {
-      // Transform the invite data to match the edge function expected format
+      // Transform the invite data to match the backend expected format
       const payload = {
-        org_id: '', // Will be resolved by the edge function
+        org_id: '', // Will be filled by the hook
         email: invite.email,
         full_name: invite.fullName,
         department_id: invite.department || null,

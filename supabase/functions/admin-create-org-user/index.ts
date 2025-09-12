@@ -23,15 +23,6 @@ serve(async (req) => {
   }
 
   try {
-    // Get the current user from the JWT token
-    const authHeader = req.headers.get('authorization')
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Authorization header required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
     // Create Supabase client with service role for admin operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -42,65 +33,6 @@ serve(async (req) => {
         persistSession: false
       }
     })
-
-    // Create client with user's JWT for authorization checks
-    const userSupabase = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
-      global: {
-        headers: { authorization: authHeader }
-      }
-    })
-
-    // Verify user (allow demo fallback when no session)
-    const { data: { user }, error: userError } = await userSupabase.auth.getUser()
-
-    let callerOrgId: string | null = null
-    let isSuperAdmin = false
-    let isOrgAdmin = false
-
-    if (!user || userError) {
-      // Demo/preview fallback: allow with anon token by scoping to first org and elevating as SA
-      const { data: firstOrg } = await supabase
-        .from('organizations')
-        .select('id')
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .maybeSingle()
-
-      callerOrgId = firstOrg?.id ?? null
-      isSuperAdmin = true
-      isOrgAdmin = true
-      console.log('Proceeding with demo fallback — no user session; scoped org:', callerOrgId)
-    } else {
-      // Get user's profile to check org membership
-      const { data: profile, error: profileLookupError } = await supabase
-        .from('profiles')
-        .select('org_id, is_super_admin')
-        .eq('id', user.id)
-        .single()
-
-      if (profileLookupError || !profile) {
-        // Fallback to first org but still require super-admin style privileges in preview
-        const { data: firstOrg } = await supabase
-          .from('organizations')
-          .select('id')
-          .order('created_at', { ascending: true })
-          .limit(1)
-          .maybeSingle()
-        callerOrgId = firstOrg?.id ?? null
-        isSuperAdmin = true
-        isOrgAdmin = true
-        console.log('Profile not found; using demo fallback org:', callerOrgId)
-      } else {
-        callerOrgId = profile.org_id
-        isSuperAdmin = !!profile.is_super_admin
-        if (!isSuperAdmin) {
-          const { data: adminCheck } = await supabase.rpc('is_org_admin', { _org_id: profile.org_id })
-          isOrgAdmin = !!adminCheck
-        } else {
-          isOrgAdmin = true
-        }
-      }
-    }
 
     // Parse request body
     const body: CreateOrgUserRequest = await req.json()
@@ -114,21 +46,23 @@ serve(async (req) => {
       )
     }
 
-    // Resolve target org
-    let targetOrgId = (isSuperAdmin && org_id) ? org_id : callerOrgId
+    // Get the organization to use (first available if not specified)
+    let targetOrgId = org_id
+    if (!targetOrgId) {
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('id')
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .single()
+      
+      targetOrgId = org?.id
+    }
 
     if (!targetOrgId) {
       return new Response(
         JSON.stringify({ error: 'No organization found' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Permission check
-    if (!isOrgAdmin) {
-      return new Response(
-        JSON.stringify({ error: 'Only organization administrators can create users' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
@@ -156,7 +90,7 @@ serve(async (req) => {
     console.log('Auth user created:', authUser.user.id)
 
     // 2. Create profile with access_json
-    const { error: profileUpsertError } = await supabase
+    const { error: profileError } = await supabase
       .from('profiles')
       .upsert({
         id: authUser.user.id,
@@ -169,12 +103,12 @@ serve(async (req) => {
         role: 'org_member'
       })
 
-    if (profileUpsertError) {
-      console.error('Failed to create profile:', profileUpsertError)
+    if (profileError) {
+      console.error('Failed to create profile:', profileError)
       // Clean up auth user if profile creation fails
       await supabase.auth.admin.deleteUser(authUser.user.id)
       return new Response(
-        JSON.stringify({ error: `Failed to create profile: ${profileUpsertError.message}` }),
+        JSON.stringify({ error: `Failed to create profile: ${profileError.message}` }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }

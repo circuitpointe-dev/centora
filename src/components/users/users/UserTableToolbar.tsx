@@ -108,7 +108,6 @@ export const UserTableToolbar: React.FC<UserTableToolbarProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="No Department">No Department</SelectItem>
                     {departments.map((d) => (
                       <SelectItem key={d} value={d}>
                         {d}

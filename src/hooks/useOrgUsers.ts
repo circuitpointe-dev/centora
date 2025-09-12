@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface OrgUser {
+interface OrgUser {
   id: string;
   full_name: string;
   email: string;
@@ -13,26 +13,16 @@ export interface OrgUser {
 
 interface UseOrgUsersParams {
   search?: string;
-  department?: string;
-  status?: string;
   page?: number;
   pageSize?: number;
 }
 
-export const useOrgUsers = ({ 
-  search, 
-  department, 
-  status, 
-  page = 1, 
-  pageSize = 8 
-}: UseOrgUsersParams = {}) => {
+export const useOrgUsers = ({ search, page = 1, pageSize = 8 }: UseOrgUsersParams = {}) => {
   return useQuery({
-    queryKey: ['org-users', search, department, status, page, pageSize],
+    queryKey: ['org-users', search, page, pageSize],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('list_org_users', {
         _search: search || null,
-        _status: status || null,
-        _department: department || null,
         _page: page,
         _page_size: pageSize,
       });
@@ -46,14 +36,12 @@ export const useOrgUsers = ({
   });
 };
 
-export const useOrgUsersCount = (search?: string, department?: string, status?: string) => {
+export const useOrgUsersCount = (search?: string) => {
   return useQuery({
-    queryKey: ['org-users-count', search, department, status],
+    queryKey: ['org-users-count', search],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('count_org_users', {
         _search: search || null,
-        _status: status || null,
-        _department: department || null,
       });
       
       if (error) {
