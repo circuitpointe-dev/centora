@@ -205,14 +205,19 @@ Deno.serve(async (req) => {
 
     createdOrgId = orgRes.id as string;
 
-    // 3) Create profile for the admin user
-    const { error: profileError } = await adminClient.from("profiles").insert({
-      id: createdUserId,
-      email: payload.email,
-      full_name: payload.contactName,
-      role: "org_admin",
-      org_id: createdOrgId,
-    });
+    // 3) Create or update profile for the admin user (id may already exist via triggers)
+    const { error: profileError } = await adminClient
+      .from("profiles")
+      .upsert(
+        {
+          id: createdUserId,
+          email: payload.email,
+          full_name: payload.contactName,
+          role: "org_admin",
+          org_id: createdOrgId,
+        },
+        { onConflict: "id" }
+      );
 
     if (profileError) {
       console.error("profileError", profileError);
