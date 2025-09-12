@@ -85,6 +85,228 @@ export type Database = {
           },
         ]
       }
+      document_shares: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          created_by: string
+          document_id: string
+          expires_at: string | null
+          id: string
+          permission_level: string
+          shared_with_email: string
+          shared_with_name: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          created_by: string
+          document_id: string
+          expires_at?: string | null
+          id?: string
+          permission_level?: string
+          shared_with_email: string
+          shared_with_name?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          expires_at?: string | null
+          id?: string
+          permission_level?: string
+          shared_with_email?: string
+          shared_with_name?: string | null
+        }
+        Relationships: []
+      }
+      document_signatures: {
+        Row: {
+          created_at: string
+          created_by: string
+          document_id: string
+          expires_at: string | null
+          id: string
+          signature_data: Json | null
+          signed_at: string | null
+          signer_email: string
+          signer_name: string | null
+          status: Database["public"]["Enums"]["signature_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          document_id: string
+          expires_at?: string | null
+          id?: string
+          signature_data?: Json | null
+          signed_at?: string | null
+          signer_email: string
+          signer_name?: string | null
+          status?: Database["public"]["Enums"]["signature_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          expires_at?: string | null
+          id?: string
+          signature_data?: Json | null
+          signed_at?: string | null
+          signer_email?: string
+          signer_name?: string | null
+          status?: Database["public"]["Enums"]["signature_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      document_tag_associations: {
+        Row: {
+          created_at: string
+          document_id: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: []
+      }
+      document_tags: {
+        Row: {
+          bg_color: string
+          color: string
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          org_id: string
+          text_color: string
+        }
+        Insert: {
+          bg_color?: string
+          color?: string
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          org_id: string
+          text_color?: string
+        }
+        Update: {
+          bg_color?: string
+          color?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          org_id?: string
+          text_color?: string
+        }
+        Relationships: []
+      }
+      document_versions: {
+        Row: {
+          changes_description: string | null
+          created_at: string
+          created_by: string
+          document_id: string
+          file_path: string
+          id: string
+          version: string
+        }
+        Insert: {
+          changes_description?: string | null
+          created_at?: string
+          created_by: string
+          document_id: string
+          file_path: string
+          id?: string
+          version: string
+        }
+        Update: {
+          changes_description?: string | null
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          file_path?: string
+          id?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          category: Database["public"]["Enums"]["document_category"]
+          created_at: string
+          created_by: string
+          description: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          is_template: boolean | null
+          mime_type: string | null
+          org_id: string
+          status: Database["public"]["Enums"]["document_status"]
+          template_category: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+          version: string | null
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["document_category"]
+          created_at?: string
+          created_by: string
+          description?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          is_template?: boolean | null
+          mime_type?: string | null
+          org_id: string
+          status?: Database["public"]["Enums"]["document_status"]
+          template_category?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["document_category"]
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          is_template?: boolean | null
+          mime_type?: string | null
+          org_id?: string
+          status?: Database["public"]["Enums"]["document_status"]
+          template_category?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
       donor_contacts: {
         Row: {
           created_at: string
@@ -813,6 +1035,69 @@ export type Database = {
         }
         Relationships: []
       }
+      policy_acknowledgments: {
+        Row: {
+          acknowledged_at: string
+          id: string
+          ip_address: unknown | null
+          policy_document_id: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          id?: string
+          ip_address?: unknown | null
+          policy_document_id: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          id?: string
+          ip_address?: unknown | null
+          policy_document_id?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      policy_documents: {
+        Row: {
+          acknowledgment_required: boolean | null
+          created_at: string
+          department: string | null
+          document_id: string
+          effective_date: string
+          expires_date: string | null
+          id: string
+          policy_content: Json | null
+          updated_at: string
+        }
+        Insert: {
+          acknowledgment_required?: boolean | null
+          created_at?: string
+          department?: string | null
+          document_id: string
+          effective_date: string
+          expires_date?: string | null
+          id?: string
+          policy_content?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          acknowledgment_required?: boolean | null
+          created_at?: string
+          department?: string | null
+          document_id?: string
+          effective_date?: string
+          expires_date?: string | null
+          id?: string
+          policy_content?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           access_json: Json
@@ -1390,6 +1675,20 @@ export type Database = {
     }
     Enums: {
       app_role: "org_admin" | "org_member"
+      document_category:
+        | "policies"
+        | "finance"
+        | "contracts"
+        | "m-e"
+        | "uncategorized"
+        | "templates"
+        | "compliance"
+      document_status:
+        | "draft"
+        | "active"
+        | "archived"
+        | "expired"
+        | "pending_approval"
       donor_status: "active" | "inactive" | "potential"
       feature_permission: "read" | "write" | "admin"
       funding_cycle_status: "ongoing" | "upcoming" | "closed"
@@ -1413,7 +1712,9 @@ export type Database = {
         | "Declined"
       opportunity_type: "RFP" | "LOI" | "CFP"
       organization_type: "NGO" | "DONOR"
+      signature_status: "pending" | "signed" | "declined" | "expired"
       task_priority: "low" | "medium" | "high"
+      template_status: "active" | "draft" | "archived"
       user_status: "active" | "inactive" | "deactivated"
     }
     CompositeTypes: {
@@ -1543,6 +1844,22 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["org_admin", "org_member"],
+      document_category: [
+        "policies",
+        "finance",
+        "contracts",
+        "m-e",
+        "uncategorized",
+        "templates",
+        "compliance",
+      ],
+      document_status: [
+        "draft",
+        "active",
+        "archived",
+        "expired",
+        "pending_approval",
+      ],
       donor_status: ["active", "inactive", "potential"],
       feature_permission: ["read", "write", "admin"],
       funding_cycle_status: ["ongoing", "upcoming", "closed"],
@@ -1568,7 +1885,9 @@ export const Constants = {
       ],
       opportunity_type: ["RFP", "LOI", "CFP"],
       organization_type: ["NGO", "DONOR"],
+      signature_status: ["pending", "signed", "declined", "expired"],
       task_priority: ["low", "medium", "high"],
+      template_status: ["active", "draft", "archived"],
       user_status: ["active", "inactive", "deactivated"],
     },
   },
