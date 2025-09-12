@@ -1,9 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import ModalSignup from '@/components/auth/ModalSignup';
+import SimpleSignup from '@/components/auth/SimpleSignup';
 
 const SignupPage = () => {
-  const navigate = useNavigate();
-  return <ModalSignup onClose={() => navigate('/')} />;
+  return <SimpleSignup />;
 };
 
 export default SignupPage;
