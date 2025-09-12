@@ -130,7 +130,7 @@ serve(async (req) => {
     console.log('Auth user created:', authUser.user.id)
 
     // 2. Create profile with access_json
-    const { error: profileError } = await supabase
+    const { error: profileUpsertError } = await supabase
       .from('profiles')
       .upsert({
         id: authUser.user.id,
@@ -143,12 +143,12 @@ serve(async (req) => {
         role: 'org_member'
       })
 
-    if (profileError) {
-      console.error('Failed to create profile:', profileError)
+    if (profileUpsertError) {
+      console.error('Failed to create profile:', profileUpsertError)
       // Clean up auth user if profile creation fails
       await supabase.auth.admin.deleteUser(authUser.user.id)
       return new Response(
-        JSON.stringify({ error: `Failed to create profile: ${profileError.message}` }),
+        JSON.stringify({ error: `Failed to create profile: ${profileUpsertError.message}` }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
