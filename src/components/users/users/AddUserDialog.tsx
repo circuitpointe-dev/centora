@@ -13,7 +13,7 @@ import {
 import { AddUserForm, type AddUserPayload } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
 import { UserInviteSuccess } from "./UserInviteSuccess";
-import { useCreateUser } from "@/hooks/useUsers";
+import { useCreateOrgUser } from "@/hooks/useCreateOrgUser";
 
 type Step = "form" | "preview" | "success";
 
@@ -21,7 +21,7 @@ export const AddUserDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
   const [invite, setInvite] = useState<AddUserPayload | null>(null);
-  const createUserMutation = useCreateUser();
+  const createUserMutation = useCreateOrgUser();
 
   const reset = () => {
     setInvite(null);
@@ -38,11 +38,12 @@ export const AddUserDialog: React.FC = () => {
     if (!invite) return;
     
     try {
-      // Transform the invite data to match the backend expected format
+      // Transform the invite data to match the edge function expected format
       const payload = {
+        org_id: '', // Will be resolved by the edge function
         email: invite.email,
         full_name: invite.fullName,
-        department_id: invite.department || undefined,
+        department_id: invite.department || null,
         role_ids: [], // Add role IDs based on access
         access_json: invite.access || {},
       };
