@@ -4,7 +4,7 @@ project_id = "kspzfifdwfpirgqstzhz"
 verify_jwt = false
 
 [functions.admin-create-org-user]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-verification-code]
 verify_jwt = false

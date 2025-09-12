@@ -23,6 +23,15 @@ serve(async (req) => {
   }
 
   try {
+    // Get the current user from the JWT token
+    const authHeader = req.headers.get('authorization')
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authorization header required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Create Supabase client with service role for admin operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -33,6 +42,47 @@ serve(async (req) => {
         persistSession: false
       }
     })
+
+    // Create client with user's JWT for authorization checks
+    const userSupabase = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+      global: {
+        headers: { authorization: authHeader }
+      }
+    })
+
+    // Verify user is authenticated and get their org
+    const { data: { user }, error: userError } = await userSupabase.auth.getUser()
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Get user's profile to check org membership
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('org_id, is_super_admin')
+      .eq('id', user.id)
+      .single()
+
+    if (profileError || !profile) {
+      return new Response(
+        JSON.stringify({ error: 'User profile not found' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Only allow org admins or super admins to create users
+    if (!profile.is_super_admin) {
+      const { data: isAdmin } = await supabase.rpc('is_org_admin', { _org_id: profile.org_id })
+      if (!isAdmin) {
+        return new Response(
+          JSON.stringify({ error: 'Only organization administrators can create users' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    }
 
     // Parse request body
     const body: CreateOrgUserRequest = await req.json()
@@ -46,18 +96,8 @@ serve(async (req) => {
       )
     }
 
-    // Get the organization to use (first available if not specified)
-    let targetOrgId = org_id
-    if (!targetOrgId) {
-      const { data: org } = await supabase
-        .from('organizations')
-        .select('id')
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .single()
-      
-      targetOrgId = org?.id
-    }
+    // Use the user's organization (or specified org for super admins)
+    let targetOrgId = profile.is_super_admin && org_id ? org_id : profile.org_id
 
     if (!targetOrgId) {
       return new Response(

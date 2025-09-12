@@ -23,13 +23,7 @@ export interface UserStats {
   pending_invitations: number;
 }
 
-export interface CreateUserData {
-  email: string;
-  full_name: string;
-  department_id?: string;
-  role_ids: string[];
-  access_json?: Record<string, any>;
-}
+// CreateUserData moved to useCreateOrgUser.ts
 
 export interface UpdateUserData {
   full_name?: string;
@@ -107,45 +101,7 @@ export const useUsersCount = (search?: string, department?: string, status?: str
   });
 };
 
-// Hook to create user invitation
-export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
-  return useMutation({
-    mutationFn: async (userData: CreateUserData) => {
-      const { data, error } = await supabase.rpc('create_user_invitation', {
-        _email: userData.email,
-        _full_name: userData.full_name,
-        _department_id: userData.department_id || null,
-        _role_ids: userData.role_ids,
-        _access: userData.access_json || null,
-      });
-      
-      if (error) {
-        throw new Error(`Failed to create user: ${error.message}`);
-      }
-      
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['org-users'] });
-      queryClient.invalidateQueries({ queryKey: ['org-users-count'] });
-      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
-      toast({
-        title: 'User invited',
-        description: 'The user invitation has been sent successfully.',
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error creating user',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
-};
+// Removed useCreateUser - now using useCreateOrgUser from useCreateOrgUser.ts hook
 
 // Hook to update user
 export const useUpdateUser = () => {
