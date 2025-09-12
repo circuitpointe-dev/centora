@@ -42,12 +42,17 @@ export const UserDirectoryTable: React.FC = () => {
 
   const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useUsers({
     search: searchQuery,
-    status: filters.status !== "all" ? filters.status : undefined,
+    status: filters.status !== "all" ? (filters.status as string) : undefined,
+    department: filters.department !== "all" ? (filters.department as string) : undefined,
     page: currentPage,
     pageSize: usersPerPage,
   });
 
-  const { data: totalUsers = 0 } = useUsersCount(searchQuery);
+  const { data: totalUsers = 0 } = useUsersCount(
+    searchQuery,
+    filters.status !== "all" ? (filters.status as string) : undefined,
+    filters.department !== "all" ? (filters.department as string) : undefined
+  );
   const { data: departmentsData = [] } = useDepartments();
 
   const departments = useMemo(

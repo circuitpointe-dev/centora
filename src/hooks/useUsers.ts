@@ -58,23 +58,27 @@ export const useUsers = ({
   search, 
   role, 
   status, 
+  department,
   page = 1, 
   pageSize = 8 
 }: {
   search?: string;
   role?: string;
   status?: string;
+  department?: string;
   page?: number;
   pageSize?: number;
 } = {}) => {
   return useQuery({
-    queryKey: ['org-users', search, role, status, page, pageSize],
+    queryKey: ['org-users', search, role, status, department, page, pageSize],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('list_org_users', {
+      const { data, error } = await (supabase as any).rpc('list_org_users', {
         _search: search || null,
+        _status: status || null,
+        _department: department || null,
         _page: page,
         _page_size: pageSize,
-      });
+      } as any);
       
       if (error) {
         throw new Error(`Failed to fetch users: ${error.message}`);
@@ -86,13 +90,15 @@ export const useUsers = ({
 };
 
 // Hook to get users count (for pagination)
-export const useUsersCount = (search?: string) => {
+export const useUsersCount = (search?: string, status?: string, department?: string) => {
   return useQuery({
-    queryKey: ['org-users-count', search],
+    queryKey: ['org-users-count', search, status, department],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('count_org_users', {
+      const { data, error } = await (supabase as any).rpc('count_org_users', {
         _search: search || null,
-      });
+        _status: status || null,
+        _department: department || null,
+      } as any);
       
       if (error) {
         throw new Error(`Failed to count users: ${error.message}`);
@@ -150,10 +156,12 @@ export const useUpdateUser = () => {
 
   return useMutation({
     mutationFn: async ({ userId, data }: { userId: string; data: UpdateUserData }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update(data)
-        .eq('id', userId);
+      const { error } = await (supabase as any).rpc('admin_update_user', {
+        _profile_id: userId,
+        _full_name: data.full_name ?? null,
+        _department_id: data.department_id ?? null,
+        _status: data.status ?? null,
+      } as any);
       
       if (error) {
         throw new Error(`Failed to update user: ${error.message}`);
@@ -193,10 +201,10 @@ export const useUpdateUserStatus = () => {
       status: 'active' | 'inactive' | 'deactivated';
       reason?: string;
     }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ status })
-        .eq('id', userId);
+      const { error } = await (supabase as any).rpc('admin_update_user_status', {
+        _profile_id: userId,
+        _status: status,
+      } as any);
       
       if (error) {
         throw new Error(`Failed to update user status: ${error.message}`);
