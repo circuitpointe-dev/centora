@@ -8,57 +8,9 @@ import { cn } from '@/lib/utils';
 import { TemplateCard } from './TemplateCard';
 import { TemplateDetailDialog } from './TemplateDetailDialog';
 import { TemplateEditor } from './TemplateEditor';
-
-const templatesData = [
-  {
-    id: '1',
-    title: 'Annual Report Template',
-    category: 'Report',
-    department: 'Finance',
-    lastUpdated: '2 days ago',
-    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop'
-  },
-  {
-    id: '2',
-    title: 'Employee Contract',
-    category: 'Agreement',
-    department: 'HR',
-    lastUpdated: '2 days ago',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=240&fit=crop'
-  },
-  {
-    id: '3',
-    title: 'Invoice Template',
-    category: 'Financial',
-    department: 'Accounting',
-    lastUpdated: '2 days ago',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=240&fit=crop'
-  },
-  {
-    id: '4',
-    title: 'Performance Review',
-    category: 'Document',
-    department: 'HR',
-    lastUpdated: '2 days ago',
-    image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=240&fit=crop'
-  },
-  {
-    id: '5',
-    title: 'NDA Template',
-    category: 'Agreement',
-    department: 'Legal',
-    lastUpdated: '2 days ago',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=240&fit=crop'
-  },
-  {
-    id: '6',
-    title: 'Budget Report',
-    category: 'Report',
-    department: 'Finance',
-    lastUpdated: '2 days ago',
-    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop'
-  }
-];
+import { useTemplates, useCreateDocumentFromTemplate } from '@/hooks/useTemplates';
+import { Loader2 } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 export const TemplateGallery = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,23 +21,32 @@ export const TemplateGallery = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<any>(null);
 
-  const filteredTemplates = templatesData.filter(template => {
-    const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.department.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesFilter = selectedFilter === 'all' || template.category === selectedFilter;
-    
-    return matchesSearch && matchesFilter;
+  const { data: templates, isLoading, error } = useTemplates({
+    category: selectedFilter !== 'all' ? selectedFilter : undefined,
+    search: searchQuery,
   });
 
-  const handleUseTemplate = (id: string) => {
-    console.log('Use template:', id);
-    // TODO: Implement template usage logic
+  const createFromTemplateMutation = useCreateDocumentFromTemplate();
+
+  const filteredTemplates = templates || [];
+
+  const handleUseTemplate = async (id: string) => {
+    const template = templates?.find(t => t.id === id);
+    if (template) {
+      try {
+        await createFromTemplateMutation.mutateAsync({
+          template_id: id,
+          title: `${template.title} Copy`,
+          description: `Document created from ${template.title} template`,
+        });
+      } catch (error) {
+        console.error('Failed to create document from template:', error);
+      }
+    }
   };
 
   const handleView = (id: string) => {
-    const template = templatesData.find(t => t.id === id);
+    const template = templates?.find(t => t.id === id);
     if (template) {
       setSelectedTemplate(template);
       setIsDialogOpen(true);
@@ -93,7 +54,7 @@ export const TemplateGallery = () => {
   };
 
   const handleEdit = (id: string) => {
-    const template = templatesData.find(t => t.id === id);
+    const template = templates?.find(t => t.id === id);
     if (template) {
       setEditingTemplate(template);
       setIsEditing(true);
@@ -138,6 +99,27 @@ export const TemplateGallery = () => {
         onSave={handleSaveTemplate}
         onPublish={handlePublishTemplate}
       />
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-2">Failed to load templates</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
     );
   }
 
@@ -230,10 +212,10 @@ export const TemplateGallery = () => {
               key={template.id}
               id={template.id}
               title={template.title}
-              category={template.category}
-              department={template.department}
-              lastUpdated={template.lastUpdated}
-              image={template.image}
+              category={template.category || template.template_category || 'Document'}
+              department={template.creator?.full_name || 'System'}
+              lastUpdated={formatDistanceToNow(new Date(template.updated_at), { addSuffix: true })}
+              image="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop" // Default template image
               viewMode={viewMode}
               onUseTemplate={handleUseTemplate}
               onView={handleView}
@@ -262,15 +244,15 @@ export const TemplateGallery = () => {
                         <img
                           className="w-full h-full object-cover"
                           alt={`${template.title} Preview`}
-                          src={template.image}
+                          src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop"
                         />
                       </div>
                       <div className="font-medium text-gray-900">{template.title}</div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-600">{template.category}</TableCell>
-                  <TableCell className="text-gray-600">{template.department}</TableCell>
-                  <TableCell className="text-gray-600">{template.lastUpdated}</TableCell>
+                  <TableCell className="text-gray-600">{template.category || template.template_category || 'Document'}</TableCell>
+                  <TableCell className="text-gray-600">{template.creator?.full_name || 'System'}</TableCell>
+                  <TableCell className="text-gray-600">{formatDistanceToNow(new Date(template.updated_at), { addSuffix: true })}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

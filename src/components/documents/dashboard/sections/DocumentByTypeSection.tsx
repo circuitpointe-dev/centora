@@ -2,14 +2,42 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
+import { useDocumentsByType } from "@/hooks/useDashboardStats";
+import { Loader2 } from "lucide-react";
+
 export const DocumentByTypeSection = (): JSX.Element => {
-  // Document types data for the chart
-  const documentTypes = [
-    { name: "Policies", value: 16, color: "#3b82f6" },
-    { name: "Contracts", value: 28, color: "#ef4444" },
-    { name: "Finance", value: 24, color: "#a855f7" },
-    { name: "Reports", value: 32, color: "#10b981" },
-  ];
+  const { data: documentTypesData, isLoading } = useDocumentsByType();
+
+  if (isLoading) {
+    return (
+      <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Documents by Type
+        </h3>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </div>
+    );
+  }
+
+  // Color mapping for different categories
+  const colorMap: Record<string, string> = {
+    'Policies': '#3b82f6',
+    'Contracts': '#ef4444', 
+    'Finance': '#a855f7',
+    'Reports': '#10b981',
+    'Legal': '#f59e0b',
+    'HR': '#8b5cf6',
+    'Operations': '#06b6d4',
+    'Uncategorized': '#6b7280',
+  };
+
+  const documentTypes = documentTypesData?.map((item, index) => ({
+    name: item.category,
+    value: item.percentage,
+    color: colorMap[item.category] || Object.values(colorMap)[index % Object.values(colorMap).length],
+  })) || [];
 
   // Custom legend, stacked vertically, left-aligned, and closer to the chart
   const CustomLegend = ({
