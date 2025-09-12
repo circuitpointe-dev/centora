@@ -1,18 +1,56 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { useDocumentsByDepartment } from "@/hooks/useDashboardStats";
+import { Loader2, BarChart3 } from "lucide-react";
 
 export const DocumentByDepartmentSection = (): JSX.Element => {
-  // Chart data
-  const departmentData = [
-    { name: "Finance", value: 165 },
-    { name: "Operations", value: 346 },
-    { name: "HR", value: 442 },
-    { name: "Legal", value: 61 },
-    { name: "IT", value: 284 },
-  ];
+  const { data: departmentResponse, isLoading, error } = useDocumentsByDepartment();
 
-  // X-axis labels
-  const xAxisLabels = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450];
+  if (isLoading) {
+    return (
+      <Card className="border border-gray-200 shadow-sm rounded-sm h-[412px] min-h-[412px] flex flex-col">
+        <CardHeader className="pb-4 pt-[33px] px-8">
+          <CardTitle className="text-lg font-semibold text-gray-900">
+            Documents by Department
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0 flex-1 flex flex-col overflow-hidden px-8 pb-8 pt-0">
+          <div className="flex items-center justify-center h-full">
+            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !departmentResponse || departmentResponse.length === 0) {
+    return (
+      <Card className="border border-gray-200 shadow-sm rounded-sm h-[412px] min-h-[412px] flex flex-col">
+        <CardHeader className="pb-4 pt-[33px] px-8">
+          <CardTitle className="text-lg font-semibold text-gray-900">
+            Documents by Department
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0 flex-1 flex flex-col overflow-hidden px-8 pb-8 pt-0">
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <BarChart3 className="h-12 w-12 text-gray-400 mb-4" />
+            <p className="text-gray-500">No data available</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Transform the data to match the component structure
+  const departmentData = departmentResponse.map(item => ({
+    name: item.department,
+    value: item.count
+  }));
+
+  // Calculate max value and create x-axis labels based on data
+  const maxValue = Math.max(...departmentData.map((d) => d.value));
+  const step = Math.ceil(maxValue / 9);
+  const xAxisLabels = Array.from({ length: 10 }, (_, i) => i * step);
 
   // Layout constants
   const cardHeight = 412;
@@ -31,7 +69,7 @@ export const DocumentByDepartmentSection = (): JSX.Element => {
       : 0;
 
   // Determine max value for scaling
-  const maxValue = Math.max(...departmentData.map((d) => d.value));
+  const calculatedMaxValue = Math.max(...departmentData.map((d) => d.value));
   // Chart bar maximum width (not full chart width, leave margin for tooltip, etc)
   const barMaxWidth = chartWidth - 16;
 
@@ -106,7 +144,7 @@ export const DocumentByDepartmentSection = (): JSX.Element => {
               >
                 <TooltipProvider>
                   {departmentData.map((dept, index) => {
-                    const width = (dept.value / maxValue) * barMaxWidth;
+                    const width = (dept.value / calculatedMaxValue) * barMaxWidth;
                     const top = index * (barHeight + barVerticalGap);
 
                     return (
