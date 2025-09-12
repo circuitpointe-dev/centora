@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { ComplianceDocumentCard } from './ComplianceDocumentCard';
-import { complianceDocumentsData } from './data/complianceDocumentsData';
 import { DocumentDetailDialog } from './DocumentDetailDialog';
+import { useComplianceDocuments } from '@/hooks/usePolicyDocuments';
+import { Loader2 } from 'lucide-react';
 
 export const ComplianceDocuments = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -19,15 +20,11 @@ export const ComplianceDocuments = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
 
-  const filteredDocuments = complianceDocumentsData.filter(doc => {
-    const matchesSearch = doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.department.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
-    const matchesDepartment = departmentFilter === 'all' || doc.department === departmentFilter;
-    
-    return matchesSearch && matchesStatus && matchesDepartment;
+  // Fetch compliance documents from backend
+  const { data: documents, isLoading, error } = useComplianceDocuments({
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    department: departmentFilter !== 'all' ? departmentFilter : undefined,
+    search: searchQuery,
   });
 
   const handleViewDocument = (document: any) => {
@@ -35,8 +32,24 @@ export const ComplianceDocuments = () => {
     setIsDialogOpen(true);
   };
 
-  const departments = Array.from(new Set(complianceDocumentsData.map(doc => doc.department)));
+  // Get unique departments from the documents
+  const departments = React.useMemo(() => {
+    if (!documents) return [];
+    return Array.from(new Set(documents.map(doc => doc.department)));
+  }, [documents]);
+
   const [filterOpen, setFilterOpen] = useState(false);
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Failed to load compliance documents</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -127,77 +140,80 @@ export const ComplianceDocuments = () => {
       </div>
 
       {/* Document Display */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDocuments.map((document) => (
-            <ComplianceDocumentCard
-              key={document.id}
-              document={document}
-              onViewDocument={handleViewDocument}
-            />
-          ))}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
         </div>
-      ) : (
-        <div className="bg-white rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="font-semibold">Document Name</TableHead>
-                <TableHead className="font-semibold">Department</TableHead>
-                <TableHead className="font-semibold">Effective Date</TableHead>
-                <TableHead className="font-semibold">Expiry Date</TableHead>
-                <TableHead className="font-semibold">Status</TableHead>
-                <TableHead className="font-semibold">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredDocuments.map((document) => (
-                <TableRow key={document.id}>
-                  <TableCell>
-                    <div className="font-medium text-gray-900">{document.title}</div>
-                  </TableCell>
-                  <TableCell className="text-gray-600">{document.department}</TableCell>
-                  <TableCell className="text-gray-600">
-                    {new Date(document.effectiveDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </TableCell>
-                  <TableCell className="text-gray-600">
-                    {new Date(document.expiresDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={cn(
-                      document.status === 'Active' && 'bg-green-100 text-green-800 border-green-200',
-                      document.status === 'Pending' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                      document.status === 'Retired' && 'bg-gray-100 text-gray-800 border-gray-200'
-                    )}>
-                      {document.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <button 
-                      className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 hover:underline font-medium"
-                      onClick={() => handleViewDocument(document)}
-                    >
-                      <Eye className="h-4 w-4" />
-                      View Document
-                    </button>
-                  </TableCell>
+      ) : documents && documents.length > 0 ? (
+        viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {documents.map((document) => (
+              <ComplianceDocumentCard
+                key={document.id}
+                document={document}
+                onViewDocument={handleViewDocument}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="font-semibold">Document Name</TableHead>
+                  <TableHead className="font-semibold">Department</TableHead>
+                  <TableHead className="font-semibold">Effective Date</TableHead>
+                  <TableHead className="font-semibold">Expiry Date</TableHead>
+                  <TableHead className="font-semibold">Status</TableHead>
+                  <TableHead className="font-semibold">Action</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {filteredDocuments.length === 0 && (
+              </TableHeader>
+              <TableBody>
+                {documents.map((document) => (
+                  <TableRow key={document.id}>
+                    <TableCell>
+                      <div className="font-medium text-gray-900">{document.title}</div>
+                    </TableCell>
+                    <TableCell className="text-gray-600">{document.department}</TableCell>
+                    <TableCell className="text-gray-600">
+                      {new Date(document.effective_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {document.expires_date ? new Date(document.expires_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      }) : 'N/A'}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={cn(
+                        document.status === 'Active' && 'bg-green-100 text-green-800 border-green-200',
+                        document.status === 'Pending' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                        document.status === 'Retired' && 'bg-gray-100 text-gray-800 border-gray-200'
+                      )}>
+                        {document.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <button 
+                        className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 hover:underline font-medium"
+                        onClick={() => handleViewDocument(document)}
+                      >
+                        <Eye className="h-4 w-4" />
+                        View Document
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )
+      ) : (
         <div className="text-center py-12">
           <p className="text-gray-500">
             {searchQuery ? 'No documents found matching your search.' : 'No compliance documents available.'}

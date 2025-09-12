@@ -4,11 +4,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { PolicyDocument } from './data/policyLibraryData';
 
 interface PolicyCardProps {
-  policy: PolicyDocument;
-  onViewPolicy: (policy: PolicyDocument) => void;
+  policy: {
+    id: string;
+    title: string;
+    version: string;
+    status: 'Acknowledged' | 'Pending' | 'Expired';
+    description: string;
+    department: string;
+    last_updated: string;
+  };
+  onViewPolicy: (policy: any) => void;
 }
 
 export const PolicyCard: React.FC<PolicyCardProps> = ({ policy, onViewPolicy }) => {
@@ -54,7 +61,7 @@ export const PolicyCard: React.FC<PolicyCardProps> = ({ policy, onViewPolicy }) 
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-gray-500 mb-3">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3 flex-shrink-0" />
-              <span>Updated {new Date(policy.lastUpdated).toLocaleDateString('en-US', {
+              <span>Updated {new Date(policy.last_updated).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'

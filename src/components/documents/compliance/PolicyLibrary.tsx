@@ -8,44 +8,59 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { PolicyCard } from './PolicyCard';
-import { policyLibraryData, PolicyDocument } from './data/policyLibraryData';
 import { PolicyDetailDialog } from './PolicyDetailDialog';
+import { usePolicyDocuments, useAcknowledgePolicy } from '@/hooks/usePolicyDocuments';
+import { Loader2 } from 'lucide-react';
 
 export const PolicyLibrary = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPolicy, setSelectedPolicy] = useState<PolicyDocument | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
-  const [policies, setPolicies] = useState(policyLibraryData);
-
-  const filteredPolicies = policies.filter(policy => {
-    const matchesSearch = policy.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      policy.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      policy.department.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || policy.status === statusFilter;
-    const matchesDepartment = departmentFilter === 'all' || policy.department === departmentFilter;
-    
-    return matchesSearch && matchesStatus && matchesDepartment;
+  
+  // Fetch policies from backend
+  const { data: policies, isLoading, error, refetch } = usePolicyDocuments({
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    department: departmentFilter !== 'all' ? departmentFilter : undefined,
+    search: searchQuery,
   });
 
-  const handleViewPolicy = (policy: PolicyDocument) => {
+  const acknowledgeMutation = useAcknowledgePolicy();
+
+  const handleViewPolicy = (policy: any) => {
     setSelectedPolicy(policy);
     setIsDialogOpen(true);
   };
 
-  const handleAcknowledgePolicy = (policyId: string) => {
-    setPolicies(prev => prev.map(policy => 
-      policy.id === policyId 
-        ? { ...policy, status: 'Acknowledged' as const }
-        : policy
-    ));
+  const handleAcknowledgePolicy = async (policyId: string) => {
+    try {
+      await acknowledgeMutation.mutateAsync(policyId);
+      refetch(); // Refresh the data
+    } catch (error) {
+      console.error('Failed to acknowledge policy:', error);
+    }
   };
 
-  const departments = Array.from(new Set(policyLibraryData.map(policy => policy.department)));
+  // Get unique departments from the policies
+  const departments = React.useMemo(() => {
+    if (!policies) return [];
+    return Array.from(new Set(policies.map(policy => policy.department)));
+  }, [policies]);
+
   const [filterOpen, setFilterOpen] = useState(false);
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Failed to load policies</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -136,69 +151,72 @@ export const PolicyLibrary = () => {
       </div>
 
       {/* Policy Display */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPolicies.map((policy) => (
-            <PolicyCard
-              key={policy.id}
-              policy={policy}
-              onViewPolicy={handleViewPolicy}
-            />
-          ))}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
         </div>
-      ) : (
-        <div className="bg-white rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="font-semibold">Policy Name</TableHead>
-                <TableHead className="font-semibold">Version</TableHead>
-                <TableHead className="font-semibold">Last Updated</TableHead>
-                <TableHead className="font-semibold">Status</TableHead>
-                <TableHead className="font-semibold">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredPolicies.map((policy) => (
-                <TableRow key={policy.id}>
-                  <TableCell>
-                    <div className="font-medium text-gray-900">{policy.title}</div>
-                  </TableCell>
-                  <TableCell className="text-gray-600">{policy.version}</TableCell>
-                  <TableCell className="text-gray-600">
-                    {new Date(policy.lastUpdated).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={cn(
-                      policy.status === 'Acknowledged' && 'bg-green-100 text-green-800 border-green-200',
-                      policy.status === 'Pending' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                      policy.status === 'Expired' && 'bg-red-100 text-red-800 border-red-200'
-                    )}>
-                      {policy.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <button 
-                      className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 hover:underline font-medium"
-                      onClick={() => handleViewPolicy(policy)}
-                    >
-                      <Eye className="h-4 w-4" />
-                      View Policy
-                    </button>
-                  </TableCell>
+      ) : policies && policies.length > 0 ? (
+        viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {policies.map((policy) => (
+              <PolicyCard
+                key={policy.id}
+                policy={policy}
+                onViewPolicy={handleViewPolicy}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="font-semibold">Policy Name</TableHead>
+                  <TableHead className="font-semibold">Version</TableHead>
+                  <TableHead className="font-semibold">Last Updated</TableHead>
+                  <TableHead className="font-semibold">Status</TableHead>
+                  <TableHead className="font-semibold">Action</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {filteredPolicies.length === 0 && (
+              </TableHeader>
+              <TableBody>
+                {policies.map((policy) => (
+                  <TableRow key={policy.id}>
+                    <TableCell>
+                      <div className="font-medium text-gray-900">{policy.title}</div>
+                    </TableCell>
+                    <TableCell className="text-gray-600">{policy.version}</TableCell>
+                    <TableCell className="text-gray-600">
+                      {new Date(policy.last_updated).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={cn(
+                        policy.status === 'Acknowledged' && 'bg-green-100 text-green-800 border-green-200',
+                        policy.status === 'Pending' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                        policy.status === 'Expired' && 'bg-red-100 text-red-800 border-red-200'
+                      )}>
+                        {policy.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <button 
+                        className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 hover:underline font-medium"
+                        onClick={() => handleViewPolicy(policy)}
+                      >
+                        <Eye className="h-4 w-4" />
+                        View Policy
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )
+      ) : (
         <div className="text-center py-12">
           <p className="text-gray-500">
             {searchQuery ? 'No policies found matching your search.' : 'No policies available.'}

@@ -10,8 +10,8 @@ interface ComplianceDocument {
   title: string;
   description: string;
   department: string;
-  effectiveDate: string;
-  expiresDate: string;
+  effective_date: string;
+  expires_date: string;
   status: 'Active' | 'Pending' | 'Retired';
 }
 
@@ -65,12 +65,12 @@ export const ComplianceDocumentCard: React.FC<ComplianceDocumentCardProps> = ({ 
           <div className="flex items-center text-sm text-gray-600">
             <Calendar className="h-4 w-4 mr-2" />
             <span className="font-medium">Effective:</span>
-            <span className="ml-1">{formatDate(document.effectiveDate)}</span>
+            <span className="ml-1">{formatDate(document.effective_date)}</span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
             <Calendar className="h-4 w-4 mr-2" />
             <span className="font-medium">Expires:</span>
-            <span className="ml-1">{formatDate(document.expiresDate)}</span>
+            <span className="ml-1">{document.expires_date ? formatDate(document.expires_date) : 'N/A'}</span>
             <Badge 
               variant="secondary" 
               className={cn("ml-2 text-xs", getStatusColor(document.status))}

@@ -10,7 +10,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import DocumentCard from './DocumentCard';
-import { documentsData } from './data';
 import { Card } from '@/components/ui/card';
 import DocumentPreviewCard from './DocumentPreviewCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -23,6 +22,8 @@ import {
 } from '@/components/ui/select';
 import DocumentList from './DocumentList';
 import UploadDocumentDialog from './UploadDocumentDialog';
+import { useDocuments } from '@/hooks/useDocuments';
+import { Loader2 } from 'lucide-react';
 
 const filterOptions = [
   { id: 'all', name: 'All Documents' },
@@ -38,43 +39,51 @@ const DocumentsFeaturePage = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-
-  const filteredDocuments = useMemo(() => {
-    let filtered = activeFilter && activeFilter !== 'all'
-      ? documentsData.filter((doc) => doc.category === activeFilter)
-      : documentsData;
-
-    // Apply search filter
-    if (searchQuery.trim()) {
-      filtered = filtered.filter((doc) =>
-        doc.fileName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return filtered;
-  }, [activeFilter, searchQuery]);
-
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
+
+  // Fetch documents from backend
+  const { data: documents, isLoading, error } = useDocuments({
+    category: activeFilter,
+    search: searchQuery,
+    is_template: false, // Only show regular documents, not templates
+  });
 
   // Set default selected document to the first one
   useEffect(() => {
-    if (filteredDocuments.length > 0 && !selectedDocumentId) {
-      setSelectedDocumentId(filteredDocuments[0].id);
+    if (documents?.length && !selectedDocumentId) {
+      setSelectedDocumentId(documents[0].id);
     }
-  }, [filteredDocuments, selectedDocumentId]);
+  }, [documents, selectedDocumentId]);
 
   const handleSelectDocument = (id: string) => {
     setSelectedDocumentId(id);
   };
 
   const selectedDocument = useMemo(
-    () => documentsData.find((doc) => doc.id === selectedDocumentId),
-    [selectedDocumentId]
+    () => documents?.find((doc) => doc.id === selectedDocumentId),
+    [documents, selectedDocumentId]
   );
 
   const handleFilterChange = (filterId: string) => {
     setActiveFilter(filterId);
+    setSelectedDocumentId(null); // Reset selection when filter changes
   };
+
+  if (error) {
+    return (
+      <div className="flex flex-col h-full gap-6 pb-6">
+        <div>
+          <h1 className="text-xl font-medium text-gray-900">Document Manager</h1>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <p className="text-red-600 mb-2">Failed to load documents</p>
+            <p className="text-gray-500 text-sm">{error.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full gap-6 pb-6">
@@ -151,10 +160,14 @@ const DocumentsFeaturePage = () => {
       <div className="grid gap-8 flex-1 min-h-0 grid-cols-12">
         <div className="col-span-12 lg:col-span-8">
           <ScrollArea className="h-full">
-            {filteredDocuments.length > 0 ? (
+            {isLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin" />
+              </div>
+            ) : documents && documents.length > 0 ? (
               viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pr-6">
-                  {filteredDocuments.map((doc) => (
+                  {documents.map((doc) => (
                     <DocumentCard
                       key={doc.id}
                       {...doc}
@@ -166,7 +179,7 @@ const DocumentsFeaturePage = () => {
               ) : (
                 <div className="pr-6">
                   <DocumentList
-                    documents={filteredDocuments}
+                    documents={documents}
                     selectedDocumentId={selectedDocumentId}
                     onSelectDocument={handleSelectDocument}
                   />

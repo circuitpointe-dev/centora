@@ -7,57 +7,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn } from '@/lib/utils';
 import { TemplateCard } from './TemplateCard';
 import { TemplateDetailDialog } from './TemplateDetailDialog';
-
-const savedTemplatesData = [
-  {
-    id: '1',
-    title: 'Annual Financial Report',
-    category: 'Report',
-    department: 'Finance',
-    lastUpdated: '3 days ago',
-    image: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=240&fit=crop'
-  },
-  {
-    id: '2',
-    title: 'Employee Onboarding',
-    category: 'Document',
-    department: 'HR',
-    lastUpdated: '1 week ago',
-    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop'
-  },
-  {
-    id: '3',
-    title: 'Project Proposal',
-    category: 'Proposal',
-    department: 'Operations',
-    lastUpdated: '2 weeks ago',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=240&fit=crop'
-  },
-  {
-    id: '4',
-    title: 'Marketing Campaign Brief',
-    category: 'Brief',
-    department: 'Marketing',
-    lastUpdated: '5 days ago',
-    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=240&fit=crop'
-  },
-  {
-    id: '5',
-    title: 'Budget Request Form',
-    category: 'Form',
-    department: 'Finance',
-    lastUpdated: '1 week ago',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=240&fit=crop'
-  },
-  {
-    id: '6',
-    title: 'Meeting Minutes',
-    category: 'Document',
-    department: 'General',
-    lastUpdated: '4 days ago',
-    image: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=240&fit=crop'
-  }
-];
+import { useDocuments } from '@/hooks/useDocuments';
+import { Loader2 } from 'lucide-react';
 
 export const SavedTemplates = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,15 +17,20 @@ export const SavedTemplates = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const filteredTemplates = savedTemplatesData.filter(template => {
-    const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.department.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesFilter = selectedFilter === 'all' || template.category === selectedFilter;
-    
-    return matchesSearch && matchesFilter;
+  // Fetch templates from backend (documents marked as templates)
+  const { data: templates, isLoading, error } = useDocuments({
+    search: searchQuery,
+    is_template: true,
   });
+
+  const filteredTemplates = React.useMemo(() => {
+    if (!templates) return [];
+    
+    return templates.filter(template => {
+      const matchesFilter = selectedFilter === 'all' || template.template_category === selectedFilter;
+      return matchesFilter;
+    });
+  }, [templates, selectedFilter]);
 
   const handleUseTemplate = (id: string) => {
     console.log('Use template:', id);
@@ -82,7 +38,7 @@ export const SavedTemplates = () => {
   };
 
   const handleView = (id: string) => {
-    const template = savedTemplatesData.find(t => t.id === id);
+    const template = templates?.find(t => t.id === id);
     if (template) {
       setSelectedTemplate(template);
       setIsDialogOpen(true);
@@ -98,6 +54,17 @@ export const SavedTemplates = () => {
     console.log('Download template:', id);
     // TODO: Implement download logic
   };
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Failed to load templates</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -175,90 +142,93 @@ export const SavedTemplates = () => {
       </div>
 
       {/* Templates Display */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredTemplates.map((template) => (
-            <TemplateCard
-              key={template.id}
-              id={template.id}
-              title={template.title}
-              category={template.category}
-              department={template.department}
-              lastUpdated={template.lastUpdated}
-              image={template.image}
-              viewMode={viewMode}
-              onUseTemplate={handleUseTemplate}
-              onView={handleView}
-              onEdit={handleEdit}
-            />
-          ))}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
         </div>
-      ) : (
-        <div className="bg-white rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="font-semibold">Template Name</TableHead>
-                <TableHead className="font-semibold">Category</TableHead>
-                <TableHead className="font-semibold">Department</TableHead>
-                <TableHead className="font-semibold">Last Updated</TableHead>
-                <TableHead className="font-semibold w-16">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTemplates.map((template) => (
-                <TableRow key={template.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-10 h-8 rounded overflow-hidden flex-shrink-0">
-                        <img
-                          className="w-full h-full object-cover"
-                          alt={`${template.title} Preview`}
-                          src={template.image}
-                        />
-                      </div>
-                      <div className="font-medium text-gray-900">{template.title}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-gray-600">{template.category}</TableCell>
-                  <TableCell className="text-gray-600">{template.department}</TableCell>
-                  <TableCell className="text-gray-600">{template.lastUpdated}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleUseTemplate(template.id)}>
-                          <Play className="h-4 w-4 mr-2" />
-                          Use as Template
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleView(template.id)}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          Preview
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEdit(template.id)}>
-                          <Edit2 className="h-4 w-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDownload(template.id)}>
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+      ) : filteredTemplates.length > 0 ? (
+        viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredTemplates.map((template) => (
+              <TemplateCard
+                key={template.id}
+                id={template.id}
+                title={template.title}
+                category={template.template_category || 'Document'}
+                department="General"
+                lastUpdated={template.addedTime}
+                image="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=240&fit=crop"
+                viewMode={viewMode}
+                onUseTemplate={handleUseTemplate}
+                onView={handleView}
+                onEdit={handleEdit}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="font-semibold">Template Name</TableHead>
+                  <TableHead className="font-semibold">Category</TableHead>
+                  <TableHead className="font-semibold">Department</TableHead>
+                  <TableHead className="font-semibold">Last Updated</TableHead>
+                  <TableHead className="font-semibold w-16">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {filteredTemplates.length === 0 && (
+              </TableHeader>
+              <TableBody>
+                {filteredTemplates.map((template) => (
+                  <TableRow key={template.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-10 h-8 rounded overflow-hidden flex-shrink-0">
+                          <img
+                            className="w-full h-full object-cover"
+                            alt={`${template.title} Preview`}
+                            src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=240&fit=crop"
+                          />
+                        </div>
+                        <div className="font-medium text-gray-900">{template.title}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-gray-600">{template.template_category || 'Document'}</TableCell>
+                    <TableCell className="text-gray-600">General</TableCell>
+                    <TableCell className="text-gray-600">{template.addedTime}</TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleUseTemplate(template.id)}>
+                            <Play className="h-4 w-4 mr-2" />
+                            Use as Template
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleView(template.id)}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            Preview
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEdit(template.id)}>
+                            <Edit2 className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDownload(template.id)}>
+                            <Download className="h-4 w-4 mr-2" />
+                            Download
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )
+      ) : (
         <div className="text-center py-12">
           <p className="text-gray-500">
             {searchQuery ? 'No saved templates found matching your search.' : 'No saved templates available.'}
