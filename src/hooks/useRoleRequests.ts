@@ -78,42 +78,47 @@ export const useCreateRoleRequest = () => {
 
   return useMutation({
     mutationFn: async (requestData: CreateRoleRequestData) => {
-      // For now, create a user invitation as a role request
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('User not authenticated');
+      try {
+        // For now, create a user invitation as a role request
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          throw new Error('User not authenticated');
+        }
+
+        // Get user's profile to get org info
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('org_id, full_name, email')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile) {
+          throw new Error('User profile not found');
+        }
+
+        // Create the role request as an invitation record
+        const { data, error } = await supabase.rpc('create_user_invitation', {
+          _email: profile.email,
+          _full_name: profile.full_name || 'User',
+          _department_id: null,
+          _role_ids: [], // Will be filled when approved
+          _access: {
+            requested_role: requestData.requested_role,
+            modules: requestData.modules,
+            message: requestData.message,
+          },
+        });
+
+        if (error) {
+          throw new Error(`Failed to create role request: ${error.message}`);
+        }
+
+        return data;
+      } catch (error: any) {
+        console.error('Failed to create role request:', error);
+        throw error;
       }
-
-      // Get user's profile to get org info
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('org_id, full_name, email')
-        .eq('id', user.id)
-        .single();
-
-      if (!profile) {
-        throw new Error('User profile not found');
-      }
-
-      // Create the role request as an invitation record
-      const { data, error } = await supabase.rpc('create_user_invitation', {
-        _email: profile.email,
-        _full_name: profile.full_name || 'User',
-        _department_id: null,
-        _role_ids: [], // Will be filled when approved
-        _access: {
-          requested_role: requestData.requested_role,
-          modules: requestData.modules,
-          message: requestData.message,
-        },
-      });
-
-      if (error) {
-        throw new Error(`Failed to create role request: ${error.message}`);
-      }
-
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['role-requests'] });

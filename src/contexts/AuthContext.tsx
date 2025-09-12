@@ -272,13 +272,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const value = {
-    user,
-    login,
-    register,
-    logout,
-    isAuthenticated: authMode === 'supabase' ? Boolean(session?.user?.email_confirmed_at) : Boolean(user),
-  };
+  const value = {
+    user,
+    login,
+    register,
+    logout,
+    isAuthenticated: authMode === 'supabase' ? Boolean(session?.user) : Boolean(user),
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

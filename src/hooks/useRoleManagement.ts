@@ -33,13 +33,19 @@ export const useRoles = () => {
   return useQuery({
     queryKey: ['roles'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_roles');
-      
-      if (error) {
-        throw new Error(`Failed to fetch roles: ${error.message}`);
-      }
+      try {
+        const { data, error } = await supabase.rpc('get_roles');
+        
+        if (error) {
+          throw new Error(`Failed to fetch roles: ${error.message}`);
+        }
 
-      return data as Role[];
+        return data as Role[];
+      } catch (error: any) {
+        console.error('Failed to fetch roles:', error);
+        // Return empty array instead of throwing to prevent app crash
+        return [];
+      }
     },
   });
 };
@@ -209,16 +215,22 @@ export const useOrgModulesWithFeatures = () => {
   return useQuery({
     queryKey: ['org-modules-with-features'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_org_modules_with_features');
-      if (error) {
-        console.error('get_org_modules_with_features error:', error);
-        throw new Error(error.message);
+      try {
+        const { data, error } = await supabase.rpc('get_org_modules_with_features');
+        if (error) {
+          console.error('get_org_modules_with_features error:', error);
+          throw new Error(error.message);
+        }
+        return (data || []).map((module: any) => ({
+          module: module.module,
+          module_name: module.module_name,
+          features: module.features || [],
+        }));
+      } catch (error: any) {
+        console.error('Failed to fetch org modules:', error);
+        // Return empty array instead of throwing to prevent app crash
+        return [];
       }
-      return (data || []).map((module: any) => ({
-        module: module.module,
-        module_name: module.module_name,
-        features: module.features || [],
-      }));
     },
   });
 };
