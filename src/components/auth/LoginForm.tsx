@@ -155,6 +155,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
             New organization?{" "}
             <Link
               to="/signup"
+              state={{ backgroundLocation: location }}
               className="font-medium text-violet-600 hover:text-violet-700 underline underline-offset-4 transition-colors"
             >
               Sign up here

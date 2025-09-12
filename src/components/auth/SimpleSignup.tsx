@@ -11,7 +11,7 @@ const SimpleSignup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  
+  const [organizationName, setOrganizationName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const SimpleSignup = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!email || !password || !fullName) {
+    if (!email || !password || !fullName || !organizationName) {
       toast({
         title: 'Error',
         description: 'Please fill in all fields',
@@ -49,6 +49,7 @@ const SimpleSignup = () => {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: fullName,
+            organization_name: organizationName,
           },
         },
       });
@@ -114,6 +115,19 @@ const SimpleSignup = () => {
               />
             </div>
 
+            <div>
+              <Label htmlFor="organizationName">Organization Name</Label>
+              <Input
+                id="organizationName"
+                name="organizationName"
+                type="text"
+                required
+                value={organizationName}
+                onChange={(e) => setOrganizationName(e.target.value)}
+                className="mt-1"
+                placeholder="Enter your organization name"
+              />
+            </div>
 
             <div>
               <Label htmlFor="email">Email address</Label>
