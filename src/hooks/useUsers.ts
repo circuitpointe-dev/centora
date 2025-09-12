@@ -56,22 +56,24 @@ export const useUserStats = () => {
 // Hook to get paginated users list
 export const useUsers = ({ 
   search, 
-  role, 
+  department, 
   status, 
   page = 1, 
   pageSize = 8 
 }: {
   search?: string;
-  role?: string;
+  department?: string;
   status?: string;
   page?: number;
   pageSize?: number;
 } = {}) => {
   return useQuery({
-    queryKey: ['org-users', search, role, status, page, pageSize],
+    queryKey: ['org-users', search, department, status, page, pageSize],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('list_org_users', {
         _search: search || null,
+        _status: status || null,
+        _department: department || null,
         _page: page,
         _page_size: pageSize,
       });
@@ -86,12 +88,14 @@ export const useUsers = ({
 };
 
 // Hook to get users count (for pagination)
-export const useUsersCount = (search?: string) => {
+export const useUsersCount = (search?: string, department?: string, status?: string) => {
   return useQuery({
-    queryKey: ['org-users-count', search],
+    queryKey: ['org-users-count', search, department, status],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('count_org_users', {
         _search: search || null,
+        _status: status || null,
+        _department: department || null,
       });
       
       if (error) {

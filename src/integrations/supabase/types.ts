@@ -1152,7 +1152,9 @@ export type Database = {
         Returns: undefined
       }
       count_org_users: {
-        Args: { _search?: string }
+        Args:
+          | { _department?: string; _search?: string; _status?: string }
+          | { _search?: string }
         Returns: number
       }
       create_department: {
@@ -1294,7 +1296,15 @@ export type Database = {
         Returns: boolean
       }
       list_org_users: {
-        Args: { _page?: number; _page_size?: number; _search?: string }
+        Args:
+          | {
+              _department?: string
+              _page?: number
+              _page_size?: number
+              _search?: string
+              _status?: string
+            }
+          | { _page?: number; _page_size?: number; _search?: string }
         Returns: {
           department: string
           email: string

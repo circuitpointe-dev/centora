@@ -13,7 +13,7 @@ import {
 import { AddUserForm, type AddUserPayload } from "./AddUserForm";
 import { UserInvitePreview } from "./UserInvitePreview";
 import { UserInviteSuccess } from "./UserInviteSuccess";
-import { useCreateOrgUser } from "@/hooks/useCreateOrgUser";
+import { useCreateUser } from "@/hooks/useUsers";
 
 type Step = "form" | "preview" | "success";
 
@@ -21,7 +21,7 @@ export const AddUserDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
   const [invite, setInvite] = useState<AddUserPayload | null>(null);
-  const createUserMutation = useCreateOrgUser();
+  const createUserMutation = useCreateUser();
 
   const reset = () => {
     setInvite(null);
@@ -40,10 +40,9 @@ export const AddUserDialog: React.FC = () => {
     try {
       // Transform the invite data to match the backend expected format
       const payload = {
-        org_id: '', // Will be filled by the hook
         email: invite.email,
         full_name: invite.fullName,
-        department_id: invite.department || null,
+        department_id: invite.department || undefined,
         role_ids: [], // Add role IDs based on access
         access_json: invite.access || {},
       };
