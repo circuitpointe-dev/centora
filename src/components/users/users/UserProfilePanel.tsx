@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DepartmentSelect } from "@/components/users/users/DepartmentSelect";
 import { Users as UsersIcon, Mail, Building2, Shield } from "lucide-react";
 import { useUpdateUser } from "@/hooks/useUsers";
+import { useDepartments } from "@/hooks/useDepartments";
 
 type Mode = "view" | "edit";
 
@@ -30,10 +31,19 @@ export const UserProfilePanel: React.FC<UserProfilePanelProps> = ({ mode, user, 
   const updateUserMutation = useUpdateUser();
   const [editing, setEditing] = React.useState(mode === "edit");
 
-  const [fullName, setFullName] = React.useState(user.full_name);
-  const [email, setEmail] = React.useState(user.email);
-  const [department, setDepartment] = React.useState(user.department);
-  const [status, setStatus] = React.useState<UserProfilePanelProps["user"]["status"]>(user.status);
+const { data: departments = [] } = useDepartments();
+
+const [fullName, setFullName] = React.useState(user.full_name);
+const [email] = React.useState(user.email);
+const [departmentId, setDepartmentId] = React.useState<string>((user as any).department_id || "");
+const [status, setStatus] = React.useState<UserProfilePanelProps["user"]["status"]>(user.status);
+
+React.useEffect(() => {
+  if (!departmentId && user.department && departments.length) {
+    const match = departments.find((d) => d.name === user.department);
+    if (match) setDepartmentId(match.id);
+  }
+}, [departmentId, user.department, departments]);
 
   const save = () => {
     updateUserMutation.mutate({
@@ -41,6 +51,7 @@ export const UserProfilePanel: React.FC<UserProfilePanelProps> = ({ mode, user, 
       data: {
         full_name: fullName.trim(),
         status,
+        department_id: departmentId || undefined,
       }
     });
     onClose();
@@ -81,7 +92,7 @@ export const UserProfilePanel: React.FC<UserProfilePanelProps> = ({ mode, user, 
                 <Input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  disabled
                   className="mt-1 focus-visible:ring-violet-600 focus-visible:ring-offset-2"
                 />
               )}
@@ -98,8 +109,8 @@ export const UserProfilePanel: React.FC<UserProfilePanelProps> = ({ mode, user, 
                 <div className="font-medium text-gray-900">{user.department}</div>
               ) : (
                 <DepartmentSelect
-                  value={department}
-                  onChange={setDepartment}
+                  value={departmentId}
+                  onChange={setDepartmentId}
                 />
               )}
             </div>

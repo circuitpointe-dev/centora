@@ -154,10 +154,14 @@ export const useUpdateUser = () => {
 
   return useMutation({
     mutationFn: async ({ userId, data }: { userId: string; data: UpdateUserData }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update(data)
-        .eq('id', userId);
+      const payload = {
+        _profile_id: userId,
+        _full_name: data.full_name ?? null,
+        _department_id: (data as any).department_id ?? null,
+        _status: data.status ?? null,
+      } as any;
+
+      const { error } = await supabase.rpc('admin_update_user', payload);
       
       if (error) {
         throw new Error(`Failed to update user: ${error.message}`);
@@ -197,10 +201,10 @@ export const useUpdateUserStatus = () => {
       status: 'active' | 'inactive' | 'deactivated';
       reason?: string;
     }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ status })
-        .eq('id', userId);
+      const { error } = await supabase.rpc('admin_update_user_status', {
+        _profile_id: userId,
+        _status: status,
+      } as any);
       
       if (error) {
         throw new Error(`Failed to update user status: ${error.message}`);
