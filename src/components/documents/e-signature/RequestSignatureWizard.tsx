@@ -9,6 +9,9 @@ import { RecipientsStep } from "./RecipientsStep";
 import { ReviewAndSendStep } from "./ReviewAndSendStep";
 import DocumentSelectionDialog from "./DocumentSelectionDialog";
 import FileUploadArea from "./FileUploadArea";
+import { useCreateSignatureRequest } from "@/hooks/useESignature";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface Document {
   id: string;
@@ -40,6 +43,8 @@ interface Recipient {
 }
 
 export const RequestSignatureWizard = () => {
+  const navigate = useNavigate();
+  const createSignatureRequest = useCreateSignatureRequest();
   const [currentStep, setCurrentStep] = useState(1);
   const [showDocumentDialog, setShowDocumentDialog] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
@@ -97,9 +102,38 @@ export const RequestSignatureWizard = () => {
     setCurrentStep(2);
   };
 
-  const handleSendForSignature = () => {
-    console.log("Sending document for signature");
-    // Handle sending logic here
+  const handleSendForSignature = async () => {
+    try {
+      // Validate that we have recipients with valid emails
+      const validRecipients = recipients.filter(r => r.email && r.name);
+      if (validRecipients.length === 0) {
+        toast.error("Please add at least one recipient with valid email and name");
+        return;
+      }
+
+      // Get document ID from selected document or uploaded file
+      const documentId = selectedDocument?.id || uploadedFile?.id;
+      if (!documentId) {
+        toast.error("Please select a document or upload a file");
+        return;
+      }
+
+      // Create signature requests for each recipient
+      for (const recipient of validRecipients) {
+        await createSignatureRequest.mutateAsync({
+          document_id: documentId,
+          signer_email: recipient.email,
+          signer_name: recipient.name,
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+        });
+      }
+
+      toast.success(`Signature request sent to ${validRecipients.length} recipient(s)`);
+      navigate('/dashboard/documents/e-signature');
+    } catch (error) {
+      console.error('Error sending signature request:', error);
+      toast.error('Failed to send signature request');
+    }
   };
 
   const handleMessageCheckboxChange = (checked: boolean | "indeterminate") => {

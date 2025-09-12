@@ -3,6 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Upload, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { useCreateDocument } from "@/hooks/useDocuments";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UploadedFile {
   file: File;
@@ -21,6 +25,15 @@ const FileUploadArea = ({
   onFileRemove,
 }: FileUploadAreaProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
+
+  const { uploadFile, isUploading } = useFileUpload({
+    bucket: 'documents',
+    folder: 'uploads',
+    allowedTypes: ['application/pdf'],
+    maxSize: 25 * 1024 * 1024 // 25MB
+  });
+
+  const createDocument = useCreateDocument();
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -50,15 +63,44 @@ const FileUploadArea = ({
     [onFileSelect]
   );
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     if (selectedFiles.length > 0) {
       const file = selectedFiles[0];
       if (file.type === "application/pdf" && file.size <= 25 * 1024 * 1024) {
-        onFileSelect({
-          file,
-          id: Math.random().toString(36).substr(2, 9),
-        });
+        try {
+          // Upload file to Supabase Storage
+          const uploadResult = await uploadFile(file);
+          
+          // Create document record in database
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) throw new Error('User not authenticated');
+
+          const documentData = {
+            title: file.name.replace('.pdf', ''),
+            file_name: file.name,
+            file_path: uploadResult.path,
+            file_size: file.size,
+            mime_type: file.type,
+            category: 'contracts' as const,
+            status: 'draft' as const
+          };
+
+          const result = await createDocument.mutateAsync(documentData);
+          
+          // Create file object with document ID for parent component
+          onFileSelect({
+            file,
+            id: result.id,
+          });
+          
+          toast.success('Document uploaded successfully');
+        } catch (error) {
+          console.error('Upload error:', error);
+          toast.error('Failed to upload document');
+        }
+      } else {
+        toast.error('Please select a valid PDF file (max 25MB)');
       }
     }
   };
@@ -149,8 +191,9 @@ const FileUploadArea = ({
               <Button
                 variant="outline"
                 className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                disabled={isUploading}
               >
-                Browse Files
+                {isUploading ? 'Uploading...' : 'Browse Files'}
               </Button>
             </div>
             <p className="text-gray-400 text-xs text-center">

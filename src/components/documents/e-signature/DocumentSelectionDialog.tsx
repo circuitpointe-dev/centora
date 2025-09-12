@@ -9,9 +9,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, FileText, Check } from 'lucide-react';
-import { documentsData } from '../documents-feature/data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { useDocuments } from '@/hooks/useDocuments';
+import { formatTimeAgo } from '@/utils/date';
 
 interface Document {
   id: string;
@@ -46,25 +47,30 @@ const DocumentSelectionDialog = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [tempSelectedDoc, setTempSelectedDoc] = useState<Document | null>(selectedDocument || null);
 
+  // Fetch real documents from database
+  const { data: documents = [], isLoading } = useDocuments({
+    search: searchQuery,
+    category: undefined // Get all documents
+  });
+
   const filteredDocuments = useMemo(() => {
-    let filtered = documentsData.map(doc => ({
+    return documents.map(doc => ({
       id: doc.id,
-      fileName: doc.fileName,
+      fileName: doc.file_name,
       category: doc.category,
-      fileSize: '2.5 MB', // Default file size since it's not in the original data
-      addedTime: doc.addedTime,
-      owner: doc.owner,
-      tags: doc.tags
+      fileSize: doc.file_size ? `${Math.round(doc.file_size / 1024)} KB` : 'Unknown',
+      addedTime: formatTimeAgo(doc.created_at),
+      owner: {
+        name: doc.creator?.full_name || 'Unknown',
+        avatar: "/placeholder.svg"
+      },
+      tags: doc.tags?.map(tag => ({
+        name: tag.name,
+        bgColor: tag.bg_color || 'bg-gray-100',
+        textColor: tag.text_color || 'text-gray-800'
+      })) || []
     }));
-
-    if (searchQuery.trim()) {
-      filtered = filtered.filter((doc) =>
-        doc.fileName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return filtered;
-  }, [searchQuery]);
+  }, [documents]);
 
   const handleConfirm = () => {
     if (tempSelectedDoc) {
@@ -102,56 +108,67 @@ const DocumentSelectionDialog = ({
 
           {/* Document List */}
           <ScrollArea className="h-[400px]">
-            <div className="space-y-2">
-              {filteredDocuments.map((doc) => (
-                <div
-                  key={doc.id}
-                  onClick={() => setTempSelectedDoc(doc)}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                    tempSelectedDoc?.id === doc.id
-                      ? 'border-violet-600 bg-violet-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-1">
-                      <FileText className="w-5 h-5 text-gray-600" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 truncate">
-                          {doc.fileName}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-sm text-gray-500">
-                            {doc.fileSize} • {doc.addedTime}
-                          </span>
-                          <span className="text-sm text-gray-500">
-                            by {doc.owner.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1 mt-2">
-                          {doc.tags.slice(0, 2).map((tag, index) => (
-                            <Badge
-                              key={index}
-                              className={`h-5 px-2 py-0 ${tag.bgColor} ${tag.textColor} font-medium text-xs rounded border-0`}
-                            >
-                              {tag.name}
-                            </Badge>
-                          ))}
-                          {doc.tags.length > 2 && (
-                            <Badge className="h-5 px-2 py-0 bg-gray-200 text-gray-800 font-medium text-xs rounded border-0">
-                              +{doc.tags.length - 2}
-                            </Badge>
-                          )}
+            {isLoading ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>Loading documents...</p>
+              </div>
+            ) : filteredDocuments.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <p>No documents found</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {filteredDocuments.map((doc) => (
+                  <div
+                    key={doc.id}
+                    onClick={() => setTempSelectedDoc(doc)}
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                      tempSelectedDoc?.id === doc.id
+                        ? 'border-violet-600 bg-violet-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-1">
+                        <FileText className="w-5 h-5 text-gray-600" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">
+                            {doc.fileName}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-sm text-gray-500">
+                              {doc.fileSize} • {doc.addedTime}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                              by {doc.owner.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 mt-2">
+                            {doc.tags.slice(0, 2).map((tag, index) => (
+                              <Badge
+                                key={index}
+                                className={`h-5 px-2 py-0 ${tag.bgColor} ${tag.textColor} font-medium text-xs rounded border-0`}
+                              >
+                                {tag.name}
+                              </Badge>
+                            ))}
+                            {doc.tags.length > 2 && (
+                              <Badge className="h-5 px-2 py-0 bg-gray-200 text-gray-800 font-medium text-xs rounded border-0">
+                                +{doc.tags.length - 2}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
+                      {tempSelectedDoc?.id === doc.id && (
+                        <Check className="w-5 h-5 text-violet-600" />
+                      )}
                     </div>
-                    {tempSelectedDoc?.id === doc.id && (
-                      <Check className="w-5 h-5 text-violet-600" />
-                    )}
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </ScrollArea>
 
           {/* Actions */}
