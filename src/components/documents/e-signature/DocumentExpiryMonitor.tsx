@@ -1,129 +1,33 @@
-import React, { useState } from 'react';
-import { Search, FileText, Upload, Mail, MoreHorizontal } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { SendExpiryReminderDialog } from './expiry-monitor/SendExpiryReminderDialog';
-import { ExpiryConfirmationDialog } from './expiry-monitor/ExpiryConfirmationDialog';
+import { DocumentExpiryMonitor } from './DocumentExpiryMonitor';
+import { SignatureTracking } from './SignatureTracking';
+import { SignedDocumentHistory } from './SignedDocumentHistory';
+import { useSignatureRequests, useSignatureStats } from '@/hooks/useESignature';
+import { Loader2 } from 'lucide-react';
 
-interface Document {
-  id: string;
-  name: string;
-  owner: string;
-  tags: string[];
-  expiryDate: string;
-  status: 'expired' | 'expiring' | 'active';
-}
-
-const mockDocuments: Document[] = [
-  {
-    id: '1',
-    name: 'Company Policy.pdf',
-    owner: 'John Smith',
-    tags: ['Finance', 'M&E'],
-    expiryDate: '2025-02-16',
-    status: 'expired'
-  },
-  {
-    id: '2',
-    name: 'Employee Contract - John Doe.pdf',
-    owner: 'John Smith',
-    tags: ['HR', 'Contract'],
-    expiryDate: '2025-02-16',
-    status: 'expired'
-  },
-  {
-    id: '3',
-    name: 'Marketing Strategy 2025.pdf',
-    owner: 'John Smith',
-    tags: ['Finance', 'M&E'],
-    expiryDate: '2025-02-16',
-    status: 'expiring'
-  },
-  {
-    id: '4',
-    name: 'Budget Approval 2025.pdf',
-    owner: 'John Smith',
-    tags: ['HR', 'Contract'],
-    expiryDate: '2025-02-16',
-    status: 'expiring'
-  },
-  {
-    id: '5',
-    name: 'Company Policy.pdf',
-    owner: 'John Smith',
-    tags: ['Reports'],
-    expiryDate: '2025-02-16',
-    status: 'expired'
-  },
-  {
-    id: '6',
-    name: 'Product Launch Plan.pdf',
-    owner: 'John Smith',
-    tags: ['Reports'],
-    expiryDate: '2025-02-16',
-    status: 'active'
-  },
-  {
-    id: '7',
-    name: 'Company Policy.pdf',
-    owner: 'John Smith',
-    tags: ['Finance', 'M&E'],
-    expiryDate: '2025-02-16',
-    status: 'expired'
-  },
-  {
-    id: '8',
-    name: 'Company Policy.pdf',
-    owner: 'John Smith',
-    tags: ['Finance', 'M&E'],
-    expiryDate: '2025-02-16',
-    status: 'expired'
-  },
-  {
-    id: '9',
-    name: 'Company Policy.pdf',
-    owner: 'John Smith',
-    tags: ['Finance', 'M&E'],
-    expiryDate: '2025-02-16',
-    status: 'active'
-  },
-  {
-    id: '10',
-    name: 'Company Policy.pdf',
-    owner: 'John Smith',
-    tags: ['Finance', 'M&E'],
-    expiryDate: '2025-02-16',
-    status: 'active'
-  }
-];
+import { useExpiringDocuments, useDocumentOwners, useSendExpiryReminder, ExpiringDocument } from '@/hooks/useDocumentExpiry';
 
 export const DocumentExpiryMonitor = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [ownerFilter, setOwnerFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<ExpiringDocument | null>(null);
   const [showReminderDialog, setShowReminderDialog] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
 
   const documentsPerPage = 10;
 
-  // Filter documents
-  const filteredDocuments = mockDocuments.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
-    const matchesOwner = ownerFilter === 'all' || doc.owner === ownerFilter;
-    return matchesSearch && matchesStatus && matchesOwner;
+  const { data: documents, isLoading, error } = useExpiringDocuments({
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    owner: ownerFilter !== 'all' ? ownerFilter : undefined,
+    search: searchTerm,
   });
 
+  const { data: owners } = useDocumentOwners();
+  const sendReminderMutation = useSendExpiryReminder();
+
   // Paginate documents
+  const filteredDocuments = documents || [];
   const totalPages = Math.ceil(filteredDocuments.length / documentsPerPage);
   const startIndex = (currentPage - 1) * documentsPerPage;
   const paginatedDocuments = filteredDocuments.slice(startIndex, startIndex + documentsPerPage);
@@ -152,25 +56,56 @@ export const DocumentExpiryMonitor = () => {
     return colors[tag] || 'bg-gray-100 text-gray-800 border-gray-200';
   };
 
-  const handleSendReminder = (document: Document) => {
+  const handleSendReminder = (document: ExpiringDocument) => {
     setSelectedDocument(document);
     setShowReminderDialog(true);
   };
 
   const handleUploadDocument = (documentId: string) => {
-    // Handle upload logic
     console.log('Upload document for:', documentId);
   };
 
-  const handleReminderSent = () => {
-    setShowReminderDialog(false);
-    setShowConfirmationDialog(true);
+  const handleReminderSent = async (params: { recipient_email: string; message: string }) => {
+    if (selectedDocument) {
+      try {
+        await sendReminderMutation.mutateAsync({
+          document_id: selectedDocument.document_id,
+          recipient_email: params.recipient_email,
+          message: params.message,
+        });
+        setShowReminderDialog(false);
+        setShowConfirmationDialog(true);
+      } catch (error) {
+        console.error('Failed to send reminder:', error);
+      }
+    }
   };
 
   const handleBackToMonitor = () => {
     setShowConfirmationDialog(false);
     setSelectedDocument(null);
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 min-h-full p-8">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-50 min-h-full p-8">
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-2">Failed to load expiring documents</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-full p-8">
@@ -206,7 +141,11 @@ export const DocumentExpiryMonitor = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Owners</SelectItem>
-                <SelectItem value="John Smith">John Smith</SelectItem>
+                {owners?.map(owner => (
+                  <SelectItem key={owner.id} value={owner.name}>
+                    {owner.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

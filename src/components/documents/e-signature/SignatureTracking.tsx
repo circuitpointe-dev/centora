@@ -7,118 +7,29 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { SideDialog, SideDialogContent, SideDialogTrigger } from '@/components/ui/side-dialog';
-import { DocumentDetailsDialog } from './signature-tracking/DocumentDetailsDialog';
-
-interface Document {
-  id: string;
-  name: string;
-  status: 'pending' | 'completed' | 'declined';
-  dateSent: string;
-  dueDate: string;
-  creator: string;
-  signatureHistory: {
-    status: string;
-    person: string;
-    date: string;
-    completed: boolean;
-  }[];
-}
-
-const mockDocuments: Document[] = [
-  {
-    id: '1',
-    name: 'Company Policy.pdf',
-    status: 'pending',
-    dateSent: '2025-02-16',
-    dueDate: '2025-02-18',
-    creator: 'Richard Nwamadi',
-    signatureHistory: [
-      { status: 'Request Sent', person: 'Millicent ERP', date: 'Apr 10, 2025 09:30 AM', completed: true },
-      { status: 'Signed', person: 'Somachi ERP', date: 'Apr 10, 2025 09:30 AM', completed: true },
-      { status: 'Pending Signature', person: 'Winifred Taigbenu', date: 'Apr 10, 2025 09:30 AM', completed: false },
-    ]
-  },
-  {
-    id: '2',
-    name: 'Employee Contract - John Doe.pdf',
-    status: 'completed',
-    dateSent: '2025-04-12',
-    dueDate: '2025-04-21',
-    creator: 'HR Department',
-    signatureHistory: [
-      { status: 'Request Sent', person: 'John Doe', date: 'Apr 12, 2025 10:00 AM', completed: true },
-      { status: 'Signed', person: 'John Doe', date: 'Apr 13, 2025 02:30 PM', completed: true },
-    ]
-  },
-  {
-    id: '3',
-    name: 'Marketing Strategy 2025.pdf',
-    status: 'declined',
-    dateSent: '2025-04-17',
-    dueDate: '2025-04-20',
-    creator: 'Marketing Team',
-    signatureHistory: [
-      { status: 'Request Sent', person: 'CEO', date: 'Apr 17, 2025 11:00 AM', completed: true },
-      { status: 'Declined', person: 'CEO', date: 'Apr 18, 2025 09:15 AM', completed: true },
-    ]
-  },
-  {
-    id: '4',
-    name: 'Product Launch Plan.pdf',
-    status: 'completed',
-    dateSent: '2025-05-08',
-    dueDate: '2025-05-15',
-    creator: 'Product Team',
-    signatureHistory: [
-      { status: 'Request Sent', person: 'Product Manager', date: 'May 08, 2025 09:00 AM', completed: true },
-      { status: 'Signed', person: 'Product Manager', date: 'May 09, 2025 03:45 PM', completed: true },
-    ]
-  },
-  {
-    id: '5',
-    name: 'Budget Approval 2025.pdf',
-    status: 'pending',
-    dateSent: '2025-05-10',
-    dueDate: '2025-05-19',
-    creator: 'Finance Team',
-    signatureHistory: [
-      { status: 'Request Sent', person: 'CFO', date: 'May 10, 2025 08:30 AM', completed: true },
-      { status: 'Pending Signature', person: 'CFO', date: 'May 10, 2025 08:30 AM', completed: false },
-    ]
-  },
-];
+import { useSignatureRequests, useSignatureStats } from '@/hooks/useESignature';
+import { Loader2 } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 export const SignatureTracking = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const documentsPerPage = 5;
 
-  // Calculate stats
-  const stats = {
-    pending: mockDocuments.filter(doc => doc.status === 'pending').length,
-    overdue: mockDocuments.filter(doc => {
-      const dueDate = new Date(doc.dueDate);
-      const today = new Date();
-      return doc.status === 'pending' && dueDate < today;
-    }).length,
-    signed: mockDocuments.filter(doc => doc.status === 'completed').length,
-    declined: mockDocuments.filter(doc => doc.status === 'declined').length,
-  };
-
-  // Filter documents
-  const filteredDocuments = mockDocuments.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
-    return matchesSearch && matchesStatus;
+  const { data: signatureRequests, isLoading, error } = useSignatureRequests({
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    search: searchTerm,
   });
 
-  // Paginate documents
+  const { data: stats } = useSignatureStats();
+
+  // Filter and paginate documents
+  const filteredDocuments = signatureRequests || [];
   const totalPages = Math.ceil(filteredDocuments.length / documentsPerPage);
   const startIndex = (currentPage - 1) * documentsPerPage;
   const paginatedDocuments = filteredDocuments.slice(startIndex, startIndex + documentsPerPage);
@@ -127,8 +38,8 @@ export const SignatureTracking = () => {
     switch (status) {
       case 'pending':
         return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Pending</Badge>;
-      case 'completed':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Completed</Badge>;
+      case 'signed':
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Signed</Badge>;
       case 'declined':
         return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Declined</Badge>;
       default:
@@ -136,10 +47,31 @@ export const SignatureTracking = () => {
     }
   };
 
-  const handleViewDetails = (document: Document) => {
+  const handleViewDetails = (document: any) => {
     setSelectedDocument(document);
     setDialogOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 min-h-full p-8">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-50 min-h-full p-8">
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-2">Failed to load signature requests</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-full p-8">
@@ -161,7 +93,7 @@ export const SignatureTracking = () => {
               <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-2">
                 <XCircle className="w-4 h-4 text-orange-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">{stats.overdue}</div>
+              <div className="text-2xl font-bold text-gray-900">{stats?.overdue || 0}</div>
               <div className="text-sm text-gray-500">Overdue Requests</div>
             </CardContent>
           </Card>
@@ -171,7 +103,7 @@ export const SignatureTracking = () => {
               <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-2">
                 <CheckCircle className="w-4 h-4 text-green-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">{stats.signed}</div>
+              <div className="text-2xl font-bold text-gray-900">{stats?.signed || 0}</div>
               <div className="text-sm text-gray-500">Signed Documents</div>
             </CardContent>
           </Card>
@@ -181,7 +113,7 @@ export const SignatureTracking = () => {
               <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-2">
                 <XCircle className="w-4 h-4 text-red-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">{stats.declined}</div>
+              <div className="text-2xl font-bold text-gray-900">{stats?.declined || 0}</div>
               <div className="text-sm text-gray-500">Declined</div>
             </CardContent>
           </Card>
@@ -246,12 +178,16 @@ export const SignatureTracking = () => {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-gray-500" />
-                        <span className="font-medium">{document.name}</span>
+                        <span className="font-medium">{document.document?.title || document.signer_email}</span>
                       </div>
                     </TableCell>
                     <TableCell>{getStatusBadge(document.status)}</TableCell>
-                    <TableCell className="text-gray-600">{document.dateSent}</TableCell>
-                    <TableCell className="text-gray-600">{document.dueDate}</TableCell>
+                    <TableCell className="text-gray-600">
+                      {formatDistanceToNow(new Date(document.created_at), { addSuffix: true })}
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {document.expires_at ? formatDistanceToNow(new Date(document.expires_at), { addSuffix: true }) : 'No due date'}
+                    </TableCell>
                     <TableCell>
                       <Button
                         variant="link"
@@ -304,16 +240,12 @@ export const SignatureTracking = () => {
         </Card>
 
         {/* Document Details Dialog */}
-        <SideDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <SideDialogContent className="w-[400px] p-0">
-            {selectedDocument && (
-              <DocumentDetailsDialog
-                document={selectedDocument}
-                onClose={() => setDialogOpen(false)}
-              />
-            )}
-          </SideDialogContent>
-        </SideDialog>
+        {selectedDocument && (
+          <DocumentDetailsDialog
+            document={selectedDocument}
+            onClose={() => setDialogOpen(false)}
+          />
+        )}
       </div>
     </div>
   );
