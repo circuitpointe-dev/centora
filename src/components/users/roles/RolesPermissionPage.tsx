@@ -9,7 +9,7 @@ import { useRoles } from "@/hooks/useRoles";
 import { useOrgModulesWithFeatures } from "@/hooks/useRoleManagement";
 import { useCreateRoleRequest } from "@/hooks/useRoleRequests";
 import { useAuth } from "@/contexts/AuthContext";
-
+import { supabase } from "@/integrations/supabase/client";
 type RequestPayload = {
   full_name: string;
   email: string;
@@ -28,9 +28,20 @@ export const RolesPermissionPage: React.FC = () => {
   // Get real data from backend
   const { data: roles = [], isLoading: rolesLoading } = useRoles();
   const { data: modules = [], isLoading: modulesLoading } = useOrgModulesWithFeatures();
-  const { user } = useAuth();
-  const createRoleRequest = useCreateRoleRequest();
-
+const { user } = useAuth();
+const createRoleRequest = useCreateRoleRequest();
+const [isSupabaseSession, setIsSupabaseSession] = useState(false);
+useEffect(() => {
+  const init = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setIsSupabaseSession(!!session);
+  };
+  init();
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setIsSupabaseSession(!!session);
+  });
+  return () => subscription.unsubscribe();
+}, []);
   // Set first role as default when roles load
   useEffect(() => {
     if (roles.length > 0 && !selectedRoleId) {

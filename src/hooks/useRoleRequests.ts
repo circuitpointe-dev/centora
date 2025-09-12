@@ -79,36 +79,35 @@ export const useCreateRoleRequest = () => {
   return useMutation({
     mutationFn: async (requestData: CreateRoleRequestData) => {
       try {
-        // For now, create a user invitation as a role request
+        // Require a Supabase-authenticated session
         const { data: { user } } = await supabase.auth.getUser();
-        
         if (!user) {
-          throw new Error('User not authenticated');
+          throw new Error('Please sign in to submit a role request');
         }
 
-        // Get user's profile to get org info
-        const { data: profile } = await supabase
+        // Get user's profile to derive org information
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('org_id, full_name, email')
           .eq('id', user.id)
           .single();
 
-        if (!profile) {
+        if (profileError || !profile) {
           throw new Error('User profile not found');
         }
 
-        // Create the role request as an invitation record
-        const { data, error } = await supabase.rpc('create_user_invitation', {
-          _email: profile.email,
-          _full_name: profile.full_name || 'User',
-          _department_id: null,
-          _role_ids: [], // Will be filled when approved
-          _access: {
+        // Store request in dedicated table with RLS
+        const { data, error } = await supabase
+          .from('role_requests')
+          .insert({
+            profile_id: user.id,
+            org_id: profile.org_id,
             requested_role: requestData.requested_role,
             modules: requestData.modules,
-            message: requestData.message,
-          },
-        });
+            message: requestData.message ?? null,
+          })
+          .select()
+          .single();
 
         if (error) {
           throw new Error(`Failed to create role request: ${error.message}`);
