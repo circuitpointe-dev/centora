@@ -196,34 +196,7 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
         },
       });
 
-      if (error) {
-        const rawMsg = (error as any)?.message || '';
-        let parsed: any = null;
-        try {
-          parsed = JSON.parse(rawMsg);
-        } catch {}
-
-        if (parsed && typeof parsed === 'object') {
-          if (parsed.code === 'DUPLICATE_EMAIL') {
-            showDuplicateEmailToast();
-            setCurrentStep(1);
-            return;
-          }
-          showGenericError(parsed.message);
-          return;
-        }
-
-        if (/duplicate|already registered|unique|exists/i.test(rawMsg)) {
-          showDuplicateEmailToast();
-          setCurrentStep(1);
-          return;
-        }
-
-        showGenericError(rawMsg);
-        return;
-      }
-
-      // Handle structured responses even on 200
+      // Check if data contains an error response (from 4xx status codes)
       const resp: any = data;
       if (resp && resp.success === false) {
         if (resp.code === 'DUPLICATE_EMAIL') {
@@ -231,7 +204,14 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
           setCurrentStep(1);
           return;
         }
-        showGenericError(resp.message);
+        showGenericError(resp.message || 'Registration failed');
+        return;
+      }
+
+      // Handle other types of errors
+      if (error) {
+        console.error('Registration error:', error);
+        showGenericError('Please try again later');
         return;
       }
 
