@@ -211,12 +211,28 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
       // Handle other types of errors
       if (error) {
         const status = (error as any)?.context?.response?.status;
-        if (status === 409) {
+        const errCode = (resp && (resp.code || resp?.error?.code)) as string | undefined;
+        const errMsg = (resp && (resp.message || resp?.error?.message)) as string | undefined;
+
+        // Duplicate email (from status or payload)
+        if (status === 409 || errCode === 'DUPLICATE_EMAIL' || /already registered/i.test(errMsg || '')) {
           showDuplicateEmailToast();
           setCurrentStep(1);
           return;
         }
-        console.error('Registration error:', error);
+
+        // Partial/duplicate profile scenario surfaced by the function
+        if (/profiles_pkey|duplicate key value/i.test(errMsg || '')) {
+          toast({
+            title: 'Account already exists',
+            description: 'This email may be partially registered. Try logging in or use “Forgot password”.',
+            variant: 'destructive',
+          });
+          setCurrentStep(1);
+          return;
+        }
+
+        console.error('Registration error:', { error, data: resp });
         showGenericError('Please try again later');
         return;
       }
