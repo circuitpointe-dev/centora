@@ -53,8 +53,11 @@ React.useEffect(() => {
         status,
         department_id: departmentId || undefined,
       }
+    }, {
+      onSuccess: () => {
+        onClose();
+      }
     });
-    onClose();
   };
 
   return (

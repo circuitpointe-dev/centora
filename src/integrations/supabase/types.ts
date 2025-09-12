@@ -1143,6 +1143,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      admin_update_user: {
+        Args: {
+          _department_id?: string
+          _full_name?: string
+          _profile_id: string
+          _status?: string
+        }
+        Returns: boolean
+      }
+      admin_update_user_status: {
+        Args: { _profile_id: string; _status: string }
+        Returns: boolean
+      }
       can_access_donor_document: {
         Args: { file_path: string }
         Returns: boolean
