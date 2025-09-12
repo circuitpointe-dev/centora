@@ -84,7 +84,7 @@ export const SignatureTracking = () => {
               <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2">
                 <Clock className="w-4 h-4 text-blue-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">{stats.pending}</div>
+              <div className="text-2xl font-bold text-gray-900">{stats?.pending || 0}</div>
               <div className="text-sm text-gray-500">Pending Signatures</div>
             </CardContent>
           </Card>
