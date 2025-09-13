@@ -16,11 +16,11 @@ interface AppUser {
 }
 
 interface AuthContextType {
-  user: AppUser | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, name: string) => Promise<boolean>;
-  logout: () => void;
-  isAuthenticated: boolean;
+  user: AppUser | null;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: { code?: string; message: string } }>;
+  register: (email: string, password: string, name: string) => Promise<boolean>;
+  logout: () => void;
+  isAuthenticated: boolean;
 }
 
 // NOTE: Updated dev users to include is_super_admin and the 'users' module
@@ -204,32 +204,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Dev accounts
-    const foundUser = AUTHORIZED_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (foundUser && password === "Circuit2025$") {
-      try {
-        await supabase.auth.signOut().catch(() => {}); // ensure no lingering Supabase session
-      } catch {}
-      setUser(foundUser);
-      setAuthMode('dev');
-      localStorage.setItem('currentUser', JSON.stringify(foundUser));
-      localStorage.setItem('isAuthenticated', 'true');
-      return true;
-    }
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: { code?: string; message: string } }> => {
+    // Dev accounts
+    const foundUser = AUTHORIZED_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (foundUser && password === "Circuit2025$") {
+      try {
+        await supabase.auth.signOut().catch(() => {}); // ensure no lingering Supabase session
+      } catch {}
+      setUser(foundUser);
+      setAuthMode('dev');
+      localStorage.setItem('currentUser', JSON.stringify(foundUser));
+      localStorage.setItem('isAuthenticated', 'true');
+      return { success: true };
+    }
 
-    // Supabase auth for real users
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      return false;
-    }
-    // session listener will populate user state
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isAuthenticated');
-    setAuthMode('supabase');
-    return true;
-  };
-
+    // Supabase auth for real users
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      const msg = (error as any)?.message || 'Authentication failed';
+      const code = msg.toLowerCase().includes('email not confirmed') ? 'email_not_confirmed' : (error as any)?.code;
+      return { success: false, error: { code, message: msg } };
+    }
+    // session listener will populate user state
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isAuthenticated');
+    setAuthMode('supabase');
+    return { success: true };
+  };
   // Keeping existing register for compatibility (ModalSignup handles real signup)
   const register = async (
     email: string,

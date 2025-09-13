@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, MailCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import ForgotPasswordDialog from "@/components/auth/ForgotPasswordDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LoginFormProps {
   onShowRegistration: () => void;
@@ -19,6 +20,8 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [resending, setResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
@@ -43,20 +46,34 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
     }
 
     try {
-      const success = await login(email, password);
+      const result = await login(email, password);
 
-      if (success) {
+      if (result.success) {
         toast({
           title: "Login Successful",
           description: "Welcome back!",
         });
         navigate("/dashboard/fundraising/dashboard");
       } else {
-        toast({
-          title: "Login Failed",
-          description: "Please check your credentials.",
-          variant: "destructive",
-        });
+        const msg = result.error?.message || "Please check your credentials.";
+        const isUnconfirmed =
+          result.error?.code === "email_not_confirmed" ||
+          msg.toLowerCase().includes("email not confirmed");
+
+        if (isUnconfirmed) {
+          setNeedsVerification(true);
+          toast({
+            title: "Email not confirmed",
+            description: "Please confirm your email to continue. You can resend the confirmation email below.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Login Failed",
+            description: msg,
+            variant: "destructive",
+          });
+        }
       }
     } catch (error: any) {
       toast({
@@ -66,6 +83,26 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
       });
     } finally {
       setIsLoading(false);
+    }
+};
+
+  const handleResend = async () => {
+    try {
+      setResending(true);
+      const { error } = await supabase.auth.resend({ type: 'signup', email });
+      if (error) throw error;
+      toast({
+        title: 'Verification email sent',
+        description: 'Please check your inbox (and spam) for the confirmation link.',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Could not resend email',
+        description: err.message || 'Please try again shortly.',
+        variant: 'destructive',
+      });
+    } finally {
+      setResending(false);
     }
   };
 
@@ -147,7 +184,27 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
               "Login"
             )}
           </Button>
-        </form>
+</form>
+
+        {needsVerification && (
+          <div className="mt-4 rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800">
+            <div className="flex items-center gap-2">
+              <MailCheck className="h-4 w-4" />
+              <span>Confirm your email to continue.</span>
+            </div>
+            <div className="mt-2 flex gap-2">
+              <Button onClick={handleResend} disabled={resending} variant="outline" className="h-9">
+                {resending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Resending...
+                  </>
+                ) : (
+                  'Resend verification email'
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Create Account Link */}
         <div className="mt-6 text-center">
