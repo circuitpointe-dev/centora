@@ -9,7 +9,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./components/pages/Index";
 import LoginPage from "./components/auth/LoginPage";
 import SignupPage from "./components/auth/SignupPage";
-import EmailVerificationPage from "./components/auth/EmailVerificationPage";
+
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MainLayout from "./components/layout/MainLayout";
 import DashboardPage from "./components/pages/DashboardPage";
@@ -41,8 +41,6 @@ const AppRoutes = () => {
         {/* Public: Register (dedicated OAuth-based signup page) */}
         <Route path="/signup" element={<SignupPage />} />
         
-        {/* Public: Email Verification */}
-        <Route path="/verify-email" element={<EmailVerificationPage />} />
         
         {/* Legacy register route redirect */}
         <Route path="/register" element={<Navigate to="/signup" replace />} />

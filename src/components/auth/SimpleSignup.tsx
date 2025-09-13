@@ -63,12 +63,19 @@ const SimpleSignup = () => {
         return;
       }
 
-      if (data.user) {
+      if (data.user && !data.session) {
         toast({
-          title: 'Account Created',
-          description: 'Please check your email to confirm your account.',
+          title: 'Account Created Successfully',
+          description: 'Please check your email and click the confirmation link to activate your account.',
         });
         navigate('/login');
+      } else if (data.session) {
+        // User is automatically logged in (email confirmation disabled)
+        toast({
+          title: 'Welcome!',
+          description: 'Your account has been created and you are now logged in.',
+        });
+        navigate('/dashboard');
       }
     } catch (error: any) {
       toast({

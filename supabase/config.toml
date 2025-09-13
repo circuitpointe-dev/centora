@@ -5,9 +5,3 @@ verify_jwt = false
 
 [functions.admin-create-org-user]
 verify_jwt = false
-
-[functions.send-verification-code]
-verify_jwt = false
-
-[functions.verify-email-code]
-verify_jwt = false

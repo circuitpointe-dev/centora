@@ -5,7 +5,6 @@ import { X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckEmailModal } from './CheckEmailModal';
 import Step1 from './signup/StepOrganizationDetails';
 import Step2 from './signup/StepModules';
 import Step3 from './signup/StepPricingPlan';
@@ -14,7 +13,6 @@ import Step4 from './signup/StepReviewSubmit';
 const ModalSignup = ({ onClose }: { onClose: () => void }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [showCheckEmailModal, setShowCheckEmailModal] = useState(false);
   const navigate = useNavigate();
   
   // Form state
@@ -156,15 +154,6 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
 
   const handlePrev = () => setCurrentStep(prev => prev - 1);
 
-  const handleProceedToVerification = () => {
-    setShowCheckEmailModal(false);
-    onClose();
-    const params = new URLSearchParams({
-      email: formData.email,
-      org: formData.organizationName
-    });
-    navigate(`/verify-email?${params.toString()}`);
-  };
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -237,40 +226,14 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
         return;
       }
 
-      toast({ title: 'Success!', description: 'Account created successfully' });
+      toast({ 
+        title: 'Registration Complete!', 
+        description: 'Please check your email and click the confirmation link to activate your account.',
+      });
       
-      // Send verification code
-      try {
-        const { data: verificationData, error: verificationError } = await supabase.functions.invoke('send-verification-code', {
-          body: { 
-            email: formData.email, 
-            organizationName: formData.organizationName 
-          }
-        });
-
-        if (verificationError || verificationData?.error) {
-          console.error('Failed to send verification code:', verificationError || verificationData?.error);
-          // Don't block the user if verification email fails
-          toast({ 
-            title: 'Account Created', 
-            description: 'Account created successfully, but verification email could not be sent. Please contact support.',
-            variant: 'default'
-          });
-          navigate('/login');
-          return;
-        }
-
-        // Show check email modal instead of redirecting immediately
-        setShowCheckEmailModal(true);
-      } catch (err) {
-        console.error('Verification email error:', err);
-        toast({ 
-          title: 'Account Created', 
-          description: 'Account created successfully, but verification email could not be sent. Please contact support.',
-          variant: 'default'
-        });
-        navigate('/login');
-      }
+      // Navigate to login page
+      onClose();
+      navigate('/login');
     } catch (err: any) {
       showGenericError(err?.message);
     } finally {
@@ -364,14 +327,6 @@ const ModalSignup = ({ onClose }: { onClose: () => void }) => {
         </div>
       </motion.div>
 
-      {/* Check Email Modal */}
-      <CheckEmailModal 
-        open={showCheckEmailModal}
-        onOpenChange={setShowCheckEmailModal}
-        onProceedToVerification={handleProceedToVerification}
-        email={formData.email}
-        organizationName={formData.organizationName}
-      />
     </div>
   );
 };
