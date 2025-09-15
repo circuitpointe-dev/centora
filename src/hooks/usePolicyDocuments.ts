@@ -146,9 +146,9 @@ export const useCreatePolicyAcknowledgment = () => {
         .from('policy_acknowledgments')
         .insert({
           user_id: user.id,
-          policy_document_id: policyDocumentId,
-          ip_address: await getUserIP(),
-          user_agent: navigator.userAgent,
+          document_id: policyDocumentId,
+          status: 'acknowledged',
+          acknowledged_at: new Date().toISOString(),
         })
         .select()
         .single();

@@ -1091,30 +1091,44 @@ export type Database = {
       }
       policy_acknowledgments: {
         Row: {
-          acknowledged_at: string
+          acknowledged_at: string | null
+          created_at: string
+          document_id: string
           id: string
-          ip_address: unknown | null
-          policy_document_id: string
-          user_agent: string | null
+          ip_address: string | null
+          status: string
+          updated_at: string
           user_id: string
         }
         Insert: {
-          acknowledged_at?: string
+          acknowledged_at?: string | null
+          created_at?: string
+          document_id: string
           id?: string
-          ip_address?: unknown | null
-          policy_document_id: string
-          user_agent?: string | null
+          ip_address?: string | null
+          status?: string
+          updated_at?: string
           user_id: string
         }
         Update: {
-          acknowledged_at?: string
+          acknowledged_at?: string | null
+          created_at?: string
+          document_id?: string
           id?: string
-          ip_address?: unknown | null
-          policy_document_id?: string
-          user_agent?: string | null
+          ip_address?: string | null
+          status?: string
+          updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "policy_acknowledgments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       policy_documents: {
         Row: {
