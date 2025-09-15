@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Lock, Users, UserCheck, Eye, Edit, Trash2 } from 'lucide-react';
-import { Document } from './data';
+import { Document } from '@/hooks/useDocuments';
 import { useToast } from '@/components/ui/use-toast';
 
 interface Permission {
@@ -80,10 +80,10 @@ const EditPermissionsDialog = ({
 
   const handleSave = () => {
     onSave(permissions);
-    toast({
-      title: "Permissions Updated",
-      description: `Permissions for "${document.fileName}" have been updated successfully.`,
-    });
+      toast({
+        title: "Permissions Updated",
+        description: `Permissions for "${document.file_name}" have been updated successfully.`,
+      });
     onOpenChange(false);
   };
 
@@ -100,7 +100,7 @@ const EditPermissionsDialog = ({
             Edit Permissions
           </DialogTitle>
           <p className="text-sm text-gray-600 mt-1">
-            Manage access permissions for "{document.fileName}"
+            Manage access permissions for "{document.file_name}"
           </p>
         </DialogHeader>
 

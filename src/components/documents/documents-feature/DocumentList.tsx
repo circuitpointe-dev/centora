@@ -11,7 +11,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MoreVertical } from 'lucide-react';
-import { Document } from './data';
+import { Document } from '@/hooks/useDocuments';
+import { formatDistanceToNow } from 'date-fns';
 
 interface DocumentListProps {
   documents: Document[];
@@ -41,26 +42,26 @@ const DocumentList = ({ documents, selectedDocumentId, onSelectDocument }: Docum
             data-state={selectedDocumentId === doc.id ? 'selected' : 'unselected'}
             className="cursor-pointer"
           >
-            <TableCell className="font-medium max-w-xs truncate" title={doc.fileName}>
-              {doc.fileName}
+            <TableCell className="font-medium max-w-xs truncate" title={doc.file_name}>
+              {doc.file_name}
             </TableCell>
-            <TableCell>{doc.addedTime}</TableCell>
-            <TableCell>{doc.owner.name}</TableCell>
+            <TableCell>{formatDistanceToNow(new Date(doc.created_at), { addSuffix: true })}</TableCell>
+            <TableCell>{doc.creator?.full_name || 'Unknown'}</TableCell>
             <TableCell>
               <div className="flex items-center gap-1 flex-wrap">
-                {doc.tags.slice(0, displayedTagsCount).map((tag, index) => (
+                {doc.tags?.slice(0, displayedTagsCount).map((tag, index) => (
                   <Badge
                     key={index}
-                    className={`h-[25px] px-2.5 py-1 ${tag.bgColor} ${tag.textColor} font-medium text-xs rounded-[5px] border-0 hover:${tag.bgColor} hover:${tag.textColor}`}
+                    className={`h-[25px] px-2.5 py-1 ${tag.bg_color} ${tag.text_color} font-medium text-xs rounded-[5px] border-0 hover:${tag.bg_color} hover:${tag.text_color}`}
                   >
                     {tag.name}
                   </Badge>
                 ))}
-                {doc.tags.length > displayedTagsCount && (
+                {(doc.tags?.length || 0) > displayedTagsCount && (
                   <Badge
                     className="h-[25px] px-2.5 py-1 bg-gray-200 text-gray-800 font-medium text-xs rounded-[5px] border-0 hover:bg-gray-200 hover:text-gray-800"
                   >
-                    +{doc.tags.length - displayedTagsCount}
+                    +{(doc.tags?.length || 0) - displayedTagsCount}
                   </Badge>
                 )}
               </div>

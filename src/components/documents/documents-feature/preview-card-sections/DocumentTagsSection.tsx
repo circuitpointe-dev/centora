@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
-import { Document } from '../data';
+import { Document } from '@/hooks/useDocuments';
 
 interface DocumentTagsSectionProps {
     tags: Document['tags'];
@@ -14,10 +14,10 @@ const DocumentTagsSection: React.FC<DocumentTagsSectionProps> = ({ tags }) => {
                 Tags
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-                {tags.map((tag) => (
+                {tags?.map((tag) => (
                     <Badge
                         key={tag.name}
-                        className={`${tag.bgColor} ${tag.textColor} h-[25px] px-2.5 py-1 rounded-[5px] font-medium text-xs border-0 hover:${tag.bgColor} hover:${tag.textColor}`}
+                        className={`${tag.bg_color} ${tag.text_color} h-[25px] px-2.5 py-1 rounded-[5px] font-medium text-xs border-0 hover:${tag.bg_color} hover:${tag.text_color}`}
                     >
                         {tag.name}
                     </Badge>

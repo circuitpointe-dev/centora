@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { FileSignature, Mail, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useCreateSignatureRequest } from '@/hooks/useESignature';
-import { Document } from '../data';
+import { Document } from '@/hooks/useDocuments';
 
 interface ExternalSignatureShareProps {
   document: Document;
@@ -88,7 +88,7 @@ const ExternalSignatureShare = ({ document }: ExternalSignatureShareProps) => {
       
       toast({
         title: "Signature request sent",
-        description: `e-Signature request for ${document.fileName} has been sent to ${recipients.length} recipient(s).`,
+        description: `e-Signature request for ${document.file_name} has been sent to ${recipients.length} recipient(s).`,
       });
       
       setRecipients([]);

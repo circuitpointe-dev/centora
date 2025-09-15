@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Building2, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Document } from '../data';
+import { Document } from '@/hooks/useDocuments';
 import { departmentList } from '@/data/departmentData';
 
 interface InternalDepartmentShareProps {
@@ -45,7 +45,7 @@ const InternalDepartmentShare = ({ document }: InternalDepartmentShareProps) => 
 
       toast({
         title: "Document shared successfully",
-        description: `${document.fileName} has been shared with ${departmentNames} (View access).`,
+        description: `${document.file_name} has been shared with ${departmentNames} (View access).`,
       });
       
       setIsSharing(false);

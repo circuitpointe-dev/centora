@@ -7,7 +7,7 @@ import {
   RotateCw,
   Share2,
 } from "lucide-react";
-import { Document } from "./data";
+import { Document } from "@/hooks/useDocuments";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const getFileType = (fileName: string) => {
@@ -49,9 +49,9 @@ export const useDocumentPreview = (document: Document) => {
     ]);
 
     const documentDetails = [
-        { label: "Type", value: getFileType(document.fileName) },
+        { label: "Type", value: getFileType(document.file_name) },
         { label: "Size", value: getFileSize() },
-        { label: "Owner", value: document.owner.name },
+        { label: "Owner", value: document.creator?.full_name || 'Unknown' },
         { label: "Modified", value: "Jun 15, 2025" },
     ];
 

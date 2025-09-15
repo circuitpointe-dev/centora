@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Building2, Users, FileSignature } from 'lucide-react';
-import { Document } from './data';
+import { Document } from '@/hooks/useDocuments';
 import InternalDepartmentShare from './share-components/InternalDepartmentShare';
 import StaffShare from './share-components/StaffShare';
 import ExternalSignatureShare from './share-components/ExternalSignatureShare';
@@ -32,7 +32,7 @@ const ShareDocumentDialog = ({ open, onOpenChange, document }: ShareDocumentDial
       Share Document
     </DialogTitle>
     <p className="text-sm text-gray-600 mt-1">
-      Share "{document.fileName}" with colleagues or external parties
+      Share "{document.file_name}" with colleagues or external parties
     </p>
   </DialogHeader>
 

@@ -25,7 +25,7 @@ import {
 import { Check, X, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Document } from '../data';
+import { Document } from '@/hooks/useDocuments';
 import { staffList } from '@/data/staffData';
 
 interface StaffShare {
@@ -92,7 +92,7 @@ const StaffShare = ({ document }: StaffShareProps) => {
 
       toast({
         title: "Document shared successfully",
-        description: `${document.fileName} has been shared with ${staffNames}.`,
+        description: `${document.file_name} has been shared with ${staffNames}.`,
       });
       
       setIsSharing(false);

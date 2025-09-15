@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CheckCircle, Clock } from 'lucide-react';
-import { Document } from './data';
+import { Document } from '@/hooks/useDocuments';
 import { useToast } from '@/components/ui/use-toast';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import RestoreVersionDialog from './RestoreVersionDialog';
@@ -53,7 +53,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
   const handleAcceptChanges = () => {
     toast({
       title: "Changes Accepted",
-      description: `The document "${document.fileName}" has been updated.`,
+      description: `The document "${document.file_name}" has been updated.`,
     });
     onOpenChange(false);
   };
@@ -73,7 +73,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
       if (action === 'overwrite') {
         toast({
           title: "Version Restored",
-          description: `The document "${document.fileName}" has been restored to the version from ${itemToRestore.date}.`,
+          description: `The document "${document.file_name}" has been restored to the version from ${itemToRestore.date}.`,
         });
       } else {
         toast({
@@ -92,7 +92,7 @@ const VersionHistoryDialog: React.FC<VersionHistoryDialogProps> = ({ open, onOpe
         <LargeSideDialogContent className="bg-gray-50 p-0">
           <LargeSideDialogHeader className="px-6 py-4 border-b bg-white">
             <LargeSideDialogTitle className="font-normal">
-              <span className="font-bold">Version History</span> / {document.fileName}
+              <span className="font-bold">Version History</span> / {document.file_name}
             </LargeSideDialogTitle>
           </LargeSideDialogHeader>
           <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-y-auto">

@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Save, X, AlertCircle } from 'lucide-react';
-import { Document } from './data';
+import { Document } from '@/hooks/useDocuments';
 import { useToast } from '@/hooks/use-toast';
 import PDFEditor from './editors/PDFEditor';
 import WordEditor from './editors/WordEditor';
@@ -43,12 +43,12 @@ const DocumentEditorDialog = ({
   const [editorContent, setEditorContent] = useState('');
   const { toast } = useToast();
 
-  const fileType = getFileType(document.fileName);
+  const fileType = getFileType(document.file_name);
   const canEdit = checkEditPermissions(userPermissions);
 
   useEffect(() => {
     // Load document content
-    setEditorContent(`Content of ${document.fileName}`);
+    setEditorContent(`Content of ${document.file_name}`);
   }, [document]);
 
   const handleSave = async () => {
@@ -68,7 +68,7 @@ const DocumentEditorDialog = ({
       
       toast({
         title: "Document Saved",
-        description: `"${document.fileName}" has been saved successfully.`,
+        description: `"${document.file_name}" has been saved successfully.`,
       });
       
       setHasUnsavedChanges(false);
@@ -129,7 +129,7 @@ const DocumentEditorDialog = ({
               {canEdit ? 'Edit Document' : 'View Document'}
             </DialogTitle>
             <div className="text-sm text-gray-600">
-              {document.fileName}
+              {document.file_name}
             </div>
             {hasUnsavedChanges && (
               <div className="flex items-center gap-1 text-orange-600">
