@@ -16,6 +16,7 @@ import {
   Linkedin,
   Instagram,
 } from "lucide-react";
+import { AdminSetup } from "@/components/setup/AdminSetup";
 
 const Index = () => {
   const location = useLocation();
@@ -90,6 +91,19 @@ const Index = () => {
               </Button>
             </Link>
           </div>
+        </div>
+
+        {/* Admin Setup Section */}
+        <div className="mt-32">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Quick Setup
+            </h2>
+            <p className="text-lg text-gray-600">
+              Create an admin user to get started with full access
+            </p>
+          </div>
+          <AdminSetup />
         </div>
 
         {/* Features Section (unchanged) */}
