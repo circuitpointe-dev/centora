@@ -24,7 +24,7 @@ export const useDocumentDownload = () => {
         const link = window.document.createElement('a');
         link.style.display = 'none';
         link.href = url;
-        link.download = documentData.file_name;
+        link.download = document.file_name;
         window.document.body.appendChild(link);
         link.click();
         window.URL.revokeObjectURL(url);
