@@ -6,21 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Eye, Edit } from 'lucide-react';
 import { getStatusColor, getReportingStatusColor } from '../utils/statusUtils';
-
-interface Grant {
-  id: number;
-  grantName: string;
-  organization: string;
-  status: string;
-  compliance: number;
-  disbursement: number;
-  reportingStatus: string;
-  region: string;
-  year: string;
-}
+import { GrantWithStats } from '@/hooks/grants/useGrantsWithStats';
 
 interface GrantsGridCardProps {
-  grant: Grant;
+  grant: GrantWithStats;
 }
 
 export const GrantsGridCard: React.FC<GrantsGridCardProps> = ({ grant }) => {
@@ -40,37 +29,37 @@ export const GrantsGridCard: React.FC<GrantsGridCardProps> = ({ grant }) => {
         {/* Grant Name */}
         <div>
           <h3 className="font-medium text-foreground mb-1">Grant name</h3>
-          <p className="text-sm text-muted-foreground">{grant.grantName}</p>
+          <p className="text-sm text-muted-foreground">{grant.grant_name}</p>
         </div>
 
         {/* Organization */}
         <div>
-          <h3 className="font-medium text-foreground mb-1">Organization</h3>
-          <p className="text-sm text-muted-foreground text-right">{grant.organization}</p>
+          <h3 className="font-medium text-foreground mb-1">Donor</h3>
+          <p className="text-sm text-muted-foreground text-right">{grant.donor_name}</p>
         </div>
 
         {/* Compliance */}
         <div>
           <div className="flex justify-between items-center mb-1">
             <h3 className="font-medium text-foreground">Compliance</h3>
-            <span className="text-sm text-muted-foreground">{grant.compliance}%</span>
+            <span className="text-sm text-muted-foreground">{grant.compliance_rate}%</span>
           </div>
-          <Progress value={grant.compliance} className="h-2" />
+          <Progress value={grant.compliance_rate} className="h-2" />
         </div>
 
         {/* Disbursement */}
         <div>
           <div className="flex justify-between items-center mb-1">
             <h3 className="font-medium text-foreground">Disbursement</h3>
-            <span className="text-sm text-muted-foreground">{grant.disbursement}%</span>
+            <span className="text-sm text-muted-foreground">{grant.disbursement_rate}%</span>
           </div>
-          <Progress value={grant.disbursement} className="h-2" />
+          <Progress value={grant.disbursement_rate} className="h-2" />
         </div>
 
         {/* Reporting Status */}
         <div>
           <h3 className="font-medium text-foreground mb-1">Reporting Status</h3>
-          <p className="text-sm text-muted-foreground">{grant.reportingStatus}</p>
+          <p className="text-sm text-muted-foreground">{grant.reporting_status}</p>
         </div>
 
         {/* Status */}

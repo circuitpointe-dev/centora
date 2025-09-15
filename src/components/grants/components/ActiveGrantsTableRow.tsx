@@ -6,21 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Eye, Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getReportingStatusColor } from '../utils/statusUtils';
-
-interface Grant {
-  id: number;
-  grantName: string;
-  organization: string;
-  status: string;
-  compliance: number;
-  disbursement: number;
-  reportingStatus: string;
-  region: string;
-  year: string;
-}
+import { GrantWithStats } from '@/hooks/grants/useGrantsWithStats';
 
 interface ActiveGrantsTableRowProps {
-  grant: Grant;
+  grant: GrantWithStats;
 }
 
 export const ActiveGrantsTableRow = ({ grant }: ActiveGrantsTableRowProps) => {
@@ -32,17 +21,17 @@ export const ActiveGrantsTableRow = ({ grant }: ActiveGrantsTableRowProps) => {
 
   return (
     <TableRow>
-      <TableCell className="font-medium">{grant.grantName}</TableCell>
-      <TableCell>{grant.organization}</TableCell>
+      <TableCell className="font-medium">{grant.grant_name}</TableCell>
+      <TableCell>{grant.donor_name}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
           <div className="w-12 h-2 bg-gray-200 rounded-full">
             <div 
               className="h-2 bg-green-500 rounded-full"
-              style={{ width: `${grant.compliance}%` }}
+              style={{ width: `${grant.compliance_rate}%` }}
             />
           </div>
-          <span className="text-sm">{grant.compliance}%</span>
+          <span className="text-sm">{grant.compliance_rate}%</span>
         </div>
       </TableCell>
       <TableCell>
@@ -50,15 +39,15 @@ export const ActiveGrantsTableRow = ({ grant }: ActiveGrantsTableRowProps) => {
           <div className="w-12 h-2 bg-gray-200 rounded-full">
             <div 
               className="h-2 bg-blue-500 rounded-full"
-              style={{ width: `${grant.disbursement}%` }}
+              style={{ width: `${grant.disbursement_rate}%` }}
             />
           </div>
-          <span className="text-sm">{grant.disbursement}%</span>
+          <span className="text-sm">{grant.disbursement_rate}%</span>
         </div>
       </TableCell>
       <TableCell>
-        <Badge className={`${getReportingStatusColor(grant.reportingStatus)} rounded-sm hover:${getReportingStatusColor(grant.reportingStatus)}`}>
-          {grant.reportingStatus}
+        <Badge className={`${getReportingStatusColor(grant.reporting_status)} rounded-sm hover:${getReportingStatusColor(grant.reporting_status)}`}>
+          {grant.reporting_status}
         </Badge>
       </TableCell>
       <TableCell>

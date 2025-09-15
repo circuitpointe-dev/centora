@@ -1,53 +1,32 @@
 
 import { useState, useMemo } from 'react';
-import { grantsData } from '../data/grantsData';
+import { useGrantsWithStats } from '@/hooks/grants/useGrantsWithStats';
+import { GrantFilters } from '@/types/grants';
 
 interface FiltersState {
-  grantName: string;
-  organization: string;
-  reportingStatus: string;
+  grant_name: string;
+  donor_name: string;
   region: string;
-  year: string;
+  program_area: string;
 }
 
 export const useActiveGrantsFilters = () => {
   const [filters, setFilters] = useState<FiltersState>({
-    grantName: '',
-    organization: '',
-    reportingStatus: 'all',
+    grant_name: '',
+    donor_name: '',
     region: 'all',
-    year: 'all'
+    program_area: 'all'
   });
 
-  const filteredData = useMemo(() => {
-    return grantsData
-      .filter(grant => grant.status === 'Active') // Only show active grants
-      .filter(grant => {
-        const matchesGrantName = filters.grantName === '' || 
-          grant.grantName.toLowerCase().includes(filters.grantName.toLowerCase());
-        
-        const matchesOrganization = filters.organization === '' || 
-          grant.organization.toLowerCase().includes(filters.organization.toLowerCase());
-        
-        const matchesReportingStatus = filters.reportingStatus === 'all' || 
-          (filters.reportingStatus === 'submitted' && grant.reportingStatus === 'All Submitted') ||
-          (filters.reportingStatus === 'due' && grant.reportingStatus.includes('Due')) ||
-          (filters.reportingStatus === 'none' && grant.reportingStatus === 'No Reports');
-        
-        const matchesRegion = filters.region === 'all' || 
-          grant.region.toLowerCase().replace(' ', '-') === filters.region;
-        
-        const matchesYear = filters.year === 'all' || 
-          grant.year === filters.year;
-
-        return matchesGrantName && matchesOrganization && 
-               matchesReportingStatus && matchesRegion && matchesYear;
-      });
-  }, [filters]);
+  // Get only active grants
+  const activeFilters = { ...filters, status: 'active' };
+  const { grants, loading, error } = useGrantsWithStats(activeFilters);
 
   return {
     filters,
     setFilters,
-    filteredData
+    filteredData: grants,
+    loading,
+    error
   };
 };

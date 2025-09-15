@@ -5,11 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search } from 'lucide-react';
 
 interface FiltersState {
-  grantName: string;
-  organization: string;
-  reportingStatus: string;
+  grant_name: string;
+  donor_name: string;
   region: string;
-  year: string;
+  program_area: string;
 }
 
 interface ActiveGrantsTableFiltersProps {

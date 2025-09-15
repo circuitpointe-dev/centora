@@ -3,8 +3,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, CheckCircle, Archive, DollarSign, FileCheck, AlertCircle } from 'lucide-react';
 import { GrantsProgressCard } from './GrantsProgressCard';
+import { useGrantStatistics } from '@/hooks/grants/useGrantStatistics';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const GrantsStatisticsCards = () => {
+  const { statistics, loading } = useGrantStatistics();
   // Ring chart component for percentages
   const RingChart = ({ percentage, color, title }: { percentage: number; color: string; title: string }) => {
     const circumference = 2 * Math.PI * 40;
@@ -44,6 +47,38 @@ export const GrantsStatisticsCards = () => {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="p-6">
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-8 w-16 mb-1" />
+              <Skeleton className="h-3 w-32" />
+            </Card>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="p-6">
+              <Skeleton className="h-24 w-24 mx-auto rounded-full" />
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: amount >= 1000000 ? 'compact' : 'standard',
+      maximumFractionDigits: 1,
+    }).format(amount);
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Row - 4 Equal Cards */}
@@ -54,7 +89,7 @@ export const GrantsStatisticsCards = () => {
             <Award className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">45</div>
+            <div className="text-2xl font-bold text-orange-600">{statistics.total_grants}</div>
             <p className="text-xs text-muted-foreground">
               Across all programs
             </p>
@@ -67,7 +102,7 @@ export const GrantsStatisticsCards = () => {
             <CheckCircle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">18</div>
+            <div className="text-2xl font-bold text-green-600">{statistics.active_grants}</div>
             <p className="text-xs text-muted-foreground">
               Currently running
             </p>
@@ -80,7 +115,7 @@ export const GrantsStatisticsCards = () => {
             <Archive className="h-4 w-4 text-gray-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-600">27</div>
+            <div className="text-2xl font-bold text-gray-600">{statistics.closed_grants}</div>
             <p className="text-xs text-muted-foreground">
               Successfully completed
             </p>
@@ -93,7 +128,7 @@ export const GrantsStatisticsCards = () => {
             <DollarSign className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">$2.4M</div>
+            <div className="text-2xl font-bold text-blue-600">{formatCurrency(statistics.total_value)}</div>
             <p className="text-xs text-muted-foreground">
               Total allocated
             </p>
@@ -108,7 +143,7 @@ export const GrantsStatisticsCards = () => {
             <CardTitle className="text-sm font-medium text-center">Disbursement Rate (%)</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center py-3">
-            <RingChart percentage={85} color="#8B5CF6" title="" />
+            <RingChart percentage={statistics.disbursement_rate} color="#8B5CF6" title="" />
           </CardContent>
         </Card>
 
@@ -117,7 +152,7 @@ export const GrantsStatisticsCards = () => {
             <CardTitle className="text-sm font-medium text-center">Compliance (%)</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center py-3">
-            <RingChart percentage={65} color="#3B82F6" title="" />
+            <RingChart percentage={statistics.compliance_rate} color="#3B82F6" title="" />
           </CardContent>
         </Card>
 

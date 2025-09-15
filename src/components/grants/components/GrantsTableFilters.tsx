@@ -5,12 +5,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search } from 'lucide-react';
 
 interface FiltersState {
-  grantName: string;
-  organization: string;
+  grant_name: string;
+  donor_name: string;
   status: string;
-  reportingStatus: string;
   region: string;
-  year: string;
+  program_area: string;
 }
 
 interface GrantsTableFiltersProps {
@@ -25,13 +24,13 @@ export const GrantsTableFilters = ({ filters, onFiltersChange, disabled }: Grant
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Search Grant Name"
-          value={filters.grantName}
-          onChange={(e) => updateFilter('grantName', e.target.value)}
+          value={filters.grant_name}
+          onChange={(e) => updateFilter('grant_name', e.target.value)}
           className="pl-10"
           disabled={disabled}
         />
@@ -39,9 +38,9 @@ export const GrantsTableFilters = ({ filters, onFiltersChange, disabled }: Grant
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
-          placeholder="Search Organization"
-          value={filters.organization}
-          onChange={(e) => updateFilter('organization', e.target.value)}
+          placeholder="Search Donor Name"
+          value={filters.donor_name}
+          onChange={(e) => updateFilter('donor_name', e.target.value)}
           className="pl-10"
           disabled={disabled}
         />
@@ -54,19 +53,8 @@ export const GrantsTableFilters = ({ filters, onFiltersChange, disabled }: Grant
           <SelectItem value="all">All Status</SelectItem>
           <SelectItem value="active">Active</SelectItem>
           <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="overdue">Overdue</SelectItem>
           <SelectItem value="closed">Closed</SelectItem>
-        </SelectContent>
-      </Select>
-      <Select value={filters.reportingStatus} onValueChange={(value) => updateFilter('reportingStatus', value)} disabled={disabled}>
-        <SelectTrigger>
-          <SelectValue placeholder="Reporting Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Reports</SelectItem>
-          <SelectItem value="submitted">All Submitted</SelectItem>
-          <SelectItem value="due">Reports Due</SelectItem>
-          <SelectItem value="none">No Reports</SelectItem>
+          <SelectItem value="cancelled">Cancelled</SelectItem>
         </SelectContent>
       </Select>
       <Select value={filters.region} onValueChange={(value) => updateFilter('region', value)} disabled={disabled}>
@@ -75,22 +63,23 @@ export const GrantsTableFilters = ({ filters, onFiltersChange, disabled }: Grant
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Regions</SelectItem>
-          <SelectItem value="north-america">North America</SelectItem>
-          <SelectItem value="europe">Europe</SelectItem>
-          <SelectItem value="asia">Asia</SelectItem>
-          <SelectItem value="africa">Africa</SelectItem>
-          <SelectItem value="south-america">South America</SelectItem>
+          <SelectItem value="North America">North America</SelectItem>
+          <SelectItem value="Europe">Europe</SelectItem>
+          <SelectItem value="Asia">Asia</SelectItem>
+          <SelectItem value="Africa">Africa</SelectItem>
+          <SelectItem value="South America">South America</SelectItem>
         </SelectContent>
       </Select>
-      <Select value={filters.year} onValueChange={(value) => updateFilter('year', value)} disabled={disabled}>
+      <Select value={filters.program_area} onValueChange={(value) => updateFilter('program_area', value)} disabled={disabled}>
         <SelectTrigger>
-          <SelectValue placeholder="Year" />
+          <SelectValue placeholder="Program Area" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Years</SelectItem>
-          <SelectItem value="2024">2024</SelectItem>
-          <SelectItem value="2023">2023</SelectItem>
-          <SelectItem value="2022">2022</SelectItem>
+          <SelectItem value="all">All Programs</SelectItem>
+          <SelectItem value="Health">Health</SelectItem>
+          <SelectItem value="Education">Education</SelectItem>
+          <SelectItem value="Environment">Environment</SelectItem>
+          <SelectItem value="Community Development">Community Development</SelectItem>
         </SelectContent>
       </Select>
     </div>

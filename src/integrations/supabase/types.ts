@@ -871,6 +871,249 @@ export type Database = {
         }
         Relationships: []
       }
+      grant_compliance: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          due_date: string
+          evidence_document: string | null
+          grant_id: string
+          id: string
+          requirement: string
+          status: Database["public"]["Enums"]["compliance_status"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          due_date: string
+          evidence_document?: string | null
+          grant_id: string
+          id?: string
+          requirement: string
+          status?: Database["public"]["Enums"]["compliance_status"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          due_date?: string
+          evidence_document?: string | null
+          grant_id?: string
+          id?: string
+          requirement?: string
+          status?: Database["public"]["Enums"]["compliance_status"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grant_compliance_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grant_compliance_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grant_disbursements: {
+        Row: {
+          amount: number
+          created_at: string | null
+          created_by: string
+          currency: string
+          disbursed_on: string | null
+          due_date: string
+          grant_id: string
+          id: string
+          milestone: string
+          status: Database["public"]["Enums"]["disbursement_status"]
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          created_by: string
+          currency?: string
+          disbursed_on?: string | null
+          due_date: string
+          grant_id: string
+          id?: string
+          milestone: string
+          status?: Database["public"]["Enums"]["disbursement_status"]
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          created_by?: string
+          currency?: string
+          disbursed_on?: string | null
+          due_date?: string
+          grant_id?: string
+          id?: string
+          milestone?: string
+          status?: Database["public"]["Enums"]["disbursement_status"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grant_disbursements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grant_disbursements_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grant_reports: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          due_date: string
+          file_name: string | null
+          file_path: string | null
+          grant_id: string
+          id: string
+          report_type: string
+          status: Database["public"]["Enums"]["report_status"]
+          submitted: boolean | null
+          submitted_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          due_date: string
+          file_name?: string | null
+          file_path?: string | null
+          grant_id: string
+          id?: string
+          report_type: string
+          status?: Database["public"]["Enums"]["report_status"]
+          submitted?: boolean | null
+          submitted_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          due_date?: string
+          file_name?: string | null
+          file_path?: string | null
+          grant_id?: string
+          id?: string
+          report_type?: string
+          status?: Database["public"]["Enums"]["report_status"]
+          submitted?: boolean | null
+          submitted_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grant_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grant_reports_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grants: {
+        Row: {
+          amount: number
+          created_at: string | null
+          created_by: string
+          currency: string
+          description: string | null
+          donor_name: string
+          end_date: string
+          grant_name: string
+          id: string
+          next_report_due: string | null
+          org_id: string
+          program_area: string | null
+          region: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["grant_status"]
+          track_status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          created_by: string
+          currency?: string
+          description?: string | null
+          donor_name: string
+          end_date: string
+          grant_name: string
+          id?: string
+          next_report_due?: string | null
+          org_id: string
+          program_area?: string | null
+          region?: string | null
+          start_date: string
+          status?: Database["public"]["Enums"]["grant_status"]
+          track_status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          created_by?: string
+          currency?: string
+          description?: string | null
+          donor_name?: string
+          end_date?: string
+          grant_name?: string
+          id?: string
+          next_report_due?: string | null
+          org_id?: string
+          program_area?: string | null
+          region?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["grant_status"]
+          track_status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grants_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grants_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       opportunities: {
         Row: {
           amount: number | null
@@ -1817,6 +2060,8 @@ export type Database = {
     }
     Enums: {
       app_role: "org_admin" | "org_member"
+      compliance_status: "completed" | "in_progress" | "overdue"
+      disbursement_status: "pending" | "released" | "cancelled"
       document_category:
         | "policies"
         | "finance"
@@ -1834,6 +2079,7 @@ export type Database = {
       donor_status: "active" | "inactive" | "potential"
       feature_permission: "read" | "write" | "admin"
       funding_cycle_status: "ongoing" | "upcoming" | "closed"
+      grant_status: "active" | "closed" | "pending" | "cancelled"
       invitation_status: "pending" | "accepted" | "rejected" | "expired"
       module_key:
         | "fundraising"
@@ -1854,6 +2100,7 @@ export type Database = {
         | "Declined"
       opportunity_type: "RFP" | "LOI" | "CFP"
       organization_type: "NGO" | "DONOR"
+      report_status: "submitted" | "overdue" | "upcoming" | "in_progress"
       signature_status: "pending" | "signed" | "declined" | "expired"
       task_priority: "low" | "medium" | "high"
       template_status: "active" | "draft" | "archived"
@@ -1986,6 +2233,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["org_admin", "org_member"],
+      compliance_status: ["completed", "in_progress", "overdue"],
+      disbursement_status: ["pending", "released", "cancelled"],
       document_category: [
         "policies",
         "finance",
@@ -2005,6 +2254,7 @@ export const Constants = {
       donor_status: ["active", "inactive", "potential"],
       feature_permission: ["read", "write", "admin"],
       funding_cycle_status: ["ongoing", "upcoming", "closed"],
+      grant_status: ["active", "closed", "pending", "cancelled"],
       invitation_status: ["pending", "accepted", "rejected", "expired"],
       module_key: [
         "fundraising",
@@ -2027,6 +2277,7 @@ export const Constants = {
       ],
       opportunity_type: ["RFP", "LOI", "CFP"],
       organization_type: ["NGO", "DONOR"],
+      report_status: ["submitted", "overdue", "upcoming", "in_progress"],
       signature_status: ["pending", "signed", "declined", "expired"],
       task_priority: ["low", "medium", "high"],
       template_status: ["active", "draft", "archived"],
