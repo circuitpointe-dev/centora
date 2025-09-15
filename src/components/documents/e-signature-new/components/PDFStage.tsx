@@ -203,17 +203,23 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
     e.stopPropagation();
     
     const container = containerRef.current;
-    const overlay = overlayRef.current;
-    if (!container || !overlay || !fabricCanvas) return;
+    if (!container || !fabricCanvas) return;
     
-    // Get click position relative to the overlay canvas
-    const rect = overlay.getBoundingClientRect();
+    // Get the PDF canvas (the actual PDF render)
+    const pdfCanvas = container.querySelector('canvas');
+    if (!pdfCanvas) return;
+    
+    // Get click position relative to the PDF canvas
+    const rect = pdfCanvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    console.log('Placing field at:', { x, y, activeTool });
-    placeFieldAt(activeTool, x, y);
-    onToolUsed();
+    // Ensure click is within PDF bounds
+    if (x >= 0 && y >= 0 && x <= rect.width && y <= rect.height) {
+      console.log('Placing field at:', { x, y, activeTool, rect });
+      placeFieldAt(activeTool, x, y);
+      onToolUsed();
+    }
   };
 
   useImperativeHandle(ref, () => ({
@@ -262,58 +268,63 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
         </div>
       )}
       
-      <Document 
-        file={fileUrl} 
-        onLoadSuccess={({ numPages }) => { 
-          setLoading(false); 
-          onNumPages(numPages); 
-          console.log('PDF loaded successfully');
-        }} 
-        onLoadError={(error) => { 
-          setLoading(false); 
-          console.error('PDF load error:', error);
-        }} 
-        loading={null}
+      {/* PDF Container with click handler */}
+      <div 
+        onClick={handleClickToPlace}
+        className={cn("relative", activeTool && "cursor-crosshair")}
+        style={{ cursor: activeTool ? 'crosshair' : 'default' }}
       >
-        <Page 
-          pageNumber={pageNumber} 
-          scale={scale} 
-          renderTextLayer={false} 
-          renderAnnotationLayer={false}
-          onRenderSuccess={() => {
-            console.log('Page rendered successfully');
-            // Sync overlay after page renders
-            setTimeout(syncOverlay, 100);
+        <Document 
+          file={fileUrl} 
+          onLoadSuccess={({ numPages }) => { 
+            setLoading(false); 
+            onNumPages(numPages); 
+            console.log('PDF loaded successfully');
+          }} 
+          onLoadError={(error) => { 
+            setLoading(false); 
+            console.error('PDF load error:', error);
+          }} 
+          loading={null}
+        >
+          <Page 
+            pageNumber={pageNumber} 
+            scale={scale} 
+            renderTextLayer={false} 
+            renderAnnotationLayer={false}
+            onRenderSuccess={() => {
+              console.log('Page rendered successfully');
+              // Sync overlay after page renders
+              setTimeout(syncOverlay, 100);
+            }}
+          />
+        </Document>
+        
+        {/* Fabric Canvas Overlay */}
+        <canvas 
+          ref={overlayRef} 
+          style={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            pointerEvents: activeTool ? 'none' : 'auto', // Allow clicks through when placing fields
+            backgroundColor: 'transparent'
           }}
         />
-      </Document>
-      
-      <canvas 
-        ref={overlayRef} 
-        onClick={handleClickToPlace}
-        onMouseMove={(e) => {
-          if (activeTool) {
-            e.currentTarget.style.cursor = 'crosshair';
-          }
-        }}
-        style={{ 
-          cursor: activeTool ? 'crosshair' : 'default',
-          backgroundColor: 'transparent'
-        }}
-      />
+      </div>
       
       {activeTool && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-2 rounded-sm text-sm z-20 shadow-lg">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-violet-600 text-white px-4 py-2 rounded-lg text-sm z-30 shadow-lg border">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            Click anywhere to place <strong>{activeTool}</strong> field
+            Click anywhere on the PDF to place <strong>{activeTool.toUpperCase()}</strong> field
           </div>
         </div>
       )}
       
       {fabricCanvas && (
-        <div className="absolute bottom-4 right-4 text-xs text-muted-foreground bg-white/80 px-2 py-1 rounded">
-          Canvas: {fabricCanvas.getObjects().length} fields
+        <div className="absolute bottom-4 right-4 text-xs text-muted-foreground bg-white/90 px-3 py-1 rounded-md shadow-sm border">
+          Fields: {fabricCanvas.getObjects().length}
         </div>
       )}
     </div>

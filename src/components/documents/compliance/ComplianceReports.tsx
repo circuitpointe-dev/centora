@@ -1,19 +1,24 @@
 import React, { useState } from "react";
-import { User, Check, Clock, X } from "lucide-react";
+import { User, Check, Clock, X, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CustomReportPage } from "./CustomReportPage";
+import { usePolicyStats } from '@/hooks/usePolicyDocuments';
 
 export const ComplianceReports = () => {
   const [showCustomReport, setShowCustomReport] = useState(false);
+  
+  // Fetch real compliance statistics from backend
+  const { data: stats, isLoading, error } = usePolicyStats();
 
   if (showCustomReport) {
     return <CustomReportPage onBack={() => setShowCustomReport(false)} />;
   }
+
   const statCards = [
     {
       title: "Total Policies Assigned",
-      value: "34",
+      value: stats?.totalPolicies?.toString() || "0",
       icon: User,
       iconBgColor: "bg-blue-100",
       iconColor: "text-blue-600",
@@ -21,7 +26,7 @@ export const ComplianceReports = () => {
     },
     {
       title: "Total Acknowledges",
-      value: "180",
+      value: stats?.acknowledged?.toString() || "0",
       icon: Check,
       iconBgColor: "bg-green-100",
       iconColor: "text-green-600",
@@ -29,7 +34,7 @@ export const ComplianceReports = () => {
     },
     {
       title: "Acknowledgement Rate",
-      value: "45%",
+      value: stats ? `${Math.round((stats.acknowledged / Math.max(stats.totalPolicies, 1)) * 100)}%` : "0%",
       icon: Clock,
       iconBgColor: "bg-yellow-100",
       iconColor: "text-yellow-600",
@@ -37,7 +42,7 @@ export const ComplianceReports = () => {
     },
     {
       title: "Policies Expired",
-      value: "6",
+      value: stats?.expired?.toString() || "0",
       icon: X,
       iconBgColor: "bg-red-100",
       iconColor: "text-red-600",
@@ -45,11 +50,29 @@ export const ComplianceReports = () => {
     },
   ];
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Failed to load compliance statistics</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Enhanced Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((card, index) => {
+      {/* Loading State */}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      ) : (
+        <>
+          {/* Enhanced Stat Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {statCards.map((card, index) => {
           const Icon = card.icon;
           return (
             <Card
@@ -78,10 +101,10 @@ export const ComplianceReports = () => {
               </CardContent>
             </Card>
           );
-        })}
-      </div>
+            })}
+          </div>
 
-      {/* Empty State */}
+          {/* Empty State */}
       <div className="bg-transparent p-12 rounded-lg">
         <div className="text-center">
           {/* Document with magnifying glass icon */}
@@ -130,8 +153,10 @@ export const ComplianceReports = () => {
           >
             Generate Custom Report
           </Button>
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
