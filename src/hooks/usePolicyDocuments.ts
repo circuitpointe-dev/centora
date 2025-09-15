@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
+import { typedSupabase } from '@/lib/supabase-client';
 import { toast } from 'sonner';
 
 export interface PolicyDocument {
@@ -48,104 +47,149 @@ export const useComplianceDocuments = (filters?: {
   status?: string;
   search?: string;
 }) => {
-  const { user } = useAuth();
-
   return useQuery({
     queryKey: ['compliance-documents', filters],
     queryFn: async () => {
-      if (!user) return [];
-
-      // Return mock data for now to avoid complex join issues
-      return [
-        {
-          id: '1',
-          title: 'Code of Conduct',
-          description: 'Company code of conduct policy',
-          effective_date: '2024-01-01',
-          expires_date: '2025-01-01',
-          status: 'active' as const,
-          department: 'HR',
-          document_id: '1',
-          acknowledgment_required: true,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }
-      ] as PolicyDocument[];
+      console.log('Fetching compliance documents from database...');
+      
+      let query = typedSupabase
+        .from('policy_documents')
+        .select(`
+          id,
+          effective_date,
+          expires_date,
+          department,
+          acknowledgment_required,
+          created_at,
+          updated_at,
+          document:documents(
+            id,
+            title,
+            description,
+            file_path,
+            file_name,
+            mime_type,
+            status,
+            created_by,
+            updated_at
+          )
+        `);
+      
+      // Apply filters
+      if (filters?.department && filters.department !== 'all') {
+        query = query.eq('department', filters.department);
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error fetching policy documents:', error);
+        throw error;
+      }
+      
+      // Transform the data to match the expected interface
+      return (data || []).map((policy: any): PolicyDocument => ({
+        id: policy.id,
+        title: policy.document?.title || 'Untitled Document',
+        description: policy.document?.description || '',
+        effective_date: policy.effective_date,
+        expires_date: policy.expires_date || undefined,
+        status: policy.document?.status === 'active' ? 'active' : 
+               policy.document?.status === 'draft' ? 'draft' : 'expired',
+        department: policy.department || undefined,
+        document_id: policy.document?.id || '',
+        acknowledgment_required: policy.acknowledgment_required || false,
+        created_at: policy.created_at,
+        updated_at: policy.updated_at,
+        document: policy.document ? {
+          file_name: policy.document.file_name,
+          file_path: policy.document.file_path,
+          mime_type: policy.document.mime_type
+        } : undefined
+      }));
     },
-    enabled: !!user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 };
-
-// Move exports after function definitions
 
 export const usePolicyAcknowledgments = (filters?: {
   status?: string;
   department?: string;
   search?: string;
 }) => {
-  const { user } = useAuth();
-
   return useQuery({
     queryKey: ['policy-acknowledgments', filters],
     queryFn: async () => {
-      if (!user) throw new Error('User not authenticated');
-
-      // Return mock data for now to avoid complex join issues
-      return [
-        {
-          id: '1',
-          user_id: 'user1',
-          policy_document_id: 'policy1',
-          acknowledged_at: '2024-01-15T10:00:00Z',
-          ip_address: '192.168.1.1',
-          user_agent: 'Mozilla/5.0',
-          user: {
-            full_name: 'John Doe',
-            email: 'john.doe@company.com',
-            department: 'Engineering'
-          },
-          policy_document: {
-            title: 'Code of Conduct',
-            effective_date: '2024-01-01',
-            expires_date: '2025-01-01'
-          }
-        },
-        {
-          id: '2',
-          user_id: 'user2',
-          policy_document_id: 'policy1',
-          acknowledged_at: '2024-01-16T14:30:00Z',
-          ip_address: '192.168.1.2',
-          user_agent: 'Mozilla/5.0',
-          user: {
-            full_name: 'Jane Smith',
-            email: 'jane.smith@company.com',
-            department: 'HR'
-          },
-          policy_document: {
-            title: 'Code of Conduct',
-            effective_date: '2024-01-01',
-            expires_date: '2025-01-01'
-          }
-        }
-      ] as PolicyAcknowledgment[];
+      console.log('Fetching policy acknowledgments from database...');
+      
+      let query = typedSupabase
+        .from('policy_acknowledgments')
+        .select(`
+          id,
+          user_id,
+          document_id,
+          status,
+          acknowledged_at,
+          created_at,
+          updated_at,
+          ip_address,
+          user:profiles(
+            id,
+            full_name,
+            email
+          ),
+          policy_document:documents(
+            id,
+            title
+          )
+        `);
+      
+      if (filters?.status && filters.status !== 'All Status') {
+        query = query.eq('status', filters.status.toLowerCase());
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error fetching policy acknowledgments:', error);
+        throw error;
+      }
+      
+      return (data || []).map((ack: any): PolicyAcknowledgment => ({
+        id: ack.id,
+        user_id: ack.user_id,
+        policy_document_id: ack.document_id,
+        acknowledged_at: ack.acknowledged_at || '',
+        ip_address: ack.ip_address || undefined,
+        user_agent: 'Browser',
+        user: ack.user ? {
+          full_name: ack.user.full_name || 'Unknown User',
+          email: ack.user.email,
+          department: 'General'
+        } : undefined,
+        policy_document: ack.policy_document ? {
+          title: ack.policy_document.title,
+          effective_date: new Date().toISOString().split('T')[0],
+          expires_date: undefined
+        } : undefined
+      }));
     },
-    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
 export const useCreatePolicyAcknowledgment = () => {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (policyDocumentId: string) => {
-      if (!user) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase
+      console.log('Creating policy acknowledgment for:', policyDocumentId);
+      
+      const { data, error } = await typedSupabase
         .from('policy_acknowledgments')
         .insert({
-          user_id: user.id,
           document_id: policyDocumentId,
           status: 'acknowledged',
           acknowledged_at: new Date().toISOString(),
@@ -158,7 +202,8 @@ export const useCreatePolicyAcknowledgment = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['policy-acknowledgments'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['policy-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['compliance-documents'] });
       toast.success('Policy acknowledged successfully');
     },
     onError: (error) => {
@@ -169,22 +214,70 @@ export const useCreatePolicyAcknowledgment = () => {
 };
 
 export const usePolicyStats = () => {
-  const { user } = useAuth();
-
   return useQuery({
     queryKey: ['policy-stats'],
     queryFn: async () => {
-      if (!user) throw new Error('User not authenticated');
-
-      // Return mock stats for now
-      return {
-        totalEmployees: 150,
-        acknowledged: 120,
-        pending: 25,
-        exempt: 5,
-      };
+      console.log('Fetching policy statistics from database...');
+      
+      try {
+        // Get total employees count
+        const { count: totalEmployees, error: totalError } = await typedSupabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true });
+        
+        if (totalError) {
+          console.error('Error fetching total employees:', totalError);
+        }
+        
+        // Get acknowledged count
+        const { count: acknowledged, error: ackError } = await typedSupabase
+          .from('policy_acknowledgments')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'acknowledged');
+        
+        if (ackError) {
+          console.error('Error fetching acknowledged count:', ackError);
+        }
+        
+        // Get pending count
+        const { count: pending, error: pendingError } = await typedSupabase
+          .from('policy_acknowledgments')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending');
+        
+        if (pendingError) {
+          console.error('Error fetching pending count:', pendingError);
+        }
+        
+        // Get exempt count
+        const { count: exempt, error: exemptError } = await typedSupabase
+          .from('policy_acknowledgments')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'exempt');
+        
+        if (exemptError) {
+          console.error('Error fetching exempt count:', exemptError);
+        }
+        
+        return {
+          totalEmployees: totalEmployees || 0,
+          acknowledged: acknowledged || 0,
+          pending: pending || 0,
+          exempt: exempt || 0,
+        };
+      } catch (error) {
+        console.error('Error in usePolicyStats:', error);
+        // Return fallback data
+        return {
+          totalEmployees: 0,
+          acknowledged: 0,
+          pending: 0,
+          exempt: 0,
+        };
+      }
     },
-    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
