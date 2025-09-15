@@ -150,7 +150,16 @@ export const ComplianceDocuments = () => {
             {documents.map((document) => (
               <ComplianceDocumentCard
                 key={document.id}
-                document={document}
+                document={{
+                  id: document.id,
+                  title: document.title,
+                  description: document.description || '',
+                  department: document.department || 'General',
+                  effective_date: document.effective_date,
+                  expires_date: document.expires_date || '',
+                  status: document.status === 'active' ? 'Active' : 
+                         document.status === 'expired' ? 'Retired' : 'Pending'
+                }}
                 onViewDocument={handleViewDocument}
               />
             ))}
@@ -191,9 +200,9 @@ export const ComplianceDocuments = () => {
                     </TableCell>
                     <TableCell>
                       <Badge className={cn(
-                        document.status === 'Active' && 'bg-green-100 text-green-800 border-green-200',
-                        document.status === 'Pending' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                        document.status === 'Retired' && 'bg-gray-100 text-gray-800 border-gray-200'
+                        document.status === 'active' && 'bg-green-100 text-green-800 border-green-200',
+                        document.status === 'expired' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                        document.status === 'draft' && 'bg-gray-100 text-gray-800 border-gray-200'
                       )}>
                         {document.status}
                       </Badge>

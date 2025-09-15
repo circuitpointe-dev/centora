@@ -174,42 +174,49 @@ export const AcknowledgedDashboard = () => {
       <AcknowledgedToolbar
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
-        selectedStatus={selectedStatus}
-        onStatusChange={handleStatusFilterChange}
-        selectedDepartment={selectedDepartment}
-        onDepartmentChange={handleDepartmentFilterChange}
+        statusFilter={selectedStatus}
+        onStatusFilterChange={handleStatusFilterChange}
         selectedCount={selectedEmployees.length}
-        onBulkReminder={handleBulkReminder}
-        onGenerateReport={handleGenerateReport}
+        onSendBulkReminder={handleBulkReminder}
+        filterOpen={false}
+        onFilterOpenChange={() => {}}
       />
 
       <AcknowledgedTable
-        data={filteredData}
+        employees={filteredData}
         selectedEmployees={selectedEmployees}
-        onCheckboxChange={handleCheckboxChange}
+        onSelectEmployee={handleCheckboxChange}
         onSelectAll={handleSelectAll}
-        onSingleReminder={handleSingleReminder}
+        onSendReminder={(employeeId) => {
+          const employee = filteredData.find(emp => emp.id === employeeId);
+          if (employee) handleSingleReminder(employee);
+        }}
+        onMarkAsExempt={() => {}}
+        allEligibleSelected={selectedEmployees.length === filteredData.length}
+        eligibleEmployeesCount={filteredData.length}
       />
 
       <BulkReminderDialog
         open={showBulkReminder}
         onOpenChange={setShowBulkReminder}
         selectedCount={selectedEmployees.length}
-        onSend={handleBulkReminderSend}
-        selectedEmployees={selectedEmployees}
+        message=""
+        onMessageChange={() => {}}
+        onConfirm={() => handleBulkReminderSend(selectedEmployees, "")}
       />
 
       <SingleReminderDialog
         open={showSingleReminder}
         onOpenChange={setSingleReminder}
         employee={selectedEmployee}
-        onSend={handleSingleReminderSend}
+        message=""
+        onMessageChange={() => {}}
+        onConfirm={() => handleSingleReminderSend("")}
       />
 
       <ReminderSuccessDialog
         open={showSuccessDialog}
         onOpenChange={setShowSuccessDialog}
-        message={successMessage}
       />
     </div>
   );

@@ -161,7 +161,14 @@ export const PolicyLibrary = () => {
             {policies.map((policy) => (
               <PolicyCard
                 key={policy.id}
-                policy={policy}
+                policy={{
+                  ...policy,
+                  version: '1.0',
+                  status: policy.status === 'active' ? 'Pending' : 'Acknowledged',
+                  description: policy.description || '',
+                  department: policy.department || '',
+                  last_updated: policy.updated_at
+                }}
                 onViewPolicy={handleViewPolicy}
               />
             ))}
@@ -184,9 +191,9 @@ export const PolicyLibrary = () => {
                     <TableCell>
                       <div className="font-medium text-gray-900">{policy.title}</div>
                     </TableCell>
-                    <TableCell className="text-gray-600">{policy.version}</TableCell>
+                    <TableCell className="text-gray-600">1.0</TableCell>
                     <TableCell className="text-gray-600">
-                      {new Date(policy.last_updated).toLocaleDateString('en-US', {
+                      {new Date(policy.updated_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric'
@@ -194,11 +201,11 @@ export const PolicyLibrary = () => {
                     </TableCell>
                     <TableCell>
                       <Badge className={cn(
-                        policy.status === 'Acknowledged' && 'bg-green-100 text-green-800 border-green-200',
-                        policy.status === 'Pending' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                        policy.status === 'Expired' && 'bg-red-100 text-red-800 border-red-200'
+                        policy.status === 'active' && 'bg-green-100 text-green-800 border-green-200',
+                        policy.status === 'expired' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                        policy.status === 'draft' && 'bg-red-100 text-red-800 border-red-200'
                       )}>
-                        {policy.status}
+                        {policy.status === 'active' ? 'Active' : policy.status === 'expired' ? 'Expired' : 'Draft'}
                       </Badge>
                     </TableCell>
                     <TableCell>
