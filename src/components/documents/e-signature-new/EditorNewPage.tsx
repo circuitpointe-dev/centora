@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { FieldPalette } from "./components/FieldPalette";
 import { PDFStage, PDFStageHandle } from "./components/PDFStage";
 import { PropertiesPanel } from "./components/PropertiesPanel";
+import { PreviewDialog } from "./components/PreviewDialog";
 
 export type FieldType = "signature" | "name" | "date" | "email" | "text";
 
@@ -29,19 +30,21 @@ export const EditorNewPage: React.FC = () => {
   const [scale, setScale] = useState(1);
   const [pageNumber, setPageNumber] = useState(1);
   const [numPages, setNumPages] = useState(1);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  // Derive file URL from wizard state
+  // Derive file URL from wizard state or backend
   const fileUrl = useMemo(() => {
     const state = location?.state || {};
     if (state.selectedFiles && state.selectedFiles.length > 0) {
       const file = state.selectedFiles[0] as File;
       return URL.createObjectURL(file);
     }
-    if (state.selectedDoc) {
-      // Use document URL from backend
-      return `/documents/${state.selectedDoc.id}/preview`;
+    if (state.selectedDoc && state.selectedDoc.file_path) {
+      // Use Supabase storage URL for documents
+      return `https://kspzfifdwfpirgqstzhz.supabase.co/storage/v1/object/public/documents/${state.selectedDoc.file_path}`;
     }
-    return "";
+    // Fallback to a sample PDF for demo
+    return "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
   }, [location?.state]);
 
   useEffect(() => {
@@ -89,8 +92,19 @@ export const EditorNewPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Button variant="secondary" onClick={() => navigate(-1)}>Back</Button>
             <Button variant="outline" onClick={handleClearAll}>Clear</Button>
-            <Button onClick={() => toast("Preview coming soon")}>Preview</Button>
-            <Button onClick={() => toast("Saved draft")} variant="default">Save draft</Button>
+            <Button onClick={() => {
+              const fields = stageRef.current?.getAllFields();
+              if (fields && fields.length > 0) {
+                setIsPreviewOpen(true);
+              } else {
+                toast("Add some fields first to preview");
+              }
+            }}>Preview</Button>
+            <Button onClick={() => {
+              const fields = stageRef.current?.getAllFields();
+              toast(`Draft saved with ${fields?.length || 0} fields`);
+              // TODO: Save to backend
+            }} variant="default">Save draft</Button>
           </div>
         </div>
       </header>
@@ -145,6 +159,14 @@ export const EditorNewPage: React.FC = () => {
           </Card>
         </aside>
       </main>
+
+      {/* Preview Dialog */}
+      <PreviewDialog
+        open={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        fields={stageRef.current?.getAllFields() || []}
+        documentTitle={location?.state?.selectedDoc?.title || 'Document'}
+      />
     </div>
   );
 };

@@ -9,6 +9,7 @@ export interface PDFStageHandle {
   updateField: (id: string, patch: Partial<FieldData>) => void;
   removeField: (id: string) => void;
   clearAll: () => void;
+  getAllFields: () => FieldData[];
 }
 
 interface PDFStageProps {
@@ -194,6 +195,12 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
       fabricCanvas.getObjects().forEach((o) => fabricCanvas.remove(o));
       fabricCanvas.discardActiveObject();
       fabricCanvas.renderAll();
+    },
+    getAllFields: () => {
+      if (!fabricCanvas) return [];
+      return fabricCanvas.getObjects()
+        .map((obj: any) => obj.fieldData)
+        .filter((data): data is FieldData => !!data);
     }
   }), [fabricCanvas]);
 

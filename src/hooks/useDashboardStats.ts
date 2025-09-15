@@ -120,7 +120,7 @@ export const useDocumentsByDepartment = () => {
             id,
             category,
             created_by,
-            profiles(department_id, departments(name))
+            creator:profiles!documents_created_by_fkey(department_id, departments(name))
           `);
 
         if (error) {
@@ -138,8 +138,8 @@ export const useDocumentsByDepartment = () => {
         
         data?.forEach((doc: any) => {
           let departmentName = 'General';
-          if (doc.profiles?.departments?.name) {
-            departmentName = doc.profiles.departments.name;
+          if (doc.creator?.departments?.name) {
+            departmentName = doc.creator.departments.name;
           } else if (doc.category) {
             // Use category as fallback department
             departmentName = doc.category.charAt(0).toUpperCase() + doc.category.slice(1);
@@ -213,14 +213,14 @@ export const useRecentActivity = () => {
         // Get recent documents
         const { data: recentDocs, error: docsError } = await supabase
           .from('documents')
-          .select(`
-            id,
-            title,
-            created_at,
-            updated_at,
-            created_by,
-            profiles(full_name)
-          `)
+        .select(`
+          id,
+          title,
+          created_at,
+          updated_at,
+          created_by,
+          creator:profiles!documents_created_by_fkey(full_name)
+        `)
           .order('updated_at', { ascending: false })
           .limit(3);
 
@@ -236,9 +236,9 @@ export const useRecentActivity = () => {
             id: `doc-${doc.id}`,
             type: 'document_uploaded',
             title: doc.title,
-            description: `Uploaded by ${doc.profiles?.full_name || 'Unknown'}`,
+            description: `Uploaded by ${doc.creator?.full_name || 'Unknown'}`,
             created_at: doc.updated_at || doc.created_at,
-            user_name: doc.profiles?.full_name,
+            user_name: doc.creator?.full_name,
           });
         });
 
