@@ -1,122 +1,161 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Building, FileText } from 'lucide-react';
-import { reportsData } from './data/reportsData';
-import { grantsData } from './data/grantsData';
+import { CalendarClock, FileText, AlertTriangle } from 'lucide-react';
+import { useGrantReports } from '@/hooks/grants/useGrantReports';
+import { useGrants } from '@/hooks/grants/useGrants';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Helper function to calculate days until due date
+const getDaysUntilDue = (dueDate: string): number => {
+  const today = new Date();
+  const due = new Date(dueDate);
+  const diffTime = due.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
+
+// Helper function to get urgency color and info based on days
+const getUrgencyInfo = (days: number) => {
+  if (days <= 3) {
+    return {
+      color: '#EF4444', // red-500
+      bgColor: 'bg-red-100',
+      textColor: 'text-red-800',
+      text: 'Critical',
+      priority: 1
+    };
+  } else if (days <= 7) {
+    return {
+      color: '#F97316', // orange-500
+      bgColor: 'bg-orange-100',
+      textColor: 'text-orange-800',
+      text: 'Urgent',
+      priority: 2
+    };
+  } else {
+    return {
+      color: '#10B981', // green-500
+      bgColor: 'bg-green-100',
+      textColor: 'text-green-800',
+      text: 'Normal',
+      priority: 3
+    };
+  }
+};
 
 const UpcomingReportingDeadlines = () => {
-  // Get current date for comparison
-  const currentDate = new Date();
-  
-  // Function to calculate days until due
-  const getDaysUntilDue = (dueDate: string) => {
-    const due = new Date(dueDate);
-    const diffTime = due.getTime() - currentDate.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
+  const { reports, loading: reportsLoading } = useGrantReports();
+  const { grants, loading: grantsLoading } = useGrants();
 
-  // Function to get color and urgency based on days until due
-  const getUrgencyInfo = (days: number) => {
-    if (days <= 3) {
-      return {
-        color: 'red',
-        dotColor: 'bg-red-500',
-        textColor: 'text-red-600',
-        urgencyText: `Due in ${days} days`,
-        priority: 1
-      };
-    } else if (days <= 7) {
-      return {
-        color: 'orange',
-        dotColor: 'bg-orange-500',
-        textColor: 'text-orange-600',
-        urgencyText: `Due in ${days} days`,
-        priority: 2
-      };
-    } else {
-      return {
-        color: 'green',
-        dotColor: 'bg-green-500',
-        textColor: 'text-green-600',
-        urgencyText: `Due in ${days} days`,
-        priority: 3
-      };
-    }
-  };
+  const loading = reportsLoading || grantsLoading;
 
-  // Filter and process reports for upcoming deadlines
-  const upcomingReports = reportsData
-    .filter(report => !report.submitted && report.status !== 'Overdue')
+  if (loading) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarClock className="h-5 w-5 text-blue-600" />
+            Upcoming Reporting Deadlines
+            <Skeleton className="h-5 w-8 rounded-full" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="p-4">
+              <div className="flex justify-between items-start mb-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+              <Skeleton className="h-4 w-24 mb-1" />
+              <Skeleton className="h-4 w-20" />
+            </Card>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Filter for upcoming reports that are not submitted
+  const upcomingReports = reports
+    .filter(report => !report.submitted && report.status === 'upcoming')
     .map(report => {
-      const days = getDaysUntilDue(report.dueDate);
-      const urgencyInfo = getUrgencyInfo(days);
-
-      const grant = grantsData.find(g => g.id === report.grantId);
+      const days = getDaysUntilDue(report.due_date);
+      const urgency = getUrgencyInfo(days);
+      const grant = grants.find(g => g.id === report.grant_id);
       
       return {
         ...report,
-        grant,
         days,
-        urgencyInfo
+        urgency,
+        grant
       };
     })
-    .filter(Boolean)
-    .sort((a, b) => a!.urgencyInfo.priority - b!.urgencyInfo.priority);
-
-  const reportCount = upcomingReports.length;
+    .sort((a, b) => a.urgency.priority - b.urgency.priority);
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-medium text-gray-900">Upcoming Reporting Deadlines</h2>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {upcomingReports.map((report) => (
-          <Card key={report!.id} className="border border-gray-200 rounded-sm shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start gap-2">
-                <div className={`w-2 h-2 rounded-full ${report!.urgencyInfo.dotColor} mt-1.5 flex-shrink-0`} />
-                <div className="min-w-0 flex-1">
-                  <CardTitle className="text-sm font-medium text-gray-900 truncate">
-                    {report!.grant?.grantName || 'Unknown Grant'}
-                  </CardTitle>
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <CalendarClock className="h-5 w-5 text-blue-600" />
+          Upcoming Reporting Deadlines
+          {upcomingReports.length > 0 && (
+            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+              {upcomingReports.length}
+            </Badge>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {upcomingReports.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
+            <p>No upcoming reporting deadlines</p>
+          </div>
+        ) : (
+          upcomingReports.map((report) => (
+            <Card key={report.id} className="border-l-4 hover:shadow-md transition-shadow" 
+                  style={{ borderLeftColor: report.urgency.color }}>
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className="font-medium text-foreground">
+                      {report.grant?.grant_name || 'Unknown Grant'}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      {report.grant?.donor_name || 'Unknown Donor'}
+                    </p>
+                  </div>
+                  <Badge className={`${report.urgency.bgColor} ${report.urgency.textColor} border-0`}>
+                    {report.urgency.text}
+                  </Badge>
                 </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="pt-0 space-y-3">
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <Building className="w-3 h-3" />
-                <span className="truncate">{report!.grant?.organization || 'Unknown Organization'}</span>
-              </div>
-              
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <FileText className="w-3 h-3" />
-                <span className="truncate">{report!.reportType}</span>
-              </div>
-              
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <Calendar className="w-3 h-3" />
-                <span>Report due: {new Date(report!.dueDate).toLocaleDateString()}</span>
-              </div>
-              
-              <div className={`text-xs font-medium ${report!.urgencyInfo.textColor}`}>
-                {report!.urgencyInfo.urgencyText}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="flex justify-start">
-        <Badge variant="outline" className="text-xs">
-          COUNT: {reportCount}
-        </Badge>
-      </div>
-    </div>
+                
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-1">
+                    <FileText className="h-4 w-4" />
+                    <span>{report.report_type}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <CalendarClock className="h-4 w-4" />
+                    <span>
+                      Due in {report.days} day{report.days !== 1 ? 's' : ''} 
+                      ({new Date(report.due_date).toLocaleDateString()})
+                    </span>
+                  </div>
+                  {report.days <= 3 && (
+                    <div className="flex items-center gap-1 text-red-600">
+                      <AlertTriangle className="h-4 w-4" />
+                      <span className="font-medium">Urgent</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

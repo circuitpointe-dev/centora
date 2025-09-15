@@ -22,58 +22,48 @@ export const ActiveGrantsTableFilters = ({ filters, onFiltersChange }: ActiveGra
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Search Grant Name"
-          value={filters.grantName}
-          onChange={(e) => updateFilter('grantName', e.target.value)}
+          value={filters.grant_name}
+          onChange={(e) => updateFilter('grant_name', e.target.value)}
           className="pl-10"
         />
       </div>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
-          placeholder="Search Organization"
-          value={filters.organization}
-          onChange={(e) => updateFilter('organization', e.target.value)}
+          placeholder="Search Donor Name"
+          value={filters.donor_name}
+          onChange={(e) => updateFilter('donor_name', e.target.value)}
           className="pl-10"
         />
       </div>
-      <Select value={filters.reportingStatus} onValueChange={(value) => updateFilter('reportingStatus', value)}>
-        <SelectTrigger>
-          <SelectValue placeholder="Reporting Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Reports</SelectItem>
-          <SelectItem value="submitted">All Submitted</SelectItem>
-          <SelectItem value="due">Reports Due</SelectItem>
-          <SelectItem value="none">No Reports</SelectItem>
-        </SelectContent>
-      </Select>
       <Select value={filters.region} onValueChange={(value) => updateFilter('region', value)}>
         <SelectTrigger>
           <SelectValue placeholder="Region" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Regions</SelectItem>
-          <SelectItem value="north-america">North America</SelectItem>
-          <SelectItem value="europe">Europe</SelectItem>
-          <SelectItem value="asia">Asia</SelectItem>
-          <SelectItem value="africa">Africa</SelectItem>
-          <SelectItem value="south-america">South America</SelectItem>
+          <SelectItem value="North America">North America</SelectItem>
+          <SelectItem value="Europe">Europe</SelectItem>
+          <SelectItem value="Asia">Asia</SelectItem>
+          <SelectItem value="Africa">Africa</SelectItem>
+          <SelectItem value="South America">South America</SelectItem>
         </SelectContent>
       </Select>
-      <Select value={filters.year} onValueChange={(value) => updateFilter('year', value)}>
+      <Select value={filters.program_area} onValueChange={(value) => updateFilter('program_area', value)}>
         <SelectTrigger>
-          <SelectValue placeholder="Year" />
+          <SelectValue placeholder="Program Area" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Years</SelectItem>
-          <SelectItem value="2024">2024</SelectItem>
-          <SelectItem value="2023">2023</SelectItem>
-          <SelectItem value="2022">2022</SelectItem>
+          <SelectItem value="all">All Programs</SelectItem>
+          <SelectItem value="Health">Health</SelectItem>
+          <SelectItem value="Education">Education</SelectItem>
+          <SelectItem value="Environment">Environment</SelectItem>
+          <SelectItem value="Community Development">Community Development</SelectItem>
         </SelectContent>
       </Select>
     </div>

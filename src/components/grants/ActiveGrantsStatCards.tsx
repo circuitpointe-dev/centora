@@ -1,171 +1,82 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
-import { grantsData } from './data/grantsData';
-
-// Focus area colors matching the custom instructions
-const PROGRAM_AREA_COLORS = {
-  'Health': '#22c55e',        // Green for Health
-  'Education': '#3b82f6',     // Blue for Education  
-  'Girl Child': '#3b82f6',    // Blue for Education-related (Girl Child)
-  'WASH': '#22c55e',          // Green for Health-related (WASH)
-  'Livelihoods': '#f59e0b'    // Amber for Livelihoods
-};
-
-const REGION_COLORS = {
-  'Latin America': '#3b82f6',
-  'Europe': '#ef4444',
-  'Sub-Saharan Africa': '#22c55e',
-  'South Asia': '#f59e0b'
-};
-
-const STATUS_COLORS = {
-  'On track': '#22c55e',
-  'At risk': '#f59e0b',
-  'Behind schedule': '#ef4444'
-};
-
-const CustomLegend = ({ payload }: any) => (
-  <div className="flex flex-wrap justify-center gap-4 mt-4">
-    {payload.map((entry: any, index: number) => (
-      <div key={index} className="flex items-center gap-2">
-        <div 
-          className="w-3 h-3 rounded-full" 
-          style={{ backgroundColor: entry.color }}
-        />
-        <span className="text-sm text-gray-600">
-          {entry.payload.name}: {entry.payload.value}
-        </span>
-      </div>
-    ))}
-  </div>
-);
+import { Award, CheckCircle, TrendingUp, DollarSign } from 'lucide-react';
+import { useGrantStatistics } from '@/hooks/grants/useGrantStatistics';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const ActiveGrantsStatCards = () => {
-  // Filter only active grants
-  const activeGrants = grantsData.filter(grant => grant.status === 'Active');
+  const { statistics, loading } = useGrantStatistics();
 
-  // Program Area Data
-  const programAreaData = Object.entries(
-    activeGrants.reduce((acc, grant) => {
-      acc[grant.programArea] = (acc[grant.programArea] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
-  ).map(([name, value]) => ({
-    name,
-    value,
-    fill: PROGRAM_AREA_COLORS[name as keyof typeof PROGRAM_AREA_COLORS] || '#6b7280'
-  }));
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <Skeleton className="h-4 w-24 mb-2" />
+                <Skeleton className="h-8 w-16" />
+              </div>
+              <Skeleton className="h-8 w-8 rounded-full" />
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
-  // Region Data
-  const regionData = Object.entries(
-    activeGrants.reduce((acc, grant) => {
-      acc[grant.region] = (acc[grant.region] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
-  ).map(([name, value]) => ({
-    name,
-    value,
-    fill: REGION_COLORS[name as keyof typeof REGION_COLORS] || '#6b7280'
-  }));
-
-  // Status Data
-  const statusData = Object.entries(
-    activeGrants.reduce((acc, grant) => {
-      acc[grant.trackStatus] = (acc[grant.trackStatus] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
-  ).map(([name, value]) => ({
-    name,
-    value,
-    fill: STATUS_COLORS[name as keyof typeof STATUS_COLORS] || '#6b7280'
-  }));
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',    
+      currency: 'USD',
+      notation: amount >= 1000000 ? 'compact' : 'standard',
+      maximumFractionDigits: 1,
+    }).format(amount);
+  };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-      {/* Program Area Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-medium">Active grants by program area</CardTitle>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <Card className="hover:shadow-xl transition-all duration-300 shadow-lg border border-orange-200">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Active Grants</CardTitle>
+          <CheckCircle className="h-4 w-4 text-orange-600" />
         </CardHeader>
         <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={programAreaData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={80}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {programAreaData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Legend content={<CustomLegend />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <div className="text-2xl font-bold text-orange-600">{statistics.active_grants}</div>
+          <p className="text-xs text-muted-foreground">Currently running</p>
         </CardContent>
       </Card>
 
-      {/* Region Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-medium">Active grants by region</CardTitle>
+      <Card className="hover:shadow-xl transition-all duration-300 shadow-lg border border-green-200">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+          <DollarSign className="h-4 w-4 text-green-600" />
         </CardHeader>
         <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={regionData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {regionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Legend content={<CustomLegend />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <div className="text-2xl font-bold text-green-600">{formatCurrency(statistics.total_value)}</div>
+          <p className="text-xs text-muted-foreground">Total allocated</p>
         </CardContent>
       </Card>
 
-      {/* Status Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-medium">Active grants by status</CardTitle>
+      <Card className="hover:shadow-xl transition-all duration-300 shadow-lg border border-blue-200">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Disbursement Rate</CardTitle>
+          <TrendingUp className="h-4 w-4 text-blue-600" />
         </CardHeader>
         <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={statusData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={80}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {statusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Legend content={<CustomLegend />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <div className="text-2xl font-bold text-blue-600">{statistics.disbursement_rate}%</div>
+          <p className="text-xs text-muted-foreground">Funds released</p>
+        </CardContent>
+      </Card>
+
+      <Card className="hover:shadow-xl transition-all duration-300 shadow-lg border border-purple-200">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Compliance Rate</CardTitle>
+          <Award className="h-4 w-4 text-purple-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-purple-600">{statistics.compliance_rate}%</div>
+          <p className="text-xs text-muted-foreground">Requirements met</p>
         </CardContent>
       </Card>
     </div>
