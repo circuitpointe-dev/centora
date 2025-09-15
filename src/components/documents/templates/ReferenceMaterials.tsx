@@ -7,81 +7,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn } from '@/lib/utils';
 import { ReferenceCard } from './ReferenceCard';
 import { ReferenceDetailDialog } from './ReferenceDetailDialog';
-
-const referenceMaterialsData = [
-  {
-    id: '1',
-    name: 'Code of Conduct',
-    category: 'Company Documents',
-    lastUpdated: '2025-01-15',
-    size: '2.4 MB',
-    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop'
-  },
-  {
-    id: '2',
-    name: 'IT Usage Policy',
-    category: 'Company Documents',
-    lastUpdated: '2025-02-25',
-    size: '2.7 MB',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=240&fit=crop'
-  },
-  {
-    id: '3',
-    name: 'Brand Guidelines 2024',
-    category: 'Guidelines',
-    lastUpdated: '2025-01-18',
-    size: '1.5 MB',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=240&fit=crop'
-  },
-  {
-    id: '4',
-    name: 'Project Report Template',
-    category: 'Templates',
-    lastUpdated: '2025-03-01',
-    size: '3.9 MB',
-    image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=240&fit=crop'
-  },
-  {
-    id: '5',
-    name: 'Budget Planning Template',
-    category: 'Templates',
-    lastUpdated: '2025-01-16',
-    size: '2.2 MB',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=240&fit=crop'
-  },
-  {
-    id: '6',
-    name: 'System User Manual',
-    category: 'Help Documents',
-    lastUpdated: '2025-04-18',
-    size: '1.9 MB',
-    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop'
-  },
-  {
-    id: '7',
-    name: 'Customer Service SOP',
-    category: 'SOPs',
-    lastUpdated: '2025-05-16',
-    size: '4.8 MB',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=240&fit=crop'
-  },
-  {
-    id: '8',
-    name: 'Presentation Template',
-    category: 'Templates',
-    lastUpdated: '2025-04-13',
-    size: '2.9 MB',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=240&fit=crop'
-  },
-  {
-    id: '9',
-    name: 'New Employee Guide',
-    category: 'Help Documents',
-    lastUpdated: '2025-03-12',
-    size: '1.5 MB',
-    image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=240&fit=crop'
-  }
-];
+import { useDocuments } from '@/hooks/useDocuments';
+import { useDocumentDownload } from '@/hooks/useDocumentOperations';
+import { Loader2 } from 'lucide-react';
 
 export const ReferenceMaterials = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -90,17 +18,27 @@ export const ReferenceMaterials = () => {
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const filteredDocuments = referenceMaterialsData.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.category.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesFilter = selectedFilter === 'all' || doc.category === selectedFilter;
-    
-    return matchesSearch && matchesFilter;
+  // Fetch reference documents from backend (using category filter for reference materials)
+  const { data: documents, isLoading, error } = useDocuments({
+    category: selectedFilter === 'all' ? undefined : selectedFilter.toLowerCase().replace(' ', '-'),
+    search: searchQuery,
+    is_template: false,
   });
 
+  const downloadMutation = useDocumentDownload();
+
+  // Transform documents to match expected format
+  const filteredDocuments = documents?.map(doc => ({
+    id: doc.id,
+    name: doc.title,
+    category: doc.category?.charAt(0).toUpperCase() + doc.category?.slice(1) || 'Document',
+    lastUpdated: new Date(doc.updated_at).toLocaleDateString(),
+    size: doc.file_size ? `${(doc.file_size / (1024 * 1024)).toFixed(1)} MB` : 'Unknown',
+    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=240&fit=crop'
+  })) || [];
+
   const handlePreview = (id: string) => {
-    const document = referenceMaterialsData.find(d => d.id === id);
+    const document = filteredDocuments.find(d => d.id === id);
     if (document) {
       setSelectedDocument(document);
       setIsDialogOpen(true);
@@ -108,9 +46,19 @@ export const ReferenceMaterials = () => {
   };
 
   const handleDownload = (id: string) => {
-    console.log('Download document:', id);
-    // TODO: Implement download logic
+    downloadMutation.mutate(id);
   };
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Failed to load reference materials</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -188,23 +136,28 @@ export const ReferenceMaterials = () => {
       </div>
 
       {/* Documents Display */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredDocuments.map((document) => (
-            <ReferenceCard
-              key={document.id}
-              id={document.id}
-              name={document.name}
-              category={document.category}
-              lastUpdated={document.lastUpdated}
-              size={document.size}
-              image={document.image}
-              onPreview={handlePreview}
-              onDownload={handleDownload}
-            />
-          ))}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
         </div>
-      ) : (
+      ) : filteredDocuments.length > 0 ? (
+        viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredDocuments.map((document) => (
+              <ReferenceCard
+                key={document.id}
+                id={document.id}
+                name={document.name}
+                category={document.category}
+                lastUpdated={document.lastUpdated}
+                size={document.size}
+                image={document.image}
+                onPreview={handlePreview}
+                onDownload={handleDownload}
+              />
+            ))}
+          </div>
+        ) : (
         <div className="bg-white rounded-lg border">
           <Table>
             <TableHeader>
@@ -258,10 +211,8 @@ export const ReferenceMaterials = () => {
             </TableBody>
           </Table>
         </div>
-      )}
-
-      {/* Empty State */}
-      {filteredDocuments.length === 0 && (
+        )
+      ) : (
         <div className="text-center py-12">
           <p className="text-gray-500">
             {searchQuery ? 'No reference materials found matching your search.' : 'No reference materials available.'}

@@ -8,7 +8,9 @@ import { cn } from '@/lib/utils';
 import { TemplateCard } from './TemplateCard';
 import { TemplateDetailDialog } from './TemplateDetailDialog';
 import { useDocuments } from '@/hooks/useDocuments';
+import { useDocumentDownload } from '@/hooks/useDocumentOperations';
 import { Loader2 } from 'lucide-react';
+import { useCreateDocumentFromTemplate } from '@/hooks/useTemplates';
 
 export const SavedTemplates = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,6 +25,9 @@ export const SavedTemplates = () => {
     is_template: true,
   });
 
+  const downloadMutation = useDocumentDownload();
+  const createFromTemplateMutation = useCreateDocumentFromTemplate();
+
   const filteredTemplates = React.useMemo(() => {
     if (!templates) return [];
     
@@ -32,9 +37,19 @@ export const SavedTemplates = () => {
     });
   }, [templates, selectedFilter]);
 
-  const handleUseTemplate = (id: string) => {
-    console.log('Use template:', id);
-    // TODO: Implement template usage logic
+  const handleUseTemplate = async (id: string) => {
+    const template = templates?.find(t => t.id === id);
+    if (template) {
+      try {
+        await createFromTemplateMutation.mutateAsync({
+          template_id: id,
+          title: `${template.title} Copy`,
+          description: `Document created from ${template.title} template`,
+        });
+      } catch (error) {
+        console.error('Failed to create document from template:', error);
+      }
+    }
   };
 
   const handleView = (id: string) => {
@@ -51,8 +66,7 @@ export const SavedTemplates = () => {
   };
 
   const handleDownload = (id: string) => {
-    console.log('Download template:', id);
-    // TODO: Implement download logic
+    downloadMutation.mutate(id);
   };
 
   if (error) {

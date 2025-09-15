@@ -1,34 +1,45 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { FileText, MoreVertical, Download } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Download, FileText, MoreVertical } from 'lucide-react';
+import { Document } from '@/hooks/useDocuments';
+import { useDocumentDownload } from '@/hooks/useDocumentOperations';
+import { Loader2 } from 'lucide-react';
 
-interface DocumentTag {
-  name: string;
-  bgColor: string;
-  textColor: string;
-}
-
-interface DocumentOwner {
-  name: string;
-  avatar: string;
-}
-
-export interface DocumentCardProps {
-  fileName: string;
-  addedTime: string;
-  owner: DocumentOwner;
-  tags: DocumentTag[];
+interface DocumentCardProps extends Document {
+  selected?: boolean;
   onSelect: () => void;
-  selected: boolean;
 }
 
-const DocumentCard = ({ fileName, addedTime, owner, tags, onSelect, selected }: DocumentCardProps) => {
-  const displayedTags = tags.slice(0, 1);
-  const remainingTagsCount = tags.length - 1;
+const DocumentCard: React.FC<DocumentCardProps> = ({
+  id,
+  title,
+  created_at,
+  creator,
+  tags,
+  onSelect,
+  selected = false,
+  ...document
+}) => {
+  const downloadMutation = useDocumentDownload();
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    downloadMutation.mutate(id);
+  };
+
+  const displayedTags = tags?.slice(0, 1) || [];
+  const remainingTagsCount = (tags?.length || 0) - 1;
+
+  const formatTimeAgo = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
 
   const truncateFileName = (name: string, maxLength: number = 30): string => {
     if (name.length <= maxLength) {
@@ -66,11 +77,11 @@ const DocumentCard = ({ fileName, addedTime, owner, tags, onSelect, selected }: 
       <CardContent className="flex flex-grow flex-col items-start gap-4 px-3 py-4 bg-white rounded-b-[5px]">
         <div className="flex items-start justify-between w-full">
           <div className="flex flex-col items-start gap-1 flex-1 min-w-0">
-            <h3 className="mt-[-1.00px] font-medium text-[#383838] text-sm w-full truncate" title={fileName}>
-              {truncateFileName(fileName)}
+            <h3 className="mt-[-1.00px] font-medium text-[#383838] text-sm w-full truncate" title={title}>
+              {truncateFileName(title)}
             </h3>
             <p className="text-xs text-[#38383899] font-normal">
-              {addedTime}
+              {formatTimeAgo(created_at)}
             </p>
           </div>
 
@@ -82,14 +93,10 @@ const DocumentCard = ({ fileName, addedTime, owner, tags, onSelect, selected }: 
         <div className="flex flex-col items-start gap-3 w-full mt-auto">
           <div className="flex items-center gap-1.5">
             <Avatar className="w-[30px] h-[30px]">
-              <AvatarImage
-                src={owner.avatar}
-                alt={owner.name}
-              />
-              <AvatarFallback>{owner.name.substring(0,2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback>{creator?.full_name?.substring(0,2).toUpperCase() || 'UN'}</AvatarFallback>
             </Avatar>
             <span className="text-xs text-[#38383899] font-normal">
-              {owner.name}
+              {creator?.full_name || 'Unknown'}
             </span>
           </div>
 
@@ -98,7 +105,11 @@ const DocumentCard = ({ fileName, addedTime, owner, tags, onSelect, selected }: 
               {displayedTags.map((tag, index) => (
                 <Badge
                   key={index}
-                  className={`h-[25px] px-2.5 py-1 ${tag.bgColor} ${tag.textColor} font-medium text-xs rounded-[5px] border-0 hover:${tag.bgColor} hover:${tag.textColor}`}
+                  className="h-[25px] px-2.5 py-1 font-medium text-xs rounded-[5px] border-0"
+                  style={{
+                    backgroundColor: tag.bg_color || '#f3f4f6',
+                    color: tag.text_color || '#374151'
+                  }}
                 >
                   {tag.name}
                 </Badge>
@@ -111,8 +122,18 @@ const DocumentCard = ({ fileName, addedTime, owner, tags, onSelect, selected }: 
                 </Badge>
               )}
             </div>
-            <Button variant="ghost" size="icon" className="h-5 w-5 p-0 shrink-0" onClick={(e) => e.stopPropagation()}>
-              <Download className="h-5 w-5" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-5 w-5 p-0 shrink-0" 
+              onClick={handleDownload}
+              disabled={downloadMutation.isPending}
+            >
+              {downloadMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-5 w-5" />
+              )}
             </Button>
           </div>
         </div>
