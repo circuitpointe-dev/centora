@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils';
 import { TemplateCard } from './TemplateCard';
 import { TemplateDetailDialog } from './TemplateDetailDialog';
 import { TemplateEditor } from './TemplateEditor';
-import { useTemplates, useCreateDocumentFromTemplate } from '@/hooks/useTemplates';
+import { CreateTemplateDialog } from './CreateTemplateDialog';
+import { useTemplates, useCreateDocumentFromTemplate, useCreateTemplate, useUpdateTemplate } from '@/hooks/useTemplates';
 import { Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -66,14 +67,46 @@ export const TemplateGallery = () => {
     setEditingTemplate(null);
   };
 
-  const handleSaveTemplate = (content: string) => {
-    console.log('Save template:', content);
-    // TODO: Implement save logic
+  const createTemplateMutation = useCreateTemplate();
+  const updateTemplateMutation = useUpdateTemplate();
+
+  const handleSaveTemplate = async (content: string) => {
+    if (editingTemplate?.id === 'new') {
+      // Create new template
+      try {
+        await createTemplateMutation.mutateAsync({
+          title: editingTemplate.title,
+          description: content.substring(0, 200) + '...', // First 200 chars as description
+          category: editingTemplate.category,
+          file_name: `${editingTemplate.title.replace(/\s+/g, '-').toLowerCase()}.html`,
+          file_path: `templates/${Date.now()}-${editingTemplate.title.replace(/\s+/g, '-').toLowerCase()}.html`,
+          mime_type: 'text/html',
+          file_size: content.length,
+        });
+        setIsEditing(false);
+        setEditingTemplate(null);
+      } catch (error) {
+        console.error('Failed to create template:', error);
+      }
+    } else {
+      // Update existing template
+      try {
+        await updateTemplateMutation.mutateAsync({
+          id: editingTemplate.id,
+          title: editingTemplate.title,
+          description: content.substring(0, 200) + '...',
+          category: editingTemplate.category,
+        });
+        setIsEditing(false);
+        setEditingTemplate(null);
+      } catch (error) {
+        console.error('Failed to update template:', error);
+      }
+    }
   };
 
-  const handlePublishTemplate = (content: string) => {
-    console.log('Publish template:', content);
-    // TODO: Implement publish logic
+  const handlePublishTemplate = async (content: string) => {
+    await handleSaveTemplate(content);
   };
 
   const handleCreateTemplate = () => {
@@ -194,13 +227,7 @@ export const TemplateGallery = () => {
           </DropdownMenu>
 
           {/* Create Template Button */}
-          <Button 
-            className="bg-violet-600 hover:bg-violet-700 text-white"
-            onClick={handleCreateTemplate}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Create Template
-          </Button>
+          <CreateTemplateDialog />
         </div>
       </div>
 

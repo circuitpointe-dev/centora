@@ -202,14 +202,23 @@ export const useExpiredPolicies = (metrics?: string[]) => {
     queryFn: async () => {
       if (!user || !metrics?.includes('expired')) return [];
 
-      // Return mock expired policies data for now
-      return [
-        {
-          policyName: 'Sample Policy Document',
-          expiredDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          status: 'Expired',
-        }
-      ];
+      // Get expired policy documents based on updated_at being older than 1 year
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+      const { data: expiredPolicies, error } = await supabase
+        .from('documents')
+        .select('id, title, updated_at, status')
+        .eq('category', 'compliance')
+        .lt('updated_at', oneYearAgo.toISOString());
+
+      if (error) throw error;
+
+      return (expiredPolicies || []).map(policy => ({
+        policyName: policy.title,
+        expiredDate: new Date(policy.updated_at).toISOString().split('T')[0],
+        status: 'Expired',
+      }));
     },
     enabled: !!user && !!metrics?.includes('expired'),
   });

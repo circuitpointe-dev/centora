@@ -17,14 +17,30 @@ export const SignedDocumentHistory = () => {
     search: searchTerm,
   });
 
+  const { mutate: downloadDocument } = useDocumentDownload();
+  
   const handleDownload = (documentId: string) => {
-    console.log('Download document:', documentId);
-    // TODO: Implement download functionality
+    downloadDocument(documentId);
   };
 
-  const handleView = (documentId: string) => {
-    console.log('View document:', documentId);
-    // TODO: Implement view functionality
+  const handleView = async (documentId: string) => {
+    try {
+      // Get document details and open in new tab for viewing
+      const { data: document } = await supabase
+        .from('documents')
+        .select('file_path, file_name')
+        .eq('id', documentId)
+        .single();
+        
+      if (document) {
+        const publicUrl = supabase.storage
+          .from('documents')
+          .getPublicUrl(document.file_path).data.publicUrl;
+        window.open(publicUrl, '_blank');
+      }
+    } catch (error: any) {
+      toast.error(`Failed to view document: ${error.message}`);
+    }
   };
 
   if (isLoading) {

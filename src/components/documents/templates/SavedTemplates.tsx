@@ -61,8 +61,10 @@ export const SavedTemplates = () => {
   };
 
   const handleEdit = (id: string) => {
-    console.log('Edit template:', id);
-    // TODO: Implement template editing logic
+    // Navigate to template editing - for now just log
+    console.log('Editing template:', id);
+    // In a real implementation, this would navigate to the template editor
+    // or open an edit dialog
   };
 
   const handleDownload = (id: string) => {

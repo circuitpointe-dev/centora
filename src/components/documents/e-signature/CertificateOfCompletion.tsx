@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useSignatureRequests } from '@/hooks/useESignature';
 import { formatDistanceToNow } from 'date-fns';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const CertificateOfCompletion = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,14 +19,44 @@ export const CertificateOfCompletion = () => {
     search: searchTerm,
   });
 
-  const handleGenerateCertificate = (documentId: string) => {
-    console.log('Generate certificate for:', documentId);
-    // TODO: Implement certificate generation
+  const handleGenerateCertificate = async (documentId: string) => {
+    try {
+      // Generate certificate for signed document
+      const { data, error } = await supabase.functions.invoke('generate-certificate', {
+        body: { documentId }
+      });
+      
+      if (error) throw error;
+      toast.success('Certificate generated successfully');
+    } catch (error: any) {
+      toast.error(`Failed to generate certificate: ${error.message}`);
+    }
   };
 
-  const handleDownloadCertificate = (documentId: string) => {
-    console.log('Download certificate for:', documentId);
-    // TODO: Implement certificate download
+  const handleDownloadCertificate = async (documentId: string) => {
+    try {
+      // Download completion certificate
+      const { data, error } = await supabase.functions.invoke('download-certificate', {
+        body: { documentId }
+      });
+      
+      if (error) throw error;
+      
+      // Create download link
+      const blob = new Blob([data.content], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `certificate-${documentId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Certificate downloaded successfully');
+    } catch (error: any) {
+      toast.error(`Failed to download certificate: ${error.message}`);
+    }
   };
 
   if (isLoading) {
