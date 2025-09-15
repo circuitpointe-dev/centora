@@ -103,8 +103,9 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
       left: left + "px",
       top: top + "px",
       position: "absolute",
-      pointerEvents: "auto",
-      zIndex: 10,
+      pointerEvents: activeTool ? 'none' : 'auto',
+      zIndex: 20, // Ensure overlay appears above PDF
+      backgroundColor: 'transparent'
     });
 
     fabricCanvas.setDimensions({ width: cssWidth, height: cssHeight });
@@ -134,7 +135,7 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
     const h = type === "signature" ? 48 : 32;
 
     try {
-      // Create rect and text objects
+      // Create rect and text objects with better styling
       const rect = new Rect({ 
         width: w, 
         height: h, 
@@ -143,18 +144,19 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
         fill: cfg.fill, 
         stroke: cfg.stroke, 
         strokeWidth: 2, 
-        strokeDashArray: [5,5] 
+        strokeDashArray: [5,5]
       });
       
       const text = new Text(type.toUpperCase(), { 
-        left: 6, 
+        left: 8, 
         top: h/2 - 8, 
-        fontSize: 12, 
+        fontSize: 11, 
+        fontWeight: 'bold',
         fill: cfg.stroke, 
         selectable: false, 
         evented: false,
-        backgroundColor: 'rgba(255,255,255,0.8)',
-        padding: 2
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        padding: 3
       });
 
       // Create group
@@ -169,8 +171,11 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
         transparentCorners: false 
       }) as any;
 
+      // Generate a temporary ID for local use
+      const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
       const field: FieldData = { 
-        id: String(Date.now() + Math.random()), 
+        id: tempId, 
         type, 
         label: type.toUpperCase(), 
         isConfigured: false 
@@ -184,8 +189,8 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
       console.log('Field created successfully:', field);
       onFieldAdded?.(field);
 
-      // Save to database if documentId is provided
-      if (documentId) {
+      // Save to database only if documentId is a valid UUID (not demo data)
+      if (documentId && documentId !== "sample-doc" && documentId.length > 20) {
         createFieldMutation.mutate({
           document_id: documentId,
           field_type: type,
@@ -200,6 +205,10 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
           onSuccess: (savedField) => {
             // Update the field with the database ID
             group.fieldData = { ...field, id: savedField.id };
+          },
+          onError: (error) => {
+            console.error('Failed to save field to database:', error);
+            // Field will continue to work with temporary ID
           }
         });
       }
@@ -322,9 +331,11 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
       if (!fabricCanvas) return;
       const obj = fabricCanvas.getObjects().find((o: any) => (o as any).fieldData?.id === id) as any;
       if (obj) {
-        // Remove from database if it has a proper ID
+        // Remove from database if it has a proper database ID
         const fieldData = obj.fieldData;
-        if (fieldData && fieldData.id && documentId && fieldData.id.length > 10) {
+        if (fieldData && fieldData.id && documentId && 
+            !fieldData.id.startsWith('temp_') && 
+            documentId !== "sample-doc") {
           deleteFieldMutation.mutate(fieldData.id);
         }
         
@@ -395,7 +406,8 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
             top: 0,
             left: 0,
             pointerEvents: activeTool ? 'none' : 'auto', // Allow clicks through when placing fields
-            backgroundColor: 'transparent'
+            backgroundColor: 'transparent',
+            zIndex: 20 // Ensure overlay appears above PDF
           }}
         />
       </div>
