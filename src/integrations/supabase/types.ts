@@ -1181,6 +1181,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_policy_acknowledgments_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "policy_acknowledgments_document_id_fkey"
             columns: ["document_id"]
             isOneToOne: false
@@ -1223,7 +1230,15 @@ export type Database = {
           policy_content?: Json | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_policy_documents_document_id"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

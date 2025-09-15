@@ -52,32 +52,34 @@ export const useComplianceDocuments = (filters?: {
     queryFn: async () => {
       console.log('Fetching compliance documents from database...');
       
+      // Query documents with category 'compliance' and join with policy_documents
       let query = typedSupabase
-        .from('policy_documents')
+        .from('documents')
         .select(`
-          id,
-          effective_date,
-          expires_date,
-          department,
-          acknowledgment_required,
-          created_at,
-          updated_at,
-          document:documents(
+          *,
+          policy_documents!inner(
             id,
-            title,
-            description,
-            file_path,
-            file_name,
-            mime_type,
-            status,
-            created_by,
+            effective_date,
+            expires_date,
+            department,
+            acknowledgment_required,
+            created_at,
             updated_at
           )
-        `);
+        `)
+        .eq('category', 'compliance');
       
       // Apply filters
+      if (filters?.status && filters.status !== 'all') {
+        query = query.eq('status', filters.status);
+      }
+      
       if (filters?.department && filters.department !== 'all') {
-        query = query.eq('department', filters.department);
+        query = query.eq('policy_documents.department', filters.department);
+      }
+
+      if (filters?.search) {
+        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
       }
       
       const { data, error } = await query;
@@ -88,24 +90,23 @@ export const useComplianceDocuments = (filters?: {
       }
       
       // Transform the data to match the expected interface
-      return (data || []).map((policy: any): PolicyDocument => ({
-        id: policy.id,
-        title: policy.document?.title || 'Untitled Document',
-        description: policy.document?.description || '',
-        effective_date: policy.effective_date,
-        expires_date: policy.expires_date || undefined,
-        status: policy.document?.status === 'active' ? 'active' : 
-               policy.document?.status === 'draft' ? 'draft' : 'expired',
-        department: policy.department || undefined,
-        document_id: policy.document?.id || '',
-        acknowledgment_required: policy.acknowledgment_required || false,
-        created_at: policy.created_at,
-        updated_at: policy.updated_at,
-        document: policy.document ? {
-          file_name: policy.document.file_name,
-          file_path: policy.document.file_path,
-          mime_type: policy.document.mime_type
-        } : undefined
+      return (data || []).map((doc: any): PolicyDocument => ({
+        id: doc.policy_documents[0]?.id || doc.id,
+        title: doc.title || 'Untitled Document',
+        description: doc.description || '',
+        effective_date: doc.policy_documents[0]?.effective_date || doc.created_at.split('T')[0],
+        expires_date: doc.policy_documents[0]?.expires_date || undefined,
+        status: doc.status as 'active' | 'draft' | 'expired',
+        department: doc.policy_documents[0]?.department || undefined,
+        document_id: doc.id,
+        acknowledgment_required: doc.policy_documents[0]?.acknowledgment_required ?? true,
+        created_at: doc.created_at,
+        updated_at: doc.updated_at,
+        document: {
+          file_name: doc.file_name,
+          file_path: doc.file_path,
+          mime_type: doc.mime_type
+        }
       }));
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -126,27 +127,26 @@ export const usePolicyAcknowledgments = (filters?: {
       let query = typedSupabase
         .from('policy_acknowledgments')
         .select(`
-          id,
-          user_id,
-          document_id,
-          status,
-          acknowledged_at,
-          created_at,
-          updated_at,
-          ip_address,
-          user:profiles(
+          *,
+          profiles!inner(
             id,
             full_name,
-            email
+            email,
+            department_id
           ),
-          policy_document:documents(
+          documents!inner(
             id,
-            title
+            title,
+            org_id
           )
         `);
       
       if (filters?.status && filters.status !== 'All Status') {
         query = query.eq('status', filters.status.toLowerCase());
+      }
+
+      if (filters?.search) {
+        query = query.or(`profiles.full_name.ilike.%${filters.search}%,profiles.email.ilike.%${filters.search}%,documents.title.ilike.%${filters.search}%`);
       }
       
       const { data, error } = await query;
@@ -163,13 +163,13 @@ export const usePolicyAcknowledgments = (filters?: {
         acknowledged_at: ack.acknowledged_at || '',
         ip_address: ack.ip_address || undefined,
         user_agent: 'Browser',
-        user: ack.user ? {
-          full_name: ack.user.full_name || 'Unknown User',
-          email: ack.user.email,
+        user: ack.profiles ? {
+          full_name: ack.profiles.full_name || 'Unknown User',
+          email: ack.profiles.email,
           department: 'General'
         } : undefined,
-        policy_document: ack.policy_document ? {
-          title: ack.policy_document.title,
+        policy_document: ack.documents ? {
+          title: ack.documents.title,
           effective_date: new Date().toISOString().split('T')[0],
           expires_date: undefined
         } : undefined
@@ -220,20 +220,38 @@ export const usePolicyStats = () => {
       console.log('Fetching policy statistics from database...');
       
       try {
-        // Get total employees count
+        // Get user's organization first
+        const { data: profileData } = await typedSupabase
+          .from('profiles')
+          .select('org_id')
+          .eq('id', (await typedSupabase.auth.getUser()).data.user?.id)
+          .single();
+
+        if (!profileData?.org_id) {
+          return {
+            totalEmployees: 0,
+            acknowledged: 0,
+            pending: 0,
+            exempt: 0,
+          };
+        }
+        
+        // Get total employees count for the organization
         const { count: totalEmployees, error: totalError } = await typedSupabase
           .from('profiles')
-          .select('*', { count: 'exact', head: true });
+          .select('*', { count: 'exact', head: true })
+          .eq('org_id', profileData.org_id);
         
         if (totalError) {
           console.error('Error fetching total employees:', totalError);
         }
         
-        // Get acknowledged count
+        // Get acknowledged count for documents in the same org
         const { count: acknowledged, error: ackError } = await typedSupabase
           .from('policy_acknowledgments')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'acknowledged');
+          .select('*, documents!inner(org_id)', { count: 'exact', head: true })
+          .eq('status', 'acknowledged')
+          .eq('documents.org_id', profileData.org_id);
         
         if (ackError) {
           console.error('Error fetching acknowledged count:', ackError);
@@ -242,8 +260,9 @@ export const usePolicyStats = () => {
         // Get pending count
         const { count: pending, error: pendingError } = await typedSupabase
           .from('policy_acknowledgments')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'pending');
+          .select('*, documents!inner(org_id)', { count: 'exact', head: true })
+          .eq('status', 'pending')
+          .eq('documents.org_id', profileData.org_id);
         
         if (pendingError) {
           console.error('Error fetching pending count:', pendingError);
@@ -252,8 +271,9 @@ export const usePolicyStats = () => {
         // Get exempt count
         const { count: exempt, error: exemptError } = await typedSupabase
           .from('policy_acknowledgments')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'exempt');
+          .select('*, documents!inner(org_id)', { count: 'exact', head: true })
+          .eq('status', 'exempt')
+          .eq('documents.org_id', profileData.org_id);
         
         if (exemptError) {
           console.error('Error fetching exempt count:', exemptError);
