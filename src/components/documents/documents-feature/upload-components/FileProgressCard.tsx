@@ -1,14 +1,8 @@
-
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import {
-  CheckCircle,
-  Edit3,
-  FileText,
-  Trash2,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { FileTextIcon, XIcon, CheckIcon } from 'lucide-react';
+import { formatBytes } from '@/lib/utils';
 
 interface FileWithProgress extends File {
   progress: number;
@@ -20,78 +14,87 @@ interface FileProgressCardProps {
   file: FileWithProgress;
   index: number;
   isSelected: boolean;
-  onSelect: (index: number) => void;
-  onDelete: (index: number, e: React.MouseEvent) => void;
+  onSelect: () => void;
+  onRemove: () => void;
 }
 
-const FileProgressCard = ({
-  file,
-  index,
-  isSelected,
-  onSelect,
-  onDelete,
+const FileProgressCard = ({ 
+  file, 
+  index, 
+  isSelected, 
+  onSelect, 
+  onRemove 
 }: FileProgressCardProps) => {
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  const getFileIcon = (fileName: string) => {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    return <FileTextIcon className="w-8 h-8 text-blue-600" />;
+  };
+
+  const getStatusColor = () => {
+    if (file.scanComplete && file.progress === 100) return 'text-green-600';
+    if (file.progress > 0) return 'text-blue-600';
+    return 'text-gray-600';
+  };
+
+  const getStatusText = () => {
+    if (file.scanComplete && file.progress === 100) return 'Upload Complete';
+    if (file.progress > 0) return `Uploading... ${file.progress}%`;
+    return 'Ready to upload';
   };
 
   return (
-    <Card
-      key={file.id}
-      className={cn(
-        "w-full shadow-[0px_4px_16px_#eae2fd] cursor-pointer transition-colors",
-        isSelected && "ring-2 ring-violet-600"
-      )}
-      onClick={() => onSelect(index)}
+    <div 
+      className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+        isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+      }`}
+      onClick={onSelect}
     >
-      <CardContent className="flex flex-col items-start gap-4 p-4">
-        <div className="flex justify-between w-full">
-          <div className="inline-flex items-center gap-2.5">
-            <FileText className="w-[26px] h-[26px]" />
-            <div className="flex flex-col w-[184px] items-start gap-1">
-              <p className="font-medium text-[#383838] text-sm">
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0">
+          {getFileIcon(file.name)}
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-gray-900 truncate">
                 {file.name}
-              </p>
-              <p className="font-normal text-[#38383880] text-[13px]">
-                {formatFileSize(file.size)}
+              </h4>
+              <p className="text-xs text-gray-500">
+                {formatBytes(file.size)}
               </p>
             </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 hover:bg-red-50 hover:text-red-600"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove();
+              }}
+            >
+              <XIcon className="w-3 h-3" />
+            </Button>
           </div>
-
-          <div className="inline-flex items-center gap-[37px]">
-            <div className="inline-flex items-end gap-2">
-              <Edit3 className="w-4 h-4" />
-              <span className="font-medium text-violet-600 text-sm">
-                Edit PDF
+          
+          <div className="mt-2 space-y-1">
+            <div className="flex items-center gap-2">
+              {file.scanComplete && file.progress === 100 ? (
+                <CheckIcon className="w-3 h-3 text-green-600" />
+              ) : null}
+              <span className={`text-xs ${getStatusColor()}`}>
+                {getStatusText()}
               </span>
             </div>
-
-            {file.scanComplete && (
-              <div className="inline-flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-[#189e75]" />
-                <span className="font-medium text-[#189e75] text-sm">
-                  Scan Complete
-                </span>
-              </div>
+            
+            {file.progress > 0 && file.progress < 100 && (
+              <Progress value={file.progress} className="h-1" />
             )}
-
-            <Trash2
-              className="w-5 h-5 text-gray-500 cursor-pointer hover:text-red-500"
-              onClick={(e) => onDelete(index, e)}
-            />
           </div>
         </div>
-
-        <Progress
-          value={file.progress}
-          className="w-full h-1.5 bg-gray-200 rounded-[30px]"
-        />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

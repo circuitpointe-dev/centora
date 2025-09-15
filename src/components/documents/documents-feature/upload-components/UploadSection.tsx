@@ -116,8 +116,8 @@ const UploadSection = ({
               file={file}
               index={index}
               isSelected={selectedFileIndex === index}
-              onSelect={onFileSelect}
-              onDelete={handleDeleteClick}
+              onSelect={() => onFileSelect(index)}
+              onRemove={() => handleDeleteClick(index)}
             />
           ))}
         </div>

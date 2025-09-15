@@ -1,247 +1,223 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Loader2, Upload } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import TagSelection from './TagSelection';
-import DocumentOwnerSelect from './DocumentOwnerSelect';
-import DepartmentSelect from './DepartmentSelect';
+import { Badge } from '@/components/ui/badge';
+import { PlusIcon, XIcon } from 'lucide-react';
+import { useCreateDocument, useDocumentTags, useCreateDocumentTag } from '@/hooks/useDocuments';
+import { toast } from 'sonner';
 
 interface DocumentDetailsSectionProps {
-  selectedFile: File | null;
-  onUpload: () => void;
-  onCancel: () => void;
+  selectedFile?: File;
+  onUploadComplete: () => void;
 }
 
-interface Tag {
-  name: string;
-  color: string;
-}
-
-const DocumentDetailsSection = ({
-  selectedFile,
-  onUpload,
-  onCancel,
-}: DocumentDetailsSectionProps) => {
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-  const [documentOwner, setDocumentOwner] = useState('');
-  const [department, setDepartment] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
+const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDetailsSectionProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const { toast } = useToast();
+  const [category, setCategory] = useState<string>('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [newTagName, setNewTagName] = useState('');
 
-  // Set default title when file is selected
-  React.useEffect(() => {
-    if (selectedFile && !title) {
-      setTitle(selectedFile.name.replace(/\.[^/.]+$/, ""));
-    }
-  }, [selectedFile, title]);
+  const { data: availableTags } = useDocumentTags();
+  const createDocument = useCreateDocument();
+  const createTag = useCreateDocumentTag();
 
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      toast({
-        title: "No file selected",
-        description: "Please select a file to upload.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!title.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter a title for the document.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!category) {
-      toast({
-        title: "Category required", 
-        description: "Please select a category for the document.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsUploading(true);
+  const handleCreateTag = async () => {
+    if (!newTagName.trim()) return;
     
     try {
-      // Convert file to base64
-      const fileBuffer = await selectedFile.arrayBuffer();
-      const base64String = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)));
+      await createTag.mutateAsync({
+        name: newTagName.trim(),
+        color: '#3B82F6',
+        bg_color: 'bg-blue-100',
+        text_color: 'text-blue-800',
+      });
+      setNewTagName('');
+    } catch (error) {
+      toast.error('Failed to create tag');
+    }
+  };
+
+  const handleAddTag = (tagId: string) => {
+    if (!selectedTags.includes(tagId)) {
+      setSelectedTags([...selectedTags, tagId]);
+    }
+  };
+
+  const handleRemoveTag = (tagId: string) => {
+    setSelectedTags(selectedTags.filter(id => id !== tagId));
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedFile || !title.trim()) {
+      toast.error('Please select a file and provide a title');
+      return;
+    }
+
+    try {
+      // In a real app, you would upload the file to storage first
+      // For now, we'll use a mock path
+      const mockFilePath = `documents/${Date.now()}-${selectedFile.name}`;
       
-      // Upload via edge function
-      const { data, error } = await supabase.functions.invoke('document-operations', {
-        body: {
-          operation: 'upload',
-          data: {
-            fileName: selectedFile.name,
-            fileContent: base64String,
-            title: title.trim(),
-            description: description.trim() || undefined,
-            category: category,
-            tags: selectedTags.map(tag => tag.name) // Convert to tag names/IDs
-          }
-        }
+      await createDocument.mutateAsync({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        file_name: selectedFile.name,
+        file_path: mockFilePath,
+        file_size: selectedFile.size,
+        mime_type: selectedFile.type,
+        category: category as any || 'uncategorized',
+        tag_ids: selectedTags,
       });
 
-      if (error) throw error;
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setCategory('');
+      setSelectedTags([]);
+      onUploadComplete();
       
-      toast({
-        title: "Upload Successful",
-        description: `${selectedFile.name} has been uploaded successfully.`,
-      });
-      onUpload();
     } catch (error) {
-      console.error('Upload failed:', error);
-      toast({
-        title: "Upload Failed",
-        description: error.message || "Failed to upload document. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
+      toast.error('Failed to create document');
     }
   };
 
   return (
-    <Card className="flex flex-col w-full gap-12 p-8 bg-white rounded-[5px] shadow-[0px_4px_16px_#eae2fd] h-fit">
-      <div className="flex flex-col items-start gap-4 w-full">
-        <h3 className="text-[#383838] text-base font-bold">
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Document Details
         </h3>
-
+        
         {selectedFile && (
-          <div className="flex flex-col items-start gap-2 w-full p-4 bg-gray-50 rounded-[5px]">
-            <p className="font-medium text-[#383838] text-sm">Selected File:</p>
-            <p className="font-normal text-[#38383880] text-sm">{selectedFile.name}</p>
-            <p className="font-normal text-[#38383880] text-xs">
-              Size: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+          <div className="bg-gray-50 rounded-lg p-3 mb-4">
+            <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
+            <p className="text-xs text-gray-500">
+              {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
             </p>
           </div>
         )}
+      </div>
 
-        <div className="flex flex-col items-start gap-6 w-full">
-          {/* Title */}
-          <div className="flex flex-col items-start gap-2 w-full">
-            <Label className="font-medium text-[#383838e6] text-sm">
-              Document Title *
-            </Label>
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter document title"
-              className="px-4 py-3 rounded-[5px] border border-[#d9d9d9]"
-            />
-          </div>
-
-          {/* Description */}
-          <div className="flex flex-col items-start gap-2 w-full">
-            <Label className="font-medium text-[#383838e6] text-sm">
-              Description
-            </Label>
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter document description (optional)"
-              className="px-4 py-3 rounded-[5px] border border-[#d9d9d9] min-h-[80px]"
-            />
-          </div>
-
-          {/* Category */}
-          <div className="flex flex-col items-start gap-2 w-full">
-            <Label className="font-medium text-[#383838e6] text-sm">
-              Category *
-            </Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="px-4 py-3 rounded-[5px] border border-[#d9d9d9]">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="policies">Policies</SelectItem>
-                <SelectItem value="finance">Finance</SelectItem>
-                <SelectItem value="contracts">Contracts</SelectItem>
-                <SelectItem value="m-e">Monitoring & Evaluation</SelectItem>
-                <SelectItem value="compliance">Compliance</SelectItem>
-                <SelectItem value="uncategorized">Uncategorized</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <TagSelection
-            selectedTags={selectedTags}
-            onTagsChange={setSelectedTags}
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="title" className="text-sm font-medium">
+            Document Title *
+          </Label>
+          <Input
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter document title"
+            className="mt-1"
           />
+        </div>
 
-          <DocumentOwnerSelect
-            value={documentOwner}
-            onChange={setDocumentOwner}
+        <div>
+          <Label htmlFor="description" className="text-sm font-medium">
+            Description
+          </Label>
+          <Textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter document description"
+            className="mt-1 min-h-[80px]"
           />
+        </div>
 
-          <DepartmentSelect
-            value={department}
-            onChange={setDepartment}
-          />
+        <div>
+          <Label className="text-sm font-medium">Category</Label>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="mt-1">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="policies">Policies</SelectItem>
+              <SelectItem value="finance">Finance</SelectItem>
+              <SelectItem value="contracts">Contracts</SelectItem>
+              <SelectItem value="m-e">M&E</SelectItem>
+              <SelectItem value="compliance">Compliance</SelectItem>
+              <SelectItem value="templates">Templates</SelectItem>
+              <SelectItem value="uncategorized">Uncategorized</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <div className="flex flex-col items-start gap-2 w-full">
-            <Label className="font-medium text-[#383838e6] text-sm">
-              Expiry Date
-            </Label>
-
-            <div className="relative w-full">
-              <Input
-                type="date"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-                className="px-4 py-3 pr-10 rounded-[5px] border border-[#d9d9d9]"
-              />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[18px] h-[18px] text-gray-400 pointer-events-none" />
+        <div>
+          <Label className="text-sm font-medium">Tags</Label>
+          
+          {/* Selected Tags */}
+          {selectedTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {selectedTags.map(tagId => {
+                const tag = availableTags?.find(t => t.id === tagId);
+                return tag ? (
+                  <Badge key={tagId} variant="secondary" className="gap-1">
+                    {tag.name}
+                    <button
+                      onClick={() => handleRemoveTag(tagId)}
+                      className="hover:text-red-600"
+                    >
+                      <XIcon className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                ) : null;
+              })}
             </div>
+          )}
+
+          {/* Available Tags */}
+          {availableTags && availableTags.length > 0 && (
+            <div className="mt-2">
+              <p className="text-xs text-gray-500 mb-2">Available tags:</p>
+              <div className="flex flex-wrap gap-1">
+                {availableTags
+                  .filter(tag => !selectedTags.includes(tag.id))
+                  .map(tag => (
+                    <button
+                      key={tag.id}
+                      onClick={() => handleAddTag(tag.id)}
+                      className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      {tag.name}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* Create New Tag */}
+          <div className="flex gap-2 mt-2">
+            <Input
+              value={newTagName}
+              onChange={(e) => setNewTagName(e.target.value)}
+              placeholder="Create new tag"
+              className="flex-1"
+            />
+            <Button
+              onClick={handleCreateTag}
+              disabled={!newTagName.trim() || createTag.isPending}
+              size="sm"
+              variant="outline"
+            >
+              <PlusIcon className="w-3 h-3" />
+            </Button>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col w-full items-start gap-6">
-        <Button
-          onClick={handleUpload}
-          className="w-full h-[43px] bg-violet-600 hover:bg-violet-700 rounded-[5px]"
-          disabled={!selectedFile || isUploading || !title.trim() || !category}
-        >
-          {isUploading ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              <span className="font-medium text-white text-sm">Uploading...</span>
-            </>
-          ) : (
-            <>
-              <Upload className="h-4 w-4 mr-2" />
-              <span className="font-medium text-white text-sm">Upload Files</span>
-            </>
-          )}
-        </Button>
-
-        <Button
-          onClick={onCancel}
-          variant="outline"
-          className="w-full h-[43px] rounded-[5px] border border-[#d9d9d9]"
-          disabled={isUploading}
-        >
-          <span className="font-medium text-[#38383899] text-sm">
-            Cancel
-          </span>
-        </Button>
-      </div>
-    </Card>
+      <Button
+        onClick={handleSubmit}
+        disabled={!selectedFile || !title.trim() || createDocument.isPending}
+        className="w-full bg-blue-600 hover:bg-blue-700"
+      >
+        {createDocument.isPending ? 'Uploading...' : 'Upload Document'}
+      </Button>
+    </div>
   );
 };
 

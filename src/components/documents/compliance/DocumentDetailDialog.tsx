@@ -1,45 +1,18 @@
 import React from 'react';
-import { Download } from 'lucide-react';
-import {
-  SideDialog,
-  SideDialogContent,
-  SideDialogHeader,
-  SideDialogTitle,
-  SideDialogDescription,
-} from '@/components/ui/side-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
-interface ComplianceDocument {
-  id: string;
-  title: string;
-  description: string;
-  department: string;
-  effectiveDate: string;
-  expiresDate: string;
-  status: 'Active' | 'Pending' | 'Retired';
-}
+import { Calendar, Download, FileText, User } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface DocumentDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  document: ComplianceDocument | null;
+  document: any;
 }
 
-export const DocumentDetailDialog: React.FC<DocumentDetailDialogProps> = ({
-  open,
-  onOpenChange,
-  document,
-}) => {
+export const DocumentDetailDialog = ({ open, onOpenChange, document }: DocumentDetailDialogProps) => {
   if (!document) return null;
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -55,100 +28,81 @@ export const DocumentDetailDialog: React.FC<DocumentDetailDialogProps> = ({
   };
 
   return (
-    <SideDialog open={open} onOpenChange={onOpenChange}>
-      <SideDialogContent className="sm:w-[600px]">
-        <SideDialogHeader className="border-b border-gray-200 ">
-          <div className="flex items-center gap-4 mt-5">
-            <SideDialogTitle className="text-xl font-semibold text-gray-900 flex-1">
-              {document.title}
-            </SideDialogTitle>
-            <Button
-              size="sm" 
-              className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] gap-2 mr-5"
-            >
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl bg-white">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            {document.title}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Badge className={getStatusColor(document.status)}>
+              {document.status}
+            </Badge>
+            <span className="text-sm text-gray-500">
+              Department: {document.department}
+            </span>
+          </div>
+
+          {document.description && (
+            <div>
+              <h3 className="font-medium text-gray-900 mb-2">Description</h3>
+              <p className="text-gray-600">{document.description}</p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <h3 className="font-medium text-gray-900 mb-2">Effective Date</h3>
+              <div className="flex items-center gap-2 text-gray-600">
+                <Calendar className="h-4 w-4" />
+                <span>{new Date(document.effective_date).toLocaleDateString()}</span>
+              </div>
+            </div>
+
+            {document.expires_date && (
+              <div>
+                <h3 className="font-medium text-gray-900 mb-2">Expiry Date</h3>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Calendar className="h-4 w-4" />
+                  <span>{new Date(document.expires_date).toLocaleDateString()}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-medium text-gray-900 mb-2">Document Information</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Document ID:</span>
+                <span className="font-mono text-xs">{document.id}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Last Updated:</span>
+                <span>{formatDistanceToNow(new Date(document.effective_date), { addSuffix: true })}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Acknowledgment Required:</span>
+                <span>{document.acknowledgment_required ? 'Yes' : 'No'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+            <Button className="gap-2">
               <Download className="h-4 w-4" />
-              Download PDF
+              Download
             </Button>
           </div>
-        </SideDialogHeader>
-        
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
-            {/* Document Info */}
-            <div className="space-y-2">
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">Effective Date:</span> {formatDate(document.effectiveDate)}
-              </div>
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">Expires:</span> {formatDate(document.expiresDate)}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-600">Status:</span>
-                <Badge className={getStatusColor(document.status)}>
-                  {document.status}
-                </Badge>
-              </div>
-            </div>
-
-            {/* Overview */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Overview</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Lorem ipsum dolor sit amet consectetur. Adipiscing molestie venenatis 
-                nulla nec varius posuere vitae tincidunt ipsum. Egestas convallis 
-                turpis vitae at tellus in fringilla enim. Euismod quam pellentesque dolor 
-                pharetra arcu ac quam. Sed velit ipsum.
-              </p>
-            </div>
-
-            {/* Scope */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Scope</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Lorem ipsum dolor sit amet consectetur. Adipiscing molestie venenatis 
-                nulla nec varius posuere vitae tincidunt ipsum.
-              </p>
-            </div>
-
-            {/* Key Guidelines */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Key Guidelines</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li className="flex items-start">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                  Lorem ipsum dolor sit amet consectetur adipiscing
-                </li>
-                <li className="flex items-start">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                  Lorem ipsum dolor sit amet consectetur adipiscing
-                </li>
-                <li className="flex items-start">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                  Lorem ipsum dolor sit amet consectetur adipiscing
-                </li>
-              </ul>
-            </div>
-
-            {/* Conflicts of Interest */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Conflicts of Interest</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Lorem ipsum dolor sit amet consectetur. Adipiscing molestie venenatis 
-                nulla nec varius posuere vitae tincidunt ipsum.
-              </p>
-            </div>
-
-            {/* Consequences */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Consequences</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Lorem ipsum dolor sit amet consectetur. Adipiscing molestie venenatis 
-                nulla nec varius posuere vitae tincidunt ipsum.
-              </p>
-            </div>
-          </div>
         </div>
-      </SideDialogContent>
-    </SideDialog>
+      </DialogContent>
+    </Dialog>
   );
 };

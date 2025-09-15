@@ -1,75 +1,67 @@
-
-import React, { useCallback, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { UploadCloud } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useCallback } from 'react';
+import { UploadIcon, FileTextIcon } from 'lucide-react';
 
 interface FileUploadAreaProps {
   onFilesSelected: (files: File[]) => void;
+  disabled?: boolean;
 }
 
-const FileUploadArea = ({ onFilesSelected }: FileUploadAreaProps) => {
-  const [isDragOver, setIsDragOver] = useState(false);
+const FileUploadArea = ({ onFilesSelected, disabled = false }: FileUploadAreaProps) => {
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    if (disabled) return;
+    
+    const files = Array.from(e.dataTransfer.files);
+    onFilesSelected(files);
+  }, [onFilesSelected, disabled]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragOver(true);
   }, []);
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    onFilesSelected(droppedFiles);
-  }, [onFilesSelected]);
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    onFilesSelected(selectedFiles);
-  };
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
+    
+    const files = Array.from(e.target.files || []);
+    onFilesSelected(files);
+  }, [onFilesSelected, disabled]);
 
   return (
-    <Card className="w-full shadow-[0px_4px_16px_#eae2fd]">
-      <CardContent
-        className={cn(
-          "flex flex-col h-[364px] items-center justify-center gap-6 p-6 transition-colors",
-          isDragOver && "bg-violet-50 border-violet-300 border-2 border-dashed"
-        )}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <UploadCloud className="w-12 h-12 text-violet-600" />
-        <div className="flex flex-col items-center gap-6 w-full">
-          <div className="flex flex-col items-center gap-2 w-full">
-            <p className="font-medium text-[#383838] text-lg text-center">
-              Drag and drop files here
-            </p>
-            <p className="font-normal text-[#38383899] text-lg text-center">
-              or
-            </p>
-          </div>
-          <div className="relative">
+    <div 
+      className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors
+        ${disabled ? 'border-gray-200 bg-gray-50' : 'border-blue-300 hover:border-blue-400 hover:bg-blue-50'}
+      `}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
+      <div className="flex flex-col items-center gap-4">
+        <div className="p-4 rounded-full bg-blue-100">
+          <UploadIcon className="w-8 h-8 text-blue-600" />
+        </div>
+        
+        <div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Drop files here or click to browse
+          </h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Supports PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX files up to 10MB
+          </p>
+          
+          <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
+            <FileTextIcon className="w-4 h-4" />
+            Select Files
             <input
               type="file"
+              className="hidden"
               multiple
-              onChange={handleFileInput}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+              onChange={handleFileSelect}
+              disabled={disabled}
             />
-            <Button className="h-auto px-7 py-3 bg-violet-600 hover:bg-violet-700 rounded-[5px]">
-              Browse Files
-            </Button>
-          </div>
+          </label>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

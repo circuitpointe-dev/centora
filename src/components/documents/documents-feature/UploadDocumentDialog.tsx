@@ -66,9 +66,8 @@ const UploadDocumentDialog = ({ open, onOpenChange }: UploadDocumentDialogProps)
           </div>
           <div className="w-[34%] overflow-y-auto">
             <DocumentDetailsSection
-              selectedFile={selectedFileIndex !== null ? selectedFiles[selectedFileIndex] : null}
-              onUpload={handleUploadComplete}
-              onCancel={() => onOpenChange(false)}
+              selectedFile={selectedFileIndex !== null ? selectedFiles[selectedFileIndex] : undefined}
+              onUploadComplete={handleUploadComplete}
             />
           </div>
         </div>
