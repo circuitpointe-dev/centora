@@ -23,37 +23,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
 }
 
-// NOTE: Updated dev users to include is_super_admin and the 'users' module
-const AUTHORIZED_USERS: AppUser[] = [
-  {
-    id: "1",
-    email: "user@ngo.com",
-    name: "NGO User",
-    organization: "Demo NGO Organization",
-    userType: "NGO",
-    is_super_admin: false,
-    subscribedModules: ["fundraising", "grants", "documents", "programme", "procurement", "inventory", "finance", "learning", "hr", "users"]
-  },
-  {
-    id: "2",
-    email: "user@donor.com",
-    name: "Donor User",
-    organization: "Demo Donor Organization",
-    userType: "Donor",
-    is_super_admin: false,
-    subscribedModules: ["fundraising", "grants", "documents", "programme", "procurement", "inventory", "finance", "learning", "hr", "users"]
-  },
-  // Added a new SuperAdmin dev user
-  {
-    id: "3",
-    email: "superadmin@centora.com",
-    name: "Super Admin",
-    organization: "Centora ERP",
-    userType: "SuperAdmin",
-    is_super_admin: true,
-    subscribedModules: ["users"]
-  }
-];
+// Removed hardcoded demo users - using real Supabase authentication only
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -66,9 +36,8 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<AppUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [authMode, setAuthMode] = useState<"dev" | "supabase" | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
   // Load profile + org + modules for Supabase users
   const fetchProfileAndModules = async (userId: string) => {
@@ -144,81 +113,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Initialize auth listeners and existing session
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
-      setSession(sess);
-      if (sess?.user) {
-        setAuthMode('supabase');
-        // set a minimal placeholder user immediately
-        setUser(prev => prev ?? {
-          id: sess.user.id,
-          email: sess.user.email || '',
-          name: (sess.user.user_metadata as any)?.full_name || sess.user.email || 'User',
-          organization: '',
-          userType: 'NGO',
-          is_super_admin: false,
-          subscribedModules: []
-        });
-        // defer fetching profile to avoid deadlocks
-        setTimeout(() => fetchProfileAndModules(sess.user!.id), 0);
-      } else {
-        if (authMode === 'supabase') {
-          setUser(null);
-        }
-        setAuthMode(null);
-      }
-    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
+      setSession(sess);
+      if (sess?.user) {
+        // set a minimal placeholder user immediately
+        setUser(prev => prev ?? {
+          id: sess.user.id,
+          email: sess.user.email || '',
+          name: (sess.user.user_metadata as any)?.full_name || sess.user.email || 'User',
+          organization: '',
+          userType: 'NGO',
+          is_super_admin: false,
+          subscribedModules: []
+        });
+        // defer fetching profile to avoid deadlocks
+        setTimeout(() => fetchProfileAndModules(sess.user!.id), 0);
+      } else {
+        setUser(null);
+      }
+    });
 
-    // Then check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        setAuthMode('supabase');
-        setUser(prev => prev ?? {
-          id: session.user.id,
-          email: session.user.email || '',
-          name: (session.user.user_metadata as any)?.full_name || session.user.email || 'User',
-          organization: '',
-          userType: 'NGO',
-          is_super_admin: false,
-          subscribedModules: []
-        });
-        setTimeout(() => fetchProfileAndModules(session.user!.id), 0);
-      } else {
-        // Fallback to dev-mode localStorage
-        const storedUser = localStorage.getItem('currentUser');
-        const isAuthenticated = localStorage.getItem('isAuthenticated');
-        if (storedUser && isAuthenticated === 'true') {
-          try {
-            const parsedUser = JSON.parse(storedUser) as AppUser;
-            setUser(parsedUser);
-            setAuthMode('dev');
-          } catch (error) {
-            console.error('Error parsing stored user:', error);
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('isAuthenticated');
-          }
-        }
-      }
-    });
+    // Then check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        setUser(prev => prev ?? {
+          id: session.user.id,
+          email: session.user.email || '',
+          name: (session.user.user_metadata as any)?.full_name || session.user.email || 'User',
+          organization: '',
+          userType: 'NGO',
+          is_super_admin: false,
+          subscribedModules: []
+        });
+        setTimeout(() => fetchProfileAndModules(session.user!.id), 0);
+      }
+    });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: { code?: string; message: string } }> => {
-    // Dev accounts
-    const foundUser = AUTHORIZED_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (foundUser && password === "Circuit2025$") {
-      try {
-        await supabase.auth.signOut().catch(() => {}); // ensure no lingering Supabase session
-      } catch {}
-      setUser(foundUser);
-      setAuthMode('dev');
-      localStorage.setItem('currentUser', JSON.stringify(foundUser));
-      localStorage.setItem('isAuthenticated', 'true');
-      return { success: true };
-    }
-
-    // Supabase auth for real users
+    // Use Supabase authentication only
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       const msg = (error as any)?.message || 'Authentication failed';
@@ -228,57 +164,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // session listener will populate user state
     localStorage.removeItem('currentUser');
     localStorage.removeItem('isAuthenticated');
-    setAuthMode('supabase');
     return { success: true };
   };
-  // Keeping existing register for compatibility (ModalSignup handles real signup)
-  const register = async (
-    email: string,
-    password: string,
-    name: string
-  ): Promise<boolean> => {
-    // Simulated dev registration (unchanged)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  // Real user registration through Supabase
+  const register = async (
+    email: string,
+    password: string,
+    name: string
+  ): Promise<boolean> => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+        }
+      }
+    });
+    
+    return !error;
+  };
 
-    if (email && password.length >= 6 && name) {
-      const newUser: AppUser = {
-        id: Date.now().toString(),
-        email,
-        name,
-        organization: "Demo Organization",
-        userType: "NGO",
-        is_super_admin: false,
-        subscribedModules: ["fundraising", "grants", "documents"]
-      };
-      setUser(newUser);
-      setAuthMode('dev');
-      localStorage.setItem('currentUser', JSON.stringify(newUser));
-      localStorage.setItem('isAuthenticated', 'true');
-      return true;
-    }
-    return false;
-  };
-
-  const logout = async () => {
-    try {
-      if (authMode === 'supabase') {
-        await supabase.auth.signOut();
-      }
-    } finally {
-      setUser(null);
-      setSession(null);
-      setAuthMode(null);
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('isAuthenticated');
-    }
-  };
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } finally {
+      setUser(null);
+      setSession(null);
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('isAuthenticated');
+    }
+  };
 
   const value = {
     user,
     login,
     register,
     logout,
-    isAuthenticated: authMode === 'supabase' ? Boolean(session?.user) : Boolean(user),
+    isAuthenticated: Boolean(session?.user),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

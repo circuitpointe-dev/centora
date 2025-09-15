@@ -26,10 +26,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
   const location = useLocation();
   const { login } = useAuth();
 
-  // Development users
-  const isDevelopmentUser = (email: string) => {
-    return email === 'user@ngo.com' || email === 'user@donor.com';
-  };
+  // Removed development user check - using real authentication only
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
