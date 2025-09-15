@@ -70,8 +70,8 @@ const UploadSection = ({
     newFiles.forEach(file => simulateUploadProgress(file));
   };
 
-  const handleDeleteClick = (index: number, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDeleteClick = (index: number, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     setFileToDelete(index);
     setDeleteConfirmOpen(true);
   };
