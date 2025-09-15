@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { FileSignature, Mail, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useCreateSignatureRequest } from '@/hooks/useESignature';
 import { Document } from '../data';
 
 interface ExternalSignatureShareProps {
@@ -19,6 +20,7 @@ const ExternalSignatureShare = ({ document }: ExternalSignatureShareProps) => {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
+  const createSignatureRequest = useCreateSignatureRequest();
 
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -72,17 +74,34 @@ const ExternalSignatureShare = ({ document }: ExternalSignatureShareProps) => {
 
     setIsSending(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Create signature requests for each recipient
+      const promises = recipients.map(email => 
+        createSignatureRequest.mutateAsync({
+          document_id: document.id,
+          signer_email: email,
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+        })
+      );
+      
+      await Promise.all(promises);
+      
       toast({
         title: "Signature request sent",
         description: `e-Signature request for ${document.fileName} has been sent to ${recipients.length} recipient(s).`,
       });
       
-      setIsSending(false);
       setRecipients([]);
       setMessage('');
-    }, 1500);
+    } catch (error) {
+      toast({
+        title: "Failed to send signature request",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (

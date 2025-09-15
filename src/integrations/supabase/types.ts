@@ -119,7 +119,15 @@ export type Database = {
           shared_with_email?: string
           shared_with_name?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "document_shares_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       document_signatures: {
         Row: {
@@ -161,7 +169,15 @@ export type Database = {
           status?: Database["public"]["Enums"]["signature_status"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "document_signatures_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       document_tag_associations: {
         Row: {
@@ -182,7 +198,22 @@ export type Database = {
           id?: string
           tag_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "document_tag_associations_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_tag_associations_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "document_tags"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       document_tags: {
         Row: {
@@ -245,13 +276,21 @@ export type Database = {
           id?: string
           version?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       documents: {
         Row: {
           category: Database["public"]["Enums"]["document_category"]
           created_at: string
-          created_by: string
+          created_by: string | null
           description: string | null
           file_name: string
           file_path: string
@@ -270,7 +309,7 @@ export type Database = {
         Insert: {
           category?: Database["public"]["Enums"]["document_category"]
           created_at?: string
-          created_by: string
+          created_by?: string | null
           description?: string | null
           file_name: string
           file_path: string
@@ -289,7 +328,7 @@ export type Database = {
         Update: {
           category?: Database["public"]["Enums"]["document_category"]
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           description?: string | null
           file_name?: string
           file_path?: string

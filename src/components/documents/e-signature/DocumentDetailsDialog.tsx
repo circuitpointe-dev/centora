@@ -1,105 +1,116 @@
 import React from 'react';
-import { SideDialog } from '@/components/ui/side-dialog';
-import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { FileText, Calendar, User, Tag, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { SignatureRequest } from '@/hooks/useESignature';
+import { formatDistanceToNow } from 'date-fns';
+import { FileText, Mail, Calendar, User } from 'lucide-react';
 
 interface DocumentDetailsDialogProps {
-  document: any;
+  document: SignatureRequest;
   onClose: () => void;
 }
 
-export function DocumentDetailsDialog({ document, onClose }: DocumentDetailsDialogProps) {
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return 'bg-green-100 text-green-800 border-green-200';
+export const DocumentDetailsDialog = ({
+  document,
+  onClose
+}: DocumentDetailsDialogProps) => {
+  const getStatusBadge = (status: string) => {
+    switch (status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'overdue':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Pending</Badge>;
+      case 'signed':
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Signed</Badge>;
+      case 'declined':
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Declined</Badge>;
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return <Badge>{status}</Badge>;
     }
   };
 
   return (
-    <SideDialog open={true} onOpenChange={onClose}>
-      <div className="p-6 space-y-6">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <FileText className="w-8 h-8 text-blue-600" />
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">{document.title}</h2>
-              <p className="text-sm text-gray-500">Document Details</p>
-            </div>
-          </div>
-          <Badge className={`${getStatusColor(document.status)} rounded border`}>
-            {document.status}
-          </Badge>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <User className="w-5 h-5 text-gray-600" />
-            <div>
-              <p className="text-sm font-medium text-gray-900">Requester</p>
-              <p className="text-sm text-gray-600">{document.requester}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Calendar className="w-5 h-5 text-gray-600" />
-            <div>
-              <p className="text-sm font-medium text-gray-900">Requested Date</p>
-              <p className="text-sm text-gray-600">{document.requestedDate}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Clock className="w-5 h-5 text-gray-600" />
-            <div>
-              <p className="text-sm font-medium text-gray-900">Due Date</p>
-              <p className="text-sm text-gray-600">{document.dueDate}</p>
-            </div>
-          </div>
-
-          {document.tags && document.tags.length > 0 && (
-            <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-              <Tag className="w-5 h-5 text-gray-600 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 mb-2">Tags</p>
-                <div className="flex flex-wrap gap-1">
-                  {document.tags.map((tag: string, index: number) => (
-                    <Badge 
-                      key={index} 
-                      variant="outline" 
-                      className="text-xs bg-white"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg bg-white">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <FileText className="w-5 h-5" />
+            Signature Request Details
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Document Info */}
+          <div className="space-y-3">
+            <h3 className="font-medium text-gray-900">Document Information</h3>
+            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Document Name</span>
+                <span className="font-medium">{document.document?.title || 'Unknown Document'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">File Name</span>
+                <span className="text-sm">{document.document?.file_name || 'N/A'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Status</span>
+                {getStatusBadge(document.status)}
               </div>
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className="flex gap-2 pt-4 border-t">
-          <Button 
-            onClick={onClose}
-            variant="outline" 
-            className="flex-1 rounded bg-white border-gray-300 text-black hover:bg-gray-50"
-          >
-            Close
-          </Button>
-          <Button 
-            className="flex-1 rounded bg-black text-white hover:bg-gray-800"
-          >
-            View Document
-          </Button>
+          {/* Signer Info */}
+          <div className="space-y-3">
+            <h3 className="font-medium text-gray-900">Signer Information</h3>
+            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-gray-500" />
+                <span className="text-sm">{document.signer_email}</span>
+              </div>
+              {document.signer_name && (
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm">{document.signer_name}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Timeline */}
+          <div className="space-y-3">
+            <h3 className="font-medium text-gray-900">Timeline</h3>
+            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-600">Sent:</span>
+                <span className="text-sm">{formatDistanceToNow(new Date(document.created_at), { addSuffix: true })}</span>
+              </div>
+              {document.expires_at && (
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">Expires:</span>
+                  <span className="text-sm">{formatDistanceToNow(new Date(document.expires_at), { addSuffix: true })}</span>
+                </div>
+              )}
+              {document.signed_at && (
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">Signed:</span>
+                  <span className="text-sm">{formatDistanceToNow(new Date(document.signed_at), { addSuffix: true })}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button onClick={onClose}>Close</Button>
+          </div>
         </div>
-      </div>
-    </SideDialog>
+      </DialogContent>
+    </Dialog>
   );
-}
+};

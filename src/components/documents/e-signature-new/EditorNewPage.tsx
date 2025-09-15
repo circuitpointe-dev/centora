@@ -37,7 +37,10 @@ export const EditorNewPage: React.FC = () => {
       const file = state.selectedFiles[0] as File;
       return URL.createObjectURL(file);
     }
-    if (state.selectedDoc?.url) return state.selectedDoc.url as string;
+    if (state.selectedDoc) {
+      // Use document URL from backend
+      return `/documents/${state.selectedDoc.id}/preview`;
+    }
     return "";
   }, [location?.state]);
 

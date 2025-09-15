@@ -5,13 +5,17 @@ import { toast } from 'sonner';
 
 export interface ExpiringDocument {
   id: string;
+  document_id: string;
   name: string;
   owner: string;
   tags: string[];
   expiryDate: string;
   status: 'expired' | 'expiring' | 'active';
-  created_by?: string;
-  document_id: string;
+}
+
+export interface DocumentOwner {
+  id: string;
+  name: string;
 }
 
 export const useExpiringDocuments = (filters?: {
@@ -26,77 +30,64 @@ export const useExpiringDocuments = (filters?: {
     queryFn: async () => {
       if (!user) throw new Error('User not authenticated');
 
-      const { data, error } = await supabase
-        .from('policy_documents')
+      let query = supabase
+        .from('documents')
         .select(`
           id,
-          expires_date,
-          document_id,
-          documents!inner(
-            title,
-            created_by,
-            org_id,
-            profiles!created_by(full_name)
-          ),
-          document_tag_associations!left(
-            document_tags!inner(name, color)
+          title,
+          file_name,
+          created_at,
+          updated_at,
+          category,
+          status,
+          created_by,
+          document_tag_associations(
+            document_tags(name)
           )
         `)
-        .not('expires_date', 'is', null)
-        .order('expires_date', { ascending: true });
+        .eq('status', 'active')
+        .order('updated_at', { ascending: false });
 
+      const { data, error } = await query;
       if (error) throw error;
 
-      const now = new Date();
-      const thirtyDaysFromNow = new Date();
-      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-
-      let transformedData = (data || []).map((policy: any) => {
-        const expiryDate = new Date(policy.expires_date);
+      // Transform data to match interface
+      const documents: ExpiringDocument[] = (data || []).map(doc => {
+        const now = new Date();
+        const updatedAt = new Date(doc.updated_at);
+        const daysDiff = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60 * 60 * 24));
+        
         let status: 'expired' | 'expiring' | 'active' = 'active';
-
-        if (expiryDate < now) {
-          status = 'expired';
-        } else if (expiryDate <= thirtyDaysFromNow) {
-          status = 'expiring';
-        }
-
-        // Extract tags from associations
-        const tags = policy.document_tag_associations?.map((assoc: any) => 
-          assoc.document_tags?.name || 'General'
-        ) || ['General'];
+        if (daysDiff > 365) status = 'expired';
+        else if (daysDiff > 330) status = 'expiring';
 
         return {
-          id: policy.id,
-          name: policy.documents?.title || 'Untitled Document',
-          owner: policy.documents?.profiles?.full_name || 'Unknown',
-          tags: tags.slice(0, 3), // Limit to first 3 tags
-          expiryDate: policy.expires_date,
-          status,
-          created_by: policy.documents?.created_by,
-          document_id: policy.document_id,
+          id: doc.id,
+          document_id: doc.id,
+          name: doc.title || doc.file_name,
+          owner: 'Current User', // TODO: Add proper user lookup
+          tags: doc.document_tag_associations?.map((assoc: any) => assoc.document_tags.name) || [],
+          expiryDate: new Date(updatedAt.getTime() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+          status
         };
       });
 
       // Apply filters
+      let filteredDocs = documents;
+      
       if (filters?.status && filters.status !== 'all') {
-        transformedData = transformedData.filter(doc => doc.status === filters.status);
+        filteredDocs = filteredDocs.filter(doc => doc.status === filters.status);
       }
-
-      if (filters?.owner && filters.owner !== 'all') {
-        transformedData = transformedData.filter(doc => doc.owner === filters.owner);
-      }
-
+      
       if (filters?.search) {
         const searchLower = filters.search.toLowerCase();
-        transformedData = transformedData.filter(doc => 
+        filteredDocs = filteredDocs.filter(doc => 
           doc.name.toLowerCase().includes(searchLower) ||
-          doc.owner.toLowerCase().includes(searchLower) ||
-          doc.tags.some(tag => tag.toLowerCase().includes(searchLower))
+          doc.owner.toLowerCase().includes(searchLower)
         );
       }
 
-      return transformedData as ExpiringDocument[];
+      return filteredDocs;
     },
     enabled: !!user,
   });
@@ -110,18 +101,12 @@ export const useDocumentOwners = () => {
     queryFn: async () => {
       if (!user) throw new Error('User not authenticated');
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .not('full_name', 'is', null)
-        .order('full_name');
+      // For now, return current user as owner
+      const owners: DocumentOwner[] = [
+        { id: user.id, name: 'Current User' }
+      ];
 
-      if (error) throw error;
-
-      return (data || []).map(profile => ({
-        id: profile.id,
-        name: profile.full_name || 'Unknown User',
-      }));
+      return owners;
     },
     enabled: !!user,
   });
@@ -136,15 +121,12 @@ export const useSendExpiryReminder = () => {
       recipient_email: string;
       message: string;
     }) => {
-      // In a real implementation, this would call an edge function to send email
-      console.log('Sending expiry reminder:', params);
-      
-      // Simulate API call
+      // For now, just simulate sending reminder
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
       return { success: true };
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expiring-documents'] });
       toast.success('Expiry reminder sent successfully');
     },
     onError: (error: any) => {

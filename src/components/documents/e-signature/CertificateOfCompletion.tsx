@@ -1,132 +1,154 @@
-
-import React from 'react';
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from 'react';
+import { Search, FileText, Download, Award, Calendar } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Award, BadgeCheck, Copy, Download } from 'lucide-react';
-
-const signers = [
-  {
-    name: "Chioma Ike",
-    email: "chiomaIke@circuitpointe.com",
-    date: "Apr 5, 2025",
-    time: "2:30PM",
-  },
-  {
-    name: "Winifred Taigbenu",
-    email: "winifredtaigbenu@circuitpointe.com",
-    date: "Apr 15, 2025",
-    time: "2:30PM",
-  },
-  {
-    name: "Wasiu Baanu",
-    email: "wasiubaanu@circuitpointe.com",
-    date: "Apr 23, 2025",
-    time: "2:30PM",
-  },
-];
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useSignatureRequests } from '@/hooks/useESignature';
+import { formatDistanceToNow } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 
 export const CertificateOfCompletion = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const { data: signatureRequests, isLoading, error } = useSignatureRequests({
+    status: 'signed',
+    search: searchTerm,
+  });
+
+  const handleGenerateCertificate = (documentId: string) => {
+    console.log('Generate certificate for:', documentId);
+    // TODO: Implement certificate generation
+  };
+
+  const handleDownloadCertificate = (documentId: string) => {
+    console.log('Download certificate for:', documentId);
+    // TODO: Implement certificate download
+  };
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 min-h-full p-8">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-50 min-h-full p-8">
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-2">Failed to load certificates</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-full p-8">
-      <div className="max-w-4xl mx-auto flex flex-col items-center gap-12">
-        <Card className="w-full max-w-[860px] h-[522px] shadow-[0px_4px_16px_#eae2fd] rounded-[5px] overflow-hidden bg-white">
-          <CardContent className="flex flex-col items-center gap-8 p-0 pt-[50px] px-[37px]">
-            <div className="flex items-center gap-2">
-              <h1 className="font-medium text-[#383838] text-xl leading-[25px]">
-                Certificate of Completion
-              </h1>
-              <Award className="w-8 h-8 text-purple-500" />
-            </div>
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Certificate of Completion</h2>
+            <p className="text-sm text-gray-600">Generate and manage completion certificates for signed documents</p>
+          </div>
+        </div>
 
-            <div className="flex flex-col items-start gap-8 w-full">
-              <div className="flex flex-col w-[223px] items-start gap-0.5">
-                <h2 className="font-medium text-[#383838] text-base leading-5">
-                  Company Policy
-                </h2>
+        {/* Search */}
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            placeholder="Search completed documents..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 rounded-[5px] bg-white"
+          />
+        </div>
 
-                <div className="flex items-center gap-[17px] w-full">
-                  <span className="font-normal text-[#38383899] text-xs leading-[15px]">
-                    Completed - April 23, 2025
-                  </span>
+        {/* Table */}
+        <Card className="rounded-[5px] bg-white">
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="font-semibold">Document Name</TableHead>
+                  <TableHead className="font-semibold">Completed By</TableHead>
+                  <TableHead className="font-semibold">Completion Date</TableHead>
+                  <TableHead className="font-semibold">Certificate Status</TableHead>
+                  <TableHead className="font-semibold">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {signatureRequests?.map((document) => (
+                  <TableRow key={document.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-gray-500" />
+                        <span className="font-medium">{document.document?.title || 'Unknown Document'}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{document.signer_name || document.signer_email}</div>
+                        {document.signer_name && (
+                          <div className="text-sm text-gray-500">{document.signer_email}</div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-gray-500" />
+                        <span className="text-gray-600">
+                          {document.signed_at ? formatDistanceToNow(new Date(document.signed_at), { addSuffix: true }) : 'Not completed'}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                        Available
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleGenerateCertificate(document.document_id)}
+                          className="text-violet-600 hover:text-violet-700"
+                        >
+                          <Award className="w-4 h-4 mr-1" />
+                          Generate
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDownloadCertificate(document.document_id)}
+                          className="text-violet-600 hover:text-violet-700"
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Download
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
-                  <Badge className="flex items-center gap-1.5 px-3.5 py-1.5 bg-green-100 text-[#10bb4b] hover:bg-green-100 rounded-[30px] font-normal text-xs">
-                    <BadgeCheck className="w-3 h-3" />
-                    Verified
-                  </Badge>
-                </div>
+            {signatureRequests?.length === 0 && (
+              <div className="text-center py-12">
+                <Award className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-500">No completed documents found</p>
+                <p className="text-sm text-gray-400 mt-1">Certificates will appear here once documents are signed</p>
               </div>
-
-              <div className="flex flex-col items-start gap-4 w-full">
-                <h2 className="font-medium text-[#383838] text-base leading-5">
-                  Signers
-                </h2>
-
-                <div className="w-full border border-solid border-[#e0e5ea] rounded-[5px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-[#f2f4f6] border border-solid border-[#e0e5eb] rounded-[5px_5px_0px_0px]">
-                        <TableHead className="w-[188px] py-2.5 pl-[22px] font-normal text-[#383838cc] text-sm leading-[17.5px]">
-                          Name
-                        </TableHead>
-                        <TableHead className="font-normal text-[#383838cc] text-sm leading-[17.5px]">
-                          Email
-                        </TableHead>
-                        <TableHead className="font-normal text-[#383838cc] text-sm leading-[17.5px]">
-                          Date Signed
-                        </TableHead>
-                        <TableHead className="pr-[50px] font-normal text-[#383838cc] text-sm leading-[17.5px]">
-                          Time
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {signers.map((signer, index) => (
-                        <TableRow key={index} className="border-none">
-                          <TableCell className="py-4 pl-[22px] font-normal text-[#383838cc] text-sm leading-[17.5px]">
-                            {signer.name}
-                          </TableCell>
-                          <TableCell className="font-normal text-[#383838cc] text-sm leading-[17.5px]">
-                            {signer.email}
-                          </TableCell>
-                          <TableCell className="font-normal text-[#383838cc] text-sm leading-[17.5px]">
-                            {signer.date}
-                          </TableCell>
-                          <TableCell className="font-normal text-[#383838cc] text-sm leading-[17.5px]">
-                            {signer.time}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
-
-        <div className="flex items-center gap-[75px]">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2.5 px-8 py-3 h-auto border border-solid border-[#dfdfdf] rounded-[5px] font-medium text-[#38383880] text-sm"
-          >
-            <Copy className="w-4 h-4" />
-            Copy Certificate Link
-          </Button>
-
-          <Button className="flex items-center gap-2.5 px-8 py-3 h-auto bg-violet-600 hover:bg-violet-700 rounded-[5px] font-medium text-white text-sm">
-            <Download className="w-4 h-4" />
-            Download Certificate
-          </Button>
-        </div>
       </div>
     </div>
   );

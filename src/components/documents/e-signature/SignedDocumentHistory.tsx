@@ -1,30 +1,31 @@
 import React, { useState } from 'react';
-import { Search, FileText, Eye } from 'lucide-react';
+import { Search, FileText, Download, Eye } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useSignatureRequests } from '@/hooks/useESignature';
-import { Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 
 export const SignedDocumentHistory = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const documentsPerPage = 10;
 
   const { data: signatureRequests, isLoading, error } = useSignatureRequests({
     status: 'signed',
     search: searchTerm,
   });
 
-  const filteredDocuments = signatureRequests || [];
-  const totalPages = Math.ceil(filteredDocuments.length / documentsPerPage);
-  const startIndex = (currentPage - 1) * documentsPerPage;
-  const paginatedDocuments = filteredDocuments.slice(startIndex, startIndex + documentsPerPage);
+  const handleDownload = (documentId: string) => {
+    console.log('Download document:', documentId);
+    // TODO: Implement download functionality
+  };
+
+  const handleView = (documentId: string) => {
+    console.log('View document:', documentId);
+    // TODO: Implement view functionality
+  };
 
   if (isLoading) {
     return (
@@ -36,18 +37,31 @@ export const SignedDocumentHistory = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="bg-gray-50 min-h-full p-8">
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-2">Failed to load signed documents</p>
+          <p className="text-gray-500 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-50 min-h-full p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Search */}
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Search signed documents..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 rounded-[5px] bg-white"
-          />
+        <div className="flex justify-between items-center">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              placeholder="Search signed documents..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 rounded-[5px] bg-white"
+            />
+          </div>
         </div>
 
         {/* Table */}
@@ -57,89 +71,72 @@ export const SignedDocumentHistory = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="font-semibold">Document Name</TableHead>
+                  <TableHead className="font-semibold">Signer</TableHead>
+                  <TableHead className="font-semibold">Signed Date</TableHead>
                   <TableHead className="font-semibold">Status</TableHead>
-                  <TableHead className="font-semibold">Date Signed</TableHead>
-                  <TableHead className="font-semibold">Signers</TableHead>
                   <TableHead className="font-semibold">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedDocuments.map((document) => (
+                {signatureRequests?.map((document) => (
                   <TableRow key={document.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-gray-500" />
-                        <span className="font-medium">{document.document?.title || document.signer_email}</span>
+                        <span className="font-medium">{document.document?.title || 'Unknown Document'}</span>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{document.signer_name || document.signer_email}</div>
+                        {document.signer_name && (
+                          <div className="text-sm text-gray-500">{document.signer_email}</div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {document.signed_at ? formatDistanceToNow(new Date(document.signed_at), { addSuffix: true }) : 'Not signed'}
                     </TableCell>
                     <TableCell>
                       <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
                         Signed
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-600">
-                      {document.signed_at ? formatDistanceToNow(new Date(document.signed_at), { addSuffix: true }) : 'Unknown'}
-                    </TableCell>
-                    <TableCell className="text-gray-600">1</TableCell>
                     <TableCell>
-                      <Button
-                        variant="link"
-                        className="text-violet-600 hover:text-violet-700 p-0 h-auto"
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        View
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleView(document.document_id)}
+                          className="text-violet-600 hover:text-violet-700"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDownload(document.document_id)}
+                          className="text-violet-600 hover:text-violet-700"
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Download
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="p-4 border-t">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                    
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          onClick={() => setCurrentPage(page)}
-                          isActive={currentPage === page}
-                          className="cursor-pointer"
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+            {signatureRequests?.length === 0 && (
+              <div className="text-center py-12">
+                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-500">No signed documents found</p>
               </div>
             )}
           </CardContent>
         </Card>
-
-        {/* Empty State */}
-        {filteredDocuments.length === 0 && !isLoading && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">
-              {searchTerm ? 'No signed documents found matching your search.' : 'No signed documents found.'}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
