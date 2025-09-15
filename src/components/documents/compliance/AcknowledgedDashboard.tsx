@@ -6,6 +6,8 @@ import { BulkReminderDialog } from './acknowledged/BulkReminderDialog';
 import { SingleReminderDialog } from './acknowledged/SingleReminderDialog';
 import { ReminderSuccessDialog } from './acknowledged/ReminderSuccessDialog';
 import { useToast } from '@/hooks/use-toast';
+import { usePolicyAcknowledgments, usePolicyStats } from '@/hooks/usePolicyDocuments';
+import { Loader2 } from 'lucide-react';
 
 interface Employee {
   id: string;
@@ -15,244 +17,199 @@ interface Employee {
   status: 'Acknowledged' | 'Pending' | 'Expired' | 'Exempt';
 }
 
-const acknowledgedData: Employee[] = [
-  {
-    id: '1',
-    name: 'Millicent ERP',
-    policyAssigned: 'Code of Conduct',
-    acknowledgementDate: '2025-02-18',
-    status: 'Acknowledged'
-  },
-  {
-    id: '2',
-    name: 'Winifred Taghbenu',
-    policyAssigned: 'Data Privacy',
-    acknowledgementDate: null,
-    status: 'Expired'
-  },
-  {
-    id: '3',
-    name: 'Chioma Ike',
-    policyAssigned: 'Code of Conduct',
-    acknowledgementDate: '2025-02-18',
-    status: 'Acknowledged'
-  },
-  {
-    id: '4',
-    name: 'Wesfu Baanu',
-    policyAssigned: 'Code of Conduct',
-    acknowledgementDate: null,
-    status: 'Pending'
-  },
-  {
-    id: '5',
-    name: 'John Doe',
-    policyAssigned: 'Code of Conduct',
-    acknowledgementDate: '2025-02-18',
-    status: 'Acknowledged'
-  },
-  {
-    id: '6',
-    name: 'Richard Nwamadi',
-    policyAssigned: 'Code of Conduct',
-    acknowledgementDate: null,
-    status: 'Expired'
-  },
-  {
-    id: '7',
-    name: 'Somachi ERP',
-    policyAssigned: 'Code of Conduct',
-    acknowledgementDate: null,
-    status: 'Pending'
-  }
-];
-
-const statisticsData = [
-  {
-    title: 'Total Employees',
-    value: '245',
-    icon: '👥',
-    bgColor: 'bg-blue-50',
-    textColor: 'text-blue-600'
-  },
-  {
-    title: 'Acknowledged',
-    value: '180',
-    icon: '✓',
-    bgColor: 'bg-green-50',
-    textColor: 'text-green-600'
-  },
-  {
-    title: 'Pending',
-    value: '45',
-    icon: '⏳',
-    bgColor: 'bg-yellow-50',
-    textColor: 'text-yellow-600'
-  },
-  {
-    title: 'Exempt',
-    value: '6',
-    icon: '⊘',
-    bgColor: 'bg-red-50',
-    textColor: 'text-red-600'
-  }
-];
-
 export const AcknowledgedDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [employees, setEmployees] = useState(acknowledgedData);
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('All Status');
+  const [selectedDepartment, setSelectedDepartment] = useState('All Departments');
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
-  const [bulkReminderOpen, setBulkReminderOpen] = useState(false);
-  const [bulkReminderMessage, setBulkReminderMessage] = useState('');
-  const [singleReminderOpen, setSingleReminderOpen] = useState(false);
-  const [singleReminderEmployee, setSingleReminderEmployee] = useState<Employee | null>(null);
-  const [singleReminderMessage, setSingleReminderMessage] = useState('');
-  const [reminderSuccessOpen, setReminderSuccessOpen] = useState(false);
+  const [showBulkReminder, setShowBulkReminder] = useState(false);
+  const [showSingleReminder, setSingleReminder] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const { toast } = useToast();
 
-  const filteredEmployees = employees.filter(employee => {
-    const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.policyAssigned.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || employee.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
+  // Fetch real data from backend
+  const { data: acknowledgments, isLoading: acknowledgementsLoading } = usePolicyAcknowledgments({
+    search: searchQuery,
+    status: selectedStatus !== 'All Status' ? selectedStatus.toLowerCase() : undefined,
+    department: selectedDepartment !== 'All Departments' ? selectedDepartment : undefined,
   });
 
-  const handleSendReminder = (employeeId: string) => {
-    const employee = employees.find(emp => emp.id === employeeId);
-    if (employee) {
-      setSingleReminderEmployee(employee);
-      setSingleReminderMessage(`Hello ${employee.name},
+  const { data: stats, isLoading: statsLoading } = usePolicyStats();
 
-This is a reminder to review and acknowledge the ${employee.policyAssigned} policy document.
+  const statisticsData = [
+    {
+      title: 'Total Employees',
+      value: stats?.totalEmployees?.toString() || '0',
+      icon: '👥',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-600'
+    },
+    {
+      title: 'Acknowledged',
+      value: stats?.acknowledged?.toString() || '0',
+      icon: '✓',
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-600'
+    },
+    {
+      title: 'Pending',
+      value: stats?.pending?.toString() || '0',
+      icon: '⏳',
+      bgColor: 'bg-yellow-50',
+      textColor: 'text-yellow-600'
+    },
+    {
+      title: 'Exempt',
+      value: stats?.exempt?.toString() || '0',
+      icon: '⊘',
+      bgColor: 'bg-red-50',
+      textColor: 'text-red-600'
+    }
+  ];
 
-Acknowledging this policy confirms that you have read, understood, and agreed to comply with its contents. This step is required to meet organizational compliance standards.
+  // Transform acknowledgments data to Employee format
+  const acknowledgedData: Employee[] = acknowledgments?.map(ack => ({
+    id: ack.id,
+    name: ack.user?.full_name || 'Unknown User',
+    policyAssigned: ack.policy_document?.title || 'Unknown Policy',
+    acknowledgementDate: ack.acknowledged_at,
+    status: 'Acknowledged' as const
+  })) || [];
 
-Thank you`);
-      setSingleReminderOpen(true);
+  if (acknowledgementsLoading || statsLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  const handleBulkReminder = () => {
+    setShowBulkReminder(true);
+  };
+
+  const handleSingleReminder = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setSingleReminder(true);
+  };
+
+  const handleBulkReminderSend = (selectedEmployees: string[], message: string) => {
+    console.log('Sending bulk reminder to:', selectedEmployees, 'Message:', message);
+    setShowBulkReminder(false);
+    setShowSuccessDialog(true);
+    toast({
+      title: "Reminders Sent",
+      description: `Bulk reminder sent to ${selectedEmployees.length} employees.`,
+    });
+  };
+
+  const handleSingleReminderSend = (message: string) => {
+    if (selectedEmployee) {
+      console.log(`This is a reminder to review and acknowledge the ${selectedEmployee.policyAssigned} policy document.`);
+      setSingleReminder(false);
+      setShowSuccessDialog(true);
+      toast({
+        title: "Reminder Sent",
+        description: `Reminder sent to ${selectedEmployee.name}.`,
+      });
     }
   };
 
-  const handleConfirmSingleReminder = () => {
-    console.log('Sending reminder to employee:', singleReminderEmployee?.id);
-    setSingleReminderOpen(false);
-    setReminderSuccessOpen(true);
-    setSingleReminderEmployee(null);
-  };
-
-  const handleMarkAsExempt = (employeeId: string) => {
-    setEmployees(prev => prev.map(emp => 
-      emp.id === employeeId 
-        ? { ...emp, status: 'Exempt' as const }
-        : emp
-    ));
-  };
-
-  const handleSelectEmployee = (employeeId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedEmployees(prev => [...prev, employeeId]);
-    } else {
-      setSelectedEmployees(prev => prev.filter(id => id !== employeeId));
-    }
+  const handleCheckboxChange = (employeeId: string, checked: boolean) => {
+    setSelectedEmployees(prev => 
+      checked 
+        ? [...prev, employeeId]
+        : prev.filter(id => id !== employeeId)
+    );
   };
 
   const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      const eligibleEmployees = filteredEmployees
-        .filter(emp => emp.status === 'Pending' || emp.status === 'Expired')
-        .map(emp => emp.id);
-      setSelectedEmployees(eligibleEmployees);
-    } else {
-      setSelectedEmployees([]);
-    }
+    setSelectedEmployees(checked ? acknowledgedData.map(emp => emp.id) : []);
   };
 
-  const handleSendBulkReminder = () => {
-    setBulkReminderMessage(`Hello,
-
-This is a reminder to review and acknowledge your assigned policy document.
-
-Acknowledging this policy confirms that you have read, understood, and agreed to comply with its contents. This step is required to meet organizational compliance standards.
-
-Thank you`);
-    setBulkReminderOpen(true);
+  const handleStatusFilterChange = (status: string) => {
+    setSelectedStatus(status);
   };
 
-  const handleConfirmBulkReminder = () => {
-    console.log('Sending bulk reminder to employees:', selectedEmployees);
-    setBulkReminderOpen(false);
-    setReminderSuccessOpen(true);
-    setSelectedEmployees([]);
+  const handleDepartmentFilterChange = (department: string) => {
+    setSelectedDepartment(department);
   };
 
-  const eligibleEmployees = filteredEmployees.filter(emp => emp.status === 'Pending' || emp.status === 'Expired');
-  const allEligibleSelected = eligibleEmployees.length > 0 && eligibleEmployees.every(emp => selectedEmployees.includes(emp.id));
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleGenerateReport = () => {
+    console.log('Generating compliance report with current filters');
+    toast({
+      title: "Report Generated",
+      description: "Compliance report has been generated successfully.",
+    });
+  };
+
+  const filteredData = acknowledgedData.filter(employee => {
+    const matchesSearch = employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         employee.policyAssigned.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = selectedStatus === 'All Status' || employee.status === selectedStatus;
+    
+    // For department filtering, we'd need to add department info to the Employee interface
+    // For now, we'll just handle 'All Departments'
+    const matchesDepartment = selectedDepartment === 'All Departments';
+    
+    return matchesSearch && matchesStatus && matchesDepartment;
+  });
+
+  const successMessage = selectedEmployees.length > 1 
+    ? `Bulk reminder sent successfully to ${selectedEmployees.length} employees!`
+    : selectedEmployee 
+      ? `This is a reminder to review and acknowledge your assigned policy document.`
+      : "Reminder sent successfully!";
 
   return (
     <div className="space-y-6">
-      {/* Statistics Cards */}
       <AcknowledgedStatCards statistics={statisticsData} />
-
-      {/* Toolbar */}
+      
       <AcknowledgedToolbar
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
+        onSearchChange={handleSearchChange}
+        selectedStatus={selectedStatus}
+        onStatusChange={handleStatusFilterChange}
+        selectedDepartment={selectedDepartment}
+        onDepartmentChange={handleDepartmentFilterChange}
         selectedCount={selectedEmployees.length}
-        onSendBulkReminder={handleSendBulkReminder}
-        filterOpen={filterOpen}
-        onFilterOpenChange={setFilterOpen}
+        onBulkReminder={handleBulkReminder}
+        onGenerateReport={handleGenerateReport}
       />
 
-      {/* Table */}
       <AcknowledgedTable
-        employees={filteredEmployees}
+        data={filteredData}
         selectedEmployees={selectedEmployees}
-        onSelectEmployee={handleSelectEmployee}
+        onCheckboxChange={handleCheckboxChange}
         onSelectAll={handleSelectAll}
-        onSendReminder={handleSendReminder}
-        onMarkAsExempt={handleMarkAsExempt}
-        allEligibleSelected={allEligibleSelected}
-        eligibleEmployeesCount={eligibleEmployees.length}
+        onSingleReminder={handleSingleReminder}
       />
 
-      {/* Empty State */}
-      {filteredEmployees.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">
-            {searchQuery ? 'No employees found matching your search.' : 'No employee data available.'}
-          </p>
-        </div>
-      )}
-
-      {/* Bulk Reminder Dialog */}
       <BulkReminderDialog
-        open={bulkReminderOpen}
-        onOpenChange={setBulkReminderOpen}
+        open={showBulkReminder}
+        onOpenChange={setShowBulkReminder}
         selectedCount={selectedEmployees.length}
-        message={bulkReminderMessage}
-        onMessageChange={setBulkReminderMessage}
-        onConfirm={handleConfirmBulkReminder}
+        onSend={handleBulkReminderSend}
+        selectedEmployees={selectedEmployees}
       />
 
-      {/* Single Reminder Dialog */}
       <SingleReminderDialog
-        open={singleReminderOpen}
-        onOpenChange={setSingleReminderOpen}
-        employee={singleReminderEmployee}
-        message={singleReminderMessage}
-        onMessageChange={setSingleReminderMessage}
-        onConfirm={handleConfirmSingleReminder}
+        open={showSingleReminder}
+        onOpenChange={setSingleReminder}
+        employee={selectedEmployee}
+        onSend={handleSingleReminderSend}
       />
 
-      {/* Success Dialog */}
       <ReminderSuccessDialog
-        open={reminderSuccessOpen}
-        onOpenChange={setReminderSuccessOpen}
+        open={showSuccessDialog}
+        onOpenChange={setShowSuccessDialog}
+        message={successMessage}
       />
     </div>
   );
