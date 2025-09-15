@@ -8,6 +8,7 @@ import { FieldPalette } from "./components/FieldPalette";
 import { PDFStage, PDFStageHandle } from "./components/PDFStage";
 import { PropertiesPanel } from "./components/PropertiesPanel";
 import { PreviewDialog } from "./components/PreviewDialog";
+import { SigningDialog } from "./components/SigningDialog";
 
 export type FieldType = "signature" | "name" | "date" | "email" | "text";
 
@@ -31,6 +32,7 @@ export const EditorNewPage: React.FC = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [numPages, setNumPages] = useState(1);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [signingField, setSigningField] = useState<FieldData | null>(null);
 
   // Derive file URL from wizard state or backend
   const fileUrl = useMemo(() => {
@@ -53,7 +55,7 @@ export const EditorNewPage: React.FC = () => {
 
   const handleAddFieldClick = (type: FieldType) => {
     setActiveTool(type);
-    toast("Click anywhere on the page to place the field");
+    toast.info(`Click anywhere on the document to place the ${type} field`);
   };
 
   const handleFieldAdded = (field: FieldData) => {
@@ -78,6 +80,28 @@ export const EditorNewPage: React.FC = () => {
   const handleClearAll = () => {
     stageRef.current?.clearAll();
     setSelectedField(null);
+    setActiveTool(null);
+  };
+
+  const handleSignField = (field: FieldData) => {
+    setSigningField(field);
+  };
+
+  const handleSigningSave = (value: any) => {
+    if (!signingField) return;
+    
+    stageRef.current?.updateField(signingField.id, { 
+      value, 
+      isConfigured: true 
+    });
+    
+    // Update selected field if it's the same
+    if (selectedField?.id === signingField.id) {
+      setSelectedField({ ...signingField, value, isConfigured: true });
+    }
+    
+    setSigningField(null);
+    toast.success("Field filled successfully");
   };
 
   return (
@@ -97,13 +121,17 @@ export const EditorNewPage: React.FC = () => {
               if (fields && fields.length > 0) {
                 setIsPreviewOpen(true);
               } else {
-                toast("Add some fields first to preview");
+                toast.error("Add some fields first to preview");
               }
             }}>Preview</Button>
             <Button onClick={() => {
               const fields = stageRef.current?.getAllFields();
-              toast(`Draft saved with ${fields?.length || 0} fields`);
-              // TODO: Save to backend
+              if (fields && fields.length > 0) {
+                toast.success(`Draft saved with ${fields.length} fields`);
+                // TODO: Save to backend
+              } else {
+                toast.error("No fields to save");
+              }
             }} variant="default">Save draft</Button>
           </div>
         </div>
@@ -155,6 +183,7 @@ export const EditorNewPage: React.FC = () => {
               field={selectedField}
               onChange={handleUpdateSelected}
               onRemove={handleRemoveSelected}
+              onSign={handleSignField}
             />
           </Card>
         </aside>
@@ -166,6 +195,14 @@ export const EditorNewPage: React.FC = () => {
         onOpenChange={setIsPreviewOpen}
         fields={stageRef.current?.getAllFields() || []}
         documentTitle={location?.state?.selectedDoc?.title || 'Document'}
+      />
+
+      {/* Signing Dialog */}
+      <SigningDialog
+        open={!!signingField}
+        onOpenChange={(open) => !open && setSigningField(null)}
+        field={signingField}
+        onSave={handleSigningSave}
       />
     </div>
   );

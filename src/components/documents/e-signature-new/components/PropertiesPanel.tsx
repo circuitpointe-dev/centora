@@ -7,9 +7,10 @@ interface PropertiesPanelProps {
   field: FieldData | null;
   onChange: (patch: Partial<FieldData>) => void;
   onRemove: () => void;
+  onSign?: (field: FieldData) => void;
 }
 
-export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ field, onChange, onRemove }) => {
+export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ field, onChange, onRemove, onSign }) => {
   if (!field) {
     return (
       <div className="text-sm text-muted-foreground">Select a field to edit its properties.</div>
@@ -26,9 +27,33 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ field, onChang
         <label className="text-xs text-muted-foreground">Label</label>
         <Input value={field.label} onChange={(e) => onChange({ label: e.target.value })} className="rounded-sm" />
       </div>
-      <div className="flex items-center justify-between pt-2">
-        <Button variant="destructive" onClick={onRemove} size="sm">Remove</Button>
-        <Button variant="default" size="sm" onClick={() => onChange({ isConfigured: true })}>Mark configured</Button>
+      <div className="space-y-2">
+        <Button 
+          variant="default" 
+          className="w-full" 
+          onClick={() => onSign?.(field)}
+          size="sm"
+        >
+          {field.type === 'signature' ? '✍️ Sign Field' :
+           field.type === 'name' ? '👤 Fill Name' :
+           field.type === 'date' ? '📅 Set Date' :
+           field.type === 'email' ? '📧 Enter Email' :
+           '✏️ Fill Field'}
+        </Button>
+        
+        <div className="flex gap-2">
+          <Button variant="destructive" onClick={onRemove} size="sm" className="flex-1">
+            Remove
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => onChange({ isConfigured: true })} 
+            className="flex-1"
+          >
+            {field.isConfigured ? '✅' : 'Mark Done'}
+          </Button>
+        </div>
       </div>
     </div>
   );

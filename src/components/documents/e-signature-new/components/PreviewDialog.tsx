@@ -124,10 +124,22 @@ export const PreviewDialog: React.FC<PreviewDialogProps> = ({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Back to Editor
             </Button>
+            {fields.length > 0 && (
+              <Button 
+                variant="secondary"
+                onClick={() => {
+                  // TODO: Switch to fill mode
+                  console.log('Switch to fill mode');
+                }}
+              >
+                Fill Document
+              </Button>
+            )}
             <Button 
               disabled={fields.length === 0}
               onClick={() => {
                 // TODO: Implement send for signature
+                console.log('Send for signature');
                 onOpenChange(false);
               }}
             >

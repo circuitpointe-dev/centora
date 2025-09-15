@@ -209,7 +209,17 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
       <Document file={fileUrl} onLoadSuccess={({ numPages }) => { setLoading(false); onNumPages(numPages); }} onLoadError={() => setLoading(false)} loading={<div className="h-[400px] grid place-items-center text-muted-foreground">Loading…</div>}>
         <Page pageNumber={pageNumber} scale={scale} renderTextLayer renderAnnotationLayer />
       </Document>
-      <canvas ref={overlayRef} onClick={handleClickToPlace} />
+      <canvas 
+        ref={overlayRef} 
+        onClick={handleClickToPlace} 
+        style={{ cursor: activeTool ? 'crosshair' : 'default' }}
+      />
+      
+      {activeTool && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-2 rounded-sm text-sm z-20 animate-pulse">
+          Click anywhere to place {activeTool} field
+        </div>
+      )}
     </div>
   );
 });
