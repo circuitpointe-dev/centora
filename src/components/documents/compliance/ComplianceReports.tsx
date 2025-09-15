@@ -18,7 +18,7 @@ export const ComplianceReports = () => {
   const statCards = [
     {
       title: "Total Policies Assigned",
-      value: stats?.totalPolicies?.toString() || "0",
+      value: stats?.totalEmployees?.toString() || "0",
       icon: User,
       iconBgColor: "bg-blue-100",
       iconColor: "text-blue-600",
@@ -34,7 +34,7 @@ export const ComplianceReports = () => {
     },
     {
       title: "Acknowledgement Rate",
-      value: stats ? `${Math.round((stats.acknowledged / Math.max(stats.totalPolicies, 1)) * 100)}%` : "0%",
+      value: stats ? `${Math.round((stats.acknowledged / Math.max(stats.totalEmployees, 1)) * 100)}%` : "0%",
       icon: Clock,
       iconBgColor: "bg-yellow-100",
       iconColor: "text-yellow-600",
@@ -42,7 +42,7 @@ export const ComplianceReports = () => {
     },
     {
       title: "Policies Expired",
-      value: stats?.expired?.toString() || "0",
+      value: stats?.exempt?.toString() || "0",
       icon: X,
       iconBgColor: "bg-red-100",
       iconColor: "text-red-600",

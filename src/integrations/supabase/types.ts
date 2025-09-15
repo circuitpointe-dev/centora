@@ -737,6 +737,65 @@ export type Database = {
         }
         Relationships: []
       }
+      esignature_fields: {
+        Row: {
+          created_at: string
+          created_by: string
+          document_id: string
+          field_label: string
+          field_type: string
+          field_value: string | null
+          height: number
+          id: string
+          is_required: boolean
+          page_number: number
+          position_x: number
+          position_y: number
+          updated_at: string
+          width: number
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          document_id: string
+          field_label: string
+          field_type: string
+          field_value?: string | null
+          height?: number
+          id?: string
+          is_required?: boolean
+          page_number?: number
+          position_x: number
+          position_y: number
+          updated_at?: string
+          width?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          field_label?: string
+          field_type?: string
+          field_value?: string | null
+          height?: number
+          id?: string
+          is_required?: boolean
+          page_number?: number
+          position_x?: number
+          position_y?: number
+          updated_at?: string
+          width?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "esignature_fields_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       features: {
         Row: {
           created_at: string | null

@@ -9,6 +9,7 @@ import { PDFStage, PDFStageHandle } from "./components/PDFStage";
 import { PropertiesPanel } from "./components/PropertiesPanel";
 import { PreviewDialog } from "./components/PreviewDialog";
 import { SigningDialog } from "./components/SigningDialog";
+import { useSaveESignatureFields } from "@/hooks/useESignatureFields";
 
 export type FieldType = "signature" | "name" | "date" | "email" | "text";
 
@@ -33,6 +34,13 @@ export const EditorNewPage: React.FC = () => {
   const [numPages, setNumPages] = useState(1);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [signingField, setSigningField] = useState<FieldData | null>(null);
+
+  // Database operations
+  const saveFieldsMutation = useSaveESignatureFields();
+
+  // Extract document info from location state
+  const documentInfo = location?.state?.selectedDoc || location?.state?.document;
+  const documentId = documentInfo?.id || "sample-doc";
 
   // Derive file URL from wizard state or backend
   const fileUrl = useMemo(() => {
@@ -127,12 +135,28 @@ export const EditorNewPage: React.FC = () => {
             <Button onClick={() => {
               const fields = stageRef.current?.getAllFields();
               if (fields && fields.length > 0) {
-                toast.success(`Draft saved with ${fields.length} fields`);
-                // TODO: Save to backend
+                // Convert fabric fields to database format and save
+                const fieldsForSave = fields.map(field => ({
+                  field_type: field.type,
+                  field_label: field.label,
+                  position_x: 100, // These would be calculated from fabric objects in a real implementation
+                  position_y: 100,
+                  width: 140,
+                  height: 32,
+                  page_number: pageNumber,
+                  is_required: field.required ?? true
+                }));
+
+                saveFieldsMutation.mutate({
+                  documentId,
+                  fields: fieldsForSave
+                });
               } else {
                 toast.error("No fields to save");
               }
-            }} variant="default">Save draft</Button>
+            }} variant="default" disabled={saveFieldsMutation.isPending}>
+              {saveFieldsMutation.isPending ? "Saving..." : "Save draft"}
+            </Button>
           </div>
         </div>
       </header>
@@ -158,6 +182,7 @@ export const EditorNewPage: React.FC = () => {
               onToolUsed={() => setActiveTool(null)}
               onFieldAdded={handleFieldAdded}
               onSelectionChange={handleSelectionChange}
+              documentId={documentId}
             />
 
             {/* Controls */}

@@ -1,6 +1,8 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Canvas as FabricCanvas, Rect, Text, Group } from "fabric";
+import { cn } from "@/lib/utils";
+import { useESignatureFields, useCreateESignatureField, useUpdateESignatureField, useDeleteESignatureField } from "@/hooks/useESignatureFields";
 import type { FieldData, FieldType } from "../EditorNewPage";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.3.31/build/pdf.worker.min.mjs`;
@@ -21,6 +23,7 @@ interface PDFStageProps {
   onToolUsed: () => void;
   onFieldAdded?: (field: FieldData) => void;
   onSelectionChange?: (field: FieldData | null) => void;
+  documentId?: string; // Add document ID for database operations
 }
 
 export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
@@ -32,11 +35,17 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
   onToolUsed,
   onFieldAdded,
   onSelectionChange,
+  documentId,
 }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Database operations
+  const createFieldMutation = useCreateESignatureField();
+  const updateFieldMutation = useUpdateESignatureField();
+  const deleteFieldMutation = useDeleteESignatureField();
 
   const colors = useMemo(() => ({
     signature: { fill: "rgba(99,102,241,0.10)", stroke: "#6366f1" },
@@ -172,6 +181,21 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
       
       console.log('Field created successfully:', field);
       onFieldAdded?.(field);
+
+      // Save to database if documentId is provided
+      if (documentId) {
+        createFieldMutation.mutate({
+          document_id: documentId,
+          field_type: type,
+          field_label: type.toUpperCase(),
+          position_x: x - w/2,
+          position_y: y - h/2,
+          width: w,
+          height: h,
+          page_number: pageNumber,
+          is_required: true
+        });
+      }
     } catch (error) {
       console.error('Error creating field:', error);
     }
