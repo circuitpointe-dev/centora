@@ -8,12 +8,12 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ComplianceRequirement } from "../data/complianceData";
+import { GrantCompliance } from "@/types/grants";
 
 interface ComplianceViewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  requirement: ComplianceRequirement | null;
+  requirement: GrantCompliance | null;
 }
 
 export const ComplianceViewDialog = ({ open, onOpenChange, requirement }: ComplianceViewDialogProps) => {
@@ -42,7 +42,7 @@ export const ComplianceViewDialog = ({ open, onOpenChange, requirement }: Compli
       icon: MessageSquare,
       label: "Feedback provided",
       date: "Jun 1, 2025",
-      completed: requirement.status === 'Completed'
+      completed: requirement.status === 'completed'
     }
   ];
 
@@ -123,7 +123,7 @@ export const ComplianceViewDialog = ({ open, onOpenChange, requirement }: Compli
               <div className="flex justify-between">
                 <span className="text-gray-600">Due date</span>
                 <span className="text-gray-900 font-medium">
-                  {new Date(requirement.dueDate).toLocaleDateString('en-US', { 
+                  {new Date(requirement.due_date).toLocaleDateString('en-US', { 
                     year: 'numeric', 
                     month: 'short', 
                     day: 'numeric' 

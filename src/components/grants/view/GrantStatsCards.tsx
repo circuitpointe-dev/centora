@@ -1,24 +1,31 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { disbursementsData } from "../data/disbursementsData";
-import { complianceData } from "../data/complianceData";
+import { useGrantCompliance } from "@/hooks/grants/useGrantCompliance";
+import { useGrantDisbursements } from "@/hooks/grants/useGrantDisbursements";
 
 interface GrantStatsCardsProps {
-  grantId: number;
+  grantId: string;
 }
 
 export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => {
+  const { compliance: grantCompliance } = useGrantCompliance(grantId);
+  const { disbursements: grantDisbursements } = useGrantDisbursements(grantId);
+
   // Calculate disbursement rate for this grant
-  const grantDisbursements = disbursementsData.filter(d => d.grantId === grantId);
   const totalDisbursements = grantDisbursements.length;
-  const releasedDisbursements = grantDisbursements.filter(d => d.status === 'Released').length;
+  const releasedDisbursements = grantDisbursements.filter(d => d.status === 'released').length;
   const disbursementRate = totalDisbursements > 0 ? Math.round((releasedDisbursements / totalDisbursements) * 100) : 0;
 
   // Calculate compliance rate for this grant
-  const grantCompliance = complianceData.filter(c => c.grantId === grantId);
   const totalCompliance = grantCompliance.length;
-  const completedCompliance = grantCompliance.filter(c => c.status === 'Completed').length;
+  const completedCompliance = grantCompliance.filter(c => c.status === 'completed').length;
   const complianceRate = totalCompliance > 0 ? Math.round((completedCompliance / totalCompliance) * 100) : 0;
+
+  // Calculate disbursed amount
+  const totalAmount = grantDisbursements.reduce((sum, d) => sum + Number(d.amount), 0);
+  const releasedAmount = grantDisbursements
+    .filter(d => d.status === 'released')
+    .reduce((sum, d) => sum + Number(d.amount), 0);
 
   // Portfolio progress data for this grant
   const portfolioData = [
@@ -27,7 +34,7 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
       value: disbursementRate, 
       color: "bg-blue-500", 
       width: `${disbursementRate}%`, 
-      amount: "$750,000",
+      amount: `$${releasedAmount.toLocaleString()}`,
       description: "Released over allocated"
     },
     { 
@@ -35,7 +42,7 @@ export const GrantStatsCards: React.FC<GrantStatsCardsProps> = ({ grantId }) => 
       value: Math.min(disbursementRate + 10, 100), 
       color: "bg-red-500", 
       width: `${Math.min(disbursementRate + 10, 100)}%`, 
-      amount: "$700,000",
+      amount: `$${Math.round(releasedAmount * 0.9).toLocaleString()}`,
       description: "Expended over released"
     },
   ];

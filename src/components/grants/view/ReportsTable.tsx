@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Eye, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,46 +17,45 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { reportsData, Report } from "../data/reportsData";
+import { useGrantReports } from "@/hooks/grants/useGrantReports";
+import { GrantReport } from "@/types/grants";
 
 interface ReportsTableProps {
-  grantId: number;
+  grantId: string;
   isEditMode?: boolean;
 }
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'Submitted': return 'bg-green-100 text-green-800';
-    case 'Overdue': return 'bg-red-100 text-red-800';
-    case 'Upcoming': return 'bg-blue-100 text-blue-800';
-    case 'In Progress': return 'bg-yellow-100 text-yellow-800';
+    case 'submitted': return 'bg-green-100 text-green-800';
+    case 'overdue': return 'bg-red-100 text-red-800';
+    case 'upcoming': return 'bg-blue-100 text-blue-800';
+    case 'in_progress': return 'bg-yellow-100 text-yellow-800';
     default: return 'bg-gray-100 text-gray-800';
   }
 };
 
 export const ReportsTable = ({ grantId, isEditMode = false }: ReportsTableProps) => {
+  const { reports: grantReports } = useGrantReports(grantId);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Filter reports for the specific grant
-  const grantReports = reportsData.filter(report => report.grantId === grantId);
-  
   // Calculate pagination
   const totalPages = Math.ceil(grantReports.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedReports = grantReports.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleView = (report: Report) => {
+  const handleView = (report: GrantReport) => {
     console.log('Viewing report:', report);
     // TODO: Implement view logic - could open a modal or navigate to report view
-    alert(`Viewing ${report.reportType} - Due: ${report.dueDate}`);
+    alert(`Viewing ${report.report_type} - Due: ${report.due_date}`);
   };
 
-  const handleDownload = (report: Report) => {
+  const handleDownload = (report: GrantReport) => {
     console.log('Downloading report:', report);
-    if (report.submitted && report.fileName) {
+    if (report.submitted && report.file_name) {
       // TODO: Implement actual download logic
-      alert(`Downloading ${report.fileName}`);
+      alert(`Downloading ${report.file_name}`);
     } else {
       alert('Report not available for download');
     }
@@ -84,10 +82,10 @@ export const ReportsTable = ({ grantId, isEditMode = false }: ReportsTableProps)
             {paginatedReports.map((report) => (
               <TableRow key={report.id} className="hover:bg-gray-50">
                 <TableCell className="font-medium text-black">
-                  {report.reportType}
+                  {report.report_type}
                 </TableCell>
                 <TableCell className="text-gray-600">
-                  {new Date(report.dueDate).toLocaleDateString()}
+                  {new Date(report.due_date).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
                   <span className={`text-xs px-2 py-1 rounded-sm ${
@@ -98,7 +96,7 @@ export const ReportsTable = ({ grantId, isEditMode = false }: ReportsTableProps)
                 </TableCell>
                 <TableCell>
                   <span className={`text-xs px-2 py-1 rounded-sm ${getStatusColor(report.status)}`}>
-                    {report.status}
+                    {report.status.replace('_', ' ')}
                   </span>
                 </TableCell>
                 <TableCell>

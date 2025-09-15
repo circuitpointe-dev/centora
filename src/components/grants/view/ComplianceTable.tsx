@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Plus, MoreVertical, Eye, CheckCircle, Clock, Upload, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,23 +24,22 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { complianceData, ComplianceRequirement } from "../data/complianceData";
+import { useGrantCompliance } from "@/hooks/grants/useGrantCompliance";
 import { AddComplianceDialog } from "./AddComplianceDialog";
 import { UploadEvidenceDialog } from "./UploadEvidenceDialog";
+import { GrantCompliance } from "@/types/grants";
 
 interface ComplianceTableProps {
-  grantId: number;
+  grantId: string;
   isEditMode?: boolean;
 }
 
 export const ComplianceTable = ({ grantId, isEditMode = false }: ComplianceTableProps) => {
-  const [requirements, setRequirements] = useState(
-    complianceData.filter(r => r.grantId === grantId)
-  );
+  const { compliance: requirements, createCompliance, updateCompliance } = useGrantCompliance(grantId);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [selectedRequirement, setSelectedRequirement] = useState<ComplianceRequirement | null>(null);
-  const [editingRequirement, setEditingRequirement] = useState<ComplianceRequirement | null>(null);
+  const [selectedRequirement, setSelectedRequirement] = useState<GrantCompliance | null>(null);
+  const [editingRequirement, setEditingRequirement] = useState<GrantCompliance | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -57,12 +55,12 @@ export const ComplianceTable = ({ grantId, isEditMode = false }: ComplianceTable
     setAddDialogOpen(true);
   };
 
-  const handleEdit = (requirement: ComplianceRequirement) => {
+  const handleEdit = (requirement: GrantCompliance) => {
     setEditingRequirement(requirement);
     setAddDialogOpen(true);
   };
 
-  const handleUploadEvidence = (requirement: ComplianceRequirement) => {
+  const handleUploadEvidence = (requirement: GrantCompliance) => {
     setSelectedRequirement(requirement);
     setUploadDialogOpen(true);
   };
@@ -72,57 +70,52 @@ export const ComplianceTable = ({ grantId, isEditMode = false }: ComplianceTable
     // TODO: Implement document viewing logic
   };
 
-  const handleSaveRequirement = (requirementData: Omit<ComplianceRequirement, 'id' | 'grantId'>) => {
-    if (editingRequirement) {
-      // Update existing requirement
-      setRequirements(prev =>
-        prev.map(r =>
-          r.id === editingRequirement.id
-            ? { ...r, ...requirementData }
-            : r
-        )
-      );
-    } else {
-      // Add new requirement
-      const newRequirement: ComplianceRequirement = {
-        id: Math.max(...requirements.map(r => r.id), 0) + 1,
-        grantId,
-        ...requirementData,
-      };
-      setRequirements(prev => [...prev, newRequirement]);
+  const handleSaveRequirement = async (requirementData: Omit<GrantCompliance, 'id' | 'grant_id' | 'created_at' | 'updated_at' | 'created_by'>) => {
+    try {
+      if (editingRequirement) {
+        await updateCompliance(editingRequirement.id, requirementData);
+      } else {
+        await createCompliance({
+          ...requirementData,
+          grant_id: grantId,
+        });
+      }
+      setEditingRequirement(null);
+    } catch (error) {
+      console.error('Error saving compliance requirement:', error);
     }
-    setEditingRequirement(null);
   };
 
-  const handleUploadComplete = (fileName: string) => {
+  const handleUploadComplete = async (fileName: string) => {
     if (selectedRequirement) {
-      setRequirements(prev =>
-        prev.map(r =>
-          r.id === selectedRequirement.id
-            ? { ...r, status: 'Completed' as const, evidenceDocument: fileName }
-            : r
-        )
-      );
-      setSelectedRequirement(null);
+      try {
+        await updateCompliance(selectedRequirement.id, {
+          status: 'completed',
+          evidence_document: fileName
+        });
+        setSelectedRequirement(null);
+      } catch (error) {
+        console.error('Error updating compliance:', error);
+      }
     }
   };
 
-  const getStatusIcon = (status: ComplianceRequirement['status']) => {
+  const getStatusIcon = (status: GrantCompliance['status']) => {
     switch (status) {
-      case 'Completed':
+      case 'completed':
         return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'In Progress':
+      case 'in_progress':
         return <Clock className="h-4 w-4 text-yellow-600" />;
       default:
         return null;
     }
   };
 
-  const getStatusColor = (status: ComplianceRequirement['status']) => {
+  const getStatusColor = (status: GrantCompliance['status']) => {
     switch (status) {
-      case 'Completed':
+      case 'completed':
         return 'text-green-800 bg-green-100';
-      case 'In Progress':
+      case 'in_progress':
         return 'text-yellow-800 bg-yellow-100';
       default:
         return 'text-gray-800 bg-gray-100';
@@ -164,22 +157,22 @@ export const ComplianceTable = ({ grantId, isEditMode = false }: ComplianceTable
                   {requirement.requirement}
                 </TableCell>
                 <TableCell className="text-gray-600">
-                  <span className={requirement.status === 'Completed' ? 'line-through' : ''}>
-                    {new Date(requirement.dueDate).toLocaleDateString()}
+                  <span className={requirement.status === 'completed' ? 'line-through' : ''}>
+                    {new Date(requirement.due_date).toLocaleDateString()}
                   </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     {getStatusIcon(requirement.status)}
                     <span className={`text-xs px-2 py-1 rounded-sm ${getStatusColor(requirement.status)}`}>
-                      {requirement.status}
+                      {requirement.status.replace('_', ' ')}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell className="text-gray-600">
-                  {requirement.status === 'Completed' && requirement.evidenceDocument ? (
+                  {requirement.status === 'completed' && requirement.evidence_document ? (
                     <span className="text-blue-600 underline cursor-pointer">
-                      {requirement.evidenceDocument}
+                      {requirement.evidence_document}
                     </span>
                   ) : (
                     <span className="text-gray-400">—</span>
@@ -198,9 +191,9 @@ export const ComplianceTable = ({ grantId, isEditMode = false }: ComplianceTable
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-white border-gray-200 z-50">
-                        {requirement.status === 'Completed' && requirement.evidenceDocument ? (
+                        {requirement.status === 'completed' && requirement.evidence_document ? (
                           <DropdownMenuItem
-                            onClick={() => handleViewDocument(requirement.evidenceDocument!)}
+                            onClick={() => handleViewDocument(requirement.evidence_document!)}
                             className="flex items-center gap-2 cursor-pointer"
                           >
                             <Eye className="h-4 w-4" />

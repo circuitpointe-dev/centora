@@ -8,14 +8,13 @@ import { LifecycleTracker } from "./LifecycleTracker";
 
 interface OverviewProps {
   grant: {
-    id: number;
-    grantName: string;
-    organization: string;
+    id: string;
+    grant_name: string;
+    donor_name: string;
     status: string;
-    compliance: number;
-    amount: string;
-    programArea: string;
-    nextReportDue: string;
+    amount: number;
+    program_area?: string;
+    next_report_due?: string;
   };
 }
 

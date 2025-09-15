@@ -38,7 +38,7 @@ const CloseGrantPage = () => {
     
     toast({
       title: "Grant successfully closed",
-      description: `${grant.grantName} has been closed.`,
+      description: `${grant.grant_name} has been closed.`,
     });
     
     setCloseDialogOpen(false);
@@ -65,7 +65,7 @@ const CloseGrantPage = () => {
 
       <div>
         <h1 className="text-xl font-medium text-gray-900">Close Grant Review</h1>
-        <p className="text-lg text-gray-500">{grant.grantName}</p>
+        <p className="text-lg text-gray-500">{grant.grant_name}</p>
       </div>
 
       <GrantCloseStatistics

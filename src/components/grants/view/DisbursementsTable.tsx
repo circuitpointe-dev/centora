@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Plus, MoreVertical, Edit, Check, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,18 +16,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { disbursementsData, Disbursement } from "../data/disbursementsData";
+import { useGrantDisbursements } from "@/hooks/grants/useGrantDisbursements";
+import { GrantDisbursement } from "@/types/grants";
 import { DisbursementDialog } from "./DisbursementDialog";
 
 interface DisbursementsTableProps {
-  grantId: number;
+  grantId: string;
   isEditMode?: boolean;
 }
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'Released': return 'bg-green-100 text-green-800';
-    case 'Pending': return 'bg-yellow-100 text-yellow-800';
+    case 'released': return 'bg-green-100 text-green-800';
+    case 'pending': return 'bg-yellow-100 text-yellow-800';
+    case 'cancelled': return 'bg-red-100 text-red-800';
     default: return 'bg-gray-100 text-gray-800';
   }
 };
@@ -41,67 +42,62 @@ const formatCurrency = (amount: number) => {
 };
 
 export const DisbursementsTable = ({ grantId, isEditMode = false }: DisbursementsTableProps) => {
-  const [disbursements, setDisbursements] = useState(
-    disbursementsData.filter(d => d.grantId === grantId)
-  );
+  const { disbursements, createDisbursement, updateDisbursement, deleteDisbursement } = useGrantDisbursements(grantId);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingDisbursement, setEditingDisbursement] = useState<Disbursement | null>(null);
+  const [editingDisbursement, setEditingDisbursement] = useState<GrantDisbursement | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [disbursementToDelete, setDisbursementToDelete] = useState<Disbursement | null>(null);
+  const [disbursementToDelete, setDisbursementToDelete] = useState<GrantDisbursement | null>(null);
 
   const handleAddMilestone = () => {
     setEditingDisbursement(null);
     setDialogOpen(true);
   };
 
-  const handleEdit = (disbursement: Disbursement) => {
+  const handleEdit = (disbursement: GrantDisbursement) => {
     setEditingDisbursement(disbursement);
     setDialogOpen(true);
   };
 
-  const handleMarkAsReleased = (disbursement: Disbursement) => {
-    setDisbursements(prev =>
-      prev.map(d =>
-        d.id === disbursement.id
-          ? { ...d, status: 'Released' as const }
-          : d
-      )
-    );
+  const handleMarkAsReleased = async (disbursement: GrantDisbursement) => {
+    try {
+      await updateDisbursement(disbursement.id, {
+        status: 'released',
+        disbursed_on: new Date().toISOString().split('T')[0]
+      });
+    } catch (error) {
+      console.error('Error marking disbursement as released:', error);
+    }
   };
 
-  const handleDelete = (disbursement: Disbursement) => {
+  const handleDelete = (disbursement: GrantDisbursement) => {
     setDisbursementToDelete(disbursement);
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (disbursementToDelete) {
-      setDisbursements(prev =>
-        prev.filter(d => d.id !== disbursementToDelete.id)
-      );
-      setDisbursementToDelete(null);
+      try {
+        await deleteDisbursement(disbursementToDelete.id);
+        setDisbursementToDelete(null);
+      } catch (error) {
+        console.error('Error deleting disbursement:', error);
+      }
     }
     setDeleteDialogOpen(false);
   };
 
-  const handleSave = (disbursementData: Omit<Disbursement, 'id' | 'grantId'>) => {
-    if (editingDisbursement) {
-      // Edit existing
-      setDisbursements(prev =>
-        prev.map(d =>
-          d.id === editingDisbursement.id
-            ? { ...d, ...disbursementData }
-            : d
-        )
-      );
-    } else {
-      // Add new
-      const newDisbursement: Disbursement = {
-        id: Math.max(...disbursements.map(d => d.id), 0) + 1,
-        grantId,
-        ...disbursementData,
-      };
-      setDisbursements(prev => [...prev, newDisbursement]);
+  const handleSave = async (disbursementData: Omit<GrantDisbursement, 'id' | 'grant_id' | 'created_at' | 'updated_at' | 'created_by'>) => {
+    try {
+      if (editingDisbursement) {
+        await updateDisbursement(editingDisbursement.id, disbursementData);
+      } else {
+        await createDisbursement({
+          ...disbursementData,
+          grant_id: grantId,
+        });
+      }
+    } catch (error) {
+      console.error('Error saving disbursement:', error);
     }
   };
 
@@ -137,14 +133,14 @@ export const DisbursementsTable = ({ grantId, isEditMode = false }: Disbursement
                   {disbursement.milestone}
                 </TableCell>
                 <TableCell className="text-gray-600">
-                  {formatCurrency(disbursement.amount)}
+                  {formatCurrency(Number(disbursement.amount))}
                 </TableCell>
                 <TableCell className="text-gray-600">
-                  {new Date(disbursement.dueDate).toLocaleDateString()}
+                  {new Date(disbursement.due_date).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="text-gray-600">
-                  {disbursement.status === 'Released' 
-                    ? new Date(disbursement.disbursedOn).toLocaleDateString() 
+                  {disbursement.status === 'released' && disbursement.disbursed_on
+                    ? new Date(disbursement.disbursed_on).toLocaleDateString() 
                     : '-'
                   }
                 </TableCell>
@@ -173,7 +169,7 @@ export const DisbursementsTable = ({ grantId, isEditMode = false }: Disbursement
                           <Edit className="h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
-                        {disbursement.status === 'Released' && (
+                        {disbursement.status === 'released' && (
                           <DropdownMenuItem
                             onClick={() => console.log('View receipt for disbursement:', disbursement.id)}
                             className="flex items-center gap-2 text-gray-700 hover:bg-gray-50"
@@ -182,7 +178,7 @@ export const DisbursementsTable = ({ grantId, isEditMode = false }: Disbursement
                             View Receipt
                           </DropdownMenuItem>
                         )}
-                        {disbursement.status === 'Pending' && (
+                        {disbursement.status === 'pending' && (
                           <DropdownMenuItem
                             onClick={() => handleMarkAsReleased(disbursement)}
                             className="flex items-center gap-2 text-gray-700 hover:bg-gray-50"

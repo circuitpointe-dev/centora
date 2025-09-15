@@ -3,7 +3,7 @@ import { useParams, Navigate, useNavigate, useSearchParams } from 'react-router-
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Edit, Save, X } from 'lucide-react';
-import { grantsData } from '../data/grantsData';
+import { useGrants } from '@/hooks/grants/useGrants';
 import Overview from './Overview';
 import EditableOverview from './EditableOverview';
 import { ReportsTable } from './ReportsTable';
@@ -20,6 +20,8 @@ const GrantViewPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedData, setEditedData] = useState({});
 
+  const { grants, updateGrant } = useGrants();
+
   // Check for edit mode from URL
   useEffect(() => {
     const editParam = searchParams.get('edit');
@@ -35,7 +37,7 @@ const GrantViewPage = () => {
   }, [searchParams, setSearchParams]);
 
   // Find the grant by ID
-  const grant = grantsData.find(g => g.id === parseInt(grantId || '0'));
+  const grant = grants.find(g => g.id === grantId);
 
   if (!grant) {
     return <Navigate to="/dashboard/grants/active-grants" replace />;
@@ -53,15 +55,22 @@ const GrantViewPage = () => {
     setIsEditMode(true);
   };
 
-  const handleSave = () => {
-    // TODO: Implement actual save logic to backend
-    console.log('Saving edited data:', editedData);
-    toast({
-      title: "Grant updated",
-      description: "Grant details have been successfully updated.",
-    });
-    setIsEditMode(false);
-    setEditedData({});
+  const handleSave = async () => {
+    try {
+      await updateGrant(grant.id, editedData);
+      toast({
+        title: "Grant updated",
+        description: "Grant details have been successfully updated.",
+      });
+      setIsEditMode(false);
+      setEditedData({});
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update grant. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -95,10 +104,10 @@ const GrantViewPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            {grant.grantName}
+            {grant.grant_name}
           </h1>
           <p className="text-lg text-gray-500 mt-1">
-            {grant.organization}
+            {grant.donor_name}
           </p>
         </div>
         <div className="flex items-center gap-3">

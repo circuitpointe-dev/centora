@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
@@ -25,13 +24,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { ComplianceRequirement } from "../data/complianceData";
+import { GrantCompliance } from "@/types/grants";
 
 interface AddComplianceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (requirement: Omit<ComplianceRequirement, 'id' | 'grantId'>) => void;
-  editingRequirement?: ComplianceRequirement | null;
+  onSave: (requirement: Omit<GrantCompliance, 'id' | 'grant_id' | 'created_at' | 'updated_at' | 'created_by'>) => void;
+  editingRequirement?: GrantCompliance | null;
 }
 
 export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
@@ -42,7 +41,7 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
 }) => {
   const [requirement, setRequirement] = useState("");
   const [dueDate, setDueDate] = useState<Date>();
-  const [status, setStatus] = useState<'In Progress' | 'Completed'>('In Progress');
+  const [status, setStatus] = useState<'in_progress' | 'completed' | 'overdue'>('in_progress');
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
 
   const isEditing = !!editingRequirement;
@@ -51,14 +50,14 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
   useEffect(() => {
     if (editingRequirement) {
       setRequirement(editingRequirement.requirement);
-      setDueDate(new Date(editingRequirement.dueDate));
+      setDueDate(new Date(editingRequirement.due_date));
       setStatus(editingRequirement.status);
       setEvidenceFile(null); // Reset file input for editing
     } else {
       // Reset form for adding new
       setRequirement("");
       setDueDate(undefined);
-      setStatus('In Progress');
+      setStatus('in_progress');
       setEvidenceFile(null);
     }
   }, [editingRequirement, open]);
@@ -75,15 +74,15 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
 
     onSave({
       requirement,
-      dueDate: format(dueDate, "yyyy-MM-dd"),
+      due_date: format(dueDate, "yyyy-MM-dd"),
       status,
-      evidenceDocument: evidenceFile ? evidenceFile.name : editingRequirement?.evidenceDocument,
+      evidence_document: evidenceFile ? evidenceFile.name : editingRequirement?.evidence_document,
     });
 
     // Reset form
     setRequirement("");
     setDueDate(undefined);
-    setStatus('In Progress');
+    setStatus('in_progress');
     setEvidenceFile(null);
     onOpenChange(false);
   };
@@ -91,7 +90,7 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
   const handleCancel = () => {
     setRequirement("");
     setDueDate(undefined);
-    setStatus('In Progress');
+    setStatus('in_progress');
     setEvidenceFile(null);
     onOpenChange(false);
   };
@@ -148,13 +147,13 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
 
           <div className="space-y-2">
             <Label className="text-gray-700">Status</Label>
-            <Select value={status} onValueChange={(value: 'In Progress' | 'Completed') => setStatus(value)}>
+            <Select value={status} onValueChange={(value: 'in_progress' | 'completed' | 'overdue') => setStatus(value)}>
               <SelectTrigger className="border-gray-300">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200">
-                <SelectItem value="In Progress">In Progress</SelectItem>
-                <SelectItem value="Completed">Completed</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -178,9 +177,9 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
                   Selected: {evidenceFile.name}
                 </p>
               )}
-              {isEditing && editingRequirement?.evidenceDocument && !evidenceFile && (
+              {isEditing && editingRequirement?.evidence_document && !evidenceFile && (
                 <p className="text-sm text-gray-600 mt-2">
-                  Current: {editingRequirement.evidenceDocument}
+                  Current: {editingRequirement.evidence_document}
                 </p>
               )}
             </div>

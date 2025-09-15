@@ -3,7 +3,7 @@ import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Clock } from 'lucide-react';
-import { grantsData } from '../data/grantsData';
+import { useGrants } from '@/hooks/grants/useGrants';
 import { useToast } from "@/hooks/use-toast";
 import { NGOOverview } from './NGOOverview';
 import { NGOReportSubmissionTable } from './NGOReportSubmissionTable';
@@ -18,8 +18,10 @@ const NGOGrantViewPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isExtensionDialogOpen, setIsExtensionDialogOpen] = useState(false);
 
+  const { grants } = useGrants();
+
   // Find the grant by ID
-  const grant = grantsData.find(g => g.id === parseInt(grantId || '0'));
+  const grant = grants.find(g => g.id === grantId);
 
   if (!grant) {
     return <Navigate to="/dashboard/grants/dashboard" replace />;
@@ -58,10 +60,10 @@ const NGOGrantViewPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            {grant.grantName}
+            {grant.grant_name}
           </h1>
           <p className="text-lg text-gray-500 mt-1">
-            Funded by {grant.organization}
+            Funded by {grant.donor_name}
           </p>
         </div>
         <div className="flex items-center gap-3">

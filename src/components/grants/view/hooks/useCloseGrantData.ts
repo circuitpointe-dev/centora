@@ -1,9 +1,8 @@
-
 import { useState, useMemo } from 'react';
-import { grantsData } from '../../data/grantsData';
-import { complianceData } from '../../data/complianceData';
-import { disbursementsData } from '../../data/disbursementsData';
-import { reportsData } from '../../data/reportsData';
+import { useGrants } from '@/hooks/grants/useGrants';
+import { useGrantCompliance } from '@/hooks/grants/useGrantCompliance';
+import { useGrantDisbursements } from '@/hooks/grants/useGrantDisbursements';
+import { useGrantReports } from '@/hooks/grants/useGrantReports';
 
 export const useCloseGrantData = (grantId: string) => {
   const [currentPage, setCurrentPage] = useState({
@@ -12,19 +11,20 @@ export const useCloseGrantData = (grantId: string) => {
     compliance: 1,
   });
 
-  const grant = grantsData.find(g => g.id === parseInt(grantId || '0'));
-  
-  const grantCompliance = complianceData.filter(c => c.grantId === grant?.id);
-  const grantDisbursements = disbursementsData.filter(d => d.grantId === grant?.id);
-  const grantReports = reportsData.filter(r => r.grantId === grant?.id);
+  const { grants } = useGrants();
+  const { compliance: grantCompliance } = useGrantCompliance(grantId);
+  const { disbursements: grantDisbursements } = useGrantDisbursements(grantId);
+  const { reports: grantReports } = useGrantReports(grantId);
+
+  const grant = grants.find(g => g.id === grantId);
 
   const statistics = useMemo(() => {
-    const completedCompliance = grantCompliance.filter(c => c.status === 'Completed').length;
+    const completedCompliance = grantCompliance.filter(c => c.status === 'completed').length;
     const complianceRate = grantCompliance.length > 0 ? Math.round((completedCompliance / grantCompliance.length) * 100) : 0;
 
-    const releasedDisbursements = grantDisbursements.filter(d => d.status === 'Released');
-    const totalDisbursed = releasedDisbursements.reduce((sum, d) => sum + d.amount, 0);
-    const totalAmount = grantDisbursements.reduce((sum, d) => sum + d.amount, 0);
+    const releasedDisbursements = grantDisbursements.filter(d => d.status === 'released');
+    const totalDisbursed = releasedDisbursements.reduce((sum, d) => sum + Number(d.amount), 0);
+    const totalAmount = grantDisbursements.reduce((sum, d) => sum + Number(d.amount), 0);
     const disbursementRate = totalAmount > 0 ? Math.round((totalDisbursed / totalAmount) * 100) : 0;
 
     const submittedReports = grantReports.filter(r => r.submitted).length;
