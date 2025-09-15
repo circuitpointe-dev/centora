@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Eye, Upload } from 'lucide-react';
 
 interface NGOReportSubmissionTableProps {
-  grantId: number;
+  grantId: string;
 }
 
 interface ReportSubmission {

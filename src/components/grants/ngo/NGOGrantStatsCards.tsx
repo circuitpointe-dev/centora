@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, DollarSign, Calendar, FileText } from 'lucide-react';
 
 interface NGOGrantStatsCardsProps {
-  grantId: number;
+  grantId: string;
 }
 
 export const GrantStatsCards = ({ grantId }: NGOGrantStatsCardsProps) => {

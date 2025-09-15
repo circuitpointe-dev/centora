@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import React, { useState } from "react";
@@ -6,14 +5,13 @@ import { getStatusColor } from "../utils/statusUtils";
 
 interface GrantDetailsSectionProps {
   grant: {
-    id: number;
-    grantName: string;
-    organization: string;
+    id: string;
+    grant_name: string;
+    donor_name: string;
     status: string;
-    compliance: number;
-    amount: string;
-    programArea: string;
-    nextReportDue: string;
+    amount: number;
+    program_area?: string;
+    next_report_due?: string;
   };
 }
 
@@ -29,10 +27,10 @@ export const GrantDetailsSection = ({ grant }: GrantDetailsSectionProps): JSX.El
   };
 
   const grantDetails = [
-    { label: "Grant Name", value: grant.grantName },
+    { label: "Grant Name", value: grant.grant_name },
     { label: "Start Date", value: "Jan 15, 2024" },
     { label: "End Date", value: "Dec 31, 2024" },
-    { label: "Amount", value: grant.amount },
+    { label: "Amount", value: `$${grant.amount.toLocaleString()}` },
     { label: "Grant Manager", value: "Sarah Johnson" },
     { label: "Fiduciary Officer", value: "Michael Chen" },
     { label: "Grant Administrator", value: "Emily Davis" },

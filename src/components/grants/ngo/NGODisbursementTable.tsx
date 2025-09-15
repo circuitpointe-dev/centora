@@ -3,7 +3,7 @@ import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from '@
 import { Badge } from '@/components/ui/badge';
 
 interface NGODisbursementTableProps {
-  grantId: number;
+  grantId: string;
 }
 
 interface Disbursement {

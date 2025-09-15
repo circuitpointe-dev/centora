@@ -6,14 +6,13 @@ import React, { useState } from "react";
 
 interface EditableGrantDetailsSectionProps {
   grant: {
-    id: number;
-    grantName: string;
-    organization: string;
+    id: string;
+    grant_name: string;
+    donor_name: string;
     status: string;
-    compliance: number;
-    amount: string;
-    programArea: string;
-    nextReportDue: string;
+    amount: number;
+    program_area?: string;
+    next_report_due?: string;
   };
   onUpdate: (field: string, value: string) => void;
 }
@@ -29,10 +28,10 @@ export const EditableGrantDetailsSection = ({ grant, onUpdate }: EditableGrantDe
   ];
 
   const [grantDetails, setGrantDetails] = useState({
-    grantName: grant.grantName,
+    grantName: grant.grant_name,
     startDate: "2024-01-15",
     endDate: "2024-12-31", 
-    amount: grant.amount,
+    amount: `$${grant.amount.toLocaleString()}`,
     grantManager: "Sarah Johnson",
     fiduciaryOfficer: "Michael Chen",
     grantAdministrator: "Emily Davis"

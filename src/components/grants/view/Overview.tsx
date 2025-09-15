@@ -1,4 +1,3 @@
-
 import React from "react";
 import FinalReportSection from "./FinalReportSection";
 import { GrantDetailsSection } from "./GrantDetailsSection";

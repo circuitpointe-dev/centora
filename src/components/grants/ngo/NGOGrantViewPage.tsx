@@ -129,7 +129,11 @@ const NGOGrantViewPage = () => {
         isOpen={isExtensionDialogOpen}
         onClose={() => setIsExtensionDialogOpen(false)}
         onSubmit={handleExtensionSubmitted}
-        grant={grant}
+        grant={{
+          id: parseInt(grant.id),
+          grantName: grant.grant_name,
+          organization: grant.donor_name
+        }}
       />
     </div>
   );

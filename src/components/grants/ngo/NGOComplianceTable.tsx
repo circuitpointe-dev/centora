@@ -146,7 +146,14 @@ export const NGOComplianceTable = ({ grantId }: NGOComplianceTableProps) => {
         open={isUploadDialogOpen}
         onOpenChange={setIsUploadDialogOpen}
         requirement={selectedRequirement?.requirement || ""}
-        requirementData={selectedRequirement}
+        requirementData={selectedRequirement ? {
+          id: parseInt(selectedRequirement.id),
+          requirement: selectedRequirement.requirement,
+          dueDate: selectedRequirement.due_date,
+          status: selectedRequirement.status,
+          evidenceDocument: selectedRequirement.evidence_document,
+          grantId: parseInt(selectedRequirement.grant_id)
+        } : undefined}
         onUpload={handleUploadComplete}
       />
     </div>
