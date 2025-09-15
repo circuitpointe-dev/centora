@@ -152,7 +152,9 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
         fontSize: 12, 
         fill: cfg.stroke, 
         selectable: false, 
-        evented: false 
+        evented: false,
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        padding: 2
       });
 
       // Create group
@@ -194,6 +196,11 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
           height: h,
           page_number: pageNumber,
           is_required: true
+        }, {
+          onSuccess: (savedField) => {
+            // Update the field with the database ID
+            group.fieldData = { ...field, id: savedField.id };
+          }
         });
       }
     } catch (error) {
@@ -254,17 +261,73 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
       const current: FieldData = obj.fieldData;
       const next: FieldData = { ...current, ...patch };
       obj.fieldData = next;
-      // Update label text (2nd object in group)
+      
+      // Update field display based on content
       try {
         const text = (obj as any)._objects?.[1] as any;
-        if (text && patch.label) text.set({ text: String(patch.label) });
-      } catch {}
+        if (!text) return;
+        
+        let displayText = next.label || next.type.toUpperCase();
+        
+        // If field has value, show the actual content
+        if (next.value) {
+          switch (next.type) {
+            case 'signature':
+              if (next.value.type === 'type') {
+                displayText = next.value.data; // Show typed signature
+              } else {
+                displayText = '✍️ Signed'; // Show signed indicator for drawn/uploaded
+              }
+              break;
+            case 'name':
+            case 'email':
+            case 'text':
+              displayText = next.value; // Show actual text
+              break;
+            case 'date':
+              displayText = next.value ? new Date(next.value).toLocaleDateString() : displayText;
+              break;
+            default:
+              displayText = String(next.value);
+          }
+          
+          // Update text styling for filled fields
+          text.set({ 
+            text: displayText,
+            fontWeight: 'normal',
+            fontStyle: next.type === 'signature' && next.value.type === 'type' ? 'italic' : 'normal'
+          });
+        } else if (patch.label) {
+          // Update label if no value
+          text.set({ text: String(patch.label) });
+        }
+        
+        // Update field visual state
+        const rect = (obj as any)._objects?.[0] as any;
+        if (rect && next.value) {
+          // Change appearance for filled fields
+          rect.set({ 
+            strokeDashArray: [], // Solid border for filled fields
+            fill: next.isConfigured ? 'rgba(34,197,94,0.05)' : rect.fill, // Light green for completed
+            stroke: next.isConfigured ? '#22c55e' : rect.stroke
+          });
+        }
+      } catch (error) {
+        console.error('Error updating field display:', error);
+      }
+      
       fabricCanvas.renderAll();
     },
     removeField: (id) => {
       if (!fabricCanvas) return;
       const obj = fabricCanvas.getObjects().find((o: any) => (o as any).fieldData?.id === id) as any;
       if (obj) {
+        // Remove from database if it has a proper ID
+        const fieldData = obj.fieldData;
+        if (fieldData && fieldData.id && documentId && fieldData.id.length > 10) {
+          deleteFieldMutation.mutate(fieldData.id);
+        }
+        
         fabricCanvas.remove(obj);
         fabricCanvas.discardActiveObject();
         fabricCanvas.renderAll();
