@@ -113,25 +113,68 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
   }, [fabricCanvas, fileUrl, scale, pageNumber]);
 
   const placeFieldAt = (type: FieldType, x: number, y: number) => {
-    if (!fabricCanvas) return;
+    if (!fabricCanvas) {
+      console.error('Fabric canvas not initialized');
+      return;
+    }
 
+    console.log('Creating field:', { type, x, y });
+    
     const cfg = (colors as any)[type] ?? colors.default;
     const w = type === "signature" ? 150 : type === "date" ? 110 : 140;
     const h = type === "signature" ? 48 : 32;
 
-    // Rect and label within a group
-    const rect = new Rect({ width: w, height: h, rx: 4, ry: 4, fill: cfg.fill, stroke: cfg.stroke, strokeWidth: 2, strokeDashArray: [5,5] });
-    const text = new Text(type.toUpperCase(), { left: 6, top: h/2 - 8, fontSize: 12, fill: cfg.stroke, selectable: false, evented: false });
+    try {
+      // Create rect and text objects
+      const rect = new Rect({ 
+        width: w, 
+        height: h, 
+        rx: 4, 
+        ry: 4, 
+        fill: cfg.fill, 
+        stroke: cfg.stroke, 
+        strokeWidth: 2, 
+        strokeDashArray: [5,5] 
+      });
+      
+      const text = new Text(type.toUpperCase(), { 
+        left: 6, 
+        top: h/2 - 8, 
+        fontSize: 12, 
+        fill: cfg.stroke, 
+        selectable: false, 
+        evented: false 
+      });
 
-    const group = new Group([rect, text], { left: x, top: y, hasControls: true, hasBorders: true, cornerColor: cfg.stroke, cornerStyle: 'circle', cornerSize: 8, transparentCorners: false }) as any;
+      // Create group
+      const group = new Group([rect, text], { 
+        left: x - w/2, // Center the field on click point
+        top: y - h/2, 
+        hasControls: true, 
+        hasBorders: true, 
+        cornerColor: cfg.stroke, 
+        cornerStyle: 'circle', 
+        cornerSize: 8, 
+        transparentCorners: false 
+      }) as any;
 
-    const field: FieldData = { id: String(Date.now() + Math.random()), type, label: type.toUpperCase(), isConfigured: false };
-    group.fieldData = field;
+      const field: FieldData = { 
+        id: String(Date.now() + Math.random()), 
+        type, 
+        label: type.toUpperCase(), 
+        isConfigured: false 
+      };
+      group.fieldData = field;
 
-    fabricCanvas.add(group);
-    fabricCanvas.setActiveObject(group);
-    fabricCanvas.renderAll();
-    onFieldAdded?.(field);
+      fabricCanvas.add(group);
+      fabricCanvas.setActiveObject(group);
+      fabricCanvas.renderAll();
+      
+      console.log('Field created successfully:', field);
+      onFieldAdded?.(field);
+    } catch (error) {
+      console.error('Error creating field:', error);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -156,12 +199,19 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
 
   const handleClickToPlace = (e: React.MouseEvent) => {
     if (!activeTool) return;
+    e.preventDefault();
+    e.stopPropagation();
+    
     const container = containerRef.current;
-    if (!container) return;
-    const pdfCanvas = container.querySelector('canvas') as HTMLCanvasElement | null;
-    const rect = (pdfCanvas || container).getBoundingClientRect();
+    const overlay = overlayRef.current;
+    if (!container || !overlay || !fabricCanvas) return;
+    
+    // Get click position relative to the overlay canvas
+    const rect = overlay.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    
+    console.log('Placing field at:', { x, y, activeTool });
     placeFieldAt(activeTool, x, y);
     onToolUsed();
   };
@@ -206,18 +256,64 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
 
   return (
     <div className="relative" ref={containerRef} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
-      <Document file={fileUrl} onLoadSuccess={({ numPages }) => { setLoading(false); onNumPages(numPages); }} onLoadError={() => setLoading(false)} loading={<div className="h-[400px] grid place-items-center text-muted-foreground">Loading…</div>}>
-        <Page pageNumber={pageNumber} scale={scale} renderTextLayer renderAnnotationLayer />
+      {loading && (
+        <div className="h-[400px] grid place-items-center text-muted-foreground">
+          Loading PDF...
+        </div>
+      )}
+      
+      <Document 
+        file={fileUrl} 
+        onLoadSuccess={({ numPages }) => { 
+          setLoading(false); 
+          onNumPages(numPages); 
+          console.log('PDF loaded successfully');
+        }} 
+        onLoadError={(error) => { 
+          setLoading(false); 
+          console.error('PDF load error:', error);
+        }} 
+        loading={null}
+      >
+        <Page 
+          pageNumber={pageNumber} 
+          scale={scale} 
+          renderTextLayer={false} 
+          renderAnnotationLayer={false}
+          onRenderSuccess={() => {
+            console.log('Page rendered successfully');
+            // Sync overlay after page renders
+            setTimeout(syncOverlay, 100);
+          }}
+        />
       </Document>
+      
       <canvas 
         ref={overlayRef} 
-        onClick={handleClickToPlace} 
-        style={{ cursor: activeTool ? 'crosshair' : 'default' }}
+        onClick={handleClickToPlace}
+        onMouseMove={(e) => {
+          if (activeTool) {
+            e.currentTarget.style.cursor = 'crosshair';
+          }
+        }}
+        style={{ 
+          cursor: activeTool ? 'crosshair' : 'default',
+          backgroundColor: 'transparent'
+        }}
       />
       
       {activeTool && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-2 rounded-sm text-sm z-20 animate-pulse">
-          Click anywhere to place {activeTool} field
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-2 rounded-sm text-sm z-20 shadow-lg">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            Click anywhere to place <strong>{activeTool}</strong> field
+          </div>
+        </div>
+      )}
+      
+      {fabricCanvas && (
+        <div className="absolute bottom-4 right-4 text-xs text-muted-foreground bg-white/80 px-2 py-1 rounded">
+          Canvas: {fabricCanvas.getObjects().length} fields
         </div>
       )}
     </div>
