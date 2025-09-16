@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useOrgMembers } from "@/hooks/useOrgMembers";
 
 type TeamMember = {
   id: string;
@@ -18,26 +19,19 @@ type Props = {
   onAddMember: (member: TeamMember) => void;
 };
 
-const mockStaffMembers = [
-  { id: "1", name: "John Doe" },
-  { id: "2", name: "Jane Smith" },
-  { id: "3", name: "Mike Johnson" },
-  { id: "4", name: "Sarah Wilson" },
-  { id: "5", name: "David Brown" },
-];
-
 const AddTeamMemberDialog: React.FC<Props> = ({ open, onOpenChange, onAddMember }) => {
   const [selectedMember, setSelectedMember] = useState("");
   const [role, setRole] = useState("");
+  const { data: orgMembers = [], isLoading } = useOrgMembers();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedMember && role.trim()) {
-      const member = mockStaffMembers.find(m => m.id === selectedMember);
+      const member = orgMembers.find(m => m.id === selectedMember);
       if (member) {
         onAddMember({
-          id: Date.now().toString(),
-          name: member.name,
+          id: selectedMember,
+          name: member.full_name,
           role: role.trim()
         });
         setSelectedMember("");
@@ -58,12 +52,12 @@ const AddTeamMemberDialog: React.FC<Props> = ({ open, onOpenChange, onAddMember 
             <Label htmlFor="member-select">Team Member</Label>
             <Select value={selectedMember} onValueChange={setSelectedMember}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a team member" />
+                <SelectValue placeholder={isLoading ? "Loading members..." : "Select a team member"} />
               </SelectTrigger>
               <SelectContent>
-                {mockStaffMembers.map((member) => (
+                {orgMembers.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
-                    {member.name}
+                    {member.full_name}
                   </SelectItem>
                 ))}
               </SelectContent>

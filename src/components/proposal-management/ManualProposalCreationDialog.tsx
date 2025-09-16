@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   LargeSideDialog,
   LargeSideDialogContent,
@@ -15,6 +15,11 @@ import AttachmentsTabContent from "./AttachmentsTabContent";
 import TeamTabContent from "./TeamTabContent";
 import AddFieldDialog from "./AddFieldDialog";
 import AddTeamMemberDialog from "./AddTeamMemberDialog";
+import { useCreateProposal, useUpdateProposal } from "@/hooks/useProposals";
+import { useProposalTeamMembers, useAddProposalTeamMember, useRemoveProposalTeamMember } from "@/hooks/useProposalTeamMembers";
+import { useProposalComments, useAddProposalComment } from "@/hooks/useProposalComments";
+import { useOpportunities } from "@/hooks/useOpportunities";
+import { useLocation } from "react-router-dom";
 
 type CustomField = {
   id: string;
@@ -41,28 +46,113 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   proposalTitle = "New Proposal",
   opportunityName = "Selected Opportunity"
 }) => {
+  const location = useLocation();
+  const prefilledData = location.state?.prefilledData;
+  const [proposalId, setProposalId] = useState<string | null>(prefilledData?.proposal?.id || null);
   const [activeTab, setActiveTab] = useState("overview");
-  const [comment, setComment] = useState("");
   
   // Overview tab states
-  const [overviewFields, setOverviewFields] = useState<CustomField[]>([]);
+  const [overviewFields, setOverviewFields] = useState<CustomField[]>(prefilledData?.proposal?.overview_fields || []);
   const [showOverviewFieldDialog, setShowOverviewFieldDialog] = useState(false);
   
   // Narrative tab states
-  const [narrativeFields, setNarrativeFields] = useState<CustomField[]>([]);
+  const [narrativeFields, setNarrativeFields] = useState<CustomField[]>(prefilledData?.proposal?.narrative_fields || []);
   const [showNarrativeFieldDialog, setShowNarrativeFieldDialog] = useState(false);
   
   // Budget tab states
-  const [budgetCurrency, setBudgetCurrency] = useState("");
-  const [budgetAmount, setBudgetAmount] = useState("");
+  const [budgetCurrency, setBudgetCurrency] = useState(prefilledData?.proposal?.budget_currency || "");
+  const [budgetAmount, setBudgetAmount] = useState(prefilledData?.proposal?.budget_amount?.toString() || "");
   
   // Logframe tab states
-  const [logframeFields, setLogframeFields] = useState<CustomField[]>([]);
+  const [logframeFields, setLogframeFields] = useState<CustomField[]>(prefilledData?.proposal?.logframe_fields || []);
   const [showLogframeFieldDialog, setShowLogframeFieldDialog] = useState(false);
   
   // Team tab states
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [showTeamMemberDialog, setShowTeamMemberDialog] = useState(false);
+
+  // Hooks
+  const createProposal = useCreateProposal();
+  const updateProposal = useUpdateProposal();
+  const { data: opportunities = [] } = useOpportunities();
+  const { data: teamMembers = [], refetch: refetchTeamMembers } = useProposalTeamMembers(proposalId || "");
+  const addTeamMember = useAddProposalTeamMember();
+  const removeTeamMember = useRemoveProposalTeamMember();
+  const { data: comments = [] } = useProposalComments(proposalId || "");
+  const addComment = useAddProposalComment();
+
+  // Auto-save when fields change
+  useEffect(() => {
+    if (proposalId) {
+      const saveData = {
+        id: proposalId,
+        overview_fields: overviewFields,
+        narrative_fields: narrativeFields,
+        budget_currency: budgetCurrency,
+        budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
+        logframe_fields: logframeFields,
+      };
+      
+      // Debounce the save
+      const timeoutId = setTimeout(() => {
+        updateProposal.mutate(saveData);
+      }, 1000);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [overviewFields, narrativeFields, budgetCurrency, budgetAmount, logframeFields, proposalId]);
+
+  // Create initial proposal if it doesn't exist
+  useEffect(() => {
+    if (open && !proposalId && !prefilledData?.proposal) {
+      const selectedOpportunity = opportunities.find(opp => opp.title === opportunityName);
+      createProposal.mutate({
+        name: proposalTitle,
+        title: proposalTitle,
+        opportunity_id: selectedOpportunity?.id,
+        overview_fields: [],
+        narrative_fields: [],
+        budget_currency: 'USD',
+        logframe_fields: [],
+        attachments: [],
+        submission_status: 'draft'
+      }, {
+        onSuccess: (proposal) => {
+          setProposalId(proposal.id);
+        }
+      });
+    }
+  }, [open, proposalId, proposalTitle, opportunityName, opportunities]);
+
+  // Handle save functionality
+  const handleSave = () => {
+    if (proposalId) {
+      updateProposal.mutate({
+        id: proposalId,
+        overview_fields: overviewFields,
+        narrative_fields: narrativeFields,
+        budget_currency: budgetCurrency,
+        budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
+        logframe_fields: logframeFields,
+        submission_status: 'draft'
+      });
+    }
+  };
+
+  // Handle submit functionality
+  const handleSubmit = () => {
+    if (proposalId) {
+      updateProposal.mutate({
+        id: proposalId,
+        overview_fields: overviewFields,
+        narrative_fields: narrativeFields,
+        budget_currency: budgetCurrency,
+        budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
+        logframe_fields: logframeFields,
+        submission_status: 'submitted',
+        status: 'Under Review'
+      });
+    }
+  };
 
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -101,7 +191,18 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   };
 
   const handleAddTeamMember = (member: TeamMember) => {
-    setTeamMembers([...teamMembers, member]);
+    if (proposalId) {
+      addTeamMember.mutate({
+        proposal_id: proposalId,
+        user_id: member.id,
+        name: member.name,
+        role: member.role,
+      }, {
+        onSuccess: () => {
+          refetchTeamMembers();
+        }
+      });
+    }
   };
 
   const handleRemoveField = (fieldId: string, fieldType: 'overview' | 'narrative' | 'logframe') => {
@@ -115,7 +216,16 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   };
 
   const handleRemoveTeamMember = (memberId: string) => {
-    setTeamMembers(teamMembers.filter(member => member.id !== memberId));
+    if (proposalId) {
+      removeTeamMember.mutate({
+        id: memberId,
+        proposal_id: proposalId,
+      }, {
+        onSuccess: () => {
+          refetchTeamMembers();
+        }
+      });
+    }
   };
 
   const handleFieldValueChange = (fieldId: string, value: string, fieldType: 'overview' | 'narrative' | 'logframe') => {
@@ -140,6 +250,10 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         <ProposalDialogHeader 
           proposalTitle={proposalTitle}
           opportunityName={opportunityName}
+          onSave={handleSave}
+          onSubmit={handleSubmit}
+          isSaving={updateProposal.isPending}
+          isSubmitting={updateProposal.isPending}
         />
 
         <div className="flex-1 flex overflow-hidden">
@@ -201,7 +315,11 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
                 <TabsContent value="team" className="space-y-6 mt-0">
                   <TeamTabContent
-                    teamMembers={teamMembers}
+                    teamMembers={teamMembers.map(tm => ({
+                      id: tm.id,
+                      name: tm.name,
+                      role: tm.role
+                    }))}
                     onAddMember={() => setShowTeamMemberDialog(true)}
                     onRemoveMember={handleRemoveTeamMember}
                   />
@@ -212,8 +330,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
           {/* Right Sidebar */}
           <ProposalDialogSidebar 
-            comment={comment}
-            onCommentChange={setComment}
+            proposalId={proposalId}
           />
         </div>
 

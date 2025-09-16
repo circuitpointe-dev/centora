@@ -1540,50 +1540,165 @@ export type Database = {
           },
         ]
       }
+      proposal_comments: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          proposal_id: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          proposal_id: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          proposal_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_comments_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_team_members: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          proposal_id: string
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          proposal_id: string
+          role: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          proposal_id?: string
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_team_members_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proposals: {
         Row: {
+          attachments: Json | null
+          budget_amount: number | null
+          budget_currency: string | null
+          comments: Json | null
           created_at: string
           created_by: string
           due_date: string | null
           duedate: string | null
           id: string
+          logframe_fields: Json | null
           name: string
+          narrative_fields: Json | null
+          opportunity_id: string | null
           org_id: string
+          overview_fields: Json | null
           reviewer: string | null
           status: string
+          submission_status: string | null
           team: Json | null
           title: string | null
           updated_at: string
         }
         Insert: {
+          attachments?: Json | null
+          budget_amount?: number | null
+          budget_currency?: string | null
+          comments?: Json | null
           created_at?: string
           created_by: string
           due_date?: string | null
           duedate?: string | null
           id?: string
+          logframe_fields?: Json | null
           name: string
+          narrative_fields?: Json | null
+          opportunity_id?: string | null
           org_id: string
+          overview_fields?: Json | null
           reviewer?: string | null
           status?: string
+          submission_status?: string | null
           team?: Json | null
           title?: string | null
           updated_at?: string
         }
         Update: {
+          attachments?: Json | null
+          budget_amount?: number | null
+          budget_currency?: string | null
+          comments?: Json | null
           created_at?: string
           created_by?: string
           due_date?: string | null
           duedate?: string | null
           id?: string
+          logframe_fields?: Json | null
           name?: string
+          narrative_fields?: Json | null
+          opportunity_id?: string | null
           org_id?: string
+          overview_fields?: Json | null
           reviewer?: string | null
           status?: string
+          submission_status?: string | null
           team?: Json | null
           title?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "proposals_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       role_permissions: {
         Row: {

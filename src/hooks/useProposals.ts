@@ -6,10 +6,19 @@ import { toast } from '@/hooks/use-toast';
 export interface Proposal {
   id: string;
   name: string;
+  title?: string;
   dueDate: string;
   team: ProposalTeamMember[];
   reviewer: string;
   status: 'Draft' | 'In Progress' | 'Under Review' | 'Approved' | 'Rejected';
+  opportunity_id?: string;
+  overview_fields?: any[];
+  narrative_fields?: any[];
+  budget_currency?: string;
+  budget_amount?: number;
+  logframe_fields?: any[];
+  attachments?: any[];
+  submission_status?: string;
   created_at?: string;
   updated_at?: string;
   created_by?: string;
@@ -87,9 +96,17 @@ export const useCreateProposal = () => {
   return useMutation({
     mutationFn: async (data: {
       name: string;
+      title?: string;
       dueDate?: string;
       reviewer?: string;
-      team?: any[];
+      opportunity_id?: string;
+      overview_fields?: any[];
+      narrative_fields?: any[];
+      budget_currency?: string;
+      budget_amount?: number;
+      logframe_fields?: any[];
+      attachments?: any[];
+      submission_status?: string;
     }) => {
       if (!user?.org_id) throw new Error('No organization');
       
@@ -97,10 +114,18 @@ export const useCreateProposal = () => {
         .from('proposals')
         .insert({
           name: data.name,
+          title: data.title,
           org_id: user.org_id,
           due_date: data.dueDate,
           reviewer: data.reviewer,
-          team: data.team || [],
+          opportunity_id: data.opportunity_id,
+          overview_fields: data.overview_fields || [],
+          narrative_fields: data.narrative_fields || [],
+          budget_currency: data.budget_currency || 'USD',
+          budget_amount: data.budget_amount,
+          logframe_fields: data.logframe_fields || [],
+          attachments: data.attachments || [],
+          submission_status: data.submission_status || 'draft',
           status: 'draft',
           created_by: user.id
         })
@@ -134,15 +159,33 @@ export const useUpdateProposal = () => {
     mutationFn: async (data: {
       id: string;
       name?: string;
+      title?: string;
       reviewer?: string;
       dueDate?: string;
       status?: string;
+      opportunity_id?: string;
+      overview_fields?: any[];
+      narrative_fields?: any[];
+      budget_currency?: string;
+      budget_amount?: number;
+      logframe_fields?: any[];
+      attachments?: any[];
+      submission_status?: string;
     }) => {
       const updateData: any = {};
       if (data.name !== undefined) updateData.name = data.name;
+      if (data.title !== undefined) updateData.title = data.title;
       if (data.reviewer !== undefined) updateData.reviewer = data.reviewer;
       if (data.dueDate !== undefined) updateData.due_date = data.dueDate;
       if (data.status !== undefined) updateData.status = data.status.toLowerCase().replace(' ', '_');
+      if (data.opportunity_id !== undefined) updateData.opportunity_id = data.opportunity_id;
+      if (data.overview_fields !== undefined) updateData.overview_fields = data.overview_fields;
+      if (data.narrative_fields !== undefined) updateData.narrative_fields = data.narrative_fields;
+      if (data.budget_currency !== undefined) updateData.budget_currency = data.budget_currency;
+      if (data.budget_amount !== undefined) updateData.budget_amount = data.budget_amount;
+      if (data.logframe_fields !== undefined) updateData.logframe_fields = data.logframe_fields;
+      if (data.attachments !== undefined) updateData.attachments = data.attachments;
+      if (data.submission_status !== undefined) updateData.submission_status = data.submission_status;
       
       const { data: proposal, error } = await supabase
         .from('proposals')
