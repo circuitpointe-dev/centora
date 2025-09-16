@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { donorsData } from "@/data/donorData";
 import { type Donor, useDonors, useDeleteDonor } from "@/hooks/useDonors";
 import { useToast } from "@/hooks/use-toast";
 import DonorProfile from "./DonorProfile";

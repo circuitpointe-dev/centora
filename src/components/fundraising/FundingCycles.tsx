@@ -8,12 +8,15 @@ import { FundingCycle } from "@/types/fundingCycle";
 import { getMonthName, MONTH_NAMES } from "@/utils/monthConversion";
 import { EmptyFundingCycles } from "./EmptyFundingCycles";
 import { useDonorFundingCycles } from "@/hooks/useDonorFundingCycles";
+import { useAuth } from "@/contexts/AuthContext";
 
 const FundingCycles: React.FC = () => {
+  const { user } = useAuth();
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
-  // Fetch funding cycles data
-  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles();
+  // Fetch funding cycles data for the current year and organization
+  const currentYear = new Date().getFullYear();
+  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles(undefined, selectedYear || currentYear);
 
   // Process data and compute derived values
   const { fundingData, availableYears, filteredData } = useMemo(() => {
