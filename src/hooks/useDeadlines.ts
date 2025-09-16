@@ -8,7 +8,7 @@ export interface DeadlineItem {
   organization: string;
   dueDate: string;
   status: 'Urgent' | 'Due Soon' | 'Upcoming';
-  type: 'opportunity' | 'proposal';
+  type: 'opportunity';
 }
 
 export const useDeadlines = () => {
@@ -35,14 +35,6 @@ export const useDeadlines = () => {
         .lte('deadline', thirtyDaysFromNow.toISOString().split('T')[0])
         .gte('deadline', today.toISOString().split('T')[0])
         .order('deadline', { ascending: true });
-
-      // Get proposal deadlines
-      const { data: proposals } = await supabase
-        .from('proposals')
-        .select('id, name, due_date, dueDate')
-        .eq('org_id', user.org_id)
-        .not('status', 'eq', 'Archived')
-        .order('due_date', { ascending: true });
 
       const deadlines: DeadlineItem[] = [];
 
@@ -73,41 +65,6 @@ export const useDeadlines = () => {
           status,
           type: 'opportunity'
         });
-      });
-
-      // Process proposals
-      (proposals || []).forEach((prop: any) => {
-        const dueDate = prop.due_date || prop.dueDate;
-        if (!dueDate) return;
-        
-        const deadline = new Date(dueDate);
-        const daysUntilDeadline = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        
-        // Only include if within 30 days
-        if (daysUntilDeadline <= 30 && daysUntilDeadline >= 0) {
-          let status: 'Urgent' | 'Due Soon' | 'Upcoming';
-          let dueDateText: string;
-          
-          if (daysUntilDeadline <= 1) {
-            status = 'Urgent';
-            dueDateText = daysUntilDeadline === 0 ? 'Due: Today' : 'Due: Tomorrow';
-          } else if (daysUntilDeadline <= 7) {
-            status = 'Due Soon';
-            dueDateText = `Due in ${daysUntilDeadline} days`;
-          } else {
-            status = 'Upcoming';
-            dueDateText = `Due in ${Math.ceil(daysUntilDeadline / 7)} week${Math.ceil(daysUntilDeadline / 7) > 1 ? 's' : ''}`;
-          }
-
-          deadlines.push({
-            id: prop.id,
-            title: `Proposal: "${prop.name}"`,
-            organization: 'Internal',
-            dueDate: dueDateText,
-            status,
-            type: 'proposal'
-          });
-        }
       });
 
       // Sort by urgency and date

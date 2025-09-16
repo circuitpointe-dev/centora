@@ -1540,6 +1540,51 @@ export type Database = {
           },
         ]
       }
+      proposals: {
+        Row: {
+          created_at: string
+          created_by: string
+          due_date: string | null
+          duedate: string | null
+          id: string
+          name: string
+          org_id: string
+          reviewer: string | null
+          status: string
+          team: Json | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          due_date?: string | null
+          duedate?: string | null
+          id?: string
+          name: string
+          org_id: string
+          reviewer?: string | null
+          status?: string
+          team?: Json | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          due_date?: string | null
+          duedate?: string | null
+          id?: string
+          name?: string
+          org_id?: string
+          reviewer?: string | null
+          status?: string
+          team?: Json | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           created_at: string
