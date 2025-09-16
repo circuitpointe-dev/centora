@@ -7,20 +7,17 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, History } from "lucide-react";
 import { useProposalComments, useAddProposalComment } from "@/hooks/useProposalComments";
+import { useProposalVersions } from "@/hooks/useProposalVersions";
+import { format } from "date-fns";
 
 type Props = {
   proposalId: string | null;
 };
 
-const versionHistory = [
-  { version: "V1.3", author: "Jane Doe", time: "2 hours ago" },
-  { version: "V1.2", author: "Jane Doe", time: "2 hours ago" },
-  { version: "V1.1", author: "Jane Doe", time: "2 hours ago" },
-];
-
 const ProposalDialogSidebar: React.FC<Props> = ({ proposalId }) => {
   const [newComment, setNewComment] = useState("");
   const { data: comments = [], isLoading } = useProposalComments(proposalId || "");
+  const { data: versions = [], isLoading: versionsLoading } = useProposalVersions(proposalId || "");
   const addComment = useAddProposalComment();
 
   const handleAddComment = () => {
@@ -119,19 +116,28 @@ const ProposalDialogSidebar: React.FC<Props> = ({ proposalId }) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {versionHistory.map((version, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-sm">{version.version}</div>
-                  <div className="text-xs text-gray-500">
-                    {version.author} • {version.time}
+            {versionsLoading ? (
+              <div className="text-sm text-gray-500">Loading versions...</div>
+            ) : versions.length === 0 ? (
+              <div className="text-sm text-gray-500">No versions yet.</div>
+            ) : (
+              versions.slice(0, 5).map((version) => (
+                <div key={version.id} className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-sm">{version.version_number}</div>
+                    <div className="text-xs text-gray-500">
+                      {version.user?.full_name || 'Unknown'} • {format(new Date(version.created_at), 'MMM dd, yyyy')}
+                    </div>
+                    {version.changes_description && (
+                      <div className="text-xs text-gray-400 mt-1">{version.changes_description}</div>
+                    )}
                   </div>
+                  <Button variant="ghost" size="sm" className="p-1 h-auto">
+                    <History className="w-4 h-4" />
+                  </Button>
                 </div>
-                <Button variant="ghost" size="sm" className="p-1 h-auto">
-                  <History className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
+              ))
+            )}
           </CardContent>
         </Card>
       </div>

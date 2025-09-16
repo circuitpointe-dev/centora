@@ -15,6 +15,7 @@ import AttachmentsTabContent from "./AttachmentsTabContent";
 import TeamTabContent from "./TeamTabContent";
 import AddFieldDialog from "./AddFieldDialog";
 import AddTeamMemberDialog from "./AddTeamMemberDialog";
+import SubmissionTrackerDialog from "./SubmissionTrackerDialog";
 import { useCreateProposal, useUpdateProposal } from "@/hooks/useProposals";
 import { useProposalTeamMembers, useAddProposalTeamMember, useRemoveProposalTeamMember } from "@/hooks/useProposalTeamMembers";
 import { useProposalComments, useAddProposalComment } from "@/hooks/useProposalComments";
@@ -69,6 +70,9 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   
   // Team tab states
   const [showTeamMemberDialog, setShowTeamMemberDialog] = useState(false);
+  
+  // Submission tracker dialog state
+  const [showSubmissionTrackerDialog, setShowSubmissionTrackerDialog] = useState(false);
 
   // Hooks
   const createProposal = useCreateProposal();
@@ -252,6 +256,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
           opportunityName={opportunityName}
           onSave={handleSave}
           onSubmit={handleSubmit}
+          onSubmissionTracker={() => setShowSubmissionTrackerDialog(true)}
           isSaving={updateProposal.isPending}
           isSubmitting={updateProposal.isPending}
         />
@@ -310,7 +315,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
                 </TabsContent>
 
                 <TabsContent value="attachments" className="space-y-6 mt-0">
-                  <AttachmentsTabContent />
+                  <AttachmentsTabContent proposalId={proposalId} />
                 </TabsContent>
 
                 <TabsContent value="team" className="space-y-6 mt-0">
@@ -357,6 +362,12 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
           open={showTeamMemberDialog}
           onOpenChange={setShowTeamMemberDialog}
           onAddMember={handleAddTeamMember}
+        />
+        
+        <SubmissionTrackerDialog
+          open={showSubmissionTrackerDialog}
+          onOpenChange={setShowSubmissionTrackerDialog}
+          proposalId={proposalId}
         />
       </LargeSideDialogContent>
     </LargeSideDialog>

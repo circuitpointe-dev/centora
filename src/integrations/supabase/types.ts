@@ -1567,6 +1567,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "proposal_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "proposal_comments_proposal_id_fkey"
             columns: ["proposal_id"]
             isOneToOne: false
@@ -1616,6 +1623,48 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_versions: {
+        Row: {
+          changes_description: string | null
+          created_at: string
+          created_by: string
+          id: string
+          proposal_id: string
+          version_number: string
+        }
+        Insert: {
+          changes_description?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          proposal_id: string
+          version_number: string
+        }
+        Update: {
+          changes_description?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          proposal_id?: string
+          version_number?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_versions_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
             referencedColumns: ["id"]
           },
         ]
@@ -1824,6 +1873,60 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submission_tracker: {
+        Row: {
+          completed_date: string | null
+          created_at: string
+          created_by: string
+          due_date: string | null
+          id: string
+          milestone_name: string
+          notes: string | null
+          proposal_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_date?: string | null
+          created_at?: string
+          created_by: string
+          due_date?: string | null
+          id?: string
+          milestone_name: string
+          notes?: string | null
+          proposal_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_date?: string | null
+          created_at?: string
+          created_by?: string
+          due_date?: string | null
+          id?: string
+          milestone_name?: string
+          notes?: string | null
+          proposal_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_tracker_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submission_tracker_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
             referencedColumns: ["id"]
           },
         ]

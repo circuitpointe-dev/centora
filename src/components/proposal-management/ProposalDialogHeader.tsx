@@ -9,6 +9,7 @@ type Props = {
   opportunityName: string;
   onSave?: () => void;
   onSubmit?: () => void;
+  onSubmissionTracker?: () => void;
   isSaving?: boolean;
   isSubmitting?: boolean;
 };
@@ -18,6 +19,7 @@ const ProposalDialogHeader: React.FC<Props> = ({
   opportunityName, 
   onSave,
   onSubmit,
+  onSubmissionTracker,
   isSaving = false,
   isSubmitting = false
 }) => {
@@ -28,7 +30,12 @@ const ProposalDialogHeader: React.FC<Props> = ({
           {proposalTitle} - {opportunityName}
         </LargeSideDialogTitle>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-2"
+            onClick={onSubmissionTracker}
+          >
             <BarChart3 className="w-4 h-4" />
             Submission Tracker
           </Button>
