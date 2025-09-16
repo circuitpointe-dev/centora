@@ -23,7 +23,7 @@ export const useDeadlines = () => {
       const thirtyDaysFromNow = new Date();
       thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
       
-      // Get opportunity deadlines
+      // Get opportunity deadlines for this organization's donors
       const { data: opportunities } = await supabase
         .from('opportunities')
         .select(`
@@ -32,6 +32,7 @@ export const useDeadlines = () => {
           deadline,
           donor:donors!donor_id(name)
         `)
+        .eq('donors.org_id', user.org_id)
         .lte('deadline', thirtyDaysFromNow.toISOString().split('T')[0])
         .gte('deadline', today.toISOString().split('T')[0])
         .order('deadline', { ascending: true });

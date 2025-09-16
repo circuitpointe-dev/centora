@@ -22,27 +22,54 @@ export const useFundraisingStats = () => {
     queryFn: async (): Promise<FundraisingStats> => {
       if (!user?.org_id) throw new Error('No organization');
       
-      // Get opportunities count (using as proxy for proposals for now)
+      // First get all donor IDs for this organization
+      const { data: orgDonors } = await supabase
+        .from('donors')
+        .select('id')
+        .eq('org_id', user.org_id);
+      
+      const donorIds = orgDonors?.map(donor => donor.id) || [];
+      
+      // If no donors, return empty stats
+      if (donorIds.length === 0) {
+        return {
+          totalProposals: 0,
+          conversionRate: 0,
+          activeOpportunities: 0,
+          fundsRaised: 0,
+          avgGrantSize: 0,
+          proposalsInProgress: 0,
+          pendingReviews: 0,
+          upcomingDeadlines: 0,
+          archivedProposals: 0,
+        };
+      }
+
+      // Get opportunities count for this org's donors
       const { count: opportunitiesCount } = await supabase
         .from('opportunities')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
+        .in('donor_id', donorIds);
 
       // Get opportunities in progress
       const { count: inProgressCount } = await supabase
         .from('opportunities')
         .select('*', { count: 'exact', head: true })
+        .in('donor_id', donorIds)
         .eq('status', 'In Progress');
 
       // Get opportunities under review
       const { count: pendingReviewsCount } = await supabase
         .from('opportunities')
         .select('*', { count: 'exact', head: true })
+        .in('donor_id', donorIds)
         .eq('status', 'Submitted');
 
       // Get active opportunities
       const { count: activeOpportunitiesCount } = await supabase
         .from('opportunities')
         .select('*', { count: 'exact', head: true })
+        .in('donor_id', donorIds)
         .in('status', ['To Review', 'In Progress']);
 
       // Get grants for funds calculation
@@ -60,6 +87,7 @@ export const useFundraisingStats = () => {
       const { count: awardedCount } = await supabase
         .from('opportunities')
         .select('*', { count: 'exact', head: true })
+        .in('donor_id', donorIds)
         .eq('status', 'Awarded');
 
       const conversionRate = opportunitiesCount && opportunitiesCount > 0 
@@ -73,6 +101,7 @@ export const useFundraisingStats = () => {
       const { count: upcomingDeadlinesCount } = await supabase
         .from('opportunities')
         .select('*', { count: 'exact', head: true })
+        .in('donor_id', donorIds)
         .lte('deadline', thirtyDaysFromNow.toISOString().split('T')[0])
         .gte('deadline', new Date().toISOString().split('T')[0]);
 
