@@ -8,18 +8,22 @@ import { DeadlinesCard } from '@/components/fundraising/DeadlinesCard';
 import NewDonorDialog from '@/components/fundraising/NewDonorDialog';
 import AddOpportunityDialog from '@/components/opportunity-tracking/AddOpportunityDialog';
 import CreateProposalDialog from '@/components/proposal-management/CreateProposalDialog';
+import { useDonors } from '@/hooks/useDonors';
+import { useFundraisingStats } from '@/hooks/useFundraisingStats';
+import { useDeadlines } from '@/hooks/useDeadlines';
 
 const FundraisingDashboard = () => {
   const navigate = useNavigate();
   const [showAddOpportunityDialog, setShowAddOpportunityDialog] = useState(false);
   const [showCreateProposalDialog, setShowCreateProposalDialog] = useState(false);
   
-  // Mock donors data for opportunity dialog
-  const mockDonors = [
-    { id: 'donor-1', name: 'Gates Foundation' },
-    { id: 'donor-2', name: 'Ford Foundation' },
-    { id: 'donor-3', name: 'Rockefeller Foundation' },
-  ];
+  // Fetch real data
+  const { data: donors = [] } = useDonors();
+  const { data: stats } = useFundraisingStats();
+  const { data: deadlines = [] } = useDeadlines();
+  
+  // Transform donors for opportunity dialog
+  const donorsForDialog = donors.map(donor => ({ id: donor.id, name: donor.name }));
 
   const handleAddOpportunity = (opportunity: any) => {
     console.log('New opportunity:', opportunity);
@@ -29,7 +33,8 @@ const FundraisingDashboard = () => {
   const handleGenerateReports = () => {
     navigate('/dashboard/fundraising/fundraising-analytics?tab=generate-report');
   };
-  const hasStatsData = false; // TODO: replace with dynamic checks when data is connected
+  
+  const hasStatsData = stats && (stats.totalProposals > 0 || stats.activeOpportunities > 0 || stats.fundsRaised > 0);
 
   return (
     <div>
@@ -85,9 +90,9 @@ const FundraisingDashboard = () => {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{hasStatsData ? "6" : "—"}</div>
+            <div className="text-2xl font-bold">{stats?.totalProposals || "—"}</div>
             <p className="text-xs text-muted-foreground">
-              {hasStatsData ? "+2 this month" : "No proposals yet"}
+              {hasStatsData ? `${stats?.proposalsInProgress || 0} in progress` : "No proposals yet"}
             </p>
           </CardContent>
         </Card>
@@ -98,9 +103,9 @@ const FundraisingDashboard = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{hasStatsData ? "68%" : "—"}</div>
+            <div className="text-2xl font-bold">{hasStatsData ? `${Math.round(stats?.conversionRate || 0)}%` : "—"}</div>
             <p className="text-xs text-muted-foreground">
-              {hasStatsData ? "+5% from last quarter" : "No data yet"}
+              {hasStatsData ? "Success rate" : "No data yet"}
             </p>
           </CardContent>
         </Card>
@@ -111,9 +116,9 @@ const FundraisingDashboard = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{hasStatsData ? "8" : "0"}</div>
+            <div className="text-2xl font-bold">{stats?.activeOpportunities || "0"}</div>
             <p className="text-xs text-muted-foreground">
-              {hasStatsData ? "+3 new this week" : "No active opportunities"}
+              {hasStatsData ? "Currently active" : "No active opportunities"}
             </p>
           </CardContent>
         </Card>
@@ -124,9 +129,11 @@ const FundraisingDashboard = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{hasStatsData ? "$2.3M" : "$0"}</div>
+            <div className="text-2xl font-bold">
+              {hasStatsData ? `$${(stats?.fundsRaised || 0).toLocaleString()}` : "$0"}
+            </div>
             <p className="text-xs text-muted-foreground">
-              {hasStatsData ? "+15% from last quarter" : "No funds recorded yet"}
+              {hasStatsData ? `Avg: $${(stats?.avgGrantSize || 0).toLocaleString()}` : "No funds recorded yet"}
             </p>
           </CardContent>
         </Card>
@@ -138,7 +145,7 @@ const FundraisingDashboard = () => {
           <CalendarCard />
         </div>
         <div>
-          <DeadlinesCard />
+          <DeadlinesCard items={deadlines} />
         </div>
       </div>
 
@@ -146,7 +153,7 @@ const FundraisingDashboard = () => {
       <AddOpportunityDialog
         isOpen={showAddOpportunityDialog}
         onClose={() => setShowAddOpportunityDialog(false)}
-        donors={mockDonors}
+        donors={donorsForDialog}
       />
 
       <CreateProposalDialog
