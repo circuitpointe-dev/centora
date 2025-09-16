@@ -22,6 +22,33 @@ export const useFundraisingStats = () => {
     queryFn: async (): Promise<FundraisingStats> => {
       if (!user?.org_id) throw new Error('No organization');
       
+      // Get proposals count for this organization
+      const { count: proposalsCount } = await supabase
+        .from('proposals')
+        .select('*', { count: 'exact', head: true })
+        .eq('org_id', user.org_id);
+
+      // Get proposals in progress
+      const { count: inProgressCount } = await supabase
+        .from('proposals')
+        .select('*', { count: 'exact', head: true })
+        .eq('org_id', user.org_id)
+        .eq('status', 'in_progress');
+
+      // Get proposals under review
+      const { count: pendingReviewsCount } = await supabase
+        .from('proposals')
+        .select('*', { count: 'exact', head: true })
+        .eq('org_id', user.org_id)
+        .eq('status', 'under_review');
+
+      // Get archived proposals
+      const { count: archivedCount } = await supabase
+        .from('proposals')
+        .select('*', { count: 'exact', head: true })
+        .eq('org_id', user.org_id)
+        .in('status', ['approved', 'rejected']);
+
       // First get all donor IDs for this organization
       const { data: orgDonors } = await supabase
         .from('donors')
@@ -30,18 +57,18 @@ export const useFundraisingStats = () => {
       
       const donorIds = orgDonors?.map(donor => donor.id) || [];
       
-      // If no donors, return empty stats
+      // If no donors, return stats with proposals data
       if (donorIds.length === 0) {
         return {
-          totalProposals: 0,
+          totalProposals: proposalsCount || 0,
           conversionRate: 0,
           activeOpportunities: 0,
           fundsRaised: 0,
           avgGrantSize: 0,
-          proposalsInProgress: 0,
-          pendingReviews: 0,
+          proposalsInProgress: inProgressCount || 0,
+          pendingReviews: pendingReviewsCount || 0,
           upcomingDeadlines: 0,
-          archivedProposals: 0,
+          archivedProposals: archivedCount || 0,
         };
       }
 
@@ -50,20 +77,6 @@ export const useFundraisingStats = () => {
         .from('opportunities')
         .select('*', { count: 'exact', head: true })
         .in('donor_id', donorIds);
-
-      // Get opportunities in progress
-      const { count: inProgressCount } = await supabase
-        .from('opportunities')
-        .select('*', { count: 'exact', head: true })
-        .in('donor_id', donorIds)
-        .eq('status', 'In Progress');
-
-      // Get opportunities under review
-      const { count: pendingReviewsCount } = await supabase
-        .from('opportunities')
-        .select('*', { count: 'exact', head: true })
-        .in('donor_id', donorIds)
-        .eq('status', 'Submitted');
 
       // Get active opportunities
       const { count: activeOpportunitiesCount } = await supabase
@@ -106,7 +119,7 @@ export const useFundraisingStats = () => {
         .gte('deadline', new Date().toISOString().split('T')[0]);
 
       return {
-        totalProposals: opportunitiesCount || 0,
+        totalProposals: proposalsCount || 0,
         conversionRate,
         activeOpportunities: activeOpportunitiesCount || 0,
         fundsRaised: totalFunds,
@@ -114,7 +127,7 @@ export const useFundraisingStats = () => {
         proposalsInProgress: inProgressCount || 0,
         pendingReviews: pendingReviewsCount || 0,
         upcomingDeadlines: upcomingDeadlinesCount || 0,
-        archivedProposals: 0, // Will implement when proposals table is ready
+        archivedProposals: archivedCount || 0,
       };
     },
     enabled: !!user?.org_id,
