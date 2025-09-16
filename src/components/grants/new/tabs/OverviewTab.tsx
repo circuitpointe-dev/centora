@@ -9,6 +9,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { useOrgMembers } from '@/hooks/useOrgMembers';
 
 interface OverviewTabProps {
   data: {
@@ -24,18 +25,8 @@ interface OverviewTabProps {
   onUpdate: (data: any) => void;
 }
 
-// Mock data for staff members
-const staffMembers = [
-  { id: '1', name: 'Sarah Johnson', role: 'Senior Grant Manager' },
-  { id: '2', name: 'Michael Chen', role: 'Grant Manager' },
-  { id: '3', name: 'Emily Davis', role: 'Program Officer' },
-  { id: '4', name: 'David Wilson', role: 'Financial Officer' },
-  { id: '5', name: 'Lisa Rodriguez', role: 'Grant Administrator' },
-  { id: '6', name: 'James Thompson', role: 'Compliance Officer' },
-  { id: '7', name: 'Maria Garcia', role: 'Program Director' },
-];
-
 export const OverviewTab: React.FC<OverviewTabProps> = ({ data, onUpdate }) => {
+  const { data: orgMembers = [] } = useOrgMembers();
   const handleInputChange = (field: string, value: any) => {
     onUpdate({ [field]: value });
   };
@@ -163,9 +154,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, onUpdate }) => {
               <SelectValue placeholder="Select grant manager" />
             </SelectTrigger>
             <SelectContent>
-              {staffMembers.map((member) => (
-                <SelectItem key={member.id} value={member.name}>
-                  {member.name} - {member.role}
+              {orgMembers.map((member) => (
+                <SelectItem key={member.id} value={member.full_name}>
+                  {member.full_name} {member.department && `- ${member.department}`}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -181,9 +172,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, onUpdate }) => {
               <SelectValue placeholder="Select fiduciary officer" />
             </SelectTrigger>
             <SelectContent>
-              {staffMembers.map((member) => (
-                <SelectItem key={member.id} value={member.name}>
-                  {member.name} - {member.role}
+              {orgMembers.map((member) => (
+                <SelectItem key={member.id} value={member.full_name}>
+                  {member.full_name} {member.department && `- ${member.department}`}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -199,9 +190,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ data, onUpdate }) => {
               <SelectValue placeholder="Select grant administrator" />
             </SelectTrigger>
             <SelectContent>
-              {staffMembers.map((member) => (
-                <SelectItem key={member.id} value={member.name}>
-                  {member.name} - {member.role}
+              {orgMembers.map((member) => (
+                <SelectItem key={member.id} value={member.full_name}>
+                  {member.full_name} {member.department && `- ${member.department}`}
                 </SelectItem>
               ))}
             </SelectContent>

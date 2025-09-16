@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Clock, MessageSquare, FileEdit, AlertTriangle } from 'lucide-react';
+import { useGrantTodos } from '@/hooks/grants/useGrantTodos';
 
 interface ToDoItem {
   id: string;
@@ -9,38 +10,9 @@ interface ToDoItem {
   title: string;
   description: string;
   timeSince: string;
+  grantId?: string;
+  relatedId?: string;
 }
-
-const toDoItems: ToDoItem[] = [
-  {
-    id: '1',
-    type: 'Deadline',
-    title: 'Proposal submission due in 3 days',
-    description: 'Reminder: Proposal submission due in 3 days',
-    timeSince: '23 min ago'
-  },
-  {
-    id: '2',
-    type: 'Feedback',
-    title: 'Proposal submission due in 3 days',
-    description: 'Reminder: Proposal submission due in 3 days',
-    timeSince: '23 min ago'
-  },
-  {
-    id: '3',
-    type: 'Revision request',
-    title: 'Proposal submission due in 3 days',
-    description: 'Reminder: Proposal submission due in 3 days',
-    timeSince: '23 min ago'
-  },
-  {
-    id: '4',
-    type: 'Feedback',
-    title: 'Proposal submission due in 3 days',
-    description: 'Reminder: Proposal submission due in 3 days',
-    timeSince: '23 min ago'
-  }
-];
 
 const getTypeIcon = (type: string) => {
   switch (type) {
@@ -69,18 +41,48 @@ const getTypeColor = (type: string) => {
 };
 
 export const ToDoRemindersSection = () => {
+  const { todos, loading, markAsCompleted, deleteTodo } = useGrantTodos();
+
+  const handleEdit = (item: ToDoItem) => {
+    // Navigate to relevant grant/compliance/report page
+    console.log('Edit item:', item);
+  };
+
+  const handleDelete = async (item: ToDoItem) => {
+    try {
+      await deleteTodo(item.id);
+    } catch (error) {
+      console.error('Failed to delete todo:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Card className="mb-6 border border-purple-200">
+        <CardContent className="p-6">
+          <div className="animate-pulse">Loading tasks...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="mb-6 border border-purple-200">
       <CardHeader>
         <CardTitle className="text-purple-600 flex items-center gap-2">
           To Do & Reminders
-          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2">4</span>
+          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2">{todos.length}</span>
         </CardTitle>
         <CardDescription>Stay on top of your grant management tasks</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {toDoItems.map((item) => (
+        {todos.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>No pending tasks. Great job staying on top of things!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {todos.map((item) => (
             <Card key={item.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-4">
                 <div className="space-y-3">
@@ -99,20 +101,31 @@ export const ToDoRemindersSection = () => {
                   
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
-                    <Button variant="outline" size="sm" className="flex-1 text-xs">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 text-xs"
+                      onClick={() => handleEdit(item)}
+                    >
                       <Edit2 className="h-3 w-3 mr-1" />
-                      Edit
+                      View
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 text-xs">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 text-xs"
+                      onClick={() => handleDelete(item)}
+                    >
                       <Trash2 className="h-3 w-3 mr-1" />
-                      Delete
+                      Done
                     </Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
