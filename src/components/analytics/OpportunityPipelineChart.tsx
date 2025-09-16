@@ -1,32 +1,60 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { TrendingUp, DollarSign } from "lucide-react";
-
-const opportunityData = [
-  { name: "Identified", value: 40, color: "#8B5CF6" },
-  { name: "Qualified", value: 30, color: "#F59E0B" },
-  { name: "Lead", value: 20, color: "#3B82F6" },
-  { name: "Approved", value: 10, color: "#10B981" },
-];
-
-const summaryStats = [
-  { 
-    label: "New Opportunities", 
-    value: "10", 
-    change: "+8%", 
-    positive: true
-  },
-  { 
-    label: "Forecast Revenue", 
-    value: "$2.4M", 
-    change: "+15%", 
-    positive: true
-  },
-];
+import { useOpportunities } from "@/hooks/useOpportunities";
 
 export const OpportunityPipelineChart: React.FC = () => {
+  const { data: opportunities = [] } = useOpportunities();
+
+  const opportunityData = useMemo(() => {
+    const statusCounts = opportunities.reduce((acc, opp) => {
+      acc[opp.status] = (acc[opp.status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const total = opportunities.length || 1;
+    const colors = {
+      "To Review": "#8B5CF6",
+      "In Progress": "#F59E0B", 
+      "Awarded": "#10B981",
+      "Rejected": "#EF4444"
+    };
+
+    return Object.entries(statusCounts).map(([status, count]) => ({
+      name: status,
+      value: Math.round((count / total) * 100),
+      color: colors[status as keyof typeof colors] || "#6B7280"
+    }));
+  }, [opportunities]);
+
+  const summaryStats = useMemo(() => {
+    const newOpportunities = opportunities.filter(opp => {
+      const createdDate = new Date(opp.created_at);
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return createdDate >= thirtyDaysAgo;
+    }).length;
+
+    const forecastRevenue = opportunities
+      .filter(opp => opp.status === 'In Progress' || opp.status === 'To Review')
+      .reduce((sum, opp) => sum + (opp.amount || 0), 0);
+
+    return [
+      { 
+        label: "New Opportunities", 
+        value: newOpportunities.toString(), 
+        change: "", 
+        positive: true
+      },
+      { 
+        label: "Forecast Revenue", 
+        value: `$${(forecastRevenue / 1000000).toFixed(1)}M`, 
+        change: "", 
+        positive: true
+      },
+    ];
+  }, [opportunities]);
   return (
     <div className="space-y-4">
       {/* Summary Stats */}

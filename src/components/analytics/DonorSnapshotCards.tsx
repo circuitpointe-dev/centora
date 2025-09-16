@@ -1,10 +1,16 @@
 
 import React from "react";
+import { useDonors } from "@/hooks/useDonors";
 
 export const DonorSnapshotCards: React.FC = () => {
+  const { data: donors = [] } = useDonors();
+  
+  const totalDonors = donors.length;
+  const activeDonors = donors.filter(donor => donor.status === 'active').length;
+  
   const donorStats = [
-    { label: "Total donors", value: "124", change: "+8%", positive: true },
-    { label: "Current donors", value: "50", change: "+3%", positive: true },
+    { label: "Total donors", value: totalDonors.toString(), change: "", positive: true },
+    { label: "Active donors", value: activeDonors.toString(), change: "", positive: true },
   ];
 
   return (

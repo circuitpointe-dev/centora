@@ -5,11 +5,15 @@ import { DonorSegmentationChart } from "./charts/DonorSegmentationChart";
 import { OpportunityPipelineChart } from "./OpportunityPipelineChart";
 import { EmptyDonorSnapshot } from "./EmptyDonorSnapshot";
 import { EmptyOpportunityPipeline } from "./EmptyOpportunityPipeline";
+import { useDonors } from "@/hooks/useDonors";
+import { useOpportunities } from "@/hooks/useOpportunities";
 
 export const DonorSnapshotSection: React.FC = () => {
-  // For demo purposes, check if there's data - in real app this would come from props/state
-  const hasDonorData = false; // Clear static data - will be replaced with backend data
-  const hasOpportunityData = false; // Clear static data - will be replaced with backend data
+  const { data: donors = [] } = useDonors();
+  const { data: opportunities = [] } = useOpportunities();
+  
+  const hasDonorData = donors.length > 0;
+  const hasOpportunityData = opportunities.length > 0;
 
   return (
     <div className="space-y-6">

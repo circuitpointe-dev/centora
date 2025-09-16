@@ -1,16 +1,36 @@
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { donorSegmentationData, PIE_COLORS } from "../data/analyticsData";
+import { useDonors } from "@/hooks/useDonors";
+
+const PIE_COLORS = ["#8B5CF6", "#F59E0B", "#10B981", "#EF4444", "#6B7280"];
 
 export function DonorSegmentationChart() {
-  const [donorSegmentFilter, setDonorSegmentFilter] = useState("Type");
+  const [donorSegmentFilter, setDonorSegmentFilter] = useState("Status");
+  const { data: donors = [] } = useDonors();
   
-  const currentDonorData = donorSegmentationData[donorSegmentFilter as keyof typeof donorSegmentationData];
+  const currentDonorData = useMemo(() => {
+    if (donors.length === 0) return [];
+    
+    let segmentCounts: Record<string, number> = {};
+    
+    if (donorSegmentFilter === "Status") {
+      segmentCounts = donors.reduce((acc, donor) => {
+        acc[donor.status] = (acc[donor.status] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+    }
+    
+    const total = donors.length;
+    return Object.entries(segmentCounts).map(([key, count]) => ({
+      name: key.charAt(0).toUpperCase() + key.slice(1),
+      value: Math.round((count / total) * 100)
+    }));
+  }, [donors, donorSegmentFilter]);
 
   return (
     <Card>
@@ -22,10 +42,7 @@ export function DonorSegmentationChart() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Type">Type</SelectItem>
-              <SelectItem value="Sector">Sector</SelectItem>
-              <SelectItem value="Geography">Geography</SelectItem>
-              <SelectItem value="Interest Tags">Interest Tags</SelectItem>
+              <SelectItem value="Status">Status</SelectItem>
             </SelectContent>
           </Select>
         </div>
