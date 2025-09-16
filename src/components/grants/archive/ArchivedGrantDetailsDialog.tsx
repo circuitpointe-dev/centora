@@ -27,8 +27,8 @@ const ArchivedGrantDetailsDialog: React.FC<ArchivedGrantDetailsDialogProps> = ({
   onClose,
   grant
 }) => {
-  // Sample data for the grant details
-  const grantDetails = {
+    // Sample data for the grant details - this would come from backend
+    const grantDetails = {
     granteeDetails: {
       grantId: 'GR-2024-001',
       region: 'East Africa',

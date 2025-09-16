@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import GrantsDonorDashboard from '@/components/grants/GrantsDonorDashboard';
-import GrantsNGODashboard from '@/components/grants/GrantsNGODashboard';
-import { ActiveGrantsTable } from '@/components/grants/ActiveGrantsTable';
-import { Button } from '@/components/ui/button';
+import { ReportsSubmissionsPage } from '@/components/grants/pages/ReportsSubmissionsPage';
+import { ComplianceChecklistPage } from '@/components/grants/pages/ComplianceChecklistPage';
+import { DisbursementSchedulePage } from '@/components/grants/pages/DisbursementSchedulePage';
+import { ProfilePage } from '@/components/grants/pages/ProfilePage';
 import { FileSpreadsheet, BarChart3, Users, ClipboardList } from 'lucide-react';
 
 const GrantsPage = () => {
@@ -19,22 +20,26 @@ const GrantsPage = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Dashboard
           </TabsTrigger>
-          <TabsTrigger value="active-grants" className="flex items-center gap-2">
+          <TabsTrigger value="reports-submissions" className="flex items-center gap-2">
             <FileSpreadsheet className="h-4 w-4" />
-            Active Grants
+            Reports Submissions
           </TabsTrigger>
-          <TabsTrigger value="reports" className="flex items-center gap-2">
+          <TabsTrigger value="compliance-checklist" className="flex items-center gap-2">
             <ClipboardList className="h-4 w-4" />
-            Reports
+            Compliance Checklist
           </TabsTrigger>
-          <TabsTrigger value="compliance" className="flex items-center gap-2">
+          <TabsTrigger value="disbursement-schedule" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            Compliance
+            Disbursement Schedule
+          </TabsTrigger>
+          <TabsTrigger value="profile" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Profile
           </TabsTrigger>
         </TabsList>
 
@@ -42,30 +47,20 @@ const GrantsPage = () => {
           <GrantsDonorDashboard />
         </TabsContent>
 
-        <TabsContent value="active-grants" className="space-y-6">
-          <ActiveGrantsTable />
+        <TabsContent value="reports-submissions" className="space-y-6">
+          <ReportsSubmissionsPage />
         </TabsContent>
 
-        <TabsContent value="reports" className="space-y-6">
-          <div className="text-center py-12">
-            <ClipboardList className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Reports Module</h3>
-            <p className="text-muted-foreground mb-4">
-              Track and manage grant reporting requirements and submissions
-            </p>
-            <Button variant="outline">Coming Soon</Button>
-          </div>
+        <TabsContent value="compliance-checklist" className="space-y-6">
+          <ComplianceChecklistPage />
         </TabsContent>
 
-        <TabsContent value="compliance" className="space-y-6">
-          <div className="text-center py-12">
-            <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Compliance Module</h3>
-            <p className="text-muted-foreground mb-4">
-              Monitor compliance requirements and track completion status
-            </p>
-            <Button variant="outline">Coming Soon</Button>
-          </div>
+        <TabsContent value="disbursement-schedule" className="space-y-6">
+          <DisbursementSchedulePage />
+        </TabsContent>
+
+        <TabsContent value="profile" className="space-y-6">
+          <ProfilePage />
         </TabsContent>
       </Tabs>
     </div>
