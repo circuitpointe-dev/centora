@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { GrantDisbursement } from '@/types/grants';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export const useGrantDisbursements = (grantId?: string) => {
   const [disbursements, setDisbursements] = useState<GrantDisbursement[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const fetchDisbursements = async () => {
     try {
@@ -28,11 +27,7 @@ export const useGrantDisbursements = (grantId?: string) => {
       setDisbursements(data || []);
     } catch (err) {
       console.error('Error fetching disbursements:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch disbursement data',
-        variant: 'destructive',
-      });
+      toast.error('Failed to fetch disbursement data');
     } finally {
       setLoading(false);
     }
@@ -59,19 +54,12 @@ export const useGrantDisbursements = (grantId?: string) => {
       if (error) throw error;
 
       setDisbursements(prev => [...prev, data]);
-      toast({
-        title: 'Success',
-        description: 'Disbursement added successfully',
-      });
+      toast.success('Disbursement added successfully');
 
       return data;
     } catch (err) {
       console.error('Error creating disbursement:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to add disbursement',
-        variant: 'destructive',
-      });
+      toast.error('Failed to add disbursement');
       throw err;
     }
   };
@@ -88,19 +76,12 @@ export const useGrantDisbursements = (grantId?: string) => {
       if (error) throw error;
 
       setDisbursements(prev => prev.map(item => item.id === id ? data : item));
-      toast({
-        title: 'Success',
-        description: 'Disbursement updated successfully',
-      });
+      toast.success('Disbursement updated successfully');
 
       return data;
     } catch (err) {
       console.error('Error updating disbursement:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to update disbursement',
-        variant: 'destructive',
-      });
+      toast.error('Failed to update disbursement');
       throw err;
     }
   };
@@ -115,17 +96,10 @@ export const useGrantDisbursements = (grantId?: string) => {
       if (error) throw error;
 
       setDisbursements(prev => prev.filter(item => item.id !== id));
-      toast({
-        title: 'Success',
-        description: 'Disbursement deleted successfully',
-      });
+      toast.success('Disbursement deleted successfully');
     } catch (err) {
       console.error('Error deleting disbursement:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete disbursement',
-        variant: 'destructive',
-      });
+      toast.error('Failed to delete disbursement');
       throw err;
     }
   };
