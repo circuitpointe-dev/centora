@@ -86,15 +86,10 @@ export const ComplianceChecklistPage = () => {
     }
   };
 
-  const handleUploadComplete = async (fileName: string) => {
-    if (selectedRequirement) {
-      await updateCompliance(selectedRequirement.id, {
-        evidence_document: fileName,
-        status: 'completed' as const
-      });
-    }
+  const handleUploadComplete = async () => {
     setUploadDialogOpen(false);
     setSelectedRequirement(null);
+    // Refresh the compliance data since the upload hook updates the record
   };
 
   if (loading) {
@@ -261,7 +256,7 @@ export const ComplianceChecklistPage = () => {
       <UploadEvidenceDialog
         open={uploadDialogOpen}
         onOpenChange={setUploadDialogOpen}
-        requirement={selectedRequirement?.requirement || ""}
+        requirement={selectedRequirement!}
         onUpload={handleUploadComplete}
       />
     </div>

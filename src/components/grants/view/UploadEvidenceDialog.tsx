@@ -9,20 +9,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useUploadComplianceFile } from "@/hooks/grants/useGrantComplianceFiles";
+import { GrantCompliance } from "@/types/grants";
 
 interface UploadEvidenceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  requirement: string;
-  onUpload: (fileName: string) => void;
-  requirementData?: {
-    id: number;
-    requirement: string;
-    dueDate: string;
-    status: string;
-    evidenceDocument?: string;
-    grantId: number;
-  };
+  requirement: GrantCompliance;
+  onUpload: () => void;
 }
 
 export const UploadEvidenceDialog: React.FC<UploadEvidenceDialogProps> = ({
@@ -30,11 +24,9 @@ export const UploadEvidenceDialog: React.FC<UploadEvidenceDialogProps> = ({
   onOpenChange,
   requirement,
   onUpload,
-  requirementData,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const uploadFile = useUploadComplianceFile();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -58,25 +50,23 @@ export const UploadEvidenceDialog: React.FC<UploadEvidenceDialogProps> = ({
   const handleSubmit = async () => {
     if (!selectedFile) return;
 
-    setUploading(true);
-    
-    // Simulate upload progress
-    for (let i = 0; i <= 100; i += 10) {
-      setUploadProgress(i);
-      await new Promise(resolve => setTimeout(resolve, 100));
+    try {
+      await uploadFile.mutateAsync({
+        file: selectedFile,
+        complianceId: requirement.id,
+        grantId: requirement.grant_id
+      });
+      
+      onUpload();
+      setSelectedFile(null);
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Upload failed:', error);
     }
-    
-    onUpload(selectedFile.name);
-    setUploading(false);
-    setUploadProgress(0);
-    setSelectedFile(null);
-    onOpenChange(false);
   };
 
   const handleCancel = () => {
     setSelectedFile(null);
-    setUploadProgress(0);
-    setUploading(false);
     onOpenChange(false);
   };
 
@@ -91,19 +81,19 @@ export const UploadEvidenceDialog: React.FC<UploadEvidenceDialogProps> = ({
       icon: CheckCircle,
       label: "Submitted",
       date: "Jun 4, 2025",
-      completed: requirementData?.status === 'Completed'
+      completed: requirement?.status === 'completed'
     },
     {
       icon: Clock,
       label: "Reviewer assigned",
       date: "Jun 1, 2025",
-      completed: requirementData?.status === 'Completed'
+      completed: requirement?.status === 'completed'
     },
     {
       icon: MessageSquare,
       label: "Feedback provided",
       date: "Jun 1, 2025",
-      completed: requirementData?.status === 'Completed'
+      completed: requirement?.status === 'completed'
     }
   ];
 
@@ -156,33 +146,31 @@ export const UploadEvidenceDialog: React.FC<UploadEvidenceDialogProps> = ({
           </div>
 
           {/* Submission Details */}
-          {requirementData && (
-            <div>
-              <h3 className="font-semibold mb-4 text-gray-900">Submission Details</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Requirement</span>
-                  <span className="text-gray-900 font-medium">{requirementData.requirement}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Due date</span>
-                  <span className="text-gray-900 font-medium">
-                    {new Date(requirementData.dueDate).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Status</span>
-                  <Badge className={getStatusColor(requirementData.status)}>
-                    {requirementData.status}
-                  </Badge>
-                </div>
+          <div>
+            <h3 className="font-semibold mb-4 text-gray-900">Submission Details</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Requirement</span>
+                <span className="text-gray-900 font-medium">{requirement.requirement}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Due date</span>
+                <span className="text-gray-900 font-medium">
+                  {new Date(requirement.due_date).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Status</span>
+                <Badge className={getStatusColor(requirement.status)}>
+                  {requirement.status}
+                </Badge>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Upload Document */}
           <div>
@@ -229,11 +217,11 @@ export const UploadEvidenceDialog: React.FC<UploadEvidenceDialogProps> = ({
               </div>
             )}
 
-            {uploading && (
+            {uploadFile.isPending && (
               <div className="space-y-2 mt-3">
-                <Progress value={uploadProgress} className="w-full" />
+                <Progress value={100} className="w-full animate-pulse" />
                 <p className="text-sm text-gray-600 text-center">
-                  Uploading... {uploadProgress}%
+                  Uploading document...
                 </p>
               </div>
             )}
@@ -254,17 +242,17 @@ export const UploadEvidenceDialog: React.FC<UploadEvidenceDialogProps> = ({
             <Button
               variant="outline"
               onClick={handleCancel}
-              disabled={uploading}
+              disabled={uploadFile.isPending}
               className="border-gray-300 text-gray-700"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!selectedFile || uploading}
+              disabled={!selectedFile || uploadFile.isPending}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
-              Submit Requirement
+              {uploadFile.isPending ? 'Uploading...' : 'Submit Requirement'}
             </Button>
           </div>
         </div>

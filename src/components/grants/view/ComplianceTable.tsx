@@ -86,18 +86,10 @@ export const ComplianceTable = ({ grantId, isEditMode = false }: ComplianceTable
     }
   };
 
-  const handleUploadComplete = async (fileName: string) => {
-    if (selectedRequirement) {
-      try {
-        await updateCompliance(selectedRequirement.id, {
-          status: 'completed',
-          evidence_document: fileName
-        });
-        setSelectedRequirement(null);
-      } catch (error) {
-        console.error('Error updating compliance:', error);
-      }
-    }
+  const handleUploadComplete = async () => {
+    setSelectedRequirement(null);
+    setUploadDialogOpen(false);
+    // The compliance status will be updated by the upload hook
   };
 
   const getStatusIcon = (status: GrantCompliance['status']) => {
@@ -277,7 +269,7 @@ export const ComplianceTable = ({ grantId, isEditMode = false }: ComplianceTable
       <UploadEvidenceDialog
         open={uploadDialogOpen}
         onOpenChange={setUploadDialogOpen}
-        requirement={selectedRequirement?.requirement || ""}
+        requirement={selectedRequirement!}
         onUpload={handleUploadComplete}
       />
     </div>

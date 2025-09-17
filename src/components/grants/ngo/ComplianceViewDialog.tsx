@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle, Circle, Clock, MessageSquare, Download } from "lucide-react";
+import { CheckCircle, Circle, Clock, MessageSquare, Download, FileText } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GrantCompliance } from "@/types/grants";
+import { useDownloadComplianceFile } from "@/hooks/grants/useGrantComplianceFiles";
 
 interface ComplianceViewDialogProps {
   open: boolean;
@@ -17,7 +18,19 @@ interface ComplianceViewDialogProps {
 }
 
 export const ComplianceViewDialog = ({ open, onOpenChange, requirement }: ComplianceViewDialogProps) => {
+  const downloadFile = useDownloadComplianceFile();
+  
   if (!requirement) return null;
+
+  const handleDownload = () => {
+    if (requirement.evidence_document) {
+      const fileName = requirement.evidence_document.split('/').pop() || 'evidence_document';
+      downloadFile.mutate({
+        filePath: requirement.evidence_document,
+        fileName: fileName
+      });
+    }
+  };
 
   const submissionStages = [
     {
@@ -46,23 +59,8 @@ export const ComplianceViewDialog = ({ open, onOpenChange, requirement }: Compli
     }
   ];
 
-  const uploadedDocuments = [
-    {
-      fileName: "Annual financial report.docx",
-      uploadedOn: "Apr 15, 2025",
-      notes: "This draft includes new annex",
-    },
-    {
-      fileName: "Mid-year evaluation.pdf",
-      uploadedOn: "Apr 15, 2025",
-      notes: "See page 3 for revisions",
-    },
-    {
-      fileName: "Final audit.zip",
-      uploadedOn: "Apr 15, 2025",
-      notes: "Photos from April 2025 trip",
-    }
-  ];
+  // Check if evidence document exists
+  const hasEvidenceDocument = requirement.evidence_document;
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -142,31 +140,42 @@ export const ComplianceViewDialog = ({ open, onOpenChange, requirement }: Compli
           {/* Uploaded Documents */}
           <div>
             <h3 className="font-semibold mb-4 text-gray-900">Uploaded documents</h3>
-            <div className="space-y-3">
-              <div className="grid grid-cols-4 gap-4 text-sm font-medium text-gray-600 pb-2 border-b">
-                <span>File name</span>
-                <span>Uploaded on</span>
-                <span>Notes by grantee</span>
-                <span>Action</span>
-              </div>
-              {uploadedDocuments.map((doc, index) => (
-                <div key={index} className="grid grid-cols-4 gap-4 text-sm py-2">
-                  <span className="text-gray-900">{doc.fileName}</span>
-                  <span className="text-gray-600">{doc.uploadedOn}</span>
-                  <span className="text-gray-600 truncate" title={doc.notes}>
-                    {doc.notes}
-                  </span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-auto p-0 text-blue-600 hover:text-blue-700"
-                  >
-                    <Download className="h-3 w-3 mr-1" />
-                    Download
-                  </Button>
+            {hasEvidenceDocument ? (
+              <div className="border border-gray-200 rounded-lg">
+                <div className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-gray-500" />
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {requirement.evidence_document?.split('/').pop() || 'Evidence Document'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Uploaded on {requirement.updated_at ? new Date(requirement.updated_at).toLocaleDateString() : 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleDownload}
+                        disabled={downloadFile.isPending}
+                        className="border-gray-300"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        {downloadFile.isPending ? 'Downloading...' : 'Download'}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                <p>No evidence document uploaded yet</p>
+              </div>
+            )}
           </div>
 
           {/* Feedback */}

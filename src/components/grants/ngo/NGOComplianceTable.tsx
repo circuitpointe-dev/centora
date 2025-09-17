@@ -41,27 +41,10 @@ export const NGOComplianceTable = ({ grantId }: NGOComplianceTableProps) => {
     setIsUploadDialogOpen(true);
   };
 
-  const handleUploadComplete = async (fileName: string) => {
-    if (selectedRequirement) {
-      try {
-        await updateCompliance(selectedRequirement.id, {
-          status: 'completed',
-          evidence_document: fileName
-        });
-        toast({
-          title: "Evidence Uploaded",
-          description: `${fileName} has been uploaded successfully.`,
-        });
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to upload evidence. Please try again.",
-          variant: "destructive",
-        });
-      }
-    }
+  const handleUploadComplete = async () => {
     setIsUploadDialogOpen(false);
     setSelectedRequirement(null);
+    // The compliance status will be updated by the upload hook
   };
 
   return (
@@ -145,15 +128,7 @@ export const NGOComplianceTable = ({ grantId }: NGOComplianceTableProps) => {
       <UploadEvidenceDialog
         open={isUploadDialogOpen}
         onOpenChange={setIsUploadDialogOpen}
-        requirement={selectedRequirement?.requirement || ""}
-        requirementData={selectedRequirement ? {
-          id: parseInt(selectedRequirement.id),
-          requirement: selectedRequirement.requirement,
-          dueDate: selectedRequirement.due_date,
-          status: selectedRequirement.status,
-          evidenceDocument: selectedRequirement.evidence_document,
-          grantId: parseInt(selectedRequirement.grant_id)
-        } : undefined}
+        requirement={selectedRequirement!}
         onUpload={handleUploadComplete}
       />
     </div>
