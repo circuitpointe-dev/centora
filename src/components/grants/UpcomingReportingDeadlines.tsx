@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CalendarClock, FileText, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CalendarClock, FileText, AlertTriangle, Eye, Check } from 'lucide-react';
 import { useGrantReports } from '@/hooks/grants/useGrantReports';
 import { useGrants } from '@/hooks/grants/useGrants';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ReportViewDialog } from './view/ReportViewDialog';
+import { toast } from 'sonner';
 
 // Helper function to calculate days until due date
 const getDaysUntilDue = (dueDate: string): number => {
@@ -45,10 +48,30 @@ const getUrgencyInfo = (days: number) => {
 };
 
 const UpcomingReportingDeadlines = () => {
-  const { reports, loading: reportsLoading } = useGrantReports();
+  const { reports, loading: reportsLoading, updateReport } = useGrantReports();
   const { grants, loading: grantsLoading } = useGrants();
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [showViewDialog, setShowViewDialog] = useState(false);
 
   const loading = reportsLoading || grantsLoading;
+
+  const handleViewReport = (report) => {
+    setSelectedReport(report);
+    setShowViewDialog(true);
+  };
+
+  const handleMarkAsDone = async (report) => {
+    try {
+      await updateReport(report.id, {
+        status: 'submitted',
+        submitted: true,
+        submitted_date: new Date().toISOString().split('T')[0]
+      });
+      toast.success('Report marked as submitted');
+    } catch (error) {
+      toast.error('Failed to update report status');
+    }
+  };
 
   if (loading) {
     return (
@@ -150,11 +173,40 @@ const UpcomingReportingDeadlines = () => {
                     </div>
                   )}
                 </div>
+                
+                <div className="flex gap-2 mt-3 pt-3 border-t border-border">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleViewReport(report)}
+                    className="flex items-center gap-1"
+                  >
+                    <Eye className="h-4 w-4" />
+                    View
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleMarkAsDone(report)}
+                    className="flex items-center gap-1 text-green-600 border-green-200 hover:bg-green-50"
+                  >
+                    <Check className="h-4 w-4" />
+                    Done
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))
         )}
       </CardContent>
+      
+      {showViewDialog && selectedReport && (
+        <ReportViewDialog
+          report={selectedReport}
+          open={showViewDialog}
+          onOpenChange={setShowViewDialog}
+        />
+      )}
     </Card>
   );
 };
