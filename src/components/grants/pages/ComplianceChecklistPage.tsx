@@ -4,12 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { Plus, CheckCircle, Clock, AlertTriangle, Edit, Eye } from 'lucide-react';
 import { useGrantCompliance } from '@/hooks/grants/useGrantCompliance';
+import { AddComplianceDialog } from '@/components/grants/view/AddComplianceDialog';
+import { ComplianceViewDialog } from '@/components/grants/ngo/ComplianceViewDialog';
+import { UploadEvidenceDialog } from '@/components/grants/view/UploadEvidenceDialog';
+import { GrantCompliance } from '@/types/grants';
 
 export const ComplianceChecklistPage = () => {
-  const { compliance, loading, createCompliance } = useGrantCompliance();
+  const { compliance, loading, createCompliance, updateCompliance } = useGrantCompliance();
   const [isCreating, setIsCreating] = useState(false);
+  
+  // Dialog states
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedRequirement, setSelectedRequirement] = useState<GrantCompliance | null>(null);
+  const [editingRequirement, setEditingRequirement] = useState<GrantCompliance | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -42,13 +53,51 @@ export const ComplianceChecklistPage = () => {
   const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   const handleCreateCompliance = async () => {
-    setIsCreating(true);
+    setEditingRequirement(null);
+    setAddDialogOpen(true);
+  };
+
+  const handleEditRequirement = (requirement: GrantCompliance) => {
+    setEditingRequirement(requirement);
+    setAddDialogOpen(true);
+  };
+
+  const handleViewRequirement = (requirement: GrantCompliance) => {
+    setSelectedRequirement(requirement);
+    setViewDialogOpen(true);
+  };
+
+  const handleViewEvidence = (requirement: GrantCompliance) => {
+    setSelectedRequirement(requirement);
+    setUploadDialogOpen(true);
+  };
+
+  const handleSaveRequirement = async (requirementData: Omit<GrantCompliance, 'id' | 'grant_id' | 'created_at' | 'updated_at' | 'created_by'>) => {
     try {
-      // This would normally open a dialog for creating a new compliance requirement
-      console.log('Create compliance requirement functionality');
-    } finally {
-      setIsCreating(false);
+      if (editingRequirement) {
+        await updateCompliance(editingRequirement.id, requirementData);
+      } else {
+        // For creating new compliance requirements, we need a grant_id
+        // Since this is a general page, we'll need to add grant selection logic
+        console.log('Creating new compliance requirement would require grant selection:', requirementData);
+        // TODO: Add grant selection functionality or navigate to grant-specific page
+      }
+      setAddDialogOpen(false);
+      setEditingRequirement(null);
+    } catch (error) {
+      console.error('Error saving compliance requirement:', error);
     }
+  };
+
+  const handleUploadComplete = async (fileName: string) => {
+    if (selectedRequirement) {
+      await updateCompliance(selectedRequirement.id, {
+        evidence_document: fileName,
+        status: 'completed' as const
+      });
+    }
+    setUploadDialogOpen(false);
+    setSelectedRequirement(null);
   };
 
   if (loading) {
@@ -170,7 +219,7 @@ export const ComplianceChecklistPage = () => {
                       </TableCell>
                       <TableCell>
                         {item.evidence_document ? (
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => handleViewEvidence(item)}>
                             View Evidence
                           </Button>
                         ) : (
@@ -179,8 +228,13 @@ export const ComplianceChecklistPage = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Button variant="outline" size="sm">
-                            Update
+                          <Button variant="outline" size="sm" onClick={() => handleEditRequirement(item)}>
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleViewRequirement(item)}>
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
                           </Button>
                         </div>
                       </TableCell>
@@ -192,6 +246,27 @@ export const ComplianceChecklistPage = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Dialogs */}
+      <AddComplianceDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        onSave={handleSaveRequirement}
+        editingRequirement={editingRequirement}
+      />
+
+      <ComplianceViewDialog
+        open={viewDialogOpen}
+        onOpenChange={setViewDialogOpen}
+        requirement={selectedRequirement}
+      />
+
+      <UploadEvidenceDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        requirement={selectedRequirement?.requirement || ""}
+        onUpload={handleUploadComplete}
+      />
     </div>
   );
 };

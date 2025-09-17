@@ -28,6 +28,8 @@ import { SuperAdminRolesPermissionPage } from '@/components/users/roles/SuperAdm
 import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
+import { ComplianceChecklistPage } from '@/components/grants/pages/ComplianceChecklistPage';
+import { DisbursementSchedulePage } from '@/components/grants/pages/DisbursementSchedulePage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -121,6 +123,14 @@ const GenericFeaturePage = () => {
 
   if (module === 'grants' && feature === 'reports-submissions') {
     return <ReportSubmissionsPage />;
+  }
+
+  if (module === 'grants' && feature === 'compliance-checklist') {
+    return <ComplianceChecklistPage />;
+  }
+
+  if (module === 'grants' && feature === 'disbursement-schedule') {
+    return <DisbursementSchedulePage />;
   }
 
   // User Management module routes
