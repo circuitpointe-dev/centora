@@ -81,8 +81,8 @@ const OpportunityCalendarCard: React.FC<OpportunityCalendarCardProps> = ({
     setYear(y);
   };
 
-  const DayContent = (props: { date: Date }) => {
-    const reminder = getDailyReminder(props.date);
+  const DayContent = (props: { day: any; modifiers: any }) => {
+    const reminder = getDailyReminder(props.day.date);
     return (
       <div
         className={cn(
@@ -91,7 +91,7 @@ const OpportunityCalendarCard: React.FC<OpportunityCalendarCardProps> = ({
         )}
         style={{ minWidth: 24, minHeight: 24 }}
       >
-        <span>{props.date.getDate()}</span>
+        <span>{props.day.date.getDate()}</span>
       </div>
     );
   };
@@ -160,7 +160,7 @@ const OpportunityCalendarCard: React.FC<OpportunityCalendarCardProps> = ({
             today: "border border-blue-500",
           }}
           components={{
-            DayContent: DayContent,
+            DayButton: DayContent,
           }}
         />
       </div>
