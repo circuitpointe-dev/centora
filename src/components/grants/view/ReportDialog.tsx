@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Upload, Download, FileText, X } from "lucide-react";
 import { format } from "date-fns";
 import {
   Dialog,
@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { GrantReport } from "@/types/grants";
+import { useDownloadGrantReportFile, useUploadGrantReportFile } from "@/hooks/grants/useGrantReportFiles";
+import { Badge } from "@/components/ui/badge";
 
 interface ReportDialogProps {
   open: boolean;
@@ -44,6 +46,10 @@ export const ReportDialog: React.FC<ReportDialogProps> = ({
   const [status, setStatus] = useState<'upcoming' | 'in_progress' | 'submitted' | 'overdue'>('upcoming');
   const [submitted, setSubmitted] = useState(false);
   const [submittedDate, setSubmittedDate] = useState<Date>();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const downloadFile = useDownloadGrantReportFile();
+  const uploadFile = useUploadGrantReportFile();
 
   const isEditing = !!report;
 
@@ -72,11 +78,27 @@ export const ReportDialog: React.FC<ReportDialogProps> = ({
       status,
       submitted,
       submitted_date: submittedDate ? format(submittedDate, "yyyy-MM-dd") : undefined,
-      file_name: undefined,
-      file_path: undefined,
+      file_name: selectedFile?.name || report?.file_name,
+      file_path: report?.file_path,
     });
 
     onOpenChange(false);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleDownload = () => {
+    if (report?.file_path && report?.file_name) {
+      downloadFile.mutate({ 
+        filePath: report.file_path, 
+        fileName: report.file_name 
+      });
+    }
   };
 
   return (
@@ -172,6 +194,54 @@ export const ReportDialog: React.FC<ReportDialogProps> = ({
               </Popover>
             </div>
           )}
+
+          {/* File Upload Section */}
+          <div className="space-y-2">
+            <Label className="text-gray-700">Uploaded Documents</Label>
+            
+            {report?.file_name && report?.file_path ? (
+              <div className="flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm">{report.file_name}</span>
+                  <Badge variant="secondary" className="text-xs">
+                    Uploaded on {report.submitted_date ? new Date(report.submitted_date).toLocaleDateString() : 'N/A'}
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDownload}
+                    disabled={downloadFile.isPending}
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    {downloadFile.isPending ? 'Downloading...' : 'Download'}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-gray-200 rounded-md p-4">
+                <div className="text-center">
+                  <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                  <div className="text-sm text-gray-600 mb-2">
+                    Upload report document
+                  </div>
+                  <Input
+                    type="file"
+                    onChange={handleFileUpload}
+                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    className="max-w-xs mx-auto"
+                  />
+                  {selectedFile && (
+                    <div className="mt-2 text-sm text-green-600">
+                      Selected: {selectedFile.name}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end gap-3 pt-4">

@@ -6,13 +6,16 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Upload, Eye, FileText, Edit } from 'lucide-react';
 import { useGrantReports } from '@/hooks/grants/useGrantReports';
 import { ReportDialog } from '@/components/grants/view/ReportDialog';
+import { ReportViewDialog } from '@/components/grants/view/ReportViewDialog';
 import { GrantReport } from '@/types/grants';
 import { supabase } from '@/integrations/supabase/client';
 
 export const ReportsSubmissionsPage = () => {
   const { reports, loading, createReport, updateReport } = useGrantReports();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editingReport, setEditingReport] = useState<GrantReport | null>(null);
+  const [viewingReport, setViewingReport] = useState<GrantReport | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -37,6 +40,11 @@ export const ReportsSubmissionsPage = () => {
   const handleEditReport = (report: GrantReport) => {
     setEditingReport(report);
     setDialogOpen(true);
+  };
+
+  const handleViewReport = (report: GrantReport) => {
+    setViewingReport(report);
+    setViewDialogOpen(true);
   };
 
   const handleSaveReport = async (reportData: any) => {
@@ -197,7 +205,11 @@ export const ReportsSubmissionsPage = () => {
                             Edit
                           </Button>
                           {report.submitted ? (
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleViewReport(report)}
+                            >
                               <Eye className="h-3 w-3 mr-1" />
                               View
                             </Button>
@@ -224,6 +236,13 @@ export const ReportsSubmissionsPage = () => {
         onOpenChange={setDialogOpen}
         report={editingReport}
         onSave={handleSaveReport}
+      />
+
+      {/* View Report Dialog */}
+      <ReportViewDialog
+        open={viewDialogOpen}
+        onOpenChange={setViewDialogOpen}
+        report={viewingReport}
       />
     </div>
   );

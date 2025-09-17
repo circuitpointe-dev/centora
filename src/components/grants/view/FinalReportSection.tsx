@@ -59,6 +59,7 @@ const FinalReportSection = (): JSX.Element => {
       <ReportViewDialog 
         open={isDialogOpen} 
         onOpenChange={setIsDialogOpen} 
+        report={null}
       />
     </>
   );
