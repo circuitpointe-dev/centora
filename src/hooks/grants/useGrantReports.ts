@@ -12,9 +12,25 @@ export const useGrantReports = (grantId?: string) => {
     try {
       setLoading(true);
 
+      // Get current user and their organization
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('org_id')
+        .eq('id', user.user.id)
+        .single();
+
+      if (!profile?.org_id) throw new Error('User organization not found');
+
       let query = supabase
         .from('grant_reports')
-        .select('*')
+        .select(`
+          *,
+          grant:grants!inner(org_id)
+        `)
+        .eq('grant.org_id', profile.org_id)
         .order('due_date', { ascending: true });
 
       if (grantId) {

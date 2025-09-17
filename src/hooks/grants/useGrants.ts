@@ -12,9 +12,22 @@ export const useGrants = () => {
     try {
       setLoading(true);
 
+      // Get current user and their organization
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('org_id')
+        .eq('id', user.user.id)
+        .single();
+
+      if (!profile?.org_id) throw new Error('User organization not found');
+
       const { data, error } = await supabase
         .from('grants')
         .select('*')
+        .eq('org_id', profile.org_id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -24,7 +37,7 @@ export const useGrants = () => {
       console.error('Error fetching grants:', err);
       toast({
         title: 'Error',
-        description: 'Failed to fetch grants data',
+        description: 'Failed to fetch grants. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -41,10 +54,19 @@ export const useGrants = () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
 
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('org_id')
+        .eq('id', user.user.id)
+        .single();
+
+      if (!profile?.org_id) throw new Error('User organization not found');
+
       const { data, error } = await supabase
         .from('grants')
         .insert({
           ...grantData,
+          org_id: profile.org_id,
           created_by: user.user.id,
         })
         .select()
