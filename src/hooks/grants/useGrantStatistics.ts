@@ -20,61 +20,52 @@ export const useGrantStatistics = () => {
     try {
       setLoading(true);
 
-      // Fetch grants data
+      // Fetch all grants for the organization
       const { data: grants, error: grantsError } = await supabase
         .from('grants')
-        .select('status, amount');
+        .select('*');
 
       if (grantsError) throw grantsError;
 
-      // Calculate grant statistics
-      const total_grants = grants?.length || 0;
-      const active_grants = grants?.filter(g => g.status === 'active').length || 0;
-      const closed_grants = grants?.filter(g => g.status === 'closed').length || 0;
-      const total_value = grants?.reduce((sum, g) => sum + (g.amount || 0), 0) || 0;
-
-      // Fetch disbursement data for disbursement rate
-      const { data: disbursements, error: disbError } = await supabase
-        .from('grant_disbursements')
-        .select('status, amount');
-
-      if (disbError) throw disbError;
-
-      const totalDisbursements = disbursements?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
-      const releasedDisbursements = disbursements?.filter(d => d.status === 'released')
-        .reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
-      const disbursement_rate = totalDisbursements > 0 ? Math.round((releasedDisbursements / totalDisbursements) * 100) : 0;
-
-      // Fetch compliance data for compliance rate
-      const { data: compliance, error: compError } = await supabase
+      // Fetch compliance data
+      const { data: compliance, error: complianceError } = await supabase
         .from('grant_compliance')
-        .select('status');
+        .select('*');
 
-      if (compError) throw compError;
+      if (complianceError) throw complianceError;
 
-      const totalCompliance = compliance?.length || 0;
+      // Fetch disbursement data
+      const { data: disbursements, error: disbursementsError } = await supabase
+        .from('grant_disbursements')
+        .select('*');
+
+      if (disbursementsError) throw disbursementsError;
+
+      // Calculate statistics
+      const totalGrants = grants?.length || 0;
+      const activeGrants = grants?.filter(g => g.status === 'active').length || 0;
+      const closedGrants = grants?.filter(g => g.status === 'closed').length || 0;
+      const totalValue = grants?.reduce((sum, g) => sum + Number(g.amount), 0) || 0;
+      
       const completedCompliance = compliance?.filter(c => c.status === 'completed').length || 0;
-      const compliance_rate = totalCompliance > 0 ? Math.round((completedCompliance / totalCompliance) * 100) : 0;
-
-      // Fetch reports data for burn rate
-      const { data: reports, error: reportsError } = await supabase
-        .from('grant_reports')
-        .select('submitted');
-
-      if (reportsError) throw reportsError;
-
-      const totalReports = reports?.length || 0;
-      const submittedReports = reports?.filter(r => r.submitted).length || 0;
-      const burn_rate = totalReports > 0 ? Math.round((submittedReports / totalReports) * 100) : 0;
+      const totalCompliance = compliance?.length || 0;
+      const complianceRate = totalCompliance > 0 ? (completedCompliance / totalCompliance) * 100 : 0;
+      
+      const releasedDisbursements = disbursements?.filter(d => d.status === 'released').reduce((sum, d) => sum + Number(d.amount), 0) || 0;
+      const disbursementRate = totalValue > 0 ? (releasedDisbursements / totalValue) * 100 : 0;
+      
+      // Simple burn rate calculation (could be enhanced with time-based logic)
+      const pendingDisbursements = disbursements?.filter(d => d.status === 'pending').reduce((sum, d) => sum + Number(d.amount), 0) || 0;
+      const burnRate = totalValue > 0 ? ((totalValue - pendingDisbursements) / totalValue) * 100 : 0;
 
       setStatistics({
-        total_grants,
-        active_grants,
-        closed_grants,
-        total_value,
-        disbursement_rate,
-        compliance_rate,
-        burn_rate,
+        total_grants: totalGrants,
+        active_grants: activeGrants,
+        closed_grants: closedGrants,
+        total_value: totalValue,
+        disbursement_rate: disbursementRate,
+        compliance_rate: complianceRate,
+        burn_rate: burnRate,
       });
     } catch (err) {
       console.error('Error fetching grant statistics:', err);
@@ -92,5 +83,9 @@ export const useGrantStatistics = () => {
     fetchStatistics();
   }, []);
 
-  return { statistics, loading, refetch: fetchStatistics };
+  return {
+    statistics,
+    loading,
+    refetch: fetchStatistics,
+  };
 };

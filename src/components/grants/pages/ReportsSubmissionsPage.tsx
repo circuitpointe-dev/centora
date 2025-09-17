@@ -7,6 +7,7 @@ import { Plus, Upload, Eye, FileText, Edit } from 'lucide-react';
 import { useGrantReports } from '@/hooks/grants/useGrantReports';
 import { ReportDialog } from '@/components/grants/view/ReportDialog';
 import { GrantReport } from '@/types/grants';
+import { supabase } from '@/integrations/supabase/client';
 
 export const ReportsSubmissionsPage = () => {
   const { reports, loading, createReport, updateReport } = useGrantReports();
@@ -43,11 +44,21 @@ export const ReportsSubmissionsPage = () => {
       if (editingReport) {
         await updateReport(editingReport.id, reportData);
       } else {
-        // For now, create with a default grant_id - in real app this would be passed from context
-        await createReport({
-          ...reportData,
-          grant_id: 'default-grant-id' // This should be passed from the current grant context
-        });
+        // Get the first active grant for context - in a real app this would come from grant context
+        const { data: activeGrants } = await supabase
+          .from('grants')
+          .select('id')
+          .eq('status', 'active')
+          .limit(1);
+        
+        if (activeGrants && activeGrants.length > 0) {
+          await createReport({
+            ...reportData,
+            grant_id: activeGrants[0].id
+          });
+        } else {
+          throw new Error('No active grants found. Please create a grant first.');
+        }
       }
       setDialogOpen(false);
       setEditingReport(null);

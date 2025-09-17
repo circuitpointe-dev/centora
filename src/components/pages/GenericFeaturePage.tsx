@@ -7,7 +7,7 @@ import DonorManagementPage from './DonorManagementPage';
 import OpportunityTrackingPage from './OpportunityTrackingPage';
 import ProposalManagementPage from './ProposalManagementPage';
 import FundraisingAnalyticsPage from './FundraisingAnalyticsPage';
-import GrantsManagerPage from './GrantsManagerPage';
+import { GrantsManagerDashboard } from '@/components/grants/dashboard/GrantsManagerDashboard';
 import GrantsDonorDashboard from '@/components/grants/GrantsDonorDashboard';
 import TotalGrantsPage from './TotalGrantsPage';
 import ActiveGrantsPage from './ActiveGrantsPage';
@@ -82,11 +82,11 @@ const GenericFeaturePage = () => {
 
   // Render specific page components for grants routes
   if (module === 'grants' && feature === 'grants-manager') {
-    // Use GrantsDonorDashboard for donors, GrantsManagerPage for NGOs
+    // Use GrantsDonorDashboard for donors, GrantsManagerDashboard for NGOs
     if (userType === 'Donor') {
       return <GrantsDonorDashboard />;
     }
-    return <GrantsManagerPage />;
+    return <GrantsManagerDashboard />;
   }
 
   if (module === 'grants' && feature === 'total-grants') {

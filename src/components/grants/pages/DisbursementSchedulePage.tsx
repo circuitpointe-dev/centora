@@ -7,6 +7,7 @@ import { Plus, DollarSign, Clock, CheckCircle, Edit } from 'lucide-react';
 import { useGrantDisbursements } from '@/hooks/grants/useGrantDisbursements';
 import { DisbursementDialog } from '@/components/grants/view/DisbursementDialog';
 import { GrantDisbursement } from '@/types/grants';
+import { supabase } from '@/integrations/supabase/client';
 
 export const DisbursementSchedulePage = () => {
   const { disbursements, loading, createDisbursement, updateDisbursement } = useGrantDisbursements();
@@ -62,11 +63,21 @@ export const DisbursementSchedulePage = () => {
       if (editingDisbursement) {
         await updateDisbursement(editingDisbursement.id, disbursementData);
       } else {
-        // For now, create with a default grant_id - in real app this would be passed from context
-        await createDisbursement({
-          ...disbursementData,
-          grant_id: 'default-grant-id' // This should be passed from the current grant context
-        });
+        // Get the first active grant for context - in a real app this would come from grant context
+        const { data: activeGrants } = await supabase
+          .from('grants')
+          .select('id')
+          .eq('status', 'active')
+          .limit(1);
+        
+        if (activeGrants && activeGrants.length > 0) {
+          await createDisbursement({
+            ...disbursementData,
+            grant_id: activeGrants[0].id
+          });
+        } else {
+          throw new Error('No active grants found. Please create a grant first.');
+        }
       }
       setDialogOpen(false);
       setEditingDisbursement(null);

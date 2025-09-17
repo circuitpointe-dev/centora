@@ -4,16 +4,16 @@ import { useToast } from '@/hooks/use-toast';
 
 interface NGOReportStatistics {
   totalDue: number;
-  overdue: number;
   submitted: number;
+  overdue: number;
   upcoming: number;
 }
 
 export const useNGOReportStatistics = () => {
   const [reportsData, setReportsData] = useState<NGOReportStatistics>({
     totalDue: 0,
-    overdue: 0,
     submitted: 0,
+    overdue: 0,
     upcoming: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -23,29 +23,30 @@ export const useNGOReportStatistics = () => {
     try {
       setLoading(true);
 
-      // Get current date for comparison
-      const now = new Date();
-      const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-
-      // Fetch all reports
-      const { data: reports, error: reportsError } = await supabase
+      // Fetch all reports for the organization
+      const { data: reports, error } = await supabase
         .from('grant_reports')
-        .select('due_date, submitted')
-        .gte('due_date', currentMonth.toISOString().split('T')[0])
-        .lt('due_date', nextMonth.toISOString().split('T')[0]);
+        .select('*');
 
-      if (reportsError) throw reportsError;
+      if (error) throw error;
 
-      const totalDue = reports?.length || 0;
+      // Calculate statistics
+      const currentDate = new Date();
+      const thisMonthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      
+      const totalDue = reports?.filter(r => {
+        const dueDate = new Date(r.due_date);
+        return dueDate <= thisMonthEnd && !r.submitted;
+      }).length || 0;
+      
       const submitted = reports?.filter(r => r.submitted).length || 0;
-      const overdue = reports?.filter(r => !r.submitted && new Date(r.due_date) < now).length || 0;
-      const upcoming = totalDue - submitted - overdue;
+      const overdue = reports?.filter(r => r.status === 'overdue').length || 0;
+      const upcoming = reports?.filter(r => r.status === 'upcoming').length || 0;
 
       setReportsData({
         totalDue,
-        overdue,
         submitted,
+        overdue,
         upcoming,
       });
     } catch (err) {
@@ -64,5 +65,9 @@ export const useNGOReportStatistics = () => {
     fetchReportStatistics();
   }, []);
 
-  return { reportsData, loading, refetch: fetchReportStatistics };
+  return {
+    reportsData,
+    loading,
+    refetch: fetchReportStatistics,
+  };
 };
