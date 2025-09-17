@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileText, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { useGrantReports } from '@/hooks/grants/useGrantReports';
 
 interface StatCard {
   title: string;
@@ -11,36 +12,61 @@ interface StatCard {
 }
 
 export const ReportingStatsCards = () => {
+  const { reports, loading } = useGrantReports();
+
+  const totalReports = reports.length;
+  const submittedReports = reports.filter(report => report.submitted).length;
+  const overdueReports = reports.filter(report => report.status === 'overdue').length;
+  const upcomingReports = reports.filter(report => report.status === 'upcoming').length;
+
   const stats: StatCard[] = [
     {
       title: 'Total Reports',
-      value: 38,
+      value: totalReports,
       icon: <FileText className="h-5 w-5" />,
       bgColor: 'bg-purple-50',
       iconColor: 'text-purple-600',
     },
     {
       title: 'Reports Submitted',
-      value: 5,
+      value: submittedReports,
       icon: <Send className="h-5 w-5" />,
       bgColor: 'bg-blue-50',
       iconColor: 'text-blue-600',
     },
     {
-      title: 'Reports Reviewed',
-      value: 3,
-      icon: <CheckCircle className="h-5 w-5" />,
-      bgColor: 'bg-yellow-50',
-      iconColor: 'text-yellow-600',
-    },
-    {
       title: 'Reports Due',
-      value: 6,
+      value: overdueReports,
       icon: <AlertCircle className="h-5 w-5" />,
       bgColor: 'bg-red-50',
       iconColor: 'text-red-600',
     },
+    {
+      title: 'Upcoming Reports',
+      value: upcomingReports,
+      icon: <CheckCircle className="h-5 w-5" />,
+      bgColor: 'bg-green-50',
+      iconColor: 'text-green-600',
+    },
   ];
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[...Array(4)].map((_, index) => (
+          <Card key={index} className="p-6">
+            <CardContent className="p-0">
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="animate-pulse bg-gray-200 p-3 rounded-lg w-12 h-12"></div>
+                <div className="animate-pulse bg-gray-200 h-8 w-12 rounded"></div>
+                <div className="animate-pulse bg-gray-200 h-4 w-20 rounded"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

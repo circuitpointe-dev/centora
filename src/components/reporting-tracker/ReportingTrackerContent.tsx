@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Search, Filter, Eye, RotateCcw, Send } from 'lucide-react';
-import { reportSubmissionData, type GrantSubmissionData, type ReportSubmissionData } from './data/reportSubmissionData';
+import { Search, Filter, Eye, RotateCcw, Send, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useGrantReports } from '@/hooks/grants/useGrantReports';
+import { useGrants } from '@/hooks/grants/useGrants';
+import { GrantReport } from '@/types/grants';
 import { ReportDetailsDialog } from './ReportDetailsDialog';
 
 export const ReportingTrackerContent = () => {
@@ -16,28 +18,40 @@ export const ReportingTrackerContent = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<ReportSubmissionData | null>(null);
+  const [selectedReport, setSelectedReport] = useState<GrantReport | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const itemsPerPage = 10;
   const { toast } = useToast();
+  
+  const { grants, loading: grantsLoading } = useGrants();
+  const { reports, loading: reportsLoading, updateReport } = useGrantReports();
 
-  const filteredGrants = reportSubmissionData.filter(grant => {
+  // Transform backend data to frontend format
+  const grantsWithReports = grants.map(grant => {
+    const grantReports = reports.filter(report => report.grant_id === grant.id);
+    
+    return {
+      id: grant.id,
+      grantName: grant.grant_name,
+      organization: grant.donor_name,
+      reports: grantReports
+    };
+  });
+
+  const filteredGrants = grantsWithReports.filter(grant => {
     const matchesSearch = 
       grant.grantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       grant.organization.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Filter by status and type across all reports in all periods
     if (statusFilter === 'all' && typeFilter === 'all') {
       return matchesSearch;
     }
 
-    const hasMatchingReport = grant.periods.some(period =>
-      period.reports.some(report => {
-        const matchesStatus = statusFilter === 'all' || report.status === statusFilter;
-        const matchesType = typeFilter === 'all' || report.reportType === typeFilter;
-        return matchesStatus && matchesType;
-      })
-    );
+    const hasMatchingReport = grant.reports.some(report => {
+      const matchesStatus = statusFilter === 'all' || report.status === statusFilter;
+      const matchesType = typeFilter === 'all' || report.report_type === typeFilter;
+      return matchesStatus && matchesType;
+    });
 
     return matchesSearch && hasMatchingReport;
   });
@@ -46,74 +60,101 @@ export const ReportingTrackerContent = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedGrants = filteredGrants.slice(startIndex, startIndex + itemsPerPage);
 
-  const getStatusBadge = (status: ReportSubmissionData['status']) => {
-    switch (status) {
-      case 'Approved':
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'submitted':
         return 'bg-green-100 text-green-800';
-      case 'Pending review':
+      case 'in_progress':
         return 'bg-yellow-100 text-yellow-800';
-      case 'Not submitted':
+      case 'upcoming':
+        return 'bg-blue-100 text-blue-800';
+      case 'overdue':
         return 'bg-red-100 text-red-800';
-      case 'Awaiting reviewer feedback':
-        return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getActionButton = (report: ReportSubmissionData) => {
-    switch (report.action) {
-      case 'View':
-        return (
-          <Button variant="ghost" size="sm" onClick={() => handleView(report)}>
-            <Eye className="h-3 w-3 mr-1" />
-            View
-          </Button>
-        );
-      case 'Resubmit':
-        return (
-          <Button variant="ghost" size="sm" onClick={() => handleResubmit(report)}>
-            <RotateCcw className="h-3 w-3 mr-1" />
-            Resubmit
-          </Button>
-        );
-      case 'Submit':
-        return (
-          <Button variant="ghost" size="sm" onClick={() => handleSubmit(report)}>
-            <Send className="h-3 w-3 mr-1" />
-            Submit
-          </Button>
-        );
-      default:
-        return null;
+  const getActionButton = (report: GrantReport) => {
+    if (report.submitted) {
+      return (
+        <Button variant="ghost" size="sm" onClick={() => handleView(report)}>
+          <Eye className="h-3 w-3 mr-1" />
+          View
+        </Button>
+      );
+    } else if (report.status === 'overdue') {
+      return (
+        <Button variant="ghost" size="sm" onClick={() => handleResubmit(report)}>
+          <RotateCcw className="h-3 w-3 mr-1" />
+          Resubmit
+        </Button>
+      );
+    } else {
+      return (
+        <Button variant="ghost" size="sm" onClick={() => handleSubmit(report)}>
+          <Upload className="h-3 w-3 mr-1" />
+          Submit
+        </Button>
+      );
     }
   };
 
-  const handleView = (report: ReportSubmissionData) => {
-    if (report.status === 'Approved') {
-      setSelectedReport(report);
-      setIsDialogOpen(true);
-    } else {
+  const handleView = (report: GrantReport) => {
+    setSelectedReport(report);
+    setIsDialogOpen(true);
+  };
+
+  const handleResubmit = async (report: GrantReport) => {
+    try {
+      await updateReport(report.id, { 
+        status: 'in_progress' as any,
+        submitted: false,
+        submitted_date: null
+      });
       toast({
-        title: "View Report",
-        description: `Viewing ${report.reportType} report`,
+        title: "Report Updated",
+        description: `${report.report_type} report marked for resubmission`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update report status",
+        variant: "destructive",
       });
     }
   };
 
-  const handleResubmit = (report: ReportSubmissionData) => {
-    toast({
-      title: "Resubmit Report",
-      description: `Resubmitting ${report.reportType} report`,
-    });
+  const handleSubmit = async (report: GrantReport) => {
+    try {
+      await updateReport(report.id, { 
+        status: 'submitted' as any,
+        submitted: true,
+        submitted_date: new Date().toISOString().split('T')[0]
+      });
+      toast({
+        title: "Report Submitted",
+        description: `${report.report_type} report has been submitted successfully`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit report",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleSubmit = (report: ReportSubmissionData) => {
-    toast({
-      title: "Submit Report",
-      description: `Submitting ${report.reportType} report`,
-    });
-  };
+  if (grantsLoading || reportsLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-sm text-muted-foreground">Loading reports...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -152,10 +193,10 @@ export const ReportingTrackerContent = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem value="Approved">Approved</SelectItem>
-                        <SelectItem value="Pending review">Pending review</SelectItem>
-                        <SelectItem value="Not submitted">Not submitted</SelectItem>
-                        <SelectItem value="Awaiting reviewer feedback">Awaiting reviewer feedback</SelectItem>
+                        <SelectItem value="submitted">Submitted</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="upcoming">Upcoming</SelectItem>
+                        <SelectItem value="overdue">Overdue</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -167,11 +208,11 @@ export const ReportingTrackerContent = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All types</SelectItem>
-                        <SelectItem value="Narrative">Narrative</SelectItem>
-                        <SelectItem value="Financial">Financial</SelectItem>
-                        <SelectItem value="M&E">M&E</SelectItem>
-                        <SelectItem value="Report">Report</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                        <SelectItem value="quarterly">Quarterly</SelectItem>
+                        <SelectItem value="annual">Annual</SelectItem>
+                        <SelectItem value="final">Final</SelectItem>
+                        <SelectItem value="financial">Financial</SelectItem>
+                        <SelectItem value="narrative">Narrative</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -203,47 +244,55 @@ export const ReportingTrackerContent = () => {
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
                   <div className="flex items-center justify-between w-full pr-4">
                     <span className="font-medium text-left">{grant.grantName}</span>
+                    <span className="text-sm text-gray-500">{grant.organization}</span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
                   <div className="space-y-4">
-                    {grant.periods.map((period) => (
-                      <div key={period.id} className="border-l-2 border-gray-200 pl-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <h4 className="font-medium text-sm">{period.name}</h4>
-                          <span className="text-xs text-gray-500">{period.dateRange}</span>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-                          {period.reports.map((report) => (
-                            <Card key={report.id} className="p-3">
-                              <div className="space-y-2">
-                                <div className="text-center">
-                                  <h5 className="font-medium text-sm">{report.reportType}</h5>
+                    {grant.reports.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {grant.reports.map((report) => (
+                          <Card key={report.id} className="p-3">
+                            <div className="space-y-2">
+                              <div className="text-center">
+                                <h5 className="font-medium text-sm capitalize">{report.report_type}</h5>
+                              </div>
+                              <div className="space-y-2 text-xs">
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Due Date</span>
+                                  <span className="text-right">{new Date(report.due_date).toLocaleDateString()}</span>
                                 </div>
-                                <div className="space-y-2 text-xs">
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Status</span>
-                                    <Badge className={getStatusBadge(report.status)} variant="secondary">
-                                      {report.status}
-                                    </Badge>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Comments</span>
-                                    <span className="text-right max-w-20 truncate">{report.comments}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Action</span>
-                                    <div className="text-right">
-                                      {getActionButton(report)}
-                                    </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Status</span>
+                                  <Badge className={getStatusBadge(report.status)} variant="secondary">
+                                    {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                                  </Badge>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Submitted</span>
+                                  <span className="text-right">
+                                    {report.submitted_date 
+                                      ? new Date(report.submitted_date).toLocaleDateString() 
+                                      : 'Not submitted'
+                                    }
+                                  </span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Action</span>
+                                  <div className="text-right">
+                                    {getActionButton(report)}
                                   </div>
                                 </div>
                               </div>
-                            </Card>
-                          ))}
-                        </div>
+                            </div>
+                          </Card>
+                        ))}
                       </div>
-                    ))}
+                    ) : (
+                      <div className="text-center py-4 text-gray-500">
+                        No reports found for this grant
+                      </div>
+                    )}
                   </div>
                 </AccordionContent>
               </AccordionItem>

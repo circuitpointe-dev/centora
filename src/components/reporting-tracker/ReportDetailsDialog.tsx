@@ -9,71 +9,53 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle, Clock, FileText, Download, AlertCircle } from "lucide-react";
-import type { ReportSubmissionData } from "./data/reportSubmissionData";
+import { GrantReport } from '@/types/grants';
 
 interface ReportDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  report: ReportSubmissionData | null;
+  report: GrantReport | null;
 }
 
 export const ReportDetailsDialog = ({ open, onOpenChange, report }: ReportDetailsDialogProps) => {
   if (!report) return null;
 
-  // Extended submission stages including Resubmitted and Final Approval
+  // Extended submission stages for real backend data
   const submissionStages = [
     {
       icon: FileText,
-      label: "Initial Submission",
-      date: "Nov 15, 2024",
+      label: "Report Created",
+      date: new Date(report.created_at).toLocaleDateString(),
       completed: true,
     },
     {
       icon: Clock,
-      label: "Under Review",
-      date: "Nov 16, 2024",
-      completed: true,
-    },
-    {
-      icon: AlertCircle,
-      label: "Feedback Provided",
-      date: "Nov 20, 2024",
-      completed: report.status === "Approved" || report.status === "Awaiting reviewer feedback",
-    },
-    {
-      icon: FileText,
-      label: "Resubmitted",
-      date: "Nov 25, 2024",
-      completed: report.status === "Approved",
-      conditional: report.status === "Approved" || report.action === "Resubmit",
+      label: "In Progress",
+      date: report.status === 'in_progress' ? 'Current' : '',
+      completed: report.status === 'submitted' || report.submitted,
     },
     {
       icon: CheckCircle,
-      label: "Final Approval",
-      date: report.status === "Approved" ? "Dec 1, 2024" : "",
-      completed: report.status === "Approved",
+      label: "Submitted",
+      date: report.submitted_date ? new Date(report.submitted_date).toLocaleDateString() : '',
+      completed: report.submitted,
     },
   ];
 
   const uploadedDocuments = [
     {
-      name: `${report.reportType}_Report_v1.pdf`,
-      uploadDate: "Nov 15, 2024",
-      notes: "Initial submission",
+      name: report.file_name || `${report.report_type}_Report.pdf`,
+      uploadDate: report.submitted_date ? new Date(report.submitted_date).toLocaleDateString() : 'Not uploaded',
+      notes: report.submitted ? "Report submitted" : "Awaiting submission",
     },
-    {
-      name: `${report.reportType}_Report_v2.pdf`,
-      uploadDate: "Nov 25, 2024",
-      notes: "Revised version addressing feedback",
-      conditional: report.status === "Approved",
-    },
-  ];
+  ].filter(doc => report.file_name);
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Approved": return "bg-green-100 text-green-800";
-      case "Pending Review": return "bg-yellow-100 text-yellow-800";
-      case "Resubmitted": return "bg-blue-100 text-blue-800";
+    switch (status.toLowerCase()) {
+      case "submitted": return "bg-green-100 text-green-800";
+      case "in_progress": return "bg-yellow-100 text-yellow-800";
+      case "upcoming": return "bg-blue-100 text-blue-800";
+      case "overdue": return "bg-red-100 text-red-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
@@ -83,7 +65,7 @@ export const ReportDetailsDialog = ({ open, onOpenChange, report }: ReportDetail
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white border border-gray-200">
         <DialogHeader>
           <DialogTitle className="text-black text-lg font-semibold">
-            Report Details - {report.reportType}
+            Report Details - {report.report_type}
           </DialogTitle>
         </DialogHeader>
 
@@ -97,14 +79,12 @@ export const ReportDetailsDialog = ({ open, onOpenChange, report }: ReportDetail
                 <div 
                   className="h-full bg-green-500 transition-all duration-300"
                   style={{ 
-                    width: `${(submissionStages.filter(stage => !stage.conditional || stage.conditional).filter(stage => stage.completed).length - 1) / (submissionStages.filter(stage => !stage.conditional || stage.conditional).length - 1) * 100}%` 
+                    width: `${(submissionStages.filter(stage => stage.completed).length - 1) / (submissionStages.length - 1) * 100}%` 
                   }}
                 />
               </div>
               
-              {submissionStages
-                .filter(stage => !stage.conditional || stage.conditional)
-                .map((stage, index) => {
+              {submissionStages.map((stage, index) => {
                 const Icon = stage.icon;
                 return (
                   <div key={index} className="flex flex-col items-center space-y-2 relative z-10">
@@ -132,21 +112,26 @@ export const ReportDetailsDialog = ({ open, onOpenChange, report }: ReportDetail
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium">Report Type:</span>
-                  <p className="text-gray-700">{report.reportType}</p>
+                  <p className="text-gray-700 capitalize">{report.report_type}</p>
                 </div>
                 <div>
                   <span className="font-medium">Status:</span>
                   <Badge className={`ml-2 ${getStatusColor(report.status)}`}>
-                    {report.status}
+                    {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
                   </Badge>
                 </div>
                 <div>
                   <span className="font-medium">Due Date:</span>
-                  <p className="text-gray-700">Nov 30, 2024</p>
+                  <p className="text-gray-700">{new Date(report.due_date).toLocaleDateString()}</p>
                 </div>
                 <div>
                   <span className="font-medium">Submission Date:</span>
-                  <p className="text-gray-700">Nov 15, 2024</p>
+                  <p className="text-gray-700">
+                    {report.submitted_date 
+                      ? new Date(report.submitted_date).toLocaleDateString()
+                      : 'Not submitted'
+                    }
+                  </p>
                 </div>
               </div>
             </div>
@@ -165,9 +150,7 @@ export const ReportDetailsDialog = ({ open, onOpenChange, report }: ReportDetail
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {uploadedDocuments
-                  .filter(doc => !doc.conditional || doc.conditional)
-                  .map((doc, index) => (
+                {uploadedDocuments.map((doc, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{doc.name}</TableCell>
                     <TableCell>{doc.uploadDate}</TableCell>
@@ -188,29 +171,44 @@ export const ReportDetailsDialog = ({ open, onOpenChange, report }: ReportDetail
           <div>
             <h3 className="font-semibold mb-2">Feedback</h3>
             <div className="space-y-3">
-              {report.status !== "Pending review" && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              {report.status === 'submitted' && (
+                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-blue-800">Reviewer Comment</span>
-                    <span className="text-xs text-blue-600">Nov 20, 2024</span>
+                    <span className="text-sm font-medium text-green-800">Report Submitted</span>
+                    <span className="text-xs text-green-600">
+                      {report.submitted_date ? new Date(report.submitted_date).toLocaleDateString() : 'Recently'}
+                    </span>
                   </div>
-                  <p className="text-sm text-blue-700">
-                    {report.status === "Approved" 
-                      ? "Report has been reviewed and approved. Well documented with clear metrics and outcomes."
-                      : "Please provide additional details on budget allocation and include quarterly breakdown charts."
-                    }
+                  <p className="text-sm text-green-700">
+                    Report has been successfully submitted and is awaiting review.
                   </p>
                 </div>
               )}
               
-              {report.status === "Approved" && (
-                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              {report.status === 'overdue' && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-green-800">Final Approval</span>
-                    <span className="text-xs text-green-600">Dec 1, 2024</span>
+                    <span className="text-sm font-medium text-red-800">Report Overdue</span>
+                    <span className="text-xs text-red-600">
+                      Due: {new Date(report.due_date).toLocaleDateString()}
+                    </span>
                   </div>
-                  <p className="text-sm text-green-700">
-                    Report has been thoroughly reviewed and meets all requirements. Thank you for the comprehensive submission.
+                  <p className="text-sm text-red-700">
+                    This report is past its due date. Please submit as soon as possible.
+                  </p>
+                </div>
+              )}
+
+              {report.status === 'upcoming' && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-blue-800">Upcoming Report</span>
+                    <span className="text-xs text-blue-600">
+                      Due: {new Date(report.due_date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-blue-700">
+                    This report is coming due soon. Please prepare for submission.
                   </p>
                 </div>
               )}
