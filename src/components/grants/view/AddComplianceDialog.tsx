@@ -117,22 +117,22 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
           {!isEditing && (
             <div className="space-y-2">
               <Label className="text-gray-700">Select Grant</Label>
-              <Select value={selectedGrantId} onValueChange={setSelectedGrantId}>
+              <Select value={selectedGrantId} onValueChange={setSelectedGrantId} disabled={grantsLoading || grants.length === 0}>
                 <SelectTrigger className="border-gray-300">
-                  <SelectValue placeholder="Choose a grant" />
+                  <SelectValue placeholder={
+                    grantsLoading ? "Loading grants..." : 
+                    grants.length === 0 ? "No grants available" : 
+                    "Choose a grant"
+                  } />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
-                  {grantsLoading ? (
-                    <SelectItem value="" disabled>Loading grants...</SelectItem>
-                  ) : grants.length === 0 ? (
-                    <SelectItem value="" disabled>No grants available</SelectItem>
-                  ) : (
+                  {!grantsLoading && grants.length > 0 ? (
                     grants.map((grant) => (
                       <SelectItem key={grant.id} value={grant.id}>
                         {grant.grant_name} - {grant.donor_name}
                       </SelectItem>
                     ))
-                  )}
+                  ) : null}
                 </SelectContent>
               </Select>
             </div>
