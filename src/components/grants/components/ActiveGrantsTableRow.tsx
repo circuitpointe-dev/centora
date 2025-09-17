@@ -16,6 +16,7 @@ export const ActiveGrantsTableRow = ({ grant }: ActiveGrantsTableRowProps) => {
   const navigate = useNavigate();
 
   const handleView = () => {
+    console.log('Viewing grant:', grant.id, grant);
     navigate(`/dashboard/grants/view/${grant.id}`);
   };
 
