@@ -8,6 +8,7 @@ import { useGrantDisbursements } from '@/hooks/grants/useGrantDisbursements';
 import { DisbursementDialog } from '@/components/grants/view/DisbursementDialog';
 import { GrantDisbursement } from '@/types/grants';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const DisbursementSchedulePage = () => {
   const { disbursements, loading, createDisbursement, updateDisbursement } = useGrantDisbursements();
@@ -62,6 +63,7 @@ export const DisbursementSchedulePage = () => {
     try {
       if (editingDisbursement) {
         await updateDisbursement(editingDisbursement.id, disbursementData);
+        toast.success('Disbursement updated successfully!');
       } else {
         // Get the first active grant for context - in a real app this would come from grant context
         const { data: activeGrants } = await supabase
@@ -75,14 +77,17 @@ export const DisbursementSchedulePage = () => {
             ...disbursementData,
             grant_id: activeGrants[0].id
           });
+          toast.success('Disbursement added successfully!');
         } else {
-          throw new Error('No active grants found. Please create a grant first.');
+          toast.error('No active grants found. Please create a grant first.');
+          return;
         }
       }
       setDialogOpen(false);
       setEditingDisbursement(null);
     } catch (error) {
       console.error('Error saving disbursement:', error);
+      toast.error('Failed to save disbursement. Please try again.');
     }
   };
 
