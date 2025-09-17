@@ -25,26 +25,26 @@ export const ComplianceChecklistPage = () => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success/10 text-success border-success/20';
       case 'in_progress':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning/10 text-warning border-warning/20';
       case 'overdue':
-        return 'bg-red-100 text-red-800';
+        return 'bg-destructive/10 text-destructive border-destructive/20';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="h-4 w-4 text-success" />;
       case 'in_progress':
-        return <Clock className="h-4 w-4 text-yellow-600" />;
+        return <Clock className="h-4 w-4 text-warning" />;
       case 'overdue':
-        return <AlertTriangle className="h-4 w-4 text-red-600" />;
+        return <AlertTriangle className="h-4 w-4 text-destructive" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -72,15 +72,12 @@ export const ComplianceChecklistPage = () => {
     setUploadDialogOpen(true);
   };
 
-  const handleSaveRequirement = async (requirementData: Omit<GrantCompliance, 'id' | 'grant_id' | 'created_at' | 'updated_at' | 'created_by'>) => {
+  const handleSaveRequirement = async (requirementData: Omit<GrantCompliance, 'id' | 'created_at' | 'updated_at' | 'created_by'>) => {
     try {
       if (editingRequirement) {
         await updateCompliance(editingRequirement.id, requirementData);
       } else {
-        // For creating new compliance requirements, we need a grant_id
-        // Since this is a general page, we'll need to add grant selection logic
-        console.log('Creating new compliance requirement would require grant selection:', requirementData);
-        // TODO: Add grant selection functionality or navigate to grant-specific page
+        await createCompliance(requirementData);
       }
       setAddDialogOpen(false);
       setEditingRequirement(null);

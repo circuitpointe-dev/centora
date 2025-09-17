@@ -25,11 +25,12 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { GrantCompliance } from "@/types/grants";
+import { useGrants } from "@/hooks/grants/useGrants";
 
 interface AddComplianceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (requirement: Omit<GrantCompliance, 'id' | 'grant_id' | 'created_at' | 'updated_at' | 'created_by'>) => void;
+  onSave: (requirement: Omit<GrantCompliance, 'id' | 'created_at' | 'updated_at' | 'created_by'>) => void;
   editingRequirement?: GrantCompliance | null;
 }
 
@@ -39,10 +40,12 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
   onSave,
   editingRequirement,
 }) => {
+  const { grants, loading: grantsLoading } = useGrants();
   const [requirement, setRequirement] = useState("");
   const [dueDate, setDueDate] = useState<Date>();
   const [status, setStatus] = useState<'in_progress' | 'completed' | 'overdue'>('in_progress');
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
+  const [selectedGrantId, setSelectedGrantId] = useState<string>("");
 
   const isEditing = !!editingRequirement;
 
@@ -52,12 +55,14 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
       setRequirement(editingRequirement.requirement);
       setDueDate(new Date(editingRequirement.due_date));
       setStatus(editingRequirement.status);
+      setSelectedGrantId(editingRequirement.grant_id);
       setEvidenceFile(null); // Reset file input for editing
     } else {
       // Reset form for adding new
       setRequirement("");
       setDueDate(undefined);
       setStatus('in_progress');
+      setSelectedGrantId("");
       setEvidenceFile(null);
     }
   }, [editingRequirement, open]);
@@ -70,19 +75,21 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
   };
 
   const handleSave = () => {
-    if (!requirement || !dueDate) return;
+    if (!requirement || !dueDate || (!isEditing && !selectedGrantId)) return;
 
     onSave({
       requirement,
       due_date: format(dueDate, "yyyy-MM-dd"),
       status,
       evidence_document: evidenceFile ? evidenceFile.name : editingRequirement?.evidence_document,
+      grant_id: isEditing ? editingRequirement!.grant_id : selectedGrantId,
     });
 
     // Reset form
     setRequirement("");
     setDueDate(undefined);
     setStatus('in_progress');
+    setSelectedGrantId("");
     setEvidenceFile(null);
     onOpenChange(false);
   };
@@ -91,6 +98,7 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
     setRequirement("");
     setDueDate(undefined);
     setStatus('in_progress');
+    setSelectedGrantId("");
     setEvidenceFile(null);
     onOpenChange(false);
   };
@@ -105,6 +113,31 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {/* Grant Selection - only show when adding new requirement */}
+          {!isEditing && (
+            <div className="space-y-2">
+              <Label className="text-gray-700">Select Grant</Label>
+              <Select value={selectedGrantId} onValueChange={setSelectedGrantId}>
+                <SelectTrigger className="border-gray-300">
+                  <SelectValue placeholder="Choose a grant" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-200">
+                  {grantsLoading ? (
+                    <SelectItem value="" disabled>Loading grants...</SelectItem>
+                  ) : grants.length === 0 ? (
+                    <SelectItem value="" disabled>No grants available</SelectItem>
+                  ) : (
+                    grants.map((grant) => (
+                      <SelectItem key={grant.id} value={grant.id}>
+                        {grant.grant_name} - {grant.donor_name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="requirement" className="text-gray-700">
               Requirement
@@ -196,7 +229,7 @@ export const AddComplianceDialog: React.FC<AddComplianceDialogProps> = ({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={!requirement || !dueDate}
+            disabled={!requirement || !dueDate || (!isEditing && !selectedGrantId)}
             className="bg-purple-600 hover:bg-purple-700"
           >
             {isEditing ? "Update" : "Save"}
