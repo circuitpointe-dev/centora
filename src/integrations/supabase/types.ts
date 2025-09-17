@@ -14,6 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
+      budget_line_items: {
+        Row: {
+          account_id: string | null
+          allocated_amount: number
+          budget_id: string
+          category: string
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          org_id: string
+          remaining_amount: number | null
+          spent_amount: number
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          allocated_amount: number
+          budget_id: string
+          category: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          org_id: string
+          remaining_amount?: number | null
+          spent_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          allocated_amount?: number
+          budget_id?: string
+          category?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          org_id?: string
+          remaining_amount?: number | null
+          spent_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_line_items_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_line_items_budget_id_fkey"
+            columns: ["budget_id"]
+            isOneToOne: false
+            referencedRelation: "budgets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budgets: {
+        Row: {
+          allocated_budget: number
+          budget_name: string
+          created_at: string
+          created_by: string
+          currency: string
+          end_date: string
+          fiscal_year: number
+          id: string
+          org_id: string
+          spent_amount: number
+          start_date: string
+          status: string
+          total_budget: number
+          updated_at: string
+        }
+        Insert: {
+          allocated_budget?: number
+          budget_name: string
+          created_at?: string
+          created_by: string
+          currency?: string
+          end_date: string
+          fiscal_year: number
+          id?: string
+          org_id: string
+          spent_amount?: number
+          start_date: string
+          status?: string
+          total_budget: number
+          updated_at?: string
+        }
+        Update: {
+          allocated_budget?: number
+          budget_name?: string
+          created_at?: string
+          created_by?: string
+          currency?: string
+          end_date?: string
+          fiscal_year?: number
+          id?: string
+          org_id?: string
+          spent_amount?: number
+          start_date?: string
+          status?: string
+          total_budget?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           color: string | null
@@ -822,6 +933,267 @@ export type Database = {
           permissions?: string[]
         }
         Relationships: []
+      }
+      finance_team_members: {
+        Row: {
+          created_at: string
+          created_by: string
+          currency: string
+          department: string | null
+          email: string
+          full_name: string
+          hire_date: string | null
+          id: string
+          org_id: string
+          position: string
+          salary: number | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          currency?: string
+          department?: string | null
+          email: string
+          full_name: string
+          hire_date?: string | null
+          id?: string
+          org_id: string
+          position: string
+          salary?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          currency?: string
+          department?: string | null
+          email?: string
+          full_name?: string
+          hire_date?: string | null
+          id?: string
+          org_id?: string
+          position?: string
+          salary?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      financial_accounts: {
+        Row: {
+          account_code: string
+          account_name: string
+          account_type: string
+          balance: number
+          created_at: string
+          created_by: string
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_code: string
+          account_name: string
+          account_type: string
+          balance?: number
+          created_at?: string
+          created_by: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_code?: string
+          account_name?: string
+          account_type?: string
+          balance?: number
+          created_at?: string
+          created_by?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_projects: {
+        Row: {
+          budget_allocated: number
+          budget_spent: number
+          created_at: string
+          created_by: string
+          currency: string
+          description: string | null
+          end_date: string | null
+          id: string
+          manager_name: string | null
+          org_id: string
+          project_code: string
+          project_name: string
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget_allocated?: number
+          budget_spent?: number
+          created_at?: string
+          created_by: string
+          currency?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          manager_name?: string | null
+          org_id: string
+          project_code: string
+          project_name: string
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget_allocated?: number
+          budget_spent?: number
+          created_at?: string
+          created_by?: string
+          currency?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          manager_name?: string | null
+          org_id?: string
+          project_code?: string
+          project_name?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_reports: {
+        Row: {
+          created_at: string
+          created_by: string
+          file_path: string | null
+          generated_data: Json | null
+          id: string
+          org_id: string
+          report_name: string
+          report_period_end: string
+          report_period_start: string
+          report_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          file_path?: string | null
+          generated_data?: Json | null
+          id?: string
+          org_id: string
+          report_name: string
+          report_period_end: string
+          report_period_start: string
+          report_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          file_path?: string | null
+          generated_data?: Json | null
+          id?: string
+          org_id?: string
+          report_name?: string
+          report_period_end?: string
+          report_period_start?: string
+          report_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_transactions: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          created_by: string
+          credit_account_id: string | null
+          currency: string
+          debit_account_id: string | null
+          description: string
+          id: string
+          org_id: string
+          project_id: string | null
+          reference_number: string | null
+          transaction_date: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string
+          created_by: string
+          credit_account_id?: string | null
+          currency?: string
+          debit_account_id?: string | null
+          description: string
+          id?: string
+          org_id: string
+          project_id?: string | null
+          reference_number?: string | null
+          transaction_date?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          created_by?: string
+          credit_account_id?: string | null
+          currency?: string
+          debit_account_id?: string | null
+          description?: string
+          id?: string
+          org_id?: string
+          project_id?: string | null
+          reference_number?: string | null
+          transaction_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_transactions_credit_account_id_fkey"
+            columns: ["credit_account_id"]
+            isOneToOne: false
+            referencedRelation: "financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_transactions_debit_account_id_fkey"
+            columns: ["debit_account_id"]
+            isOneToOne: false
+            referencedRelation: "financial_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       focus_areas: {
         Row: {
