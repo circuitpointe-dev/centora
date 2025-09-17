@@ -7,12 +7,12 @@ import { GrantsProgressCard } from './GrantsProgressCard';
 import { GrantsTable } from './GrantsTable';
 import UpcomingReportingDeadlines from './UpcomingReportingDeadlines';
 const GrantsDonorDashboard = () => {
-  return <div>
+  return (
+    <div className="space-y-6">
       <div>
         <h1 className="text-xl font-medium text-gray-900">
           Grants Dashboard
         </h1>
-        
       </div>
 
       {/* Statistics Cards Section */}
@@ -23,6 +23,7 @@ const GrantsDonorDashboard = () => {
 
       {/* Grants Table Section */}
       <GrantsTable />
-    </div>;
+    </div>
+  );
 };
 export default GrantsDonorDashboard;

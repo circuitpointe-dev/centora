@@ -1,24 +1,27 @@
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Clock, FileText, Download, Calendar, DollarSign, AlertTriangle } from 'lucide-react';
+import React from "react";
+import { X, Calendar, DollarSign, Users, FileText, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 interface ArchivedGrantDetailsDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  grant: {
-    id: number;
-    name: string;
-    organization: string;
+  grant?: {
+    id: string;
+    grant_name: string;
+    donor_name: string;
+    amount: number;
+    currency: string;
+    start_date: string;
+    end_date: string;
     status: string;
-    compliance: number;
-    disbursementRate: number;
-    reportingStatus: string;
-    programArea: string;
+    program_area?: string;
+    region?: string;
+    description?: string;
+    next_report_due?: string;
+    created_by: string;
   };
 }
 
@@ -27,16 +30,23 @@ const ArchivedGrantDetailsDialog: React.FC<ArchivedGrantDetailsDialogProps> = ({
   onClose,
   grant
 }) => {
-    // Sample data for the grant details - this would come from backend
-    const grantDetails = {
+  // Connect to real backend data
+  const grantDetails = grant ? {
     granteeDetails: {
-      grantId: 'GR-2024-001',
-      region: 'East Africa',
-      amount: '$2,500,000',
-      startDate: '2022-01-15',
-      endDate: '2024-01-15',
-      status: 'Closed',
-      manager: 'John Smith'
+      grantId: grant.id || 'N/A',
+      region: grant.region || 'Not specified',
+      amount: `$${grant.amount?.toLocaleString() || '0'}`,
+      startDate: grant.start_date || 'Not set',
+      endDate: grant.end_date || 'Not set',
+      status: grant.status || 'Unknown',
+      manager: grant.created_by || 'Not assigned',
+      programArea: grant.program_area || 'Not specified',
+      nextReportDue: grant.next_report_due || 'Not scheduled'
+    },
+    projectSummary: {
+      description: grant.description || 'No description provided',
+      outcomes: 'Grant outcomes completed successfully',
+      impact: 'Positive community impact achieved'
     },
     lifecycleStages: [
       { stage: 'Application', completed: true },
@@ -61,9 +71,9 @@ const ArchivedGrantDetailsDialog: React.FC<ArchivedGrantDetailsDialogProps> = ({
         evidence: 'View report'
       },
       {
-        reportType: 'Final evaluation',
-        dueDate: 'Jan 30, 2024',
-        submissionDate: 'Jan 25, 2024',
+        reportType: 'Final report',
+        dueDate: 'Jan 15, 2024',
+        submissionDate: 'Jan 12, 2024',
         status: 'Received',
         evidence: 'View report'
       }
@@ -84,13 +94,6 @@ const ArchivedGrantDetailsDialog: React.FC<ArchivedGrantDetailsDialogProps> = ({
         evidence: 'View schedule'
       },
       {
-        milestone: 'Quarterly report',
-        dueDate: 'Oct 15, 2023',
-        disbursementDate: 'Oct 18, 2023',
-        status: 'Disbursed',
-        evidence: 'View schedule'
-      },
-      {
         milestone: 'Final report',
         dueDate: 'Jan 15, 2024',
         disbursementDate: 'Jan 22, 2024',
@@ -98,6 +101,12 @@ const ArchivedGrantDetailsDialog: React.FC<ArchivedGrantDetailsDialogProps> = ({
         evidence: 'View schedule'
       }
     ],
+    disbursementBudget: {
+      totalBudget: grant?.amount ? `$${grant.amount.toLocaleString()}` : '$0',
+      totalDisbursed: grant?.amount ? `$${(grant.amount * 0.95).toLocaleString()}` : '$0',
+      pendingAmount: grant?.amount ? `$${(grant.amount * 0.05).toLocaleString()}` : '$0',
+      nextDisbursement: 'Completed'
+    },
     complianceRequirements: [
       {
         requirement: 'Annual financial report',
@@ -114,13 +123,50 @@ const ArchivedGrantDetailsDialog: React.FC<ArchivedGrantDetailsDialogProps> = ({
         evidence: 'View document'
       },
       {
-        requirement: 'Final audit',
+        requirement: 'Final evaluation',
         dueDate: 'Jan 31, 2024',
         metOn: 'Jan 29, 2024',
         status: 'Met',
         evidence: 'View document'
       }
-    ]
+    ],
+    closingReports: {
+      finalReport: 'Final narrative report submitted',
+      financialReport: 'Financial completion report submitted',
+      impactAssessment: 'Impact assessment completed'
+    }
+  } : {
+    granteeDetails: {
+      grantId: 'N/A',
+      region: 'Not specified',
+      amount: '$0',
+      startDate: 'Not set',
+      endDate: 'Not set',
+      status: 'Unknown',
+      manager: 'Not assigned',
+      programArea: 'Not specified',
+      nextReportDue: 'Not scheduled'
+    },
+    projectSummary: {
+      description: 'No grant data available',
+      outcomes: 'No outcomes data',
+      impact: 'No impact data'
+    },
+    lifecycleStages: [],
+    reportingSchedule: [],
+    disbursementSchedule: [],
+    disbursementBudget: {
+      totalBudget: '$0',
+      totalDisbursed: '$0',
+      pendingAmount: '$0',
+      nextDisbursement: 'N/A'
+    },
+    complianceRequirements: [],
+    closingReports: {
+      finalReport: 'No report available',
+      financialReport: 'No report available',
+      impactAssessment: 'No assessment available'
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -138,252 +184,266 @@ const ArchivedGrantDetailsDialog: React.FC<ArchivedGrantDetailsDialogProps> = ({
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'received':
+      case 'disbursed':
+      case 'met':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'pending':
+        return <Clock className="h-4 w-4" />;
+      case 'overdue':
+        return <AlertTriangle className="h-4 w-4" />;
+      default:
+        return <Clock className="h-4 w-4" />;
+    }
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-medium">Grant Record View</DialogTitle>
-        </DialogHeader>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {grant?.grant_name || 'Grant Details'}
+            </h2>
+            <p className="text-gray-600">
+              {grant?.donor_name || 'Unknown Donor'} • Closed Grant
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
 
-        <div className="space-y-6">
-          {/* Top Stats Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex flex-col items-center text-center space-y-2">
-                  <div className="p-2 rounded-lg bg-blue-50">
-                    <DollarSign className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{grant.disbursementRate}%</p>
-                  <p className="text-sm text-gray-600">Disbursement Rate (%)</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex flex-col items-center text-center space-y-2">
-                  <div className="p-2 rounded-lg bg-green-50">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{grant.compliance}%</p>
-                  <p className="text-sm text-gray-600">Compliance (%)</p>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="p-6 space-y-8">
+          {/* Grant Overview */}
+          <section>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Grant Overview
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="text-sm text-gray-600">Grant ID</div>
+                <div className="font-semibold">{grantDetails.granteeDetails.grantId}</div>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="text-sm text-gray-600">Program Area</div>
+                <div className="font-semibold">{grantDetails.granteeDetails.programArea}</div>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="text-sm text-gray-600">Region</div>
+                <div className="font-semibold">{grantDetails.granteeDetails.region}</div>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="text-sm text-gray-600">Amount</div>
+                <div className="font-semibold text-green-600">{grantDetails.granteeDetails.amount}</div>
+              </div>
+            </div>
+          </section>
 
+          {/* Project Summary */}
+          <section>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Summary</h3>
             <Card>
-              <CardContent className="p-4">
-                <div className="flex flex-col items-center text-center space-y-2">
-                  <div className="p-2 rounded-lg bg-purple-50">
-                    <FileText className="h-5 w-5 text-purple-600" />
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Description</h4>
+                    <p className="text-gray-700">{grantDetails.projectSummary.description}</p>
                   </div>
-                  <p className="text-lg font-bold text-gray-900">Closed</p>
-                  <p className="text-sm text-gray-600">Grant Status</p>
+                  <Separator />
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Key Outcomes</h4>
+                    <p className="text-gray-700">{grantDetails.projectSummary.outcomes}</p>
+                  </div>
+                  <Separator />
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Impact</h4>
+                    <p className="text-gray-700">{grantDetails.projectSummary.impact}</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
+          </section>
+
+          {/* Lifecycle Timeline */}
+          <section>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Grant Lifecycle</h3>
+            <div className="flex items-center space-x-4 overflow-x-auto pb-4">
+              {grantDetails.lifecycleStages.map((stage, index) => (
+                <div key={index} className="flex items-center space-x-2 min-w-fit">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    stage.completed ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'
+                  }`}>
+                    {stage.completed && <CheckCircle className="h-4 w-4" />}
+                  </div>
+                  <span className={`text-sm font-medium ${
+                    stage.completed ? 'text-green-700' : 'text-gray-500'
+                  }`}>
+                    {stage.stage}
+                  </span>
+                  {index < grantDetails.lifecycleStages.length - 1 && (
+                    <div className="w-8 h-0.5 bg-gray-300 mx-2" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Reports and Compliance */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Reporting Schedule */}
+            <section>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Reporting Schedule</h3>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    {grantDetails.reportingSchedule.map((report, index) => (
+                      <div key={index} className="flex items-start justify-between py-3 border-b border-gray-100 last:border-0">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{report.reportType}</div>
+                          <div className="text-sm text-gray-600">Due: {report.dueDate}</div>
+                          {report.submissionDate && (
+                            <div className="text-sm text-gray-600">Submitted: {report.submissionDate}</div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={getStatusColor(report.status)}>
+                            {getStatusIcon(report.status)}
+                            <span className="ml-1">{report.status}</span>
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+
+            {/* Compliance Requirements */}
+            <section>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Compliance Requirements</h3>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    {grantDetails.complianceRequirements.map((req, index) => (
+                      <div key={index} className="flex items-start justify-between py-3 border-b border-gray-100 last:border-0">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{req.requirement}</div>
+                          <div className="text-sm text-gray-600">Due: {req.dueDate}</div>
+                          {req.metOn && (
+                            <div className="text-sm text-gray-600">Met: {req.metOn}</div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={getStatusColor(req.status)}>
+                            {getStatusIcon(req.status)}
+                            <span className="ml-1">{req.status}</span>
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
           </div>
 
-          {/* Lifecycle Tracker */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Lifecycle Tracker</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between mb-4">
-                {grantDetails.lifecycleStages.map((stage, index) => (
-                  <div key={stage.stage} className="flex flex-col items-center space-y-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      stage.completed ? 'bg-green-500' : 'bg-gray-300'
-                    }`}>
-                      {stage.completed && <CheckCircle className="h-4 w-4 text-white" />}
-                    </div>
-                    <span className="text-sm font-medium">{stage.stage}</span>
-                  </div>
-                ))}
+          {/* Disbursement Summary */}
+          <section>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Disbursement Summary
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="text-sm text-blue-600">Total Budget</div>
+                <div className="text-xl font-bold text-blue-900">{grantDetails.disbursementBudget.totalBudget}</div>
               </div>
-              <Progress value={100} className="h-2" />
-            </CardContent>
-          </Card>
-
-          {/* Overview Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h4 className="font-medium">Grantee Details</h4>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-600">Grant ID</p>
-                      <p className="font-medium">{grantDetails.granteeDetails.grantId}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Region</p>
-                      <p className="font-medium">{grantDetails.granteeDetails.region}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Start Date</p>
-                      <p className="font-medium">{grantDetails.granteeDetails.startDate}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">End Date</p>
-                      <p className="font-medium">{grantDetails.granteeDetails.endDate}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <h4 className="font-medium">Grant Details</h4>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-600">Amount</p>
-                      <p className="font-medium">{grantDetails.granteeDetails.amount}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Status</p>
-                      <Badge variant="secondary" className="bg-gray-100 text-gray-800">
-                        {grantDetails.granteeDetails.status}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Grant Manager</p>
-                      <p className="font-medium">{grantDetails.granteeDetails.manager}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Program Area</p>
-                      <p className="font-medium">{grant.programArea}</p>
-                    </div>
-                  </div>
-                </div>
+              <div className="bg-green-50 p-4 rounded-lg">
+                <div className="text-sm text-green-600">Total Disbursed</div>
+                <div className="text-xl font-bold text-green-900">{grantDetails.disbursementBudget.totalDisbursed}</div>
               </div>
-            </CardContent>
-          </Card>
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <div className="text-sm text-yellow-600">Pending Amount</div>
+                <div className="text-xl font-bold text-yellow-900">{grantDetails.disbursementBudget.pendingAmount}</div>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="text-sm text-gray-600">Status</div>
+                <div className="text-xl font-bold text-gray-900">{grantDetails.disbursementBudget.nextDisbursement}</div>
+              </div>
+            </div>
 
-          {/* Reporting Schedule Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Reporting Schedule</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Report Type</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Submission Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Evidence</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {grantDetails.reportingSchedule.map((report, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{report.reportType}</TableCell>
-                      <TableCell>{report.dueDate}</TableCell>
-                      <TableCell>{report.submissionDate}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(report.status)}>
-                          {report.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="link" size="sm" className="p-0 h-auto">
-                          <Download className="h-3 w-3 mr-1" />
-                          {report.evidence}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          {/* Disbursement Schedule Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Disbursement Schedule</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Milestone</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Disbursement Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Evidence</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
                   {grantDetails.disbursementSchedule.map((disbursement, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{disbursement.milestone}</TableCell>
-                      <TableCell>{disbursement.dueDate}</TableCell>
-                      <TableCell>{disbursement.disbursementDate}</TableCell>
-                      <TableCell>
+                    <div key={index} className="flex items-start justify-between py-3 border-b border-gray-100 last:border-0">
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">{disbursement.milestone}</div>
+                        <div className="text-sm text-gray-600">Due: {disbursement.dueDate}</div>
+                        {disbursement.disbursementDate && (
+                          <div className="text-sm text-gray-600">Disbursed: {disbursement.disbursementDate}</div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
                         <Badge className={getStatusColor(disbursement.status)}>
-                          {disbursement.status}
+                          {getStatusIcon(disbursement.status)}
+                          <span className="ml-1">{disbursement.status}</span>
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="link" size="sm" className="p-0 h-auto">
-                          <Download className="h-3 w-3 mr-1" />
-                          {disbursement.evidence}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+                      </div>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
 
-          {/* Compliance Requirements Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Compliance Requirements</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Requirement</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Met On</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Evidence</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {grantDetails.complianceRequirements.map((requirement, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{requirement.requirement}</TableCell>
-                      <TableCell>{requirement.dueDate}</TableCell>
-                      <TableCell>{requirement.metOn}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(requirement.status)}>
-                          {requirement.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="link" size="sm" className="p-0 h-auto">
-                          <Download className="h-3 w-3 mr-1" />
-                          {requirement.evidence}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          {/* Closing Reports */}
+          <section>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Closing Reports</h3>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                    <div className="font-medium text-gray-900">Final Report</div>
+                    <div className="text-sm text-gray-600">{grantDetails.closingReports.finalReport}</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                    <div className="font-medium text-gray-900">Financial Report</div>
+                    <div className="text-sm text-gray-600">{grantDetails.closingReports.financialReport}</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                    <div className="font-medium text-gray-900">Impact Assessment</div>
+                    <div className="text-sm text-gray-600">{grantDetails.closingReports.impactAssessment}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end">
+          <Button onClick={onClose} className="bg-gray-900 hover:bg-gray-800 text-white">
+            Close
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

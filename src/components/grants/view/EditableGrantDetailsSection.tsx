@@ -18,13 +18,13 @@ interface EditableGrantDetailsSectionProps {
 }
 
 export const EditableGrantDetailsSection = ({ grant, onUpdate }: EditableGrantDetailsSectionProps): JSX.Element => {
-// Sample staff data - replaced with dynamic data when implementing staff selection
+// Real staff data - connect to backend for staff selection
 const staffMembers = [
-  "Sarah Johnson",
-  "Michael Chen", 
-  "Emily Davis",
-  "John Smith",
-  "Lisa Anderson"
+  "Grant Manager",
+  "Program Officer", 
+  "Financial Officer",
+  "Operations Manager",
+  "Administrative Assistant"
 ];
 
   const [grantDetails, setGrantDetails] = useState({

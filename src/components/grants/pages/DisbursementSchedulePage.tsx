@@ -3,12 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import { Plus, DollarSign, Clock, CheckCircle, Edit } from 'lucide-react';
 import { useGrantDisbursements } from '@/hooks/grants/useGrantDisbursements';
+import { DisbursementDialog } from '@/components/grants/view/DisbursementDialog';
+import { GrantDisbursement } from '@/types/grants';
 
 export const DisbursementSchedulePage = () => {
-  const { disbursements, loading, createDisbursement } = useGrantDisbursements();
-  const [isCreating, setIsCreating] = useState(false);
+  const { disbursements, loading, createDisbursement, updateDisbursement } = useGrantDisbursements();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingDisbursement, setEditingDisbursement] = useState<GrantDisbursement | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -45,12 +48,30 @@ export const DisbursementSchedulePage = () => {
     .reduce((sum, d) => sum + Number(d.amount), 0);
 
   const handleCreateDisbursement = async () => {
-    setIsCreating(true);
+    setEditingDisbursement(null);
+    setDialogOpen(true);
+  };
+
+  const handleEditDisbursement = (disbursement: GrantDisbursement) => {
+    setEditingDisbursement(disbursement);
+    setDialogOpen(true);
+  };
+
+  const handleSaveDisbursement = async (disbursementData: any) => {
     try {
-      // This would normally open a dialog for creating a new disbursement
-      console.log('Create disbursement functionality');
-    } finally {
-      setIsCreating(false);
+      if (editingDisbursement) {
+        await updateDisbursement(editingDisbursement.id, disbursementData);
+      } else {
+        // For now, create with a default grant_id - in real app this would be passed from context
+        await createDisbursement({
+          ...disbursementData,
+          grant_id: 'default-grant-id' // This should be passed from the current grant context
+        });
+      }
+      setDialogOpen(false);
+      setEditingDisbursement(null);
+    } catch (error) {
+      console.error('Error saving disbursement:', error);
     }
   };
 
@@ -74,7 +95,7 @@ export const DisbursementSchedulePage = () => {
             Track grant funding disbursements and payment schedules
           </p>
         </div>
-        <Button onClick={handleCreateDisbursement} disabled={isCreating}>
+        <Button onClick={handleCreateDisbursement}>
           <Plus className="h-4 w-4 mr-2" />
           Add Disbursement
         </Button>
@@ -178,8 +199,13 @@ export const DisbursementSchedulePage = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Button variant="outline" size="sm">
-                            Update
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleEditDisbursement(disbursement)}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
                           </Button>
                         </div>
                       </TableCell>
@@ -191,6 +217,14 @@ export const DisbursementSchedulePage = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Add Disbursement Dialog */}
+      <DisbursementDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        disbursement={editingDisbursement}
+        onSave={handleSaveDisbursement}
+      />
     </div>
   );
 };

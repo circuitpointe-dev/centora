@@ -3,12 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Upload, Eye, FileText } from 'lucide-react';
+import { Plus, Upload, Eye, FileText, Edit } from 'lucide-react';
 import { useGrantReports } from '@/hooks/grants/useGrantReports';
+import { ReportDialog } from '@/components/grants/view/ReportDialog';
+import { GrantReport } from '@/types/grants';
 
 export const ReportsSubmissionsPage = () => {
-  const { reports, loading, createReport } = useGrantReports();
-  const [isCreating, setIsCreating] = useState(false);
+  const { reports, loading, createReport, updateReport } = useGrantReports();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingReport, setEditingReport] = useState<GrantReport | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -26,12 +29,30 @@ export const ReportsSubmissionsPage = () => {
   };
 
   const handleCreateReport = async () => {
-    setIsCreating(true);
+    setEditingReport(null);
+    setDialogOpen(true);
+  };
+
+  const handleEditReport = (report: GrantReport) => {
+    setEditingReport(report);
+    setDialogOpen(true);
+  };
+
+  const handleSaveReport = async (reportData: any) => {
     try {
-      // This would normally open a dialog for creating a new report
-      console.log('Create report functionality');
-    } finally {
-      setIsCreating(false);
+      if (editingReport) {
+        await updateReport(editingReport.id, reportData);
+      } else {
+        // For now, create with a default grant_id - in real app this would be passed from context
+        await createReport({
+          ...reportData,
+          grant_id: 'default-grant-id' // This should be passed from the current grant context
+        });
+      }
+      setDialogOpen(false);
+      setEditingReport(null);
+    } catch (error) {
+      console.error('Error saving report:', error);
     }
   };
 
@@ -55,7 +76,7 @@ export const ReportsSubmissionsPage = () => {
             Track and manage grant reporting requirements and submissions
           </p>
         </div>
-        <Button onClick={handleCreateReport} disabled={isCreating}>
+        <Button onClick={handleCreateReport}>
           <Plus className="h-4 w-4 mr-2" />
           New Report
         </Button>
@@ -156,6 +177,14 @@ export const ReportsSubmissionsPage = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleEditReport(report)}
+                          >
+                            <Edit className="h-3 w-3 mr-1" />
+                            Edit
+                          </Button>
                           {report.submitted ? (
                             <Button variant="outline" size="sm">
                               <Eye className="h-3 w-3 mr-1" />
@@ -177,6 +206,14 @@ export const ReportsSubmissionsPage = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Add Report Dialog */}
+      <ReportDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        report={editingReport}
+        onSave={handleSaveReport}
+      />
     </div>
   );
 };
