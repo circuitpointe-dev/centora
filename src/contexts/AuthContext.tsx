@@ -75,9 +75,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (orgError) console.error('Error loading organization:', orgError);
         if (modulesError) console.error('Error loading modules:', modulesError);
 
-        orgName = org?.name || '';
-        orgType = (org?.type as 'NGO' | 'Donor' | undefined) ?? 'NGO';
-        
+        orgName = org?.name || '';
+        // Convert organization type from database format to UI format
+        const dbOrgType = org?.type as string;
+        if (dbOrgType === 'DONOR') {
+          orgType = 'Donor';
+        } else if (dbOrgType === 'NGO') {
+          orgType = 'NGO';
+        } else {
+          orgType = 'NGO'; // default fallback
+        }
+        
         // DEVELOPMENT MODE: Give all users access to all modules
         subscribedModules = Object.values(allModules);
       } else {
