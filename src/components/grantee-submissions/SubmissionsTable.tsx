@@ -4,29 +4,34 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Grid, List, Filter, Eye } from 'lucide-react';
-import { submissionsData, type Submission } from './data/submissionsData';
+import { Search, Grid, List, Filter, Eye, Loader2 } from 'lucide-react';
+import { useGranteeSubmissions, type GranteeSubmission } from '@/hooks/grants/useGranteeSubmissions';
 import SubmissionDetailDialog from './SubmissionDetailDialog';
 
 export const SubmissionsTable = () => {
+  const { submissions, loading, updateSubmissionStatus } = useGranteeSubmissions();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [selectedSubmission, setSelectedSubmission] = useState<GranteeSubmission | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const itemsPerPage = 8;
 
-  const filteredSubmissions = submissionsData.filter(submission => {
+  const filteredSubmissions = submissions.filter(submission => {
     const matchesSearch = 
-      submission.grantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      submission.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      submission.submissionType.toLowerCase().includes(searchTerm.toLowerCase());
+      (submission.grant?.grant_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.organization_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.submission_type.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || submission.status === statusFilter;
-    const matchesType = typeFilter === 'all' || submission.submissionType === typeFilter;
+    const normalizedStatus = submission.status === 'pending_review' ? 'Pending review' : 
+                            submission.status === 'revision_requested' ? 'Revision requested' :
+                            submission.status === 'approved' ? 'Approved' : submission.status;
+    
+    const matchesStatus = statusFilter === 'all' || normalizedStatus === statusFilter;
+    const matchesType = typeFilter === 'all' || submission.submission_type === typeFilter;
     
     return matchesSearch && matchesStatus && matchesType;
   });
@@ -35,9 +40,13 @@ export const SubmissionsTable = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedSubmissions = filteredSubmissions.slice(startIndex, startIndex + itemsPerPage);
 
-  const getStatusBadge = (status: Submission['status']) => {
+  const getStatusBadge = (status: string) => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
-    switch (status) {
+    const normalizedStatus = status === 'pending_review' ? 'Pending review' : 
+                            status === 'revision_requested' ? 'Revision requested' :
+                            status === 'approved' ? 'Approved' : status;
+    
+    switch (normalizedStatus) {
       case 'Pending review':
         return `${baseClasses} bg-amber-100 text-amber-800`;
       case 'Revision requested':
@@ -49,10 +58,19 @@ export const SubmissionsTable = () => {
     }
   };
 
-  const handleViewSubmission = (submission: Submission) => {
+  const handleViewSubmission = (submission: GranteeSubmission) => {
     setSelectedSubmission(submission);
     setShowDetailDialog(true);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin mr-2" />
+        <span>Loading submissions...</span>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -62,7 +80,7 @@ export const SubmissionsTable = () => {
         <div className="flex items-center space-x-2">
           <h3 className="text-lg font-medium">Submissions inbox</h3>
           <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">
-            new (19)
+            new ({submissions.filter(s => s.status === 'pending_review').length})
           </span>
         </div>
         <div className="flex items-center space-x-2">
@@ -166,13 +184,15 @@ export const SubmissionsTable = () => {
               <TableBody>
                 {paginatedSubmissions.map((submission) => (
                   <TableRow key={submission.id}>
-                    <TableCell className="font-medium">{submission.submissionType}</TableCell>
-                    <TableCell>{submission.grantName}</TableCell>
-                    <TableCell>{submission.organization}</TableCell>
-                    <TableCell>{submission.submittedOn}</TableCell>
+                    <TableCell className="font-medium">{submission.submission_type}</TableCell>
+                    <TableCell>{submission.grant?.grant_name || 'N/A'}</TableCell>
+                    <TableCell>{submission.organization_name}</TableCell>
+                    <TableCell>{new Date(submission.submitted_date).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <span className={getStatusBadge(submission.status)}>
-                        {submission.status}
+                        {submission.status === 'pending_review' ? 'Pending review' : 
+                         submission.status === 'revision_requested' ? 'Revision requested' :
+                         submission.status === 'approved' ? 'Approved' : submission.status}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -198,28 +218,30 @@ export const SubmissionsTable = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Submission type</span>
-                  <span className="font-medium">{submission.submissionType}</span>
+                  <span className="font-medium">{submission.submission_type}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Grant name</span>
-                  <span className="font-medium">{submission.grantName}</span>
+                  <span className="font-medium">{submission.grant?.grant_name || 'N/A'}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Organization</span>
-                  <span className="font-medium">{submission.organization}</span>
+                  <span className="font-medium">{submission.organization_name}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Submitted at</span>
-                  <span className="font-medium">{submission.submittedOn}</span>
+                  <span className="font-medium">{new Date(submission.submitted_date).toLocaleDateString()}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Status</span>
                   <span className={getStatusBadge(submission.status)}>
-                    {submission.status}
+                    {submission.status === 'pending_review' ? 'Pending review' : 
+                     submission.status === 'revision_requested' ? 'Revision requested' :
+                     submission.status === 'approved' ? 'Approved' : submission.status}
                   </span>
                 </div>
                 

@@ -1,63 +1,18 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Archive, Search, Eye, Filter, Grid, List, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Archive, Search, Eye, Filter, Grid, List, FileText, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { useGrantsWithStats } from '@/hooks/grants/useGrantsWithStats';
 import ArchivedGrantDetailsDialog from '@/components/grants/archive/ArchivedGrantDetailsDialog';
 
-// Sample data
-const archivedGrantsData = [
-  {
-    id: 1,
-    name: "Clean Water Initiative",
-    organization: "WaterAid Foundation",
-    status: "Closed",
-    compliance: 95,
-    disbursementRate: 100,
-    reportingStatus: "Complete",
-    programArea: "Health"
-  },
-  {
-    id: 2,
-    name: "Education for All",
-    organization: "Education Trust",
-    status: "Closed",
-    compliance: 88,
-    disbursementRate: 95,
-    reportingStatus: "Complete",
-    programArea: "Education"
-  },
-  {
-    id: 3,
-    name: "Rural Healthcare",
-    organization: "Medical Relief Org",
-    status: "Closed",
-    compliance: 92,
-    disbursementRate: 98,
-    reportingStatus: "Pending",
-    programArea: "Health"
-  },
-];
-
-const regionData = [
-  { region: 'Africa', grants: 45 },
-  { region: 'Asia', grants: 38 },
-  { region: 'Americas', grants: 32 },
-  { region: 'Europe', grants: 28 },
-  { region: 'Oceania', grants: 13 },
-];
-
-const programAreaData = [
-  { name: 'Health', value: 89, color: '#10b981' },
-  { name: 'Education', value: 67, color: '#3b82f6' },
-];
-
 const GrantsArchivePage = () => {
+  const { grants, loading } = useGrantsWithStats({ status: 'closed' });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('all');
   const [selectedProgram, setSelectedProgram] = useState('all');
@@ -67,12 +22,38 @@ const GrantsArchivePage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const itemsPerPage = 10;
 
-  const filteredGrants = archivedGrantsData.filter(grant => {
-    const matchesSearch = grant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         grant.organization.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesProgram = selectedProgram === 'all' || grant.programArea === selectedProgram;
+  const filteredGrants = grants.filter(grant => {
+    const matchesSearch = grant.grant_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         grant.donor_name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesProgram = selectedProgram === 'all' || grant.program_area === selectedProgram;
     return matchesSearch && matchesProgram;
   });
+
+  // Generate statistics from real data
+  const regionData = grants.reduce((acc, grant) => {
+    if (grant.region) {
+      acc[grant.region] = (acc[grant.region] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  const regionChartData = Object.entries(regionData).map(([region, grants]) => ({
+    region,
+    grants
+  }));
+
+  const programAreaData = grants.reduce((acc, grant) => {
+    if (grant.program_area) {
+      acc[grant.program_area] = (acc[grant.program_area] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  const programChartData = Object.entries(programAreaData).map(([name, value], index) => ({
+    name,
+    value,
+    color: index === 0 ? '#10b981' : index === 1 ? '#3b82f6' : '#f59e0b'
+  }));
 
   const totalPages = Math.ceil(filteredGrants.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -89,6 +70,15 @@ const GrantsArchivePage = () => {
     if (rate >= 80) return 'bg-yellow-100 text-yellow-800';
     return 'bg-red-100 text-red-800';
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin mr-2" />
+        <span>Loading archived grants...</span>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -114,7 +104,7 @@ const GrantsArchivePage = () => {
                 <div className="p-3 rounded-lg bg-purple-50">
                   <Archive className="h-5 w-5 text-purple-600" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">156</p>
+                <p className="text-2xl font-bold text-gray-900">{grants.length}</p>
                 <p className="text-sm text-gray-600">Total Archived Grants</p>
               </div>
             </CardContent>
@@ -140,14 +130,20 @@ const GrantsArchivePage = () => {
           </CardHeader>
           <CardContent>
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={regionData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="region" />
-                  <YAxis />
-                  <Bar dataKey="grants" fill="#3b82f6" />
-                </BarChart>
-              </ResponsiveContainer>
+              {regionChartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={regionChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="region" />
+                    <YAxis />
+                    <Bar dataKey="grants" fill="#3b82f6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-gray-500">No region data available</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -159,23 +155,29 @@ const GrantsArchivePage = () => {
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={programAreaData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
-                    dataKey="value"
-                  >
-                    {programAreaData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+              {programChartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={programChartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={80}
+                      dataKey="value"
+                    >
+                      {programChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-gray-500">No program data available</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -191,60 +193,39 @@ const GrantsArchivePage = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm text-gray-600">Grant Name</p>
-                <p className="font-medium">Clean Water Initiative</p>
+            {grants.slice(0, 3).map((grant, index) => (
+              <div key={grant.id} className="space-y-3">
+                <div>
+                  <p className="text-sm text-gray-600">Grant Name</p>
+                  <p className="font-medium">{grant.grant_name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Donor</p>
+                  <p className="font-medium">{grant.donor_name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">End Date</p>
+                  <p className="font-medium">{new Date(grant.end_date).toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Status</p>
+                  <Badge variant="secondary" className="bg-gray-100 text-gray-800">
+                    {grant.status}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Compliance Rate</p>
+                  <Badge className={getComplianceColor(grant.compliance_rate || 0)}>
+                    {Math.round(grant.compliance_rate || 0)}%
+                  </Badge>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Organization</p>
-                <p className="font-medium">WaterAid Foundation</p>
+            ))}
+            {grants.length === 0 && (
+              <div className="col-span-3 text-center py-8">
+                <p className="text-gray-500">No archived grants available</p>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Archived Date</p>
-                <p className="font-medium">March 15, 2024</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Final Status</p>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">Successful</Badge>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm text-gray-600">Grant Name</p>
-                <p className="font-medium">Education for All</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Organization</p>
-                <p className="font-medium">Education Trust</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Archived Date</p>
-                <p className="font-medium">February 28, 2024</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Final Status</p>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">Successful</Badge>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm text-gray-600">Grant Name</p>
-                <p className="font-medium">Rural Healthcare</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Organization</p>
-                <p className="font-medium">Medical Relief Org</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Archived Date</p>
-                <p className="font-medium">January 20, 2024</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Final Status</p>
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending Review</Badge>
-              </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -311,31 +292,31 @@ const GrantsArchivePage = () => {
               <TableBody>
                 {currentData.map((grant) => (
                   <TableRow key={grant.id}>
-                    <TableCell className="font-medium">{grant.name}</TableCell>
-                    <TableCell>{grant.organization}</TableCell>
+                    <TableCell className="font-medium">{grant.grant_name}</TableCell>
+                    <TableCell>{grant.donor_name}</TableCell>
                     <TableCell>
                       <Badge variant="secondary" className="bg-gray-100 text-gray-800">
                         {grant.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getComplianceColor(grant.compliance)}>
-                        {grant.compliance}%
+                      <Badge className={getComplianceColor(grant.compliance_rate || 0)}>
+                        {Math.round(grant.compliance_rate || 0)}%
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getDisbursementColor(grant.disbursementRate)}>
-                        {grant.disbursementRate}%
+                      <Badge className={getDisbursementColor(grant.disbursement_rate || 0)}>
+                        {Math.round(grant.disbursement_rate || 0)}%
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        {grant.reportingStatus === 'Complete' ? (
+                        {grant.reporting_status === 'submitted' ? (
                           <CheckCircle className="h-4 w-4 text-green-500" />
                         ) : (
                           <AlertTriangle className="h-4 w-4 text-yellow-500" />
                         )}
-                        <span className="text-sm">{grant.reportingStatus}</span>
+                        <span className="text-sm">{grant.reporting_status || 'N/A'}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -363,8 +344,8 @@ const GrantsArchivePage = () => {
               {currentData.map((grant) => (
                 <Card key={grant.id}>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base">{grant.name}</CardTitle>
-                    <CardDescription>{grant.organization}</CardDescription>
+                    <CardTitle className="text-base">{grant.grant_name}</CardTitle>
+                    <CardDescription>{grant.donor_name}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
@@ -376,14 +357,14 @@ const GrantsArchivePage = () => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Compliance:</span>
-                        <Badge className={getComplianceColor(grant.compliance)}>
-                          {grant.compliance}%
+                        <Badge className={getComplianceColor(grant.compliance_rate || 0)}>
+                          {Math.round(grant.compliance_rate || 0)}%
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Disbursement:</span>
-                        <Badge className={getDisbursementColor(grant.disbursementRate)}>
-                          {grant.disbursementRate}%
+                        <Badge className={getDisbursementColor(grant.disbursement_rate || 0)}>
+                          {Math.round(grant.disbursement_rate || 0)}%
                         </Badge>
                       </div>
                       <div className="pt-2">

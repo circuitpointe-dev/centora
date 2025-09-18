@@ -1411,6 +1411,63 @@ export type Database = {
           },
         ]
       }
+      grantee_submissions: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          document_path: string | null
+          feedback: string | null
+          grant_id: string | null
+          id: string
+          organization_name: string
+          status: string
+          submission_type: string
+          submitted_date: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          document_path?: string | null
+          feedback?: string | null
+          grant_id?: string | null
+          id?: string
+          organization_name: string
+          status?: string
+          submission_type: string
+          submitted_date?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          document_path?: string | null
+          feedback?: string | null
+          grant_id?: string | null
+          id?: string
+          organization_name?: string
+          status?: string
+          submission_type?: string
+          submitted_date?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grantee_submissions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grantee_submissions_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grants: {
         Row: {
           amount: number

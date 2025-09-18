@@ -11,10 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Upload, Download, FileIcon, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { Submission } from "./data/submissionsData";
+import { GranteeSubmission, useGranteeSubmissions } from "@/hooks/grants/useGranteeSubmissions";
 
 interface SubmissionDetailDialogProps {
-  submission: Submission | null;
+  submission: GranteeSubmission | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -30,19 +30,25 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { updateSubmissionStatus } = useGranteeSubmissions();
   const [reviewComment, setReviewComment] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [showApproveDialog, setShowApproveDialog] = useState(false);
   const [showRevisionDialog, setShowRevisionDialog] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   if (!submission) return null;
 
-  const getStatusBadge = (status: Submission['status']) => {
+  const getStatusBadge = (status: string) => {
     const baseClasses = "px-3 py-1 rounded text-sm font-medium";
-    switch (status) {
+    const normalizedStatus = status === 'pending_review' ? 'Pending review' : 
+                            status === 'revision_requested' ? 'Revision requested' :
+                            status === 'approved' ? 'Approved' : status;
+    
+    switch (normalizedStatus) {
       case 'Pending review':
         return `${baseClasses} bg-amber-100 text-amber-800`;
       case 'Revision requested':
@@ -88,15 +94,27 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleApprove = () => {
-    toast({
-      title: "Submission Approved",
-      description: "The submission has been approved successfully.",
-    });
-    onClose();
+  const handleApprove = async () => {
+    if (!submission) return;
+    
+    try {
+      setIsUpdating(true);
+      await updateSubmissionStatus(submission.id, 'approved', reviewComment || undefined);
+      toast({
+        title: "Submission Approved",
+        description: "The submission has been approved successfully.",
+      });
+      onClose();
+    } catch (error) {
+      // Error is handled by the hook
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  const handleRequestRevision = () => {
+  const handleRequestRevision = async () => {
+    if (!submission) return;
+    
     if (!reviewComment.trim()) {
       toast({
         title: "Review Comment Required",
@@ -105,11 +123,20 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
       });
       return;
     }
-    toast({
-      title: "Revision Requested",
-      description: "Revision request has been sent to the grantee with your comments.",
-    });
-    onClose();
+    
+    try {
+      setIsUpdating(true);
+      await updateSubmissionStatus(submission.id, 'revision_requested', reviewComment);
+      toast({
+        title: "Revision Requested",
+        description: "Revision request has been sent to the grantee with your comments.",
+      });
+      onClose();
+    } catch (error) {
+      // Error is handled by the hook
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -118,7 +145,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
         <DialogContent className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 grid w-full max-w-2xl bg-white rounded-lg shadow-lg border p-6 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold mb-4 text-black">
-              {submission.submissionType} - {submission.grantName}
+              {submission.submission_type} - {submission.grant?.grant_name || 'N/A'}
             </DialogTitle>
           </DialogHeader>
 
@@ -128,35 +155,44 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Organization</span>
-                  <span className="font-medium">{submission.organization}</span>
+                  <span className="font-medium">{submission.organization_name}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Reporting period</span>
-                  <span className="font-medium">May 15, 2024</span>
+                  <span className="text-sm text-gray-600">Grant</span>
+                  <span className="font-medium">{submission.grant?.grant_name || 'N/A'}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Due date</span>
-                  <span className="font-medium">June 30, 2025</span>
+                  <span className="text-sm text-gray-600">Donor</span>
+                  <span className="font-medium">{submission.grant?.donor_name || 'N/A'}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Submitted</span>
-                  <span className="font-medium">{submission.submittedOn}</span>
+                  <span className="font-medium">{new Date(submission.submitted_date).toLocaleDateString()}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Report</span>
-                  <span className="font-medium">Quarterly report</span>
+                  <span className="text-sm text-gray-600">Type</span>
+                  <span className="font-medium">{submission.submission_type}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Status</span>
                   <Badge className={getStatusBadge(submission.status)}>
-                    {submission.status}
+                    {submission.status === 'pending_review' ? 'Pending review' : 
+                     submission.status === 'revision_requested' ? 'Revision requested' :
+                     submission.status === 'approved' ? 'Approved' : submission.status}
                   </Badge>
                 </div>
+
+                {submission.feedback && (
+                  <div className="flex justify-between items-start">
+                    <span className="text-sm text-gray-600">Previous Feedback</span>
+                    <span className="font-medium text-right max-w-xs">{submission.feedback}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -245,21 +281,23 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 pt-4">
-              <Button variant="outline" onClick={onClose}>
+              <Button variant="outline" onClick={onClose} disabled={isUpdating}>
                 Cancel
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowRevisionDialog(true)}
                 className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                disabled={isUpdating}
               >
                 Request revision
               </Button>
               <Button
                 onClick={() => setShowApproveDialog(true)}
                 className="bg-violet-600 text-white hover:bg-violet-700"
+                disabled={isUpdating}
               >
-                Approve
+                {isUpdating ? 'Processing...' : 'Approve'}
               </Button>
             </div>
           </div>

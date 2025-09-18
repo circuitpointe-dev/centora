@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { submissionsData } from './data/submissionsData';
+import { useGranteeSubmissions } from '@/hooks/grants/useGranteeSubmissions';
 
 const STATUS_COLORS = {
   'Pending review': '#f59e0b',
@@ -34,26 +34,51 @@ const CustomLegend = ({ payload }: any) => (
 );
 
 export const SubmissionStatsCards = () => {
-  // Status Summary Data
-  const statusData = Object.entries(
-    submissionsData.reduce((acc, submission) => {
-      acc[submission.status] = (acc[submission.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
-  ).map(([name, value]) => ({
+  const { submissions, loading } = useGranteeSubmissions();
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <Card className="lg:col-span-1">
+          <CardContent className="p-6 flex items-center justify-center h-64">
+            <div className="text-center">Loading...</div>
+          </CardContent>
+        </Card>
+        <Card className="lg:col-span-2">
+          <CardContent className="p-6 flex items-center justify-center h-64">
+            <div className="text-center">Loading...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Status Summary Data from real submissions
+  const statusCounts = submissions.reduce((acc, submission) => {
+    const status = submission.status === 'pending_review' ? 'Pending review' : 
+                  submission.status === 'revision_requested' ? 'Revision requested' :
+                  submission.status === 'approved' ? 'Approved' : submission.status;
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const statusData = Object.entries(statusCounts).map(([name, value]) => ({
     name,
     value,
     fill: STATUS_COLORS[name as keyof typeof STATUS_COLORS] || '#6b7280'
   }));
 
-  // Overdue submissions by type (mock data)
-  const overdueData = [
-    { name: 'Narrative', value: 7, fill: OVERDUE_COLORS['Narrative'] },
-    { name: 'Financial', value: 10, fill: OVERDUE_COLORS['Financial'] },
-    { name: 'M&E', value: 14, fill: OVERDUE_COLORS['M&E'] },
-    { name: 'Other', value: 5, fill: OVERDUE_COLORS['Other'] },
-    { name: 'Compliance', value: 12, fill: OVERDUE_COLORS['Compliance'] }
-  ];
+  // Submissions by type data
+  const typeCounts = submissions.reduce((acc, submission) => {
+    acc[submission.submission_type] = (acc[submission.submission_type] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const typeData = Object.entries(typeCounts).map(([name, value]) => ({
+    name,
+    value,
+    fill: OVERDUE_COLORS[name as keyof typeof OVERDUE_COLORS] || '#6b7280'
+  }));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -86,21 +111,27 @@ export const SubmissionStatsCards = () => {
         </CardContent>
       </Card>
 
-      {/* Overdue Submissions by Type */}
+      {/* Submissions by Type */}
       <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle className="text-base font-medium">Overdue submissions by type</CardTitle>
+          <CardTitle className="text-base font-medium">Submissions by type</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={overdueData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Bar dataKey="value" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
+            {typeData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={typeData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Bar dataKey="value" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-gray-500">No submissions data available</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
