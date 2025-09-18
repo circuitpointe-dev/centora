@@ -23,13 +23,15 @@ interface InviteGranteeDialogProps {
   onClose: () => void;
   onSend: () => void;
   formData: GrantFormData;
+  isCreating?: boolean;
 }
 
 const InviteGranteeDialog: React.FC<InviteGranteeDialogProps> = ({
   isOpen,
   onClose,
   onSend,
-  formData
+  formData,
+  isCreating = false
 }) => {
   const [contacts, setContacts] = useState<Contact[]>([
     {
@@ -107,10 +109,14 @@ ${formData.overview.grantManager || 'Grant Management Team'}`
       return;
     }
 
-    // Simulate sending invitation
+    // In a real implementation, this would call an email service
+    // For now, we'll simulate the invitation sending
     console.log('Sending invitation to:', validContacts);
     console.log('Subject:', subject);
     console.log('Body:', emailBody);
+
+    // TODO: Implement actual email sending service
+    // await emailService.sendInvitation({ to: validContacts, subject, body: emailBody });
 
     toast({
       title: "Invitation Sent",
@@ -216,8 +222,9 @@ ${formData.overview.grantManager || 'Grant Management Team'}`
           <Button 
             onClick={handleSend}
             className="bg-purple-600 hover:bg-purple-700 text-white"
+            disabled={isCreating}
           >
-            Send Invitation
+            {isCreating ? 'Creating Grant...' : 'Send Invitation'}
           </Button>
         </div>
       </DialogContent>
