@@ -78,18 +78,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         orgName = org?.name || '';
         orgType = (org?.type as 'NGO' | 'Donor' | undefined) ?? 'NGO';
         
-        const normalizedModules = (modulesData || [])
-          .map((m: any) => String(m.module).toLowerCase())
-          .filter((m: string) => allModules.includes(m));
-
-        // Ensure 'users' module is always present for NGOs
-        if (orgType === 'NGO' && !normalizedModules.includes('users')) {
-          normalizedModules.push('users');
-        }
-
-        subscribedModules = normalizedModules.length > 0
-          ? normalizedModules
-          : ['fundraising', 'documents'].filter((m) => allModules.includes(m));
+        // DEVELOPMENT MODE: Give all users access to all modules
+        subscribedModules = Object.values(allModules);
       } else {
         // Handle users with no org_id (not a Super Admin)
         console.warn("User has no org_id or is not a Super Admin. Subscribing to base modules.");
