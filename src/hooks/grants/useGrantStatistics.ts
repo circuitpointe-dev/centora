@@ -20,24 +20,39 @@ export const useGrantStatistics = () => {
     try {
       setLoading(true);
 
+      // Get current user and their organization
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('org_id')
+        .eq('id', user.user.id)
+        .single();
+
+      if (!profile?.org_id) throw new Error('User organization not found');
+
       // Fetch all grants for the organization
       const { data: grants, error: grantsError } = await supabase
         .from('grants')
-        .select('*');
+        .select('*')
+        .eq('org_id', profile.org_id);
 
       if (grantsError) throw grantsError;
 
-      // Fetch compliance data
+      // Fetch compliance data for grants in this organization
       const { data: compliance, error: complianceError } = await supabase
         .from('grant_compliance')
-        .select('*');
+        .select('*, grant:grants!inner(org_id)')
+        .eq('grant.org_id', profile.org_id);
 
       if (complianceError) throw complianceError;
 
-      // Fetch disbursement data
+      // Fetch disbursement data for grants in this organization
       const { data: disbursements, error: disbursementsError } = await supabase
         .from('grant_disbursements')
-        .select('*');
+        .select('*, grant:grants!inner(org_id)')
+        .eq('grant.org_id', profile.org_id);
 
       if (disbursementsError) throw disbursementsError;
 
