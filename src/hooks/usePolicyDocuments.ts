@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { typedSupabase } from '@/lib/supabase-client';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface PolicyDocument {
@@ -53,7 +53,7 @@ export const useComplianceDocuments = (filters?: {
       console.log('Fetching compliance documents from database...');
       
       // Query documents with category 'compliance' and join with policy_documents
-      let query = typedSupabase
+      let query = supabase
         .from('documents')
         .select(`
           *,
@@ -71,7 +71,7 @@ export const useComplianceDocuments = (filters?: {
       
       // Apply filters
       if (filters?.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status);
+        query = query.eq('policy_documents.status', filters.status);
       }
       
       if (filters?.department && filters.department !== 'all') {
@@ -124,7 +124,7 @@ export const usePolicyAcknowledgments = (filters?: {
     queryFn: async () => {
       console.log('Fetching policy acknowledgments from database...');
       
-      let query = typedSupabase
+      let query = supabase
         .from('policy_acknowledgments')
         .select(`
           *,
@@ -187,10 +187,14 @@ export const useCreatePolicyAcknowledgment = () => {
     mutationFn: async (policyDocumentId: string) => {
       console.log('Creating policy acknowledgment for:', policyDocumentId);
       
-      const { data, error } = await typedSupabase
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
         .from('policy_acknowledgments')
         .insert({
           document_id: policyDocumentId,
+          user_id: user.user.id,
           status: 'acknowledged',
           acknowledged_at: new Date().toISOString(),
         })
@@ -221,10 +225,10 @@ export const usePolicyStats = () => {
       
       try {
         // Get user's organization first
-        const { data: profileData } = await typedSupabase
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('org_id')
-          .eq('id', (await typedSupabase.auth.getUser()).data.user?.id)
+          .eq('id', (await supabase.auth.getUser()).data.user?.id)
           .single();
 
         if (!profileData?.org_id) {
@@ -237,7 +241,7 @@ export const usePolicyStats = () => {
         }
         
         // Get total employees count for the organization
-        const { count: totalEmployees, error: totalError } = await typedSupabase
+        const { count: totalEmployees, error: totalError } = await supabase
           .from('profiles')
           .select('*', { count: 'exact', head: true })
           .eq('org_id', profileData.org_id);
@@ -247,7 +251,7 @@ export const usePolicyStats = () => {
         }
         
         // Get acknowledged count for documents in the same org
-        const { count: acknowledged, error: ackError } = await typedSupabase
+        const { count: acknowledged, error: ackError } = await supabase
           .from('policy_acknowledgments')
           .select('*, documents!inner(org_id)', { count: 'exact', head: true })
           .eq('status', 'acknowledged')
@@ -258,7 +262,7 @@ export const usePolicyStats = () => {
         }
         
         // Get pending count
-        const { count: pending, error: pendingError } = await typedSupabase
+        const { count: pending, error: pendingError } = await supabase
           .from('policy_acknowledgments')
           .select('*, documents!inner(org_id)', { count: 'exact', head: true })
           .eq('status', 'pending')
@@ -269,7 +273,7 @@ export const usePolicyStats = () => {
         }
         
         // Get exempt count
-        const { count: exempt, error: exemptError } = await typedSupabase
+        const { count: exempt, error: exemptError } = await supabase
           .from('policy_acknowledgments')
           .select('*, documents!inner(org_id)', { count: 'exact', head: true })
           .eq('status', 'exempt')
