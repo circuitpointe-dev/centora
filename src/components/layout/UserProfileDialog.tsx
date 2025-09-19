@@ -1,17 +1,19 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Camera } from 'lucide-react';
+import { User, Camera, Upload } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useProfile } from '@/hooks/useProfile';
 
 interface UserProfileDialogProps {
   isOpen: boolean;
@@ -25,24 +27,67 @@ interface UserProfileDialogProps {
 }
 
 const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) => {
+  const { profile, updateProfile, uploadAvatar } = useProfile();
   const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
-    phone: user.phone || '',
-    avatar: user.avatar || '',
+    name: profile?.full_name || user.name,
+    email: profile?.email || user.email,
+    phone: profile?.phone || user.phone || '',
   });
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSave = () => {
-    // Simulate saving profile
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been successfully updated.",
-    });
-    onClose();
+  const handleSave = async () => {
+    try {
+      await updateProfile({
+        full_name: formData.name,
+        phone: formData.phone,
+      });
+      onClose();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please select an image file.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: 'File too large',
+        description: 'Please select an image smaller than 5MB.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setUploading(true);
+      await uploadAvatar(file);
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -50,13 +95,16 @@ const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) =>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
+          <DialogDescription>
+            Update your profile information and avatar.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-6">
           {/* Avatar Section */}
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={formData.avatar} alt={formData.name} />
+                <AvatarImage src={profile?.avatar_url || user.avatar} alt={formData.name} />
                 <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                   <User className="h-8 w-8" />
                 </AvatarFallback>
@@ -65,10 +113,26 @@ const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) =>
                 size="sm"
                 variant="outline"
                 className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
+                onClick={triggerFileInput}
+                disabled={uploading}
               >
-                <Camera className="h-4 w-4" />
+                {uploading ? (
+                  <Upload className="h-4 w-4 animate-pulse" />
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
               </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+              />
             </div>
+            <p className="text-xs text-gray-500 text-center">
+              Click the camera icon to upload a new avatar
+            </p>
           </div>
 
           {/* Form Fields */}
@@ -87,8 +151,12 @@ const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) =>
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                disabled
+                className="bg-gray-50"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Email cannot be changed here. Contact support if needed.
+              </p>
             </div>
             <div>
               <Label htmlFor="phone">Phone Number</Label>
@@ -106,7 +174,7 @@ const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) =>
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>
+            <Button onClick={handleSave} disabled={uploading}>
               Save Changes
             </Button>
           </div>

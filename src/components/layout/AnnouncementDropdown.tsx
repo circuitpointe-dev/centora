@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,9 +6,10 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Megaphone } from 'lucide-react';
+import { Megaphone, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import AnnouncementItem from './AnnouncementItem';
+import { useAnnouncements } from '@/hooks/useAnnouncements';
+import { formatDistanceToNow } from 'date-fns';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,72 +21,30 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-interface Announcement {
-  id: number;
-  title: string;
-  content: string;
-  time: string;
-  unread: boolean;
-}
-
-const mockAnnouncements: Announcement[] = [
-  {
-    id: 1,
-    title: "System Maintenance Scheduled",
-    content: "The system will undergo scheduled maintenance on Friday, December 15th from 2:00 AM to 4:00 AM EST. During this time, some features may be temporarily unavailable.",
-    time: "2 hours ago",
-    unread: true,
-  },
-  {
-    id: 2,
-    title: "New Grant Opportunity Available",
-    content: "We've identified a new grant opportunity from the Global Health Foundation. The deadline is January 30th. Please review the eligibility criteria and submit your application through the grants portal.",
-    time: "1 day ago",
-    unread: true,
-  },
-  {
-    id: 3,
-    title: "Policy Update: Data Protection",
-    content: "Updated data protection policies are now in effect. All team members are required to complete the new compliance training by the end of this month.",
-    time: "3 days ago",
-    unread: false,
-  },
-  {
-    id: 4,
-    title: "Quarterly Review Meeting",
-    content: "All department heads are invited to the quarterly review meeting scheduled for next Tuesday at 10:00 AM in the main conference room.",
-    time: "1 week ago",
-    unread: false,
-  },
-];
-
-const DISMISSED_ANNOUNCEMENTS_KEY = 'dismissedAnnouncements';
-
 const AnnouncementDropdown = () => {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const { announcements, loading } = useAnnouncements();
   const [dismissDialogOpen, setDismissDialogOpen] = useState(false);
-  const [announcementToDismiss, setAnnouncementToDismiss] = useState<number | null>(null);
+  const [announcementToDismiss, setAnnouncementToDismiss] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Load dismissed announcements from localStorage
-    const dismissed = JSON.parse(localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY) || '[]');
-    const filteredAnnouncements = mockAnnouncements.filter(
-      announcement => !dismissed.includes(announcement.id)
-    );
-    setAnnouncements(filteredAnnouncements);
-  }, []);
-
-  const unreadCount = announcements.filter(announcement => announcement.unread).length;
-
-  const markAsRead = (id: number) => {
-    setAnnouncements(prev =>
-      prev.map(announcement =>
-        announcement.id === id ? { ...announcement, unread: false } : announcement
-      )
-    );
+  const getAnnouncementIcon = (type: string) => {
+    switch (type) {
+      case 'maintenance': return '🔧';
+      case 'update': return '📝'; 
+      case 'urgent': return '🚨';
+      default: return 'ℹ️';
+    }
   };
 
-  const handleDismissClick = (id: number, e: React.MouseEvent) => {
+  const getAnnouncementBadgeColor = (type: string) => {
+    switch (type) {
+      case 'maintenance': return 'bg-yellow-100 text-yellow-800';
+      case 'update': return 'bg-blue-100 text-blue-800';
+      case 'urgent': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleDismissClick = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setAnnouncementToDismiss(id);
@@ -94,14 +53,6 @@ const AnnouncementDropdown = () => {
 
   const confirmDismiss = () => {
     if (announcementToDismiss) {
-      // Remove from current state
-      setAnnouncements(prev => prev.filter(announcement => announcement.id !== announcementToDismiss));
-      
-      // Add to dismissed list in localStorage
-      const dismissed = JSON.parse(localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY) || '[]');
-      dismissed.push(announcementToDismiss);
-      localStorage.setItem(DISMISSED_ANNOUNCEMENTS_KEY, JSON.stringify(dismissed));
-      
       toast({
         title: "Announcement dismissed",
         description: "The announcement has been removed from your list.",
@@ -110,6 +61,8 @@ const AnnouncementDropdown = () => {
     setDismissDialogOpen(false);
     setAnnouncementToDismiss(null);
   };
+
+  const unreadCount = announcements.length;
 
   return (
     <>
@@ -142,19 +95,49 @@ const AnnouncementDropdown = () => {
             )}
           </div>
           
-          {announcements.length === 0 ? (
+          {loading ? (
+            <div className="px-4 py-8 text-center text-muted-foreground text-sm">
+              Loading announcements...
+            </div>
+          ) : announcements.length === 0 ? (
             <div className="px-4 py-8 text-center text-muted-foreground text-sm">
               No announcements at this time
             </div>
           ) : (
             <div className="max-h-64 overflow-y-auto">
               {announcements.map((announcement) => (
-                <AnnouncementItem
+                <div
                   key={announcement.id}
-                  announcement={announcement}
-                  onMarkAsRead={markAsRead}
-                  onDismiss={handleDismissClick}
-                />
+                  className="px-4 py-3 hover:bg-accent/50 border-b border-border last:border-b-0 cursor-pointer group"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm">{getAnnouncementIcon(announcement.type)}</span>
+                        <h4 className="font-medium text-sm text-foreground line-clamp-1">
+                          {announcement.title}
+                        </h4>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAnnouncementBadgeColor(announcement.type)}`}>
+                          {announcement.type}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2">
+                        {announcement.message}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(announcement.created_at), { addSuffix: true })}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground"
+                      onClick={(e) => handleDismissClick(announcement.id, e)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
               ))}
             </div>
           )}

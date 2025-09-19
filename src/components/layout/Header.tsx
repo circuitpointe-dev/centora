@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings, User, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks/useProfile";
 import UserProfileDialog from "./UserProfileDialog";
 import SettingsDialog from "./SettingsDialog";
 import NotificationDropdown from "./NotificationDropdown";
@@ -37,16 +38,17 @@ interface HeaderProps {
 const Header = ({ sidebarCollapsed }: HeaderProps) => {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+  const { profile } = useProfile();
   const [showLogoutDialog, setShowLogoutDialog] = React.useState(false);
   const [showProfileDialog, setShowProfileDialog] = React.useState(false);
   const [showSettingsDialog, setShowSettingsDialog] = React.useState(false);
 
-  // User data from auth context
+  // User data from profile hook or auth context fallback
   const currentUser = {
-    name: user?.name || "User",
-    email: user?.email || "user@example.com", 
-    phone: "+234 802 123 4567",
-    avatar: "",
+    name: profile?.full_name || user?.name || "User",
+    email: profile?.email || user?.email || "user@example.com", 
+    phone: profile?.phone || "+234 802 123 4567",
+    avatar: profile?.avatar_url || "",
   };
 
   const handleLogout = () => {
@@ -78,10 +80,10 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
           <h3 className="text-md text-gray-700">
             Welcome,{" "}
             <span className="text-md text-gray-700">
-              {user?.name} of {" "}
+              {currentUser.name} of {" "}
             </span>
             <span className="font-semibold text-gray-900">
-              {user?.organization}
+              {user?.organization || "Your Organization"}
             </span>
           </h3>
         </div>
@@ -102,6 +104,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
                 className="flex items-center gap-1 h-8 rounded-full hover:bg-transparent"
               >
                 <Avatar className="h-8 w-8">
+                  <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
                   <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                     <User className="h-4 w-4" />
                   </AvatarFallback>

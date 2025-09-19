@@ -10,82 +10,41 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Plus } from 'lucide-react';
+import { Bell, Plus, Trash2, CheckCheck } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import NotificationItem from './NotificationItem';
+import { useNotifications } from '@/hooks/useNotifications';
+import { formatDistanceToNow } from 'date-fns';
 import SendNotificationDialog from './SendNotificationDialog';
 
-const mockNotifications = [
-  {
-    id: 1,
-    title: "New donor registered",
-    message: "Jane Smith has registered as a new donor",
-    time: "2 min ago",
-    unread: true
-  },
-  {
-    id: 2,
-    title: "Campaign milestone reached",
-    message: "Education for All campaign has reached 75% of its goal",
-    time: "1 hour ago",
-    unread: true
-  },
-  {
-    id: 3,
-    title: "Monthly report ready",
-    message: "Your monthly fundraising report is now available",
-    time: "3 hours ago",
-    unread: false
-  },
-  {
-    id: 4,
-    title: "Event reminder",
-    message: "Annual Gala is scheduled for next week",
-    time: "1 day ago",
-    unread: false
-  },
-  {
-    id: 5,
-    title: "System maintenance",
-    message: "Scheduled maintenance tonight from 2-4 AM",
-    time: "2 days ago",
-    unread: false
-  }
-];
-
 const NotificationDropdown = () => {
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const { notifications, loading, unreadCount, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const [showNewNotification, setShowNewNotification] = useState(false);
 
-  const unreadCount = notifications.filter(n => n.unread).length;
-
-  const markAsRead = (id: number) => {
-    setNotifications(prev => 
-      prev.map(notif => 
-        notif.id === id ? { ...notif, unread: false } : notif
-      )
-    );
+  const handleNotificationClick = (notificationId: string, isRead: boolean) => {
+    if (!isRead) {
+      markAsRead(notificationId);
+    }
   };
 
-  const deleteNotification = (id: number, e: React.MouseEvent) => {
+  const handleDeleteNotification = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setNotifications(prev => prev.filter(notif => notif.id !== id));
-    toast({
-      title: "Notification Deleted",
-      description: "The notification has been removed.",
-    });
+    deleteNotification(id);
   };
 
   const handleSendNotification = (notification: { title: string; message: string; recipients: string[] }) => {
-    const newNotif = {
-      id: Date.now(),
-      title: notification.title,
-      message: notification.message,
-      time: "Just now",
-      unread: true
-    };
-    
-    setNotifications(prev => [newNotif, ...prev]);
+    toast({
+      title: "Notification Sent",
+      description: "Your notification has been sent successfully.",
+    });
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'success': return '✅';
+      case 'warning': return '⚠️';
+      case 'error': return '❌';
+      default: return 'ℹ️';
+    }
   };
 
   return (
@@ -99,7 +58,7 @@ const NotificationDropdown = () => {
                 variant="destructive" 
                 className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0"
               >
-                {unreadCount}
+                {unreadCount > 9 ? '9+' : unreadCount}
               </Badge>
             )}
           </Button>
@@ -107,19 +66,67 @@ const NotificationDropdown = () => {
         <DropdownMenuContent className="w-80 bg-white" align="end" forceMount>
           <DropdownMenuLabel className="flex items-center justify-between">
             <span>Notifications</span>
-            <Badge variant="secondary">{unreadCount} new</Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary">{unreadCount} new</Badge>
+              {unreadCount > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={markAllAsRead}
+                  className="h-6 px-2 text-xs"
+                >
+                  <CheckCheck className="h-3 w-3 mr-1" />
+                  Mark all read
+                </Button>
+              )}
+            </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           
           <div className="max-h-64 overflow-y-auto">
-            {notifications.map((notification) => (
-              <NotificationItem
-                key={notification.id}
-                notification={notification}
-                onMarkAsRead={markAsRead}
-                onDelete={deleteNotification}
-              />
-            ))}
+            {loading ? (
+              <div className="p-4 text-center text-gray-500">Loading...</div>
+            ) : notifications.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">No notifications</div>
+            ) : (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-l-2 ${
+                    notification.is_read ? 'border-transparent' : 'border-blue-500 bg-blue-50'
+                  }`}
+                  onClick={() => handleNotificationClick(notification.id, notification.is_read)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{getNotificationIcon(notification.type)}</span>
+                        <p className={`text-sm font-medium ${notification.is_read ? 'text-gray-700' : 'text-gray-900'}`}>
+                          {notification.title}
+                        </p>
+                        {!notification.is_read && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                        {notification.message}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+                      onClick={(e) => handleDeleteNotification(notification.id, e)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
           
           <DropdownMenuSeparator />
