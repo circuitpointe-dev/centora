@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Grid, List, Filter, Eye, Send, AlertTriangle } from 'lucide-react';
-import { complianceMonitorData, type ComplianceMonitorItem } from './data/complianceMonitorData';
+import { Search, Grid, List, Filter, Eye, Send, AlertTriangle, Loader2 } from 'lucide-react';
+import { useGrantCompliance } from '@/hooks/grants/useGrantCompliance';
 import { useToast } from '@/hooks/use-toast';
 
 export const ComplianceTable = () => {
+  const { compliance, loading, sendReminder } = useGrantCompliance();
   const [searchTerm, setSearchTerm] = useState('');
   const [regionFilter, setRegionFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -18,7 +19,31 @@ export const ComplianceTable = () => {
   const itemsPerPage = 8;
   const { toast } = useToast();
 
-  const filteredCompliance = complianceMonitorData.filter(item => {
+  // Group compliance by grant for table display
+  const grantCompliance = compliance.reduce((acc, item) => {
+    const key = item.grant_id;
+    if (!acc[key]) {
+      acc[key] = {
+        id: key,
+        grantName: 'Sample Grant',
+        organization: 'Sample Organization', 
+        region: 'Sample Region',
+        checklistItems: 0,
+        met: 0,
+        overdue: 0,
+        pending: 0,
+      };
+    }
+    acc[key].checklistItems++;
+    if (item.status === 'completed') acc[key].met++;
+    else if (item.status === 'overdue') acc[key].overdue++;
+    else if (item.status === 'in_progress') acc[key].pending++;
+    return acc;
+  }, {} as Record<string, any>);
+
+  const complianceData = Object.values(grantCompliance);
+
+  const filteredCompliance = complianceData.filter(item => {
     const matchesSearch = 
       item.grantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -42,7 +67,7 @@ export const ComplianceTable = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedCompliance = filteredCompliance.slice(startIndex, startIndex + itemsPerPage);
 
-  const getStatusIndicator = (item: ComplianceMonitorItem) => {
+  const getStatusIndicator = (item: any) => {
     if (item.overdue > 0) {
       return <AlertTriangle className="h-4 w-4 text-red-500" />;
     }
@@ -59,14 +84,11 @@ export const ComplianceTable = () => {
     });
   };
 
-  const handleSendReminder = (itemId: string) => {
-    toast({
-      title: "Reminder Sent",
-      description: "Compliance reminder has been sent.",
-    });
+  const handleSendReminder = async (itemId: string) => {
+    await sendReminder(itemId);
   };
 
-  const getActionButton = (item: ComplianceMonitorItem) => {
+  const getActionButton = (item: any) => {
     if (item.overdue > 0 || item.pending > 0) {
       return (
         <div className="flex space-x-2">
@@ -101,6 +123,15 @@ export const ComplianceTable = () => {
       );
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin mr-2" />
+        <span>Loading compliance data...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

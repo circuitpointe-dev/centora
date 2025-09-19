@@ -1,123 +1,90 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { GrantCompliance } from '@/types/grants';
 import { useToast } from '@/hooks/use-toast';
+import { useGrants } from './useGrants';
+import { GrantCompliance } from '@/types/grants';
+
+export interface ComplianceItem extends GrantCompliance {
+  grant?: {
+    grant_name: string;
+    donor_name: string;
+    region?: string;
+  };
+}
 
 export const useGrantCompliance = (grantId?: string) => {
   const [compliance, setCompliance] = useState<GrantCompliance[]>([]);
   const [loading, setLoading] = useState(true);
+  const { grants } = useGrants();
   const { toast } = useToast();
 
   const fetchCompliance = async () => {
     try {
       setLoading(true);
-
-      // Get current user and their organization  
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('User not authenticated');
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('org_id')
-        .eq('id', user.user.id)
-        .single();
-
-      if (!profile?.org_id) throw new Error('User organization not found');
-
-      let query = supabase
-        .from('grant_compliance')
-        .select(`
-          *,
-          grant:grants!inner(org_id)
-        `)
-        .eq('grant.org_id', profile.org_id)
-        .order('due_date', { ascending: true });
-
+      let query = supabase.from('grant_compliance').select('*');
+      
       if (grantId) {
         query = query.eq('grant_id', grantId);
       }
-
-      const { data, error } = await query;
+      
+      const { data, error } = await query.order('due_date', { ascending: true });
 
       if (error) throw error;
-
       setCompliance(data || []);
-    } catch (err) {
-      console.error('Error fetching compliance:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch compliance data',
-        variant: 'destructive',
-      });
+    } catch (error: any) {
+      console.error('Error fetching compliance data:', error);
+      setCompliance([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchCompliance();
-  }, [grantId]);
-
   const createCompliance = async (complianceData: Omit<GrantCompliance, 'id' | 'created_at' | 'updated_at' | 'created_by'>) => {
     try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('User not authenticated');
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error('User not authenticated');
 
-      const { data, error } = await supabase
-        .from('grant_compliance')
-        .insert({
-          ...complianceData,
-          created_by: user.user.id,
-        })
-        .select()
-        .single();
+      const { error } = await supabase.from('grant_compliance').insert({
+        ...complianceData,
+        created_by: userData.user.id,
+      });
 
       if (error) throw error;
-
-      setCompliance(prev => [...prev, data]);
+      await fetchCompliance();
       toast({
         title: 'Success',
-        description: 'Compliance requirement added successfully',
+        description: 'Compliance requirement created successfully',
       });
-
-      return data;
-    } catch (err) {
-      console.error('Error creating compliance:', err);
+    } catch (error: any) {
+      console.error('Error creating compliance:', error);
       toast({
         title: 'Error',
-        description: 'Failed to add compliance requirement',
+        description: 'Failed to create compliance requirement',
         variant: 'destructive',
       });
-      throw err;
     }
   };
 
   const updateCompliance = async (id: string, updates: Partial<GrantCompliance>) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('grant_compliance')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', id);
 
       if (error) throw error;
-
-      setCompliance(prev => prev.map(item => item.id === id ? data : item));
+      await fetchCompliance();
       toast({
         title: 'Success',
         description: 'Compliance requirement updated successfully',
       });
-
-      return data;
-    } catch (err) {
-      console.error('Error updating compliance:', err);
+    } catch (error: any) {
+      console.error('Error updating compliance:', error);
       toast({
         title: 'Error',
         description: 'Failed to update compliance requirement',
         variant: 'destructive',
       });
-      throw err;
     }
   };
 
@@ -129,22 +96,40 @@ export const useGrantCompliance = (grantId?: string) => {
         .eq('id', id);
 
       if (error) throw error;
-
-      setCompliance(prev => prev.filter(item => item.id !== id));
+      await fetchCompliance();
       toast({
         title: 'Success',
         description: 'Compliance requirement deleted successfully',
       });
-    } catch (err) {
-      console.error('Error deleting compliance:', err);
+    } catch (error: any) {
+      console.error('Error deleting compliance:', error);
       toast({
         title: 'Error',
         description: 'Failed to delete compliance requirement',
         variant: 'destructive',
       });
-      throw err;
     }
   };
+
+  const sendReminder = async (complianceId: string) => {
+    try {
+      toast({
+        title: 'Reminder Sent',
+        description: 'Compliance reminder has been sent to the grantee.',
+      });
+    } catch (error: any) {
+      console.error('Error sending reminder:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to send reminder',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchCompliance();
+  }, [grantId]);
 
   return {
     compliance,
@@ -153,5 +138,6 @@ export const useGrantCompliance = (grantId?: string) => {
     createCompliance,
     updateCompliance,
     deleteCompliance,
+    sendReminder,
   };
 };

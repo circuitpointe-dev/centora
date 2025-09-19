@@ -8,73 +8,38 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Filter, Grid, List, Upload, CheckCircle, Eye, FileText } from 'lucide-react';
-
-interface DisbursementRecord {
-  id: number;
-  grantName: string;
-  organization: string;
-  totalGrant: number;
-  amountDisbursed: number;
-  dueDate: string;
-  status: 'Pending' | 'Released' | 'Delayed';
-  isDisbursed?: boolean;
-  hasReceipt?: boolean;
-}
-
-const disbursementData: DisbursementRecord[] = [
-  {
-    id: 1,
-    grantName: 'Clean Water 2',
-    organization: 'UNICEF',
-    totalGrant: 100000,
-    amountDisbursed: 75000,
-    dueDate: 'Jul 5, 2025',
-    status: 'Pending',
-  },
-  {
-    id: 2,
-    grantName: 'EduBridge',
-    organization: 'GAC',
-    totalGrant: 200000,
-    amountDisbursed: 150000,
-    dueDate: 'Jul 5, 2025',
-    status: 'Released',
-  },
-  {
-    id: 3,
-    grantName: 'Rural Health Initiative',
-    organization: 'USAID',
-    totalGrant: 180000,
-    amountDisbursed: 65000,
-    dueDate: 'Jul 5, 2025',
-    status: 'Delayed',
-  },
-  {
-    id: 4,
-    grantName: 'Rural Health Initiative',
-    organization: 'UNICEF',
-    totalGrant: 80000,
-    amountDisbursed: 40000,
-    dueDate: 'Jul 8, 2025',
-    status: 'Released',
-  },
-];
+import { Search, Filter, Grid, List, Upload, CheckCircle, Eye, FileText, Loader2 } from 'lucide-react';
+import { useGrantDisbursements } from '@/hooks/grants/useGrantDisbursements';
 
 export const DisbursementTable = () => {
+  const { disbursements, loading, markAsDisbursed, uploadReceipt } = useGrantDisbursements();
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [disbursementRecords, setDisbursementRecords] = useState<DisbursementRecord[]>(disbursementData);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<DisbursementRecord | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const itemsPerPage = 10;
 
-  const filteredData = disbursementRecords.filter(item => {
+  // Transform disbursements data for table display
+  const disbursementData = disbursements.map(d => ({
+    id: d.id,
+    grantName: 'Sample Grant',
+    organization: 'Sample Organization',
+    totalGrant: d.amount,
+    amountDisbursed: d.amount,
+    dueDate: new Date(d.due_date).toLocaleDateString(),
+    status: d.status === 'pending' && new Date(d.due_date) < new Date() ? 'Delayed' : 
+            d.status === 'pending' ? 'Pending' : 'Released',
+    isDisbursed: d.status === 'released',
+    disbursedOn: d.disbursed_on,
+    rawData: d
+  }));
+
+  const filteredData = disbursementData.filter(item => {
     const matchesSearch = item.grantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.organization.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || item.status.toLowerCase() === statusFilter.toLowerCase();
@@ -102,30 +67,20 @@ export const DisbursementTable = () => {
     return variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleMarkAsDisbursed = (record: DisbursementRecord) => {
+  const handleMarkAsDisbursed = (record: any) => {
     setSelectedRecord(record);
     setShowConfirmDialog(true);
   };
 
-  const confirmMarkAsDisbursed = () => {
+  const confirmMarkAsDisbursed = async () => {
     if (selectedRecord) {
-      setDisbursementRecords(prev => 
-        prev.map(record => 
-          record.id === selectedRecord.id 
-            ? { ...record, isDisbursed: true, status: 'Released' as const }
-            : record
-        )
-      );
-      toast({
-        title: "Disbursement Marked",
-        description: `${selectedRecord.grantName} has been marked as disbursed.`,
-      });
+      await markAsDisbursed(selectedRecord.rawData.id);
     }
     setShowConfirmDialog(false);
     setSelectedRecord(null);
   };
 
-  const handleUploadReceipt = (record: DisbursementRecord) => {
+  const handleUploadReceipt = (record: any) => {
     setSelectedRecord(record);
     setShowUploadDialog(true);
   };
@@ -137,33 +92,23 @@ export const DisbursementTable = () => {
     }
   };
 
-  const submitReceipt = () => {
+  const submitReceipt = async () => {
     if (selectedRecord && uploadedFile) {
-      setDisbursementRecords(prev => 
-        prev.map(record => 
-          record.id === selectedRecord.id 
-            ? { ...record, hasReceipt: true }
-            : record
-        )
-      );
-      toast({
-        title: "Receipt Uploaded",
-        description: `Receipt for ${selectedRecord.grantName} has been uploaded successfully.`,
-      });
+      await uploadReceipt(selectedRecord.rawData.id, uploadedFile);
     }
     setShowUploadDialog(false);
     setSelectedRecord(null);
     setUploadedFile(null);
   };
 
-  const handleViewReceipt = (record: DisbursementRecord) => {
+  const handleViewReceipt = (record: any) => {
     toast({
       title: "Viewing Receipt",
       description: `Opening receipt for ${record.grantName}`,
     });
   };
 
-  const getActionButtons = (item: DisbursementRecord) => {
+  const getActionButtons = (item: any) => {
     if (!item.isDisbursed) {
       return (
         <Button
@@ -273,6 +218,17 @@ export const DisbursementTable = () => {
       ))}
     </div>
   );
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-6 flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin mr-2" />
+          <span>Loading disbursement data...</span>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

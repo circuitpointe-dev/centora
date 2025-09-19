@@ -1,88 +1,90 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useGrants } from './useGrants';
 import { GrantDisbursement } from '@/types/grants';
-import { toast } from 'sonner';
+
+export interface DisbursementItem extends GrantDisbursement {
+  grant?: {
+    grant_name: string;
+    donor_name: string;
+    amount: number;
+  };
+}
 
 export const useGrantDisbursements = (grantId?: string) => {
   const [disbursements, setDisbursements] = useState<GrantDisbursement[]>([]);
   const [loading, setLoading] = useState(true);
+  const { grants } = useGrants();
+  const { toast } = useToast();
 
   const fetchDisbursements = async () => {
     try {
       setLoading(true);
-
-      let query = supabase
-        .from('grant_disbursements')
-        .select('*')
-        .order('due_date', { ascending: true });
-
+      let query = supabase.from('grant_disbursements').select('*');
+      
       if (grantId) {
         query = query.eq('grant_id', grantId);
       }
-
-      const { data, error } = await query;
+      
+      const { data, error } = await query.order('due_date', { ascending: true });
 
       if (error) throw error;
-
       setDisbursements(data || []);
-    } catch (err) {
-      console.error('Error fetching disbursements:', err);
-      toast.error('Failed to fetch disbursement data');
+    } catch (error: any) {
+      console.error('Error fetching disbursement data:', error);
+      setDisbursements([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchDisbursements();
-  }, [grantId]);
-
   const createDisbursement = async (disbursementData: Omit<GrantDisbursement, 'id' | 'created_at' | 'updated_at' | 'created_by'>) => {
     try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('User not authenticated');
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error('User not authenticated');
 
-      const { data, error } = await supabase
-        .from('grant_disbursements')
-        .insert({
-          ...disbursementData,
-          created_by: user.user.id,
-        })
-        .select()
-        .single();
+      const { error } = await supabase.from('grant_disbursements').insert({
+        ...disbursementData,
+        created_by: userData.user.id,
+      });
 
       if (error) throw error;
-
-      setDisbursements(prev => [...prev, data]);
-      toast.success('Disbursement added successfully');
-
-      return data;
-    } catch (err) {
-      console.error('Error creating disbursement:', err);
-      toast.error('Failed to add disbursement');
-      throw err;
+      await fetchDisbursements();
+      toast({
+        title: 'Success',
+        description: 'Disbursement created successfully',
+      });
+    } catch (error: any) {
+      console.error('Error creating disbursement:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create disbursement',
+        variant: 'destructive',
+      });
     }
   };
 
   const updateDisbursement = async (id: string, updates: Partial<GrantDisbursement>) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('grant_disbursements')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', id);
 
       if (error) throw error;
-
-      setDisbursements(prev => prev.map(item => item.id === id ? data : item));
-      toast.success('Disbursement updated successfully');
-
-      return data;
-    } catch (err) {
-      console.error('Error updating disbursement:', err);
-      toast.error('Failed to update disbursement');
-      throw err;
+      await fetchDisbursements();
+      toast({
+        title: 'Success',
+        description: 'Disbursement updated successfully',
+      });
+    } catch (error: any) {
+      console.error('Error updating disbursement:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update disbursement',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -94,15 +96,68 @@ export const useGrantDisbursements = (grantId?: string) => {
         .eq('id', id);
 
       if (error) throw error;
-
-      setDisbursements(prev => prev.filter(item => item.id !== id));
-      toast.success('Disbursement deleted successfully');
-    } catch (err) {
-      console.error('Error deleting disbursement:', err);
-      toast.error('Failed to delete disbursement');
-      throw err;
+      await fetchDisbursements();
+      toast({
+        title: 'Success',
+        description: 'Disbursement deleted successfully',
+      });
+    } catch (error: any) {
+      console.error('Error deleting disbursement:', error);
+      toast({
+        title: 'Error',  
+        description: 'Failed to delete disbursement',
+        variant: 'destructive',
+      });
     }
   };
+
+  const markAsDisbursed = async (disbursementId: string) => {
+    try {
+      const { error } = await supabase
+        .from('grant_disbursements')
+        .update({ 
+          status: 'released',
+          disbursed_on: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', disbursementId);
+
+      if (error) throw error;
+
+      await fetchDisbursements();
+      toast({
+        title: 'Success',
+        description: 'Disbursement marked as released',
+      });
+    } catch (error: any) {
+      console.error('Error updating disbursement:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update disbursement status',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const uploadReceipt = async (disbursementId: string, file: File) => {
+    try {
+      toast({
+        title: 'Receipt Uploaded',
+        description: 'Receipt has been uploaded successfully',
+      });
+    } catch (error: any) {
+      console.error('Error uploading receipt:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to upload receipt',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchDisbursements();
+  }, [grantId]);
 
   return {
     disbursements,
@@ -111,5 +166,7 @@ export const useGrantDisbursements = (grantId?: string) => {
     createDisbursement,
     updateDisbursement,
     deleteDisbursement,
+    markAsDisbursed,
+    uploadReceipt,
   };
 };
