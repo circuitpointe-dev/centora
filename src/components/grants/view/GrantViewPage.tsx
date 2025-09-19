@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Download, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,26 +10,68 @@ import { useGrants } from '@/hooks/grants/useGrants';
 import { CloseGrantTableSection } from './components/CloseGrantTableSection';
 import { GrantCloseStatistics } from './components/GrantCloseStatistics';
 import { useCloseGrantData } from './hooks/useCloseGrantData';
+import { EditGrantDialog } from '../dialogs/EditGrantDialog';
+import { exportGrantToPDF, exportGrantToExcel } from '@/utils/exportUtils';
+import { useToast } from '@/hooks/use-toast';
+import type { Grant } from '@/types/grants';
 
 const GrantViewPage = () => {
   const { grantId } = useParams<{ grantId: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isEditMode = searchParams.get('edit') === 'true';
-  const { grants, loading: grantsLoading } = useGrants();
+  const { grants, loading: grantsLoading, refetch } = useGrants();
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
   
   const grant = grants.find(g => g.id === grantId);
 
   const handleEditGrant = () => {
-    console.log('Edit Grant button clicked, current isEditMode:', isEditMode);
-    if (isEditMode) {
-      // Exit edit mode
-      console.log('Exiting edit mode');
-      navigate(`/dashboard/grants/view/${grantId}`);
-    } else {
-      // Enter edit mode
-      console.log('Entering edit mode');
-      navigate(`/dashboard/grants/view/${grantId}?edit=true`);
+    setShowEditDialog(true);
+  };
+
+  const handleGrantUpdated = (updatedGrant: Grant) => {
+    refetch();
+    toast({
+      title: 'Success',
+      description: 'Grant updated successfully',
+    });
+  };
+
+  const handleExportReport = async () => {
+    if (!grant || isExporting) return;
+
+    setIsExporting(true);
+    try {
+      // Get all related data for export
+      const reports = paginatedData.reports.items || [];
+      const disbursements = paginatedData.disbursements.items || [];
+      const compliance = paginatedData.compliance.items || [];
+
+      const exportData = {
+        grant,
+        reports,
+        disbursements,
+        compliance
+      };
+
+      // Export as PDF
+      await exportGrantToPDF(exportData);
+      
+      toast({
+        title: 'Success',
+        description: 'Grant report exported successfully',
+      });
+    } catch (error) {
+      console.error('Error exporting grant report:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to export grant report',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -128,11 +170,11 @@ const GrantViewPage = () => {
           </Badge>
           <Button variant="outline" size="sm" onClick={handleEditGrant}>
             <Edit className="h-4 w-4 mr-2" />
-            {isEditMode ? 'Save Changes' : 'Edit Grant'}
+            Edit Grant
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportReport} disabled={isExporting}>
             <Download className="h-4 w-4 mr-2" />
-            Export Report
+            {isExporting ? 'Exporting...' : 'Export Report'}
           </Button>
         </div>
       </div>
@@ -306,6 +348,16 @@ const GrantViewPage = () => {
           />
         </TabsContent>
       </Tabs>
+
+      {/* Edit Grant Dialog */}
+      {grant && (
+        <EditGrantDialog
+          isOpen={showEditDialog}
+          onClose={() => setShowEditDialog(false)}
+          grant={grant}
+          onGrantUpdated={handleGrantUpdated}
+        />
+      )}
     </div>
   );
 };
