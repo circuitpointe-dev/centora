@@ -27,7 +27,7 @@ interface UserProfileDialogProps {
 }
 
 const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) => {
-  const { profile, updateProfile, uploadAvatar } = useProfile();
+  const { profile, updateProfile, uploadAvatar, loading } = useProfile();
   const [formData, setFormData] = useState({
     name: profile?.full_name || user.name,
     email: profile?.email || user.email,
@@ -35,6 +35,17 @@ const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) =>
   });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update form data when profile changes
+  React.useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.full_name || user.name,
+        email: profile.email || user.email,
+        phone: profile.phone || user.phone || '',
+      });
+    }
+  }, [profile, user.name, user.email, user.phone]);
 
   const handleSave = async () => {
     try {
@@ -63,6 +74,10 @@ const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) =>
         description: 'Please select an image file.',
         variant: 'destructive',
       });
+      // Clear the input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       return;
     }
 
@@ -73,16 +88,33 @@ const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) =>
         description: 'Please select an image smaller than 5MB.',
         variant: 'destructive',
       });
+      // Clear the input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       return;
     }
 
     try {
       setUploading(true);
       await uploadAvatar(file);
+      toast({
+        title: 'Success',
+        description: 'Avatar updated successfully!',
+      });
     } catch (error) {
       console.error('Error uploading avatar:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to upload avatar. Please try again.',
+        variant: 'destructive',
+      });
     } finally {
       setUploading(false);
+      // Clear the input to allow re-uploading the same file
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -104,7 +136,11 @@ const UserProfileDialog = ({ isOpen, onClose, user }: UserProfileDialogProps) =>
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={profile?.avatar_url || user.avatar} alt={formData.name} />
+                <AvatarImage 
+                  src={profile?.avatar_url ? `${profile.avatar_url}?t=${Date.now()}` : user.avatar} 
+                  alt={formData.name}
+                  className="object-cover" 
+                />
                 <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                   <User className="h-8 w-8" />
                 </AvatarFallback>

@@ -104,7 +104,11 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
                 className="flex items-center gap-1 h-8 rounded-full hover:bg-transparent"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+                  <AvatarImage 
+                    src={currentUser.avatar ? `${currentUser.avatar}?t=${Date.now()}` : undefined} 
+                    alt={currentUser.name}
+                    className="object-cover"
+                  />
                   <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                     <User className="h-4 w-4" />
                   </AvatarFallback>

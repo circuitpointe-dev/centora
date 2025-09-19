@@ -104,10 +104,22 @@ export const useProfile = () => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${profile.id}/avatar.${fileExt}`;
 
-      // Upload file to storage
-      const { error: uploadError } = await supabase.storage
+      // Delete existing avatar if it exists
+      try {
+        await supabase.storage
+          .from('avatars')
+          .remove([fileName]);
+      } catch (error) {
+        // Ignore errors when removing non-existent files
+      }
+
+      // Upload new file to storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, file, { 
+          upsert: true,
+          cacheControl: '3600',
+        });
 
       if (uploadError) throw uploadError;
 
@@ -124,11 +136,6 @@ export const useProfile = () => {
       return urlData.publicUrl;
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to upload avatar',
-        variant: 'destructive',
-      });
       throw error;
     }
   };
