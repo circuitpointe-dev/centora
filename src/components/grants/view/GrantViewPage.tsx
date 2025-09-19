@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Download, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,9 +14,24 @@ import { useCloseGrantData } from './hooks/useCloseGrantData';
 const GrantViewPage = () => {
   const { grantId } = useParams<{ grantId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get('edit') === 'true';
   const { grants, loading: grantsLoading } = useGrants();
   
   const grant = grants.find(g => g.id === grantId);
+
+  const handleEditGrant = () => {
+    console.log('Edit Grant button clicked, current isEditMode:', isEditMode);
+    if (isEditMode) {
+      // Exit edit mode
+      console.log('Exiting edit mode');
+      navigate(`/dashboard/grants/view/${grantId}`);
+    } else {
+      // Enter edit mode
+      console.log('Entering edit mode');
+      navigate(`/dashboard/grants/view/${grantId}?edit=true`);
+    }
+  };
 
   const {
     statistics,
@@ -111,9 +126,9 @@ const GrantViewPage = () => {
           <Badge className={getStatusColor(grant.status)}>
             {grant.status.charAt(0).toUpperCase() + grant.status.slice(1)}
           </Badge>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleEditGrant}>
             <Edit className="h-4 w-4 mr-2" />
-            Edit Grant
+            {isEditMode ? 'Save Changes' : 'Edit Grant'}
           </Button>
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />

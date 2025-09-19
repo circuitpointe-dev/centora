@@ -21,6 +21,7 @@ export const GrantsTableRow = ({ grant }: GrantsTableRowProps) => {
   };
 
   const handleEdit = () => {
+    console.log('Table edit button clicked for grant:', grant.id);
     navigate(`/dashboard/grants/view/${grant.id}?edit=true`);
   };
 
