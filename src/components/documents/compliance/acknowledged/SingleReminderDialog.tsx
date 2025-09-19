@@ -1,6 +1,6 @@
 import React from 'react';
 import { Mail } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -34,11 +34,16 @@ export const SingleReminderDialog: React.FC<SingleReminderDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg bg-white">
-        <div className="p-6">
-          <div className="flex items-center gap-2 mb-4">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5 text-violet-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Send Reminder</h2>
-          </div>
+            Send Reminder
+          </DialogTitle>
+          <DialogDescription>
+            Send a reminder message to {employee.name} about their document acknowledgement requirements.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="p-6 pt-0">
           
           <div className="space-y-4 mb-6">
             <div>

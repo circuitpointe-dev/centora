@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 interface ReminderSuccessDialogProps {
@@ -15,7 +15,15 @@ export const ReminderSuccessDialog: React.FC<ReminderSuccessDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg bg-white">
-        <div className="text-center py-8">
+        <DialogHeader>
+          <DialogTitle>
+            Reminder Sent Successfully
+          </DialogTitle>
+          <DialogDescription>
+            The document owners and recipients have been notified about the reminder.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="text-center py-8 pt-0">
           <div className="mx-auto mb-6 w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center">
             <CheckCircle className="w-8 h-8 text-violet-600" />
           </div>

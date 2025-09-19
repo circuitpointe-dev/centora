@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Send } from 'lucide-react';
 import { overdueByItemType, complianceStatusData, upcomingDueDates } from './data/complianceMonitorData';
@@ -192,6 +192,9 @@ export const ComplianceCharts = () => {
               <CalendarIcon className="h-5 w-5" />
               Event Details
             </DialogTitle>
+            <DialogDescription>
+              View details for the selected compliance event or deadline.
+            </DialogDescription>
           </DialogHeader>
           {selectedEvent && (
             <div className="space-y-4">
