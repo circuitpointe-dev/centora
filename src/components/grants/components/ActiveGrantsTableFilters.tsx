@@ -5,10 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search } from 'lucide-react';
 
 interface FiltersState {
-  grant_name: string;
-  donor_name: string;
-  region: string;
-  program_area: string;
+  search: string;
+  status: string;
+  donor: string;
+  sortBy: string;
 }
 
 interface ActiveGrantsTableFiltersProps {
@@ -26,44 +26,48 @@ export const ActiveGrantsTableFilters = ({ filters, onFiltersChange }: ActiveGra
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
-          placeholder="Search Grant Name"
-          value={filters.grant_name}
-          onChange={(e) => updateFilter('grant_name', e.target.value)}
+          placeholder="Search grants, donors..."
+          value={filters.search}
+          onChange={(e) => updateFilter('search', e.target.value)}
           className="pl-10"
         />
       </div>
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <Input
-          placeholder="Search Donor Name"
-          value={filters.donor_name}
-          onChange={(e) => updateFilter('donor_name', e.target.value)}
-          className="pl-10"
-        />
-      </div>
-      <Select value={filters.region} onValueChange={(value) => updateFilter('region', value)}>
+      
+      <Select value={filters.donor} onValueChange={(value) => updateFilter('donor', value)}>
         <SelectTrigger>
-          <SelectValue placeholder="Region" />
+          <SelectValue placeholder="All Donors" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Regions</SelectItem>
-          <SelectItem value="North America">North America</SelectItem>
-          <SelectItem value="Europe">Europe</SelectItem>
-          <SelectItem value="Asia">Asia</SelectItem>
-          <SelectItem value="Africa">Africa</SelectItem>
-          <SelectItem value="South America">South America</SelectItem>
+          <SelectItem value="all">All Donors</SelectItem>
+          <SelectItem value="Gates Foundation">Gates Foundation</SelectItem>
+          <SelectItem value="Ford Foundation">Ford Foundation</SelectItem>
+          <SelectItem value="Open Society">Open Society</SelectItem>
         </SelectContent>
       </Select>
-      <Select value={filters.program_area} onValueChange={(value) => updateFilter('program_area', value)}>
+
+      <Select value={filters.status} onValueChange={(value) => updateFilter('status', value)}>
         <SelectTrigger>
-          <SelectValue placeholder="Program Area" />
+          <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Programs</SelectItem>
-          <SelectItem value="Health">Health</SelectItem>
-          <SelectItem value="Education">Education</SelectItem>
-          <SelectItem value="Environment">Environment</SelectItem>
-          <SelectItem value="Community Development">Community Development</SelectItem>
+          <SelectItem value="all">All Status</SelectItem>
+          <SelectItem value="active">Active</SelectItem>
+          <SelectItem value="pending">Pending</SelectItem>
+          <SelectItem value="closed">Closed</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Select value={filters.sortBy} onValueChange={(value) => updateFilter('sortBy', value)}>
+        <SelectTrigger>
+          <SelectValue placeholder="Sort By" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="newest">Newest First</SelectItem>
+          <SelectItem value="oldest">Oldest First</SelectItem>
+          <SelectItem value="name-asc">Name A-Z</SelectItem>
+          <SelectItem value="name-desc">Name Z-A</SelectItem>
+          <SelectItem value="amount-high">Amount High-Low</SelectItem>
+          <SelectItem value="amount-low">Amount Low-High</SelectItem>
         </SelectContent>
       </Select>
     </div>
