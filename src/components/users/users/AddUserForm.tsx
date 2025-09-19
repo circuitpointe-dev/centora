@@ -111,6 +111,9 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
   });
 
   const onValid = (values: AddUserFormValues) => {
+    console.log('AddUserForm - Form values:', values);
+    console.log('AddUserForm - Department value:', values.department);
+    
     const payload: AddUserPayload = {
       fullName: values.fullName,
       email: values.email,
@@ -118,6 +121,8 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
       access: values.access,
       message: values.message,
     };
+    
+    console.log('AddUserForm - Payload:', payload);
     onSubmit(payload); // parent flips to Preview
   };
 

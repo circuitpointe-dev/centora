@@ -25,9 +25,18 @@ export const UserInvitePreview: React.FC<Props> = ({ invite, onBack, onConfirm, 
   
   // Find department name from ID
   const departmentName = React.useMemo(() => {
-    if (!invite.department || !departments) return "—";
+    console.log('UserInvitePreview - invite.department:', invite.department);
+    console.log('UserInvitePreview - departments:', departments);
+    
+    if (!invite.department || !departments) {
+      console.log('UserInvitePreview - No department or departments not loaded');
+      return "—";
+    }
+    
     const dept = departments.find(d => d.id === invite.department);
-    return dept ? dept.name : "—";
+    console.log('UserInvitePreview - Found department:', dept);
+    
+    return dept ? dept.name : invite.department; // Show ID as fallback instead of "—"
   }, [invite.department, departments]);
 
   // Build rows from Access map

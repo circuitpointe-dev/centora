@@ -49,10 +49,12 @@ export const DepartmentSelect: React.FC<Props> = ({ value, onChange, error }) =>
       });
 
       if (error) {
+        console.error('Department creation error:', error);
         toast({ title: 'Failed to add department', description: error.message, variant: 'destructive' });
         return;
       }
 
+      console.log('Department created with ID:', newId);
       toast({ title: 'Department added', description: `${name} created successfully.` });
       onChange(String(newId));
       setNewDept("");
@@ -73,7 +75,10 @@ export const DepartmentSelect: React.FC<Props> = ({ value, onChange, error }) =>
     <div className="col-span-1 md:col-span-2">
       <Label className="text-sm text-gray-600">Department</Label>
       <div className="mt-1 flex items-center gap-2">
-        <Select value={value} onValueChange={onChange}>
+        <Select value={value} onValueChange={(newValue) => {
+          console.log('DepartmentSelect - Selected department ID:', newValue);
+          onChange(newValue);
+        }}>
           <SelectTrigger className="w-full focus-visible:ring-violet-600 focus-visible:ring-offset-2" disabled={isLoading || options.length === 0}>
             <SelectValue placeholder={isLoading ? 'Loading…' : 'Select a department'} />
           </SelectTrigger>
