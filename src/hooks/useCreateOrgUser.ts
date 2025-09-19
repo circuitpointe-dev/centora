@@ -52,10 +52,29 @@ export const useCreateOrgUser = () => {
       queryClient.invalidateQueries({ queryKey: ['departments'] });
       queryClient.invalidateQueries({ queryKey: ['roles'] });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
+      // Handle different error types
+      let errorMessage = error.message || 'An unexpected error occurred';
+      let errorTitle = 'Error';
+
+      // Parse edge function errors
+      if (error.context?.res) {
+        try {
+          const errorData = JSON.parse(error.context.res);
+          if (errorData.code === 'email_exists') {
+            errorTitle = 'Email Already Exists';
+            errorMessage = errorData.error;
+          } else {
+            errorMessage = errorData.error || errorMessage;
+          }
+        } catch (e) {
+          // Fallback to original error message
+        }
+      }
+
       toast({
-        title: "Error",
-        description: error.message,
+        title: errorTitle,
+        description: errorMessage,
         variant: "destructive",
       });
     },

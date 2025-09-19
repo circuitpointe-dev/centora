@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Mail, User as UserIcon, Building2 } from "lucide-react";
+import { useDepartments } from "@/hooks/useDepartments";
 
 import type { AddUserPayload } from "@/components/users/users/AddUserForm";
 import type { ModuleKey } from "@/components/users/users/access/types";
@@ -20,6 +21,15 @@ type Props = {
 };
 
 export const UserInvitePreview: React.FC<Props> = ({ invite, onBack, onConfirm, isLoading }) => {
+  const { data: departments } = useDepartments();
+  
+  // Find department name from ID
+  const departmentName = React.useMemo(() => {
+    if (!invite.department || !departments) return "—";
+    const dept = departments.find(d => d.id === invite.department);
+    return dept ? dept.name : "—";
+  }, [invite.department, departments]);
+
   // Build rows from Access map
   const rows = React.useMemo(() => {
     const enabled = MODULES
@@ -79,8 +89,8 @@ export const UserInvitePreview: React.FC<Props> = ({ invite, onBack, onConfirm, 
             </div>
             <div>
               <div className="text-sm text-gray-500">Department</div>
-              <div className="font-medium text-gray-900 capitalize">
-                {invite.department || "—"}
+              <div className="font-medium text-gray-900">
+                {departmentName}
               </div>
             </div>
           </div>

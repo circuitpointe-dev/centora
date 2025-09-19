@@ -81,6 +81,18 @@ serve(async (req) => {
 
     if (createUserError || !authUser.user) {
       console.error('Failed to create auth user:', createUserError)
+      
+      // Handle specific error cases
+      if (createUserError?.message?.includes('A user with this email address has already been registered')) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'A user with this email address already exists. Please use a different email or check if the user is already registered.',
+            code: 'email_exists'
+          }),
+          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+      
       return new Response(
         JSON.stringify({ error: `Failed to create user: ${createUserError?.message}` }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
