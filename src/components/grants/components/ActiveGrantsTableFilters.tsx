@@ -3,21 +3,15 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-
-interface FiltersState {
-  search: string;
-  status: string;
-  donor: string;
-  sortBy: string;
-}
+import { GrantsFilter } from '@/hooks/grants/useActiveGrantsFilters';
 
 interface ActiveGrantsTableFiltersProps {
-  filters: FiltersState;
-  onFiltersChange: (filters: FiltersState) => void;
+  filters: GrantsFilter;
+  onFiltersChange: (filters: GrantsFilter) => void;
 }
 
 export const ActiveGrantsTableFilters = ({ filters, onFiltersChange }: ActiveGrantsTableFiltersProps) => {
-  const updateFilter = (key: keyof FiltersState, value: string) => {
+  const updateFilter = (key: keyof GrantsFilter, value: string) => {
     onFiltersChange({ ...filters, [key]: value });
   };
 

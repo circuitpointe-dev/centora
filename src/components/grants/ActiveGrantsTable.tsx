@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,8 @@ import { ActiveGrantsTableFilters } from './components/ActiveGrantsTableFilters'
 import { ActiveGrantsTableRow } from './components/ActiveGrantsTableRow';
 import { ExportDropdown } from './components/ExportDropdown';
 import { EmptyGrantsState } from './components/EmptyGrantsState';
-import { useActiveGrantsFilters } from './hooks/useActiveGrantsFilters';
+import { useActiveGrantsFilters } from '@/hooks/grants/useActiveGrantsFilters';
+import { GrantsFilter } from '@/hooks/grants/useActiveGrantsFilters';
 
 export const ActiveGrantsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,7 +46,7 @@ export const ActiveGrantsTable = () => {
       <div className="p-0">
         <ActiveGrantsTableFilters 
           filters={filters} 
-          onFiltersChange={setFilters}
+          onFiltersChange={(newFilters) => setFilters(newFilters)}
         />
 
         {!hasData ? (
