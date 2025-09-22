@@ -86,8 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           orgType = 'NGO'; // default fallback
         }
         
-        // DEVELOPMENT MODE: Give all users access to all modules
-        subscribedModules = Object.values(allModules);
+        subscribedModules = modulesData?.map(m => m.module) || ['fundraising', 'documents'];
       } else {
         // Handle users with no org_id (not a Super Admin)
         console.warn("User has no org_id or is not a Super Admin. Subscribing to base modules.");

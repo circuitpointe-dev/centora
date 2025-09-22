@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { reviewerOptions } from "./ProposalData";
 import { useProposals, useUpdateProposal, useDeleteProposal } from "@/hooks/useProposals";
 import { Search } from "lucide-react";
 import ProposalRowActions from "./ProposalRowActions";
@@ -167,11 +166,11 @@ const ProposalTable: React.FC<{
                         <SelectValue placeholder="Reviewer" />
                       </SelectTrigger>
                       <SelectContent>
-                        {reviewerOptions.map(r => (
-                          <SelectItem key={r} value={r}>
-                            {r}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="Winifred John">Winifred John</SelectItem>
+                        <SelectItem value="Somachi Okafor">Somachi Okafor</SelectItem>
+                        <SelectItem value="Chioma Ike">Chioma Ike</SelectItem>
+                        <SelectItem value="Richard Nwamadi">Richard Nwamadi</SelectItem>
+                        <SelectItem value="Amina Yusuf">Amina Yusuf</SelectItem>
                       </SelectContent>
                     </Select>
                   </td>
