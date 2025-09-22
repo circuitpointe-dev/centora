@@ -22,6 +22,7 @@ import NewGrantPage from "./components/grants/new/NewGrantPage";
 import GrantReviewPage from "./components/grants/new/GrantReviewPage";
 import { RequestSignatureWizardPage } from "./components/documents/e-signature/RequestSignatureWizardPage";
 import { DocumentEditorPage } from "./components/documents/e-signature/DocumentEditorPage";
+import { DocumentSignatureEditor } from "./components/documents/e-signature-new-editor/DocumentSignatureEditor";
 import { GrantsOverviewPage } from "./components/grants/pages/GrantsOverviewPage";
 
 const queryClient = new QueryClient();
@@ -81,6 +82,16 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <DocumentEditorPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected: Signature Editor */}
+        <Route
+          path="/dashboard/documents/signature-editor"
+          element={
+            <ProtectedRoute>
+              <DocumentSignatureEditor />
             </ProtectedRoute>
           }
         />

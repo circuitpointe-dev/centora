@@ -242,16 +242,7 @@ export const useRecentActivity = () => {
           });
         });
 
-        // Add some sample signature activities for demo
-        if (activities.length < 5) {
-          activities.push({
-            id: 'sample-signature',
-            type: 'document_signed',
-            title: 'Contract Agreement',
-            description: 'Document signed by client',
-            created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-          });
-        }
+        // Activities are now purely from real data
 
         console.log('Recent activities:', activities);
         return activities.slice(0, 5);
@@ -296,25 +287,7 @@ export const useNotifications = () => {
           });
         });
 
-        // Add sample notifications for demo if none exist
-        if (notifications.length === 0) {
-          notifications.push(
-            {
-              id: 'sample-1',
-              type: 'warning',
-              title: 'Document Review Required',
-              description: 'Policy document needs your review',
-              created_at: new Date().toISOString(),
-            },
-            {
-              id: 'sample-2',
-              type: 'info',
-              title: 'New Template Available',
-              description: 'Contract template has been updated',
-              created_at: new Date(Date.now() - 60 * 60 * 1000).toISOString(), // 1 hour ago
-            }
-          );
-        }
+        // Notifications are now purely from real data
 
         console.log('Notifications:', notifications);
         return notifications.slice(0, 3); // Limit to 3 most important notifications
