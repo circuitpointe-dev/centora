@@ -47,6 +47,13 @@ const GenericFeaturePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const userType = user?.userType;
+
+  // Redirect /dashboard/documents to /dashboard/documents/documents
+  useEffect(() => {
+    if (module === 'documents' && !feature) {
+      navigate('/dashboard/documents/documents', { replace: true });
+    }
+  }, [module, feature, navigate]);
   
   // Render specific page components for fundraising routes
   if (module === 'fundraising' && feature === 'donor-management') {

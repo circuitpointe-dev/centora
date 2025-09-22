@@ -1,10 +1,9 @@
 
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { DocumentEditorHeader } from "./review-step/DocumentEditorHeader";
-import { DocumentCanvas } from "./review-step/DocumentCanvas";
-import { FieldEditorCard } from "./review-step/FieldEditorCard";
 
 interface FieldData {
   id: string;
@@ -18,57 +17,29 @@ export const DocumentEditorPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [confirmExit, setConfirmExit] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
 
-  // Get data from navigation state
-  const { selectedFiles = [], selectedDoc = null } = location.state || {};
+  // Get document from navigation state
+  const { document } = location.state || {};
   
-  // Get the first document/file for display
-  const currentDocument = selectedFiles[0] || selectedDoc;
-  const currentFileUrl = currentDocument 
-    ? (selectedFiles[0] ? URL.createObjectURL(selectedFiles[0]) : selectedDoc?.data?.fileUrl)
-    : null;
+  if (!document) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">No Document Selected</h2>
+          <p className="text-gray-600 mb-4">Please select a document to edit.</p>
+          <Button onClick={() => navigate('/dashboard/documents/documents')}>
+            Back to Documents
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
-  const hasChanges = showPreview;
+  const hasChanges = false; // TODO: Track actual changes
 
-  const handleClose = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/request-signature");
-  const handleBack = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/request-signature");
-  const confirmAndLeave = () => navigate("/dashboard/documents/request-signature");
-
-  const handlePreview = () => {
-    setShowPreview(true);
-    
-    // Get canvas data from the DocumentCanvas component
-    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
-    if (canvas) {
-      const dataURL = canvas.toDataURL('image/png');
-      console.log("Canvas data URL generated:", dataURL);
-      
-      // Create a preview window with the canvas overlay
-      const previewWindow = window.open('', '_blank');
-      if (previewWindow) {
-        previewWindow.document.write(`
-          <html>
-            <head><title>Document Preview</title></head>
-            <body style="margin: 0; padding: 20px;">
-              <h3>Document Preview with Fields</h3>
-              <img src="${dataURL}" style="max-width: 100%; border: 1px solid #ccc;" />
-            </body>
-          </html>
-        `);
-      }
-    } else {
-      console.log("No canvas found for preview");
-    }
-  };
-
-  const handleContinue = () => {
-    console.log("Continue to recipients");
-  };
-
-  const handleFieldAdded = (field: FieldData, position: { x: number; y: number }) => {
-    console.log("Field added to canvas:", field, position);
-  };
+  const handleClose = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/documents");
+  const handleBack = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/documents");
+  const confirmAndLeave = () => navigate("/dashboard/documents/documents");
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -77,31 +48,55 @@ export const DocumentEditorPage: React.FC = () => {
         onClose={handleClose}
       />
 
-      {/* Main Content - Two Column Layout */}
+      {/* Main Content */}
       <main className="flex-1 p-4">
-        <div className="grid grid-cols-12 gap-4 h-[calc(100vh-120px)]">
-          {/* Left Column - Document Canvas */}
-          <div className="col-span-9 h-full">
-            <div className="bg-white rounded-[5px] border h-full flex flex-col">
-              <div className="flex-1 p-4">
-                <DocumentCanvas 
-                  fileUrl={currentFileUrl} 
-                  onFieldAdded={handleFieldAdded}
-                />
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg border shadow-sm p-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{document.title}</h2>
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <span>Created: {new Date(document.created_at).toLocaleDateString()}</span>
+                <span>•</span>
+                <span>Creator: {document.creator?.full_name || 'Unknown'}</span>
+                <span>•</span>
+                <span>Category: {document.category}</span>
+              </div>
+            </div>
+            
+            {/* Document Content - This would be replaced with actual document viewer/editor */}
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              <div className="max-w-sm mx-auto">
+                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">Document Editor</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Document editing functionality will be implemented here based on the document type.
+                </p>
+                <div className="mt-4 space-y-2 text-xs text-gray-500">
+                  <p><strong>File:</strong> {document.file_name}</p>
+                  <p><strong>Size:</strong> {document.file_size ? `${(document.file_size / 1024 / 1024).toFixed(2)} MB` : 'Unknown'}</p>
+                  <p><strong>Type:</strong> {document.mime_type || 'Unknown'}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-between">
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={handleBack}>
+                  Back to Documents
+                </Button>
+              </div>
+              <div className="flex gap-3">
+                <Button variant="outline">
+                  Save Draft
+                </Button>
+                <Button className="bg-violet-600 hover:bg-violet-700">
+                  Save Changes
+                </Button>
               </div>
             </div>
           </div>
-
-          {/* Right Column - Field Editor */}
-          <aside className="col-span-3 h-full">
-            <div className="sticky top-4 h-[calc(100vh-160px)]">
-              <FieldEditorCard 
-                onPreview={handlePreview}
-                onContinue={handleContinue}
-                documentCount={selectedFiles.length + (selectedDoc ? 1 : 0)}
-              />
-            </div>
-          </aside>
         </div>
       </main>
 

@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { LayoutGrid, List, Upload, Search } from 'lucide-react';
@@ -35,6 +36,7 @@ const filterOptions = [
 ];
 
 const DocumentsFeaturePage = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,7 +58,14 @@ const DocumentsFeaturePage = () => {
   }, [documents, selectedDocumentId]);
 
   const handleSelectDocument = (id: string) => {
-    setSelectedDocumentId(id);
+    // Find the selected document
+    const document = documents?.find(doc => doc.id === id);
+    if (!document) return;
+
+    // Navigate to document editor with document data
+    navigate('/dashboard/documents/document-editor', {
+      state: { document }
+    });
   };
 
   const selectedDocument = useMemo(
