@@ -29,6 +29,7 @@ import {
     X
 } from 'lucide-react';
 import ProfessionalSignatureCapture from './ProfessionalSignatureCapture';
+import SignatureDetailsModal from './SignatureDetailsModal';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -75,10 +76,11 @@ const ProfessionalPDFEditor: React.FC = () => {
     const [signers, setSigners] = useState<Signer[]>([]);
     const [newSigner, setNewSigner] = useState<Signer>({ name: '', email: '' });
     const [documentTitle, setDocumentTitle] = useState('Untitled Document');
-    const [showSignatureDialog, setShowSignatureDialog] = useState(false);
+    const [showSignatureDetailsModal, setShowSignatureDetailsModal] = useState(false);
     const [activeSignatureField, setActiveSignatureField] = useState<SignatureField | null>(null);
     const [isSigningMode, setIsSigningMode] = useState(false);
     const [currentUserSignature, setCurrentUserSignature] = useState<any>(null);
+    const [userSignatureData, setUserSignatureData] = useState<any>(null);
 
     // Hooks
     const createSignatureRequest = useCreateSignatureRequest();
@@ -180,7 +182,7 @@ const ProfessionalPDFEditor: React.FC = () => {
     const handleFieldClick = (field: SignatureField) => {
         if (field.type === 'signature') {
             setActiveSignatureField(field);
-            setShowSignatureDialog(true);
+            setShowSignatureDetailsModal(true);
         } else {
             // Handle other field types (date, email, text, name)
             const value = prompt(`Enter ${field.label}:`);
@@ -192,18 +194,18 @@ const ProfessionalPDFEditor: React.FC = () => {
         }
     };
 
-    // Handle signature save
-    const handleSignatureSave = (signatureData: any) => {
+    // Handle signature details apply
+    const handleSignatureDetailsApply = (signatureData: any) => {
         if (activeSignatureField) {
-            setCurrentUserSignature(signatureData);
+            setUserSignatureData(signatureData);
             setFields(prev => prev.map(f => 
                 f.id === activeSignatureField.id 
-                    ? { ...f, value: signatureData.data } 
+                    ? { ...f, value: signatureData.selectedSignature } 
                     : f
             ));
-            setShowSignatureDialog(false);
+            setShowSignatureDetailsModal(false);
             setActiveSignatureField(null);
-            toast.success('Signature added successfully!');
+            toast.success('Signature applied successfully!');
         }
     };
 
@@ -406,16 +408,19 @@ const ProfessionalPDFEditor: React.FC = () => {
                                         .map((field) => {
                                             const fieldType = fieldTypes.find(ft => ft.type === field.type);
                                             const Icon = fieldType?.icon || PenTool;
+                                            const hasValue = field.value && field.value.trim() !== '';
                                             
                                             return (
                                                 <div
                                                     key={field.id}
                                                     className={cn(
-                                                        "absolute border-2 border-dashed rounded cursor-pointer group transition-colors",
+                                                        "absolute border-2 rounded cursor-pointer group transition-all duration-200",
                                                         selectedField?.id === field.id 
-                                                            ? "border-brand-purple bg-brand-purple/10" 
-                                                            : fieldType?.color || "bg-gray-50 border-gray-300",
-                                                        "hover:border-brand-purple"
+                                                            ? "border-brand-purple bg-brand-purple/10 shadow-lg" 
+                                                            : hasValue 
+                                                                ? "border-green-500 bg-green-50 shadow-md"
+                                                                : "border-dashed border-gray-300 bg-gray-50",
+                                                        "hover:border-brand-purple hover:shadow-lg"
                                                     )}
                                                     style={{
                                                         left: field.x * zoom,
@@ -425,13 +430,54 @@ const ProfessionalPDFEditor: React.FC = () => {
                                                     }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        handleFieldSelect(field);
+                                                        if (isSigningMode) {
+                                                            handleFieldClick(field);
+                                                        } else {
+                                                            handleFieldSelect(field);
+                                                        }
                                                     }}
                                                 >
-                                                    <div className="flex items-center justify-center h-full text-xs font-medium relative">
-                                                        <Icon className="w-3 h-3 mr-1" />
-                                                        {field.label}
-                                                        {selectedField?.id === field.id && (
+                                    <div className="flex items-center justify-center h-full text-xs font-medium relative p-1">
+                                                        {hasValue ? (
+                                                            field.type === 'signature' ? (
+                                                                // Show signature preview
+                                                                typeof field.value === 'string' && field.value.startsWith('data:') ? (
+                                                                    <img 
+                                                                        src={field.value} 
+                                                                        alt="Signature" 
+                                                                        className="max-w-full max-h-full object-contain"
+                                                                    />
+                                                                ) : typeof field.value === 'object' && field.value && 'font' in field.value && 'text' in field.value ? (
+                                                                    <div 
+                                                                        className="text-lg"
+                                                                        style={{ fontFamily: (field.value as any).font }}
+                                                                    >
+                                                                        {(field.value as any).text}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="text-center">
+                                                                        <Check className="w-4 h-4 text-green-600 mx-auto mb-1" />
+                                                                        <div className="text-green-600">Signed</div>
+                                                                    </div>
+                                                                )
+                                                            ) : (
+                                                                // Show other field values
+                                                                <div className="text-center text-green-800 font-medium truncate px-1">
+                                                                    {field.value}
+                                                                </div>
+                                                            )
+                                                        ) : (
+                                                            // Show empty field
+                                                            <div className="text-center">
+                                                                <Icon className="w-3 h-3 mx-auto mb-1 text-gray-600" />
+                                                                <div className="text-gray-600 truncate">{field.label}</div>
+                                                                {isSigningMode && (
+                                                                    <div className="text-xs text-blue-600 mt-1">Click to {field.type}</div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        
+                                                        {selectedField?.id === field.id && !isSigningMode && (
                                                             <button
                                                                 className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center hover:scale-110 transition-transform"
                                                                 onClick={(e) => {
@@ -724,17 +770,19 @@ const ProfessionalPDFEditor: React.FC = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* Signature Capture Dialog */}
-            {showSignatureDialog && activeSignatureField && (
-                <ProfessionalSignatureCapture
-                    onSave={handleSignatureSave}
-                    onCancel={() => {
-                        setShowSignatureDialog(false);
-                        setActiveSignatureField(null);
-                    }}
-                    fieldLabel={activeSignatureField.label}
-                />
-            )}
+            {/* Signature Details Modal */}
+            <SignatureDetailsModal
+                isOpen={showSignatureDetailsModal}
+                onClose={() => {
+                    setShowSignatureDetailsModal(false);
+                    setActiveSignatureField(null);
+                }}
+                onApply={handleSignatureDetailsApply}
+                initialData={{
+                    fullName: user?.user_metadata?.full_name || '',
+                    initials: user?.user_metadata?.initials || ''
+                }}
+            />
         </div>
     );
 };
