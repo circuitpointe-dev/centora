@@ -85,6 +85,9 @@ const ProfessionalPDFEditor: React.FC = () => {
     const [userSignatureData, setUserSignatureData] = useState<any>(null);
     const [showFieldInputModal, setShowFieldInputModal] = useState(false);
     const [activeInputField, setActiveInputField] = useState<SignatureField | null>(null);
+    const [pdfLoadError, setPdfLoadError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [draggedField, setDraggedField] = useState<SignatureField | null>(null);
 
     // Hooks
     const createSignatureRequest = useCreateSignatureRequest();
@@ -103,17 +106,37 @@ const ProfessionalPDFEditor: React.FC = () => {
         }
     }, [location.state]);
 
-    // Get PDF URL
+    // Get PDF URL with better error handling
     const getPDFUrl = useCallback(() => {
         const state = location.state as any;
+        
+        // Handle uploaded files
         if (state?.selectedFiles && state.selectedFiles.length > 0) {
             const file = state.selectedFiles[0] as File;
-            return URL.createObjectURL(file);
+            if (file.type === 'application/pdf') {
+                return URL.createObjectURL(file);
+            } else {
+                setPdfLoadError('Please upload a valid PDF file');
+                return null;
+            }
         }
-        if (state?.selectedDoc?.file_path) {
-            return `https://kspzfifdwfpirgqstzhz.supabase.co/storage/v1/object/public/documents/${state.selectedDoc.file_path}`;
+        
+        // Handle database documents
+        if (state?.selectedDoc) {
+            const doc = state.selectedDoc;
+            if (doc.file_path) {
+                // Construct proper Supabase URL
+                const baseUrl = 'https://kspzfifdwfpirgqstzhz.supabase.co/storage/v1/object/public/documents/';
+                const fullUrl = doc.file_path.startsWith('http') ? doc.file_path : baseUrl + doc.file_path;
+                return fullUrl;
+            } else if (doc.content || doc.file_url) {
+                return doc.content || doc.file_url;
+            }
         }
-        return "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+        
+        // If no document is provided, show error
+        setPdfLoadError('No PDF document provided. Please select a document to continue.');
+        return null;
     }, [location.state]);
 
     // Initialize sidebar fields
@@ -137,7 +160,7 @@ const ProfessionalPDFEditor: React.FC = () => {
 
     // Handle canvas click to add fields
     const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        if (!selectedTool) return;
+        if (!selectedTool || isSigningMode) return;
 
         const target = e.currentTarget;
         const rect = target.getBoundingClientRect();
@@ -160,7 +183,25 @@ const ProfessionalPDFEditor: React.FC = () => {
         setSelectedField(newField);
         setSelectedTool(null);
         toast.success(`${selectedTool} field added`);
-    }, [selectedTool, zoom, currentPage]);
+    }, [selectedTool, zoom, currentPage, isSigningMode]);
+
+    // Handle field drag start
+    const handleFieldDragStart = (field: SignatureField) => {
+        setDraggedField(field);
+    };
+
+    // Handle field drag
+    const handleFieldDrag = useCallback((fieldId: string, deltaX: number, deltaY: number) => {
+        setFields(prev => prev.map(field => 
+            field.id === fieldId 
+                ? { 
+                    ...field, 
+                    x: Math.max(0, field.x + deltaX / zoom), 
+                    y: Math.max(0, field.y + deltaY / zoom) 
+                }
+                : field
+        ));
+    }, [zoom]);
 
     // Handle field selection
     const handleFieldSelect = (field: SignatureField) => {
@@ -469,13 +510,56 @@ const ProfessionalPDFEditor: React.FC = () => {
 
                     {/* PDF Display */}
                     <div className="flex-1 p-6 overflow-auto">
-                        <div className="bg-card shadow-lg mx-auto relative rounded-sm" style={{ width: 'fit-content' }}>
-                            <Document
-                                file={getPDFUrl()}
-                                onLoadSuccess={({ numPages }) => setTotalPages(numPages)}
-                                onLoadError={(error) => console.error('PDF load error:', error)}
-                                loading={<div className="p-8 text-center text-muted-foreground">Loading PDF...</div>}
-                            >
+                        {pdfLoadError ? (
+                            <div className="flex items-center justify-center h-[500px]">
+                                <Card className="p-8 max-w-md text-center">
+                                    <div className="text-destructive mb-4">
+                                        <X className="w-12 h-12 mx-auto mb-4" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold mb-2">Failed to load PDF</h3>
+                                    <p className="text-muted-foreground mb-4">{pdfLoadError}</p>
+                                    <div className="space-y-2">
+                                        <Button 
+                                            variant="outline" 
+                                            onClick={() => {
+                                                setPdfLoadError(null);
+                                                setIsLoading(true);
+                                            }}
+                                        >
+                                            Try Again
+                                        </Button>
+                                        <Button 
+                                            variant="secondary" 
+                                            onClick={() => navigate('/dashboard/documents')}
+                                        >
+                                            Select Another Document
+                                        </Button>
+                                    </div>
+                                </Card>
+                            </div>
+                        ) : (
+                            <div className="bg-card shadow-lg mx-auto relative rounded-sm" style={{ width: 'fit-content' }}>
+                                <Document
+                                    file={getPDFUrl()}
+                                    onLoadSuccess={({ numPages }) => {
+                                        setTotalPages(numPages);
+                                        setIsLoading(false);
+                                        setPdfLoadError(null);
+                                    }}
+                                    onLoadError={(error) => {
+                                        console.error('PDF load error:', error);
+                                        setIsLoading(false);
+                                        setPdfLoadError(error.message || 'Failed to load PDF. Please check if the file is valid and try again.');
+                                    }}
+                                    loading={
+                                        <div className="flex items-center justify-center h-[500px]">
+                                            <div className="text-center">
+                                                <div className="animate-spin w-8 h-8 border-4 border-brand-purple border-t-transparent rounded-full mx-auto mb-4"></div>
+                                                <p className="text-muted-foreground">Loading PDF...</p>
+                                            </div>
+                                        </div>
+                                    }
+                                >
                                 <div 
                                     className={cn(
                                         "relative",
@@ -499,35 +583,61 @@ const ProfessionalPDFEditor: React.FC = () => {
                                             const hasValue = field.value && field.value.trim() !== '';
                                             
                                             return (
-                                                <div
-                                                    key={field.id}
-                                                    className={cn(
-                                                        "absolute border-2 rounded cursor-pointer group transition-all duration-200",
-                                                        selectedField?.id === field.id 
-                                                            ? "border-brand-purple bg-brand-purple/10 shadow-lg" 
-                                                            : hasValue 
-                                                                ? "border-green-500 bg-green-50 shadow-md"
-                                                                : isSigningMode
-                                                                    ? "border-dashed border-blue-400 bg-blue-50 hover:border-blue-500 hover:bg-blue-100 animate-pulse"
-                                                                    : "border-dashed border-gray-300 bg-gray-50",
-                                                        "hover:border-brand-purple hover:shadow-lg",
-                                                        isSigningMode && !hasValue && "ring-2 ring-blue-200"
-                                                    )}
-                                                    style={{
-                                                        left: field.x * zoom,
-                                                        top: field.y * zoom,
-                                                        width: field.width * zoom,
-                                                        height: field.height * zoom,
-                                                    }}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        if (isSigningMode) {
-                                                            handleFieldClick(field);
-                                                        } else {
-                                                            handleFieldSelect(field);
-                                                        }
-                                                    }}
-                                                >
+                                    <div
+                                        key={field.id}
+                                        className={cn(
+                                            "absolute border-2 rounded group transition-all duration-200 select-none",
+                                            selectedField?.id === field.id 
+                                                ? "border-brand-purple bg-brand-purple/10 shadow-lg" 
+                                                : hasValue 
+                                                    ? "border-green-500 bg-green-50 shadow-md"
+                                                    : isSigningMode
+                                                        ? "border-dashed border-blue-400 bg-blue-50 hover:border-blue-500 hover:bg-blue-100 animate-pulse cursor-pointer"
+                                                        : "border-dashed border-gray-300 bg-gray-50 cursor-move",
+                                            "hover:border-brand-purple hover:shadow-lg",
+                                            isSigningMode && !hasValue && "ring-2 ring-blue-200",
+                                            !isSigningMode && "draggable"
+                                        )}
+                                        style={{
+                                            left: field.x * zoom,
+                                            top: field.y * zoom,
+                                            width: field.width * zoom,
+                                            height: field.height * zoom,
+                                        }}
+                                        draggable={!isSigningMode}
+                                        onDragStart={(e) => {
+                                            if (!isSigningMode) {
+                                                e.dataTransfer.effectAllowed = 'move';
+                                                handleFieldDragStart(field);
+                                            } else {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        onDrag={(e) => {
+                                            if (!isSigningMode && draggedField?.id === field.id) {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        onDragEnd={(e) => {
+                                            if (!isSigningMode && draggedField?.id === field.id) {
+                                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                                                if (rect) {
+                                                    const newX = (e.clientX - rect.left) / zoom - field.width / 2;
+                                                    const newY = (e.clientY - rect.top) / zoom - field.height / 2;
+                                                    handleFieldDrag(field.id, newX - field.x, newY - field.y);
+                                                }
+                                                setDraggedField(null);
+                                            }
+                                        }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (isSigningMode) {
+                                                handleFieldClick(field);
+                                            } else {
+                                                handleFieldSelect(field);
+                                            }
+                                        }}
+                                    >
                                     <div className="flex items-center justify-center h-full text-xs font-medium relative p-1">
                                                         {hasValue ? (
                                                             field.type === 'signature' ? (
@@ -586,6 +696,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                                 </div>
                             </Document>
                         </div>
+                        )}
                     </div>
                 </div>
 
