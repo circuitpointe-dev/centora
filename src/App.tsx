@@ -22,8 +22,10 @@ import NewGrantPage from "./components/grants/new/NewGrantPage";
 import GrantReviewPage from "./components/grants/new/GrantReviewPage";
 import { RequestSignatureWizardPage } from "./components/documents/e-signature/RequestSignatureWizardPage";
 import { DocumentEditorPage } from "./components/documents/e-signature/DocumentEditorPage";
-import { DocumentSignatureEditor } from "./components/documents/e-signature-new-editor/DocumentSignatureEditor";
+import EditorNewPage from "./components/documents/e-signature-new/EditorNewPage";
 import { GrantsOverviewPage } from "./components/grants/pages/GrantsOverviewPage";
+import PDFSigningPlatform from "./components/documents/pdf-signing-platform/PDFSigningPlatform";
+import AdvancedPDFEditor from "./components/documents/pdf-signing-platform/AdvancedPDFEditor";
 
 const queryClient = new QueryClient();
 
@@ -41,8 +43,8 @@ const AppRoutes = () => {
 
         {/* Public: Register (dedicated OAuth-based signup page) */}
         <Route path="/signup" element={<SignupPage />} />
-        
-        
+
+
         {/* Legacy register route redirect */}
         <Route path="/register" element={<Navigate to="/signup" replace />} />
 
@@ -91,7 +93,7 @@ const AppRoutes = () => {
           path="/dashboard/documents/signature-editor"
           element={
             <ProtectedRoute>
-              <DocumentSignatureEditor />
+              <EditorNewPage />
             </ProtectedRoute>
           }
         />
@@ -102,6 +104,26 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <GrantsOverviewPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected: PDF Signing Platform */}
+        <Route
+          path="/dashboard/documents/pdf-signing-platform"
+          element={
+            <ProtectedRoute>
+              <PDFSigningPlatform />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected: Advanced PDF Editor */}
+        <Route
+          path="/dashboard/documents/pdf-signing-platform/editor/:documentId"
+          element={
+            <ProtectedRoute>
+              <AdvancedPDFEditor />
             </ProtectedRoute>
           }
         />
@@ -117,19 +139,19 @@ const AppRoutes = () => {
         >
           {/* Dashboard page - no longer redirect by default */}
           <Route path="dashboard" element={<DashboardPage />} />
-          
+
           {/* Grant View - nested within dashboard structure */}
           <Route path="view/:grantId" element={<GrantViewPage />} />
-          
+
           {/* NGO Grant View - nested within dashboard structure */}
           <Route path="ngo-view/:grantId" element={<NGOGrantViewPage />} />
-          
+
           {/* New Grant - nested within dashboard structure */}
           <Route path="new" element={<NewGrantPage />} />
-          
+
           {/* Grant Review - nested within dashboard structure */}
           <Route path="review" element={<GrantReviewPage />} />
-          
+
           {/* Other features */}
           <Route path=":feature" element={<GenericFeaturePage />} />
         </Route>

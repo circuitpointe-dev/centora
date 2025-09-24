@@ -180,7 +180,7 @@ export const RequestSignatureWizardPage: React.FC = () => {
           <div className="flex justify-center">
             <Button
               onClick={() =>
-                navigate("/dashboard/documents/signature-editor", {
+                navigate("/dashboard/documents/pdf-signing-platform", {
                   state: { selectedFiles, selectedDoc },
                 })
               }

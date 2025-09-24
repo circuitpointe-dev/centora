@@ -11,7 +11,7 @@ import { SignedDocumentHistory } from './SignedDocumentHistory';
 
 const ESignaturePage = () => {
   const navigate = useNavigate();
-  
+
   const navigationTabs = [
     { id: "tracking", label: "Signature Tracking" },
     { id: "expiry", label: "Document Expiry Monitor" },
@@ -23,18 +23,32 @@ const ESignaturePage = () => {
     navigate('/dashboard/documents/request-signature');
   };
 
+  const handleOpenPDFPlatform = () => {
+    navigate('/dashboard/documents/pdf-signing-platform');
+  };
+
   return (
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-xl font-medium text-gray-900">E-Signature</h1>
-        <Button 
-          onClick={handleRequestSignature}
-          className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Request for Signature
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            onClick={handleOpenPDFPlatform}
+            className="border-violet-600 text-violet-600 hover:bg-violet-50"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Advanced PDF Platform
+          </Button>
+          <Button
+            onClick={handleRequestSignature}
+            className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Request for Signature
+          </Button>
+        </div>
       </div>
 
       {/* Navigation Tabs */}
