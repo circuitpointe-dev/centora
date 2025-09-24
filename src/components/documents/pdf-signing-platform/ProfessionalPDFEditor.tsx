@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import ProfessionalSignatureCapture from './ProfessionalSignatureCapture';
 import SignatureDetailsModal from './SignatureDetailsModal';
+import FieldInputModal from './FieldInputModal';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -81,6 +82,8 @@ const ProfessionalPDFEditor: React.FC = () => {
     const [isSigningMode, setIsSigningMode] = useState(false);
     const [currentUserSignature, setCurrentUserSignature] = useState<any>(null);
     const [userSignatureData, setUserSignatureData] = useState<any>(null);
+    const [showFieldInputModal, setShowFieldInputModal] = useState(false);
+    const [activeInputField, setActiveInputField] = useState<SignatureField | null>(null);
 
     // Hooks
     const createSignatureRequest = useCreateSignatureRequest();
@@ -184,13 +187,19 @@ const ProfessionalPDFEditor: React.FC = () => {
             setActiveSignatureField(field);
             setShowSignatureDetailsModal(true);
         } else {
-            // Handle other field types (date, email, text, name)
-            const value = prompt(`Enter ${field.label}:`);
-            if (value) {
-                setFields(prev => prev.map(f => 
-                    f.id === field.id ? { ...f, value } : f
-                ));
-            }
+            // Handle other field types with modal instead of prompt
+            setActiveInputField(field);
+            setShowFieldInputModal(true);
+        }
+    };
+
+    // Handle field input save
+    const handleFieldInputSave = (value: string) => {
+        if (activeInputField) {
+            setFields(prev => prev.map(f => 
+                f.id === activeInputField.id ? { ...f, value } : f
+            ));
+            setActiveInputField(null);
         }
     };
 
@@ -298,6 +307,33 @@ const ProfessionalPDFEditor: React.FC = () => {
                             >
                                 <option>{documentTitle}</option>
                             </select>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                            <Button 
+                                variant={isSigningMode ? "default" : "outline"}
+                                size="sm"
+                                onClick={toggleSigningMode}
+                                className={cn(
+                                    isSigningMode 
+                                        ? "bg-green-600 hover:bg-green-700 text-white" 
+                                        : "border-green-600 text-green-600 hover:bg-green-50"
+                                )}
+                            >
+                                <PenTool className="w-4 h-4 mr-2" />
+                                {isSigningMode ? 'Sign Mode' : 'Edit Mode'}
+                            </Button>
+                            {isSigningMode && (
+                                <div className="flex items-center space-x-2">
+                                    <Button variant="outline" size="sm" onClick={handleSaveDocument}>
+                                        <Save className="w-4 h-4 mr-2" />
+                                        Save
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                        <Download className="w-4 h-4 mr-2" />
+                                        Download
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -419,8 +455,11 @@ const ProfessionalPDFEditor: React.FC = () => {
                                                             ? "border-brand-purple bg-brand-purple/10 shadow-lg" 
                                                             : hasValue 
                                                                 ? "border-green-500 bg-green-50 shadow-md"
-                                                                : "border-dashed border-gray-300 bg-gray-50",
-                                                        "hover:border-brand-purple hover:shadow-lg"
+                                                                : isSigningMode
+                                                                    ? "border-dashed border-blue-400 bg-blue-50 hover:border-blue-500 hover:bg-blue-100 animate-pulse"
+                                                                    : "border-dashed border-gray-300 bg-gray-50",
+                                                        "hover:border-brand-purple hover:shadow-lg",
+                                                        isSigningMode && !hasValue && "ring-2 ring-blue-200"
                                                     )}
                                                     style={{
                                                         left: field.x * zoom,
@@ -782,6 +821,19 @@ const ProfessionalPDFEditor: React.FC = () => {
                     fullName: user?.user_metadata?.full_name || '',
                     initials: user?.user_metadata?.initials || ''
                 }}
+            />
+
+            {/* Field Input Modal */}
+            <FieldInputModal
+                isOpen={showFieldInputModal}
+                onClose={() => {
+                    setShowFieldInputModal(false);
+                    setActiveInputField(null);
+                }}
+                onSave={handleFieldInputSave}
+                fieldType={activeInputField?.type as any || 'text'}
+                fieldLabel={activeInputField?.label || 'Field'}
+                initialValue={activeInputField?.value || ''}
             />
         </div>
     );
