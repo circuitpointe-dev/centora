@@ -3,13 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar, Mail, Building, User } from 'lucide-react';
+import { Calendar, Mail, Building, User, Type } from 'lucide-react';
 
 interface FieldInputModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (value: string) => void;
-  fieldType: 'date' | 'email' | 'text' | 'name';
+  fieldType: 'date' | 'text' | 'name' | 'initials';
   fieldLabel: string;
   initialValue?: string;
 }
@@ -39,12 +39,12 @@ const FieldInputModal: React.FC<FieldInputModalProps> = ({
     switch (fieldType) {
       case 'date':
         return <Calendar className="w-5 h-5 text-blue-600" />;
-      case 'email':
-        return <Mail className="w-5 h-5 text-green-600" />;
       case 'text':
         return <Building className="w-5 h-5 text-purple-600" />;
       case 'name':
         return <User className="w-5 h-5 text-orange-600" />;
+      case 'initials':
+        return <Type className="w-5 h-5 text-blue-600" />;
       default:
         return <User className="w-5 h-5 text-gray-600" />;
     }
@@ -54,12 +54,12 @@ const FieldInputModal: React.FC<FieldInputModalProps> = ({
     switch (fieldType) {
       case 'date':
         return 'MM/DD/YYYY or select a date';
-      case 'email':
-        return 'Enter email address';
       case 'text':
-        return 'Enter company name';
+        return 'Enter text';
       case 'name':
         return 'Enter full name';
+      case 'initials':
+        return 'Enter initials (e.g., AC)';
       default:
         return `Enter ${fieldLabel.toLowerCase()}`;
     }
@@ -82,7 +82,7 @@ const FieldInputModal: React.FC<FieldInputModalProps> = ({
             </Label>
             <Input
               id="field-input"
-              type={fieldType === 'email' ? 'email' : fieldType === 'date' ? 'date' : 'text'}
+              type={fieldType === 'date' ? 'date' : 'text'}
               placeholder={getPlaceholder()}
               value={value}
               onChange={(e) => setValue(e.target.value)}

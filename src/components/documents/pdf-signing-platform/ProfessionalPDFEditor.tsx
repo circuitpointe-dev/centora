@@ -31,6 +31,7 @@ import {
 import ProfessionalSignatureCapture from './ProfessionalSignatureCapture';
 import SignatureDetailsModal from './SignatureDetailsModal';
 import FieldInputModal from './FieldInputModal';
+import ProfessionalFieldsSidebar from './ProfessionalFieldsSidebar';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -43,7 +44,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.3.31/build
 
 interface SignatureField {
     id: string;
-    type: 'signature' | 'date' | 'email' | 'text' | 'name';
+    type: 'signature' | 'initials' | 'name' | 'date' | 'text' | 'stamp';
     label: string;
     x: number;
     y: number;
@@ -69,7 +70,7 @@ const ProfessionalPDFEditor: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [zoom, setZoom] = useState(1.2);
-    const [selectedTool, setSelectedTool] = useState<SignatureField['type'] | null>(null);
+    const [selectedTool, setSelectedTool] = useState<'signature' | 'initials' | 'name' | 'date' | 'text' | 'stamp' | null>(null);
     const [fields, setFields] = useState<SignatureField[]>([]);
     const [selectedField, setSelectedField] = useState<SignatureField | null>(null);
     const [signatureType, setSignatureType] = useState<'simple' | 'digital'>('simple');
@@ -115,13 +116,23 @@ const ProfessionalPDFEditor: React.FC = () => {
         return "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
     }, [location.state]);
 
+    // Initialize sidebar fields
+    const [sidebarFields, setSidebarFields] = useState<SignatureField[]>([
+        { id: 'req-sig-1', type: 'signature', label: 'Signature', x: 0, y: 0, width: 200, height: 60, page: 1, required: true },
+        { id: 'opt-init-1', type: 'initials', label: 'Initials', x: 0, y: 0, width: 100, height: 40, page: 1, required: false },
+        { id: 'opt-name-1', type: 'name', label: 'Name', x: 0, y: 0, width: 150, height: 32, page: 1, required: false },
+        { id: 'opt-date-1', type: 'date', label: 'Date', x: 0, y: 0, width: 120, height: 32, page: 1, required: false },
+        { id: 'opt-text-1', type: 'text', label: 'Text', x: 0, y: 0, width: 150, height: 32, page: 1, required: false },
+        { id: 'opt-stamp-1', type: 'stamp', label: 'Company Stamp', x: 0, y: 0, width: 120, height: 80, page: 1, required: false }
+    ]);
+
     // Field types configuration
     const fieldTypes = [
         { type: 'signature' as const, label: 'Signature', icon: PenTool, color: 'bg-red-50 border-red-200 text-red-800' },
-        { type: 'date' as const, label: 'Date', icon: Calendar, color: 'bg-blue-50 border-blue-200 text-blue-800' },
-        { type: 'email' as const, label: 'Email', icon: Mail, color: 'bg-green-50 border-green-200 text-green-800' },
-        { type: 'text' as const, label: 'Company', icon: Building, color: 'bg-purple-50 border-purple-200 text-purple-800' },
+        { type: 'initials' as const, label: 'Initials', icon: Type, color: 'bg-blue-50 border-blue-200 text-blue-800' },
         { type: 'name' as const, label: 'Name', icon: User, color: 'bg-orange-50 border-orange-200 text-orange-800' },
+        { type: 'date' as const, label: 'Date', icon: Calendar, color: 'bg-blue-50 border-blue-200 text-blue-800' },
+        { type: 'text' as const, label: 'Text', icon: Building, color: 'bg-purple-50 border-purple-200 text-purple-800' },
     ];
 
     // Handle canvas click to add fields
@@ -139,8 +150,8 @@ const ProfessionalPDFEditor: React.FC = () => {
             label: selectedTool.charAt(0).toUpperCase() + selectedTool.slice(1),
             x,
             y,
-            width: selectedTool === 'signature' ? 200 : selectedTool === 'name' ? 100 : 150,
-            height: selectedTool === 'signature' ? 60 : selectedTool === 'name' ? 30 : 40,
+            width: selectedTool === 'signature' ? 200 : selectedTool === 'stamp' ? 120 : selectedTool === 'name' ? 100 : 150,
+            height: selectedTool === 'signature' ? 60 : selectedTool === 'stamp' ? 80 : selectedTool === 'name' ? 30 : 40,
             page: currentPage,
             required: selectedTool === 'signature',
         };
@@ -199,7 +210,35 @@ const ProfessionalPDFEditor: React.FC = () => {
             setFields(prev => prev.map(f => 
                 f.id === activeInputField.id ? { ...f, value } : f
             ));
+            setSidebarFields(prev => prev.map(f => 
+                f.id === activeInputField.id ? { ...f, value } : f
+            ));
             setActiveInputField(null);
+        }
+    };
+
+    // Handle sidebar field edit
+    const handleSidebarFieldEdit = (field: SignatureField) => {
+        if (field.type === 'signature' || field.type === 'initials') {
+            setActiveSignatureField(field);
+            setShowSignatureDetailsModal(true);
+        } else {
+            setActiveInputField(field);
+            setShowFieldInputModal(true);
+        }
+    };
+
+    // Handle sidebar field drag start
+    const handleSidebarFieldDragStart = (field: SignatureField) => {
+        setSelectedTool(field.type);
+    };
+
+    // Handle sidebar sign action
+    const handleSidebarSign = () => {
+        if (sidebarFields.every(f => !f.required || f.value)) {
+            handleSaveDocument();
+        } else {
+            toast.error('Please complete all required fields before signing');
         }
     };
 
@@ -207,9 +246,16 @@ const ProfessionalPDFEditor: React.FC = () => {
     const handleSignatureDetailsApply = (signatureData: any) => {
         if (activeSignatureField) {
             setUserSignatureData(signatureData);
+            const signatureValue = signatureData.selectedSignature;
+            
             setFields(prev => prev.map(f => 
                 f.id === activeSignatureField.id 
-                    ? { ...f, value: signatureData.selectedSignature } 
+                    ? { ...f, value: signatureValue } 
+                    : f
+            ));
+            setSidebarFields(prev => prev.map(f => 
+                f.id === activeSignatureField.id 
+                    ? { ...f, value: signatureValue } 
                     : f
             ));
             setShowSignatureDetailsModal(false);
@@ -263,9 +309,34 @@ const ProfessionalPDFEditor: React.FC = () => {
 
             // Save e-signature fields
             for (const field of fields) {
+                // Map new field types to existing ones for backend compatibility
+                let mappedFieldType: 'signature' | 'name' | 'date' | 'email' | 'text' = 'text';
+                switch (field.type) {
+                    case 'signature':
+                        mappedFieldType = 'signature';
+                        break;
+                    case 'name':
+                        mappedFieldType = 'name';
+                        break;
+                    case 'date':
+                        mappedFieldType = 'date';
+                        break;
+                    case 'initials':
+                        mappedFieldType = 'text'; // Map initials to text type
+                        break;
+                    case 'text':
+                        mappedFieldType = 'text';
+                        break;
+                    case 'stamp':
+                        mappedFieldType = 'text'; // Map stamp to text type
+                        break;
+                    default:
+                        mappedFieldType = 'text';
+                }
+                
                 await createESignatureField.mutateAsync({
                     document_id: location.state?.selectedDoc?.id || `temp_${Date.now()}`,
-                    field_type: field.type,
+                    field_type: mappedFieldType,
                     field_label: field.label,
                     position_x: field.x,
                     position_y: field.y,
@@ -340,33 +411,14 @@ const ProfessionalPDFEditor: React.FC = () => {
             </div>
 
             <div className="flex h-[calc(100vh-80px)]">
-                {/* Left Sidebar - PDF Thumbnails (ilovePDF Style) */}
-                <div className="w-60 bg-card border-r border-border">
-                    <div className="p-4">
-                        <h3 className="text-sm font-medium text-foreground mb-3">Pages</h3>
-                        <div className="space-y-2">
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                                <div
-                                    key={pageNum}
-                                    className={cn(
-                                        "relative border-2 rounded cursor-pointer transition-colors p-2",
-                                        currentPage === pageNum 
-                                            ? "border-brand-purple bg-brand-purple/10" 
-                                            : "border-border hover:border-brand-purple/50"
-                                    )}
-                                    onClick={() => setCurrentPage(pageNum)}
-                                >
-                                    <div className="aspect-[3/4] bg-muted rounded flex items-center justify-center">
-                                        <span className="text-xs text-muted-foreground">{pageNum}</span>
-                                    </div>
-                                    <div className="text-center mt-1">
-                                        <span className="text-xs font-medium">{pageNum}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                {/* Professional Fields Sidebar */}
+                <ProfessionalFieldsSidebar
+                    fields={sidebarFields}
+                    onFieldEdit={handleSidebarFieldEdit}
+                    onFieldDragStart={handleSidebarFieldDragStart}
+                    onSign={handleSidebarSign}
+                    isSigningMode={isSigningMode}
+                />
 
                 {/* Main PDF Viewer */}
                 <div className="flex-1 bg-muted/30 flex flex-col">
