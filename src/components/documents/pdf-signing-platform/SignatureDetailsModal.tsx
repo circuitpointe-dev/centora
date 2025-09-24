@@ -173,15 +173,15 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[600px] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl font-semibold">Set your signature details</DialogTitle>
+      <DialogContent className="max-w-2xl w-full mx-4 max-h-[85vh] overflow-hidden p-0 sm:max-w-3xl">
+        <DialogHeader className="px-4 py-3 border-b sm:px-6 sm:py-4">
+          <DialogTitle className="text-lg font-semibold sm:text-xl">Set your signature details</DialogTitle>
         </DialogHeader>
         
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full max-h-[calc(85vh-120px)]">
           {/* Name and Initials Inputs */}
-          <div className="px-6 py-4 border-b bg-gray-50">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="px-4 py-3 border-b bg-gray-50 sm:px-6 sm:py-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <div>
                 <Label htmlFor="fullName" className="text-sm font-medium mb-2 block">
                   Full name: <span className="text-red-500">*</span>
@@ -209,30 +209,30 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-1">
-            {/* Left Sidebar - Tools */}
-            <div className="w-16 border-r bg-gray-50 flex flex-col items-center py-4 space-y-2">
+          <div className="flex flex-1 overflow-hidden">
+            {/* Left Sidebar - Tools - Hidden on mobile */}
+            <div className="hidden sm:flex w-14 border-r bg-gray-50 flex-col items-center py-4 space-y-2">
               <Button
                 variant="ghost"
                 size="sm"
-                className="p-2 w-10 h-10"
+                className="p-2 w-8 h-8"
                 title="Text"
               >
-                <Type className="w-4 h-4" />
+                <Type className="w-3 h-3" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="p-2 w-10 h-10"
+                className="p-2 w-8 h-8"
                 onClick={() => setIsDrawing(true)}
                 title="Draw"
               >
-                <PenTool className="w-4 h-4" />
+                <PenTool className="w-3 h-3" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="p-2 w-10 h-10"
+                className="p-2 w-8 h-8"
                 onClick={() => {
                   if (activeTab === 'signature') {
                     fileInputRef.current?.click();
@@ -242,38 +242,38 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
                 }}
                 title="Upload"
               >
-                <Upload className="w-4 h-4" />
+                <Upload className="w-3 h-3" />
               </Button>
             </div>
 
             {/* Main Content */}
-            <div className="flex-1">
+            <div className="flex-1 overflow-y-auto">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-                <TabsList className="border-b rounded-none w-full justify-start bg-transparent p-0">
+                <TabsList className="border-b rounded-none w-full justify-start bg-transparent p-0 overflow-x-auto">
                   <TabsTrigger 
                     value="signature" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-6 py-3"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-3 py-2 text-xs sm:px-6 sm:py-3 sm:text-sm whitespace-nowrap"
                   >
-                    <PenTool className="w-4 h-4 mr-2" />
+                    <PenTool className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
                     Signature
                   </TabsTrigger>
                   <TabsTrigger 
                     value="initials"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-6 py-3"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-3 py-2 text-xs sm:px-6 sm:py-3 sm:text-sm whitespace-nowrap"
                   >
-                    <Type className="w-4 h-4 mr-2" />
+                    <Type className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
                     Initials
                   </TabsTrigger>
                   <TabsTrigger 
                     value="company-stamp"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-6 py-3"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-3 py-2 text-xs sm:px-6 sm:py-3 sm:text-sm whitespace-nowrap"
                   >
-                    <Building className="w-4 h-4 mr-2" />
+                    <Building className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
                     Company Stamp
                   </TabsTrigger>
                 </TabsList>
 
-                <div className="p-6 h-full">
+                <div className="p-3 sm:p-6 h-full overflow-y-auto">
                   <TabsContent value="signature" className="mt-0 h-full">
                     {fullName ? (
                       <div className="space-y-4">
@@ -317,9 +317,9 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
                           <div className="text-center text-gray-500 mb-2">Draw your signature here</div>
                           <canvas
                             ref={canvasRef}
-                            width={400}
-                            height={150}
-                            className="border border-gray-300 w-full cursor-crosshair"
+                            width={300}
+                            height={120}
+                            className="border border-gray-300 w-full max-w-sm cursor-crosshair mx-auto"
                             onMouseDown={startDrawing}
                             onMouseMove={draw}
                             onMouseUp={stopDrawing}
@@ -405,9 +405,9 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
                           <div className="text-center text-gray-500 mb-2">Draw your initials here</div>
                           <canvas
                             ref={canvasRef}
-                            width={400}
-                            height={150}
-                            className="border border-gray-300 w-full cursor-crosshair"
+                            width={300}
+                            height={120}
+                            className="border border-gray-300 w-full max-w-sm cursor-crosshair mx-auto"
                             onMouseDown={startDrawing}
                             onMouseMove={draw}
                             onMouseUp={stopDrawing}
@@ -462,12 +462,12 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
           </div>
 
           {/* Footer Buttons */}
-          <div className="px-6 py-4 border-t bg-gray-50 flex justify-end space-x-3">
-            <Button variant="outline" onClick={onClose}>
+          <div className="px-4 py-3 border-t bg-gray-50 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:space-x-3 sm:px-6 sm:py-4">
+            <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
               Cancel
             </Button>
             <Button 
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-white w-full sm:w-auto"
               onClick={handleApply}
             >
               Apply
