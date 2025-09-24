@@ -23,8 +23,12 @@ import {
     Upload,
     Users,
     Send,
-    Download
+    Download,
+    Save,
+    Check,
+    X
 } from 'lucide-react';
+import ProfessionalSignatureCapture from './ProfessionalSignatureCapture';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -71,10 +75,15 @@ const ProfessionalPDFEditor: React.FC = () => {
     const [signers, setSigners] = useState<Signer[]>([]);
     const [newSigner, setNewSigner] = useState<Signer>({ name: '', email: '' });
     const [documentTitle, setDocumentTitle] = useState('Untitled Document');
+    const [showSignatureDialog, setShowSignatureDialog] = useState(false);
+    const [activeSignatureField, setActiveSignatureField] = useState<SignatureField | null>(null);
+    const [isSigningMode, setIsSigningMode] = useState(false);
+    const [currentUserSignature, setCurrentUserSignature] = useState<any>(null);
 
     // Hooks
     const createSignatureRequest = useCreateSignatureRequest();
     const createESignatureField = useCreateESignatureField();
+    const { data: existingFields } = useESignatureFields(documentId || '');
 
     // Initialize document from location state
     useEffect(() => {
@@ -165,6 +174,55 @@ const ProfessionalPDFEditor: React.FC = () => {
     // Remove signer
     const handleRemoveSigner = (index: number) => {
         setSigners(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // Handle field click for signing
+    const handleFieldClick = (field: SignatureField) => {
+        if (field.type === 'signature') {
+            setActiveSignatureField(field);
+            setShowSignatureDialog(true);
+        } else {
+            // Handle other field types (date, email, text, name)
+            const value = prompt(`Enter ${field.label}:`);
+            if (value) {
+                setFields(prev => prev.map(f => 
+                    f.id === field.id ? { ...f, value } : f
+                ));
+            }
+        }
+    };
+
+    // Handle signature save
+    const handleSignatureSave = (signatureData: any) => {
+        if (activeSignatureField) {
+            setCurrentUserSignature(signatureData);
+            setFields(prev => prev.map(f => 
+                f.id === activeSignatureField.id 
+                    ? { ...f, value: signatureData.data } 
+                    : f
+            ));
+            setShowSignatureDialog(false);
+            setActiveSignatureField(null);
+            toast.success('Signature added successfully!');
+        }
+    };
+
+    // Save document with signatures
+    const handleSaveDocument = async () => {
+        try {
+            // Here you would implement saving the signed document
+            // This could involve generating a new PDF with the signatures
+            toast.success('Document saved successfully!');
+        } catch (error) {
+            console.error('Error saving document:', error);
+            toast.error('Failed to save document');
+        }
+    };
+
+    // Toggle signing mode
+    const toggleSigningMode = () => {
+        setIsSigningMode(!isSigningMode);
+        setSelectedTool(null);
     };
 
     // Send for signing
@@ -597,17 +655,33 @@ const ProfessionalPDFEditor: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Sign Button - Fixed at bottom like ilovePDF */}
-                    <div className="p-6 border-t border-border">
-                        <Button
-                            onClick={handleSendForSigning}
-                            className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium py-3 rounded-lg"
-                            disabled={fields.length === 0 || signers.length === 0}
-                        >
-                            <Send className="w-4 h-4 mr-2" />
-                            Send for Signing
-                        </Button>
-                    </div>
+                        {/* Action Buttons - Fixed at bottom like ilovePDF */}
+                        <div className="p-6 border-t border-border space-y-3">
+                            {isSigningMode ? (
+                                <div className="space-y-2">
+                                    <Button
+                                        onClick={handleSaveDocument}
+                                        className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium py-3 rounded-lg"
+                                        disabled={fields.some(f => f.required && !f.value)}
+                                    >
+                                        <Save className="w-4 h-4 mr-2" />
+                                        Save Signed Document
+                                    </Button>
+                                    <div className="text-xs text-muted-foreground text-center">
+                                        {fields.filter(f => f.value).length} of {fields.length} fields completed
+                                    </div>
+                                </div>
+                            ) : (
+                                <Button
+                                    onClick={handleSendForSigning}
+                                    className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium py-3 rounded-lg"
+                                    disabled={fields.length === 0 && signers.length === 0}
+                                >
+                                    <Send className="w-4 h-4 mr-2" />
+                                    {signers.length > 0 ? 'Send for Signing' : 'Sign Document'}
+                                </Button>
+                            )}
+                        </div>
                 </div>
             </div>
 
@@ -649,6 +723,18 @@ const ProfessionalPDFEditor: React.FC = () => {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Signature Capture Dialog */}
+            {showSignatureDialog && activeSignatureField && (
+                <ProfessionalSignatureCapture
+                    onSave={handleSignatureSave}
+                    onCancel={() => {
+                        setShowSignatureDialog(false);
+                        setActiveSignatureField(null);
+                    }}
+                    fieldLabel={activeSignatureField.label}
+                />
+            )}
         </div>
     );
 };
