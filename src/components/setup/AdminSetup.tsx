@@ -20,8 +20,8 @@ export const AdminSetup = () => {
       <CardContent>
         <div className="space-y-4">
           <div className="text-sm text-muted-foreground">
-            <p><strong>Email:</strong> ngo@gmai.com</p>
-            <p><strong>Password:</strong> test@1234</p>
+            <p><strong>Email:</strong> super@circuitpointe.com</p>
+            <p><strong>Password:</strong> Circuit2025$</p>
             <p><strong>Role:</strong> Super Admin</p>
           </div>
           <Button 

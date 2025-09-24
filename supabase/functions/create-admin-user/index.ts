@@ -20,11 +20,11 @@ serve(async (req) => {
 
     // Create the auth user first
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: 'ngo@gmai.com',
-      password: 'test@1234',
+      email: 'super@circuitpointe.com',
+      password: 'Circuit2025$',
       email_confirm: true,
       user_metadata: {
-        full_name: 'NGO Admin User'
+        full_name: 'Circuit Pointe Super Admin'
       }
     })
 
@@ -52,7 +52,7 @@ serve(async (req) => {
       const { data: newOrg, error: createOrgError } = await supabaseAdmin
         .from('organizations')
         .insert({
-          name: 'NGO Organization',
+          name: 'Circuit Pointe Organization',
           type: 'NGO',
           created_by: userId
         })
@@ -83,8 +83,8 @@ serve(async (req) => {
       .from('profiles')
       .insert({
         id: userId,
-        email: 'ngo@gmai.com',
-        full_name: 'NGO Admin User',
+        email: 'super@circuitpointe.com',
+        full_name: 'Circuit Pointe Super Admin',
         org_id: orgId,
         role: 'org_admin',
         is_super_admin: true,
@@ -126,9 +126,9 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Admin user created successfully',
+        message: 'Super Admin user created successfully',
         user_id: userId,
-        email: 'ngo@gmai.com'
+        email: 'super@circuitpointe.com'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

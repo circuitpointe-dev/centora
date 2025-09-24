@@ -17,8 +17,8 @@ export const useCreateAdminUser = () => {
     },
     onSuccess: (data) => {
       toast({
-        title: "Admin User Created",
-        description: `User ${data.email} created successfully with full access. You can now login with password: test@1234`,
+        title: "Super Admin User Created",
+        description: `User ${data.email} created successfully with full access. You can now login with password: Circuit2025$`,
       });
     },
     onError: (error: Error) => {
