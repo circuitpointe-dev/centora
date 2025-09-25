@@ -34,14 +34,6 @@ const ESignaturePage = () => {
         <h1 className="text-xl font-medium text-gray-900">E-Signature</h1>
         <div className="flex items-center space-x-3">
           <Button
-            variant="outline"
-            onClick={handleOpenPDFPlatform}
-            className="border-violet-600 text-violet-600 hover:bg-violet-50"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Advanced PDF Platform
-          </Button>
-          <Button
             onClick={handleRequestSignature}
             className="bg-violet-600 hover:bg-violet-700 text-white rounded-[5px] gap-2"
           >
