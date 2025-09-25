@@ -58,6 +58,48 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          target_user_email: string | null
+          target_user_id: string | null
+          target_user_name: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          target_user_email?: string | null
+          target_user_id?: string | null
+          target_user_name?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          target_user_email?: string | null
+          target_user_id?: string | null
+          target_user_name?: string | null
+        }
+        Relationships: []
+      }
       budget_line_items: {
         Row: {
           account_id: string | null

@@ -51,9 +51,9 @@ export const useSuperAdminStats = () => {
       if (error) throw error;
 
       return {
-        active: data?.active_users || 0,
-        suspended: data?.inactive_users || 0,
-        pending: data?.pending_invitations || 0,
+        active: data?.[0]?.active_users || 0,
+        suspended: data?.[0]?.inactive_users || 0,
+        pending: data?.[0]?.pending_invitations || 0,
       };
     },
   });

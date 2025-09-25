@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -21,11 +22,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import type { SuperAdminUser, SuperAdminRole } from "./types";
-import { SUPER_ADMIN_USERS } from "./mock/superAdminUsers";
-import { SUPER_ADMIN_ROLES } from "./mock/roles";
-import { AUDIT_LOGS } from "./mock/auditLogs";
+// --- Import backend hooks ---
+import { 
+  useSuperAdminUsers, 
+  useSuperAdminStats,
+  useUpdateUserStatus,
+  useUpdateUser,
+  useCreateUserInvitation,
+  useDeleteUser
+} from '@/hooks/useSuperAdminUsers';
+import { useSuperAdminAuditLogs } from '@/hooks/useSuperAdminAuditLogs';
+import { useSuperAdminRoles } from '@/hooks/useSuperAdminRoles';
+import type { SuperAdminUser } from "./types";
 
+// --- Import components ---
 import { SuperAdminStatsCards } from "./SuperAdminStatsCards";
 import { SuperAdminTable } from "./SuperAdminTable";
 import { SuperAdminFilter, type SuperAdminFilters } from "./SuperAdminFilter";
@@ -40,7 +50,7 @@ const BRAND_PURPLE_OUTLINE =
 
 const PAGE_SIZE = 8;
 
-const rangeText = (page: number, total: number, pageSize: number) => {
+const getPaginationText = (page: number, pageSize: number, total: number): string => {
   if (total === 0) return "Showing 0 to 0 of 0 users";
   const start = (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
@@ -48,305 +58,352 @@ const rangeText = (page: number, total: number, pageSize: number) => {
 };
 
 export const SuperAdminUserPage: React.FC = () => {
-  // data & selection
-  const [users, setUsers] = React.useState<SuperAdminUser[]>(SUPER_ADMIN_USERS);
+  // Backend data hooks
+  const [query, setQuery] = React.useState("");
+  const { data: users = [], isLoading: usersLoading, refetch } = useSuperAdminUsers(query);
+  const { data: stats } = useSuperAdminStats();
+  const { data: auditLogs = [] } = useSuperAdminAuditLogs();
+  const { data: roles = [] } = useSuperAdminRoles();
+  
+  // Mutations
+  const updateUserStatusMutation = useUpdateUserStatus();
+  const updateUserMutation = useUpdateUser();
+  const createUserInvitationMutation = useCreateUserInvitation();
+  const deleteUserMutation = useDeleteUser();
+  
+  // Local state & selection
   const [selected, setSelected] = React.useState<Record<string, boolean>>({});
 
   // search & filter
-  const [query, setQuery] = React.useState("");
   const [filters, setFilters] = React.useState<SuperAdminFilters>({
-    statuses: [],
     roles: [],
+    statuses: [],
   });
 
   // pagination
-  const [page, setPage] = React.useState(1);
+  const [currentPage, setCurrentPage] = React.useState(1);
 
-  // details & dialogs
-  const [detailsUser, setDetailsUser] = React.useState<SuperAdminUser | null>(
-    null
-  );
+  // dialogs & sheets & modals
+  const [showCreate, setShowCreate] = React.useState(false);
+  const [resetUser, setResetUser] = React.useState<SuperAdminUser | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
+  const [detailsUser, setDetailsUser] = React.useState<SuperAdminUser | null>(null);
   const [detailsMode, setDetailsMode] = React.useState<"view" | "edit">("view");
-  const [resetting, setResetting] = React.useState<SuperAdminUser | null>(null);
 
-  // delete confirm
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
-
-  // centralized audit modal
   const [logsOpen, setLogsOpen] = React.useState(false);
-  const [logsFocusUser, setLogsFocusUser] =
-    React.useState<SuperAdminUser | null>(null);
+  const [logsFocusUser, setLogsFocusUser] = React.useState<SuperAdminUser | null>(null);
 
-  // derived: filter -> paginate
+  // derived state: filter & paginate
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    return users.filter((u) => {
-      const matchesQ =
+    return users.filter((user) => {
+      const matchesQuery =
         !q ||
-        u.fullName.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
-        u.role.toLowerCase().includes(q);
-      const matchesStatus =
-        filters.statuses.length ? filters.statuses.includes(u.status) : true;
-      const matchesRole =
-        filters.roles.length ? filters.roles.includes(u.role) : true;
-      return matchesQ && matchesStatus && matchesRole;
+        user.fullName.toLowerCase().includes(q) ||
+        user.email.toLowerCase().includes(q) ||
+        user.role.toLowerCase().includes(q);
+
+      const matchesRole = filters.roles.length === 0 || filters.roles.includes(user.role);
+      const matchesStatus = filters.statuses.length === 0 || filters.statuses.includes(user.status);
+
+      return matchesQuery && matchesRole && matchesStatus;
     });
   }, [users, query, filters]);
 
-  const total = filtered.length;
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paged = React.useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    return filtered.slice(start, end);
+  }, [filtered, currentPage]);
 
-  // stats (UI-only)
-  const stats = React.useMemo(
-    () => ({
-      active: users.filter((u) => u.status === "active").length,
-      suspended: users.filter((u) => u.status === "suspended").length,
-      pending: users.filter((u) => u.status === "pending").length,
-    }),
-    [users]
-  );
+  const selectedIds = React.useMemo(() => {
+    return Object.keys(selected).filter((id) => selected[id]);
+  }, [selected]);
 
-  // selection helpers
-  const selectedIds = React.useMemo(
-    () => Object.entries(selected).filter(([, v]) => v).map(([k]) => k),
-    [selected]
-  );
-  const hasSelection = selectedIds.length > 0;
-
-  // handlers
-  const toggleAllOnPage = (checked: boolean) => {
-    const next = { ...selected };
-    paged.forEach((u) => (next[u.id] = checked));
-    setSelected(next);
+  // selection handlers
+  const toggleAllOnPage = () => {
+    const allSelected = paged.every((u) => selected[u.id]);
+    if (allSelected) {
+      // deselect all on page
+      setSelected((prev) => {
+        const next = { ...prev };
+        paged.forEach((u) => delete next[u.id]);
+        return next;
+      });
+    } else {
+      // select all on page
+      setSelected((prev) => ({
+        ...prev,
+        ...paged.reduce((acc, u) => ({ ...acc, [u.id]: true }), {}),
+      }));
+    }
   };
 
-  const toggleRow = (id: string, checked: boolean) =>
-    setSelected((s) => ({ ...s, [id]: checked }));
+  const toggleRow = (id: string) => {
+    setSelected((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const handleConfirmDelete = () => {
-    if (!hasSelection) return;
-    setUsers((prev) => prev.filter((u) => !selectedIds.includes(u.id)));
-    setSelected((prev) => {
-      const copy = { ...prev };
-      selectedIds.forEach((id) => delete copy[id]);
-      return copy;
+    const idsToDelete = selectedIds;
+    Promise.all(idsToDelete.map(id => deleteUserMutation.mutateAsync(id)))
+      .then(() => {
+        setSelected({});
+        setDeleteConfirmOpen(false);
+        refetch();
+      })
+      .catch(error => {
+        console.error('Failed to delete users:', error);
+      });
+  };
+
+  // action handlers
+  const handleSuspend = (id: string) => {
+    const user = users.find(u => u.id === id);
+    if (user) {
+      updateUserStatusMutation.mutate({ 
+        userId: user.id, 
+        status: 'inactive' 
+      });
+    }
+  };
+
+  const handleActivate = (id: string) => {
+    const user = users.find(u => u.id === id);
+    if (user) {
+      updateUserStatusMutation.mutate({ 
+        userId: user.id, 
+        status: 'active' 
+      });
+    }
+  };
+
+  const handleCreate = (newUser: Omit<SuperAdminUser, "id" | "lastLoginAt">) => {
+    createUserInvitationMutation.mutate({
+      email: newUser.email,
+      full_name: newUser.fullName,
     });
-    setDeleteOpen(false);
+    setShowCreate(false);
   };
 
-  const handleSuspend = (id: string) =>
-    setUsers((list) =>
-      list.map((u) => (u.id === id ? { ...u, status: "suspended" } : u))
-    );
-
-  const handleActivate = (id: string) =>
-    setUsers((list) =>
-      list.map((u) => (u.id === id ? { ...u, status: "active" } : u))
-    );
-
-  const handleCreate = (data: Omit<SuperAdminUser, "id" | "lastLoginAt">) => {
-    const newUser: SuperAdminUser = {
-      id: `u_${Math.random().toString(36).slice(2, 8)}`,
-      lastLoginAt: new Date().toISOString(),
-      ...data,
-    };
-    setUsers((prev) => [newUser, ...prev]);
-  };
-
-  const openView = (u: SuperAdminUser) => {
-    setDetailsUser(u);
+  const openView = (user: SuperAdminUser) => {
+    setDetailsUser(user);
     setDetailsMode("view");
   };
 
-  const openEdit = (u: SuperAdminUser) => {
-    setDetailsUser(u);
+  const openEdit = (user: SuperAdminUser) => {
+    setDetailsUser(user);
     setDetailsMode("edit");
   };
 
-  const handleSaveDetails = (updated: SuperAdminUser) => {
-    setUsers((list) => list.map((u) => (u.id === updated.id ? updated : u)));
+  const handleSaveDetails = (updatedUser: SuperAdminUser) => {
+    updateUserMutation.mutate({
+      id: updatedUser.id,
+      full_name: updatedUser.fullName,
+    });
+    setDetailsUser(null);
   };
 
-  const clearFilters = () => setFilters({ statuses: [], roles: [] });
+  const clearFilters = () => {
+    setQuery("");
+    setFilters({ roles: [], statuses: [] });
+    setCurrentPage(1);
+  };
 
-  // feed recent logs for the details sheet
-  const getUserLogs = React.useCallback(
-    (u: SuperAdminUser | null) =>
-      !u
-        ? []
-        : AUDIT_LOGS.filter(
-            (l) => l.targetUserId === u.id || l.actorEmail === u.email
-          ).sort((a, b) => +new Date(b.at) - +new Date(a.at)),
-    []
-  );
+  const getUserLogs = (user: SuperAdminUser) => {
+    setLogsFocusUser(user);
+    setLogsOpen(true);
+  };
 
-  // reset pagination when inputs change
-  React.useEffect(() => {
-    setPage(1);
-  }, [query, filters]);
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+
+  if (usersLoading) {
+    return <div className="p-8">Loading...</div>;
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Title (per your spec) */}
-      <h1 className="text-lg font-semibold tracking-tight">Super Admin Users</h1>
+    <div className="p-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Super Admin Users</h1>
+      </div>
 
-      {/* Stat Cards */}
-      <SuperAdminStatsCards stats={stats} />
+      {/* Stats Cards */}
+      <SuperAdminStatsCards stats={stats || { active: 0, suspended: 0, pending: 0 }} />
 
       {/* Toolbar */}
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="text-base font-medium">Super Admin Users</span>
-          <div className="relative">
+      <div className="flex items-center justify-between gap-4 mb-6">
+        {/* Left: search bar */}
+        <div className="flex items-center gap-4 flex-1">
+          <div className="relative max-w-sm">
             <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              className="pl-9 w-72"
+              className="pl-9"
               placeholder="Search Users, Department..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-        </div>
 
-        <div className="flex items-center gap-3">
-          {/* Centralized Audit Logs */}
           <Button
             variant="outline"
-            className={BRAND_PURPLE_OUTLINE}
-            onClick={() => {
-              setLogsFocusUser(null);
-              setLogsOpen(true);
-            }}
+            onClick={() => setLogsOpen(true)}
+            className="gap-2"
           >
-            <ScrollText className="mr-2 h-4 w-4" />
+            <ScrollText className="h-4 w-4" />
             Audit Logs
           </Button>
 
-          {/* Filter */}
-          <SuperAdminFilter
-            roles={SUPER_ADMIN_ROLES as SuperAdminRole[]}
-            value={filters}
+          <SuperAdminFilter 
+            roles={roles.map(r => r.name)} 
+            value={filters} 
             onChange={setFilters}
             onApply={() => {}}
             onClear={clearFilters}
           />
+        </div>
 
-          {/* Add New Super Admin */}
-          <Dialog>
+        {/* Right: action buttons */}
+        <div className="flex items-center gap-3">
+          <Dialog open={showCreate} onOpenChange={setShowCreate}>
             <DialogTrigger asChild>
               <Button className={BRAND_PURPLE}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="h-4 w-4 mr-2" />
                 Add New Super Admin
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent>
               <DialogHeader>
-                <DialogTitle className="text-xl">Add New Super Admin</DialogTitle>
+                <DialogTitle>Add New Super Admin</DialogTitle>
+                <DialogDescription>
+                  Create a new super admin user account with access to the system.
+                </DialogDescription>
               </DialogHeader>
-              <NewSuperAdminDialog
-                roles={SUPER_ADMIN_ROLES as SuperAdminRole[]}
-                onCreate={handleCreate}
-              />
+              <NewSuperAdminDialog roles={roles.map(r => r.name)} onCreate={handleCreate} />
             </DialogContent>
           </Dialog>
 
-          {/* Delete with confirmation */}
           <Button
             variant="destructive"
-            className="bg-red-600 hover:bg-red-700 active:bg-red-800"
-            disabled={!hasSelection}
-            onClick={() => setDeleteOpen(true)}
-            title={!hasSelection ? "Select At Least One User" : "Delete Selected Users"}
+            disabled={selectedIds.length === 0}
+            onClick={() => setDeleteConfirmOpen(true)}
           >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete ({selectedIds.length})
           </Button>
         </div>
       </div>
+
+      {/* Filter summary & clear */}
+      {(query || filters.roles.length > 0 || filters.statuses.length > 0) && (
+        <div className="flex items-center justify-between py-3 px-4 bg-muted/30 rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>Filtered results ({filtered.length} users)</span>
+            {query && <span>• Search: "{query}"</span>}
+            {filters.roles.length > 0 && <span>• Roles: {filters.roles.join(', ')}</span>}
+            {filters.statuses.length > 0 && <span>• Statuses: {filters.statuses.join(', ')}</span>}
+          </div>
+          <Button variant="ghost" size="sm" onClick={clearFilters}>
+            Clear Filters
+          </Button>
+        </div>
+      )}
 
       {/* Table */}
       <SuperAdminTable
         users={paged}
         selected={selected}
-        onToggleRow={toggleRow}
         onToggleAllOnPage={toggleAllOnPage}
+        onToggleRow={toggleRow}
         onEdit={openEdit}
         onSuspend={handleSuspend}
         onActivate={handleActivate}
         onView={openView}
-        onResetPassword={(u) => setResetting(u)}
-        onViewLogs={(u) => {
-          setLogsFocusUser(u);
-          setLogsOpen(true);
-        }}
+        onResetPassword={(user) => setResetUser(user)}
+        onViewLogs={getUserLogs}
+        stickyActions
       />
 
       {/* Pagination */}
-      <div className="flex items-center justify-between border rounded-xl bg-white p-4 text-sm">
-        <div>{rangeText(page, total, PAGE_SIZE)}</div>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {getPaginationText(currentPage, PAGE_SIZE, filtered.length)}
+        </p>
+
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            disabled={page === 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           >
             Previous
           </Button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((page) => {
+              const distance = Math.abs(page - currentPage);
+              return distance <= 2 || page === 1 || page === totalPages;
+            })
+            .map((page, index, array) => {
+              const prev = array[index - 1];
+              const showEllipsis = prev && page - prev > 1;
+
+              return (
+                <React.Fragment key={page}>
+                  {showEllipsis && <span className="text-muted-foreground">...</span>}
+                  <Button
+                    variant={page === currentPage ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                </React.Fragment>
+              );
+            })}
+
           <Button
             variant="outline"
-            disabled={page === pageCount}
-            onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
           >
             Next
           </Button>
         </div>
       </div>
 
-      {/* View/Edit Sheet with Recent Activity */}
+      {/* Details Sheet */}
       <SuperAdminDetailsSheet
         user={detailsUser}
-        roles={SUPER_ADMIN_ROLES as SuperAdminRole[]}
+        roles={roles.map(r => r.name)}
         mode={detailsMode}
         open={!!detailsUser}
-        onOpenChange={(v) => !v && setDetailsUser(null)}
+        onOpenChange={(open) => !open && setDetailsUser(null)}
         onSave={handleSaveDetails}
-        userLogs={getUserLogs(detailsUser)}
-        onOpenFullLogs={(u) => {
-          setLogsFocusUser(u);
-          setLogsOpen(true);
-        }}
       />
 
       {/* Reset Password Dialog */}
       <ResetPasswordDialog
-        user={resetting}
-        open={!!resetting}
-        onOpenChange={(v) => !v && setResetting(null)}
+        user={resetUser}
+        open={!!resetUser}
+        onOpenChange={(open) => !open && setResetUser(null)}
       />
 
-      {/* Strict Delete Confirmation */}
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+      {/* Delete Confirmation */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Permanently Delete Selected Super Admins?
-            </AlertDialogTitle>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
-              This Action Cannot Be Undone. It Will Permanently Remove{" "}
-              <b>{selectedIds.length}</b> Super Admin{" "}
-              {selectedIds.length === 1 ? "User" : "Users"} And Revoke Their
-              Access To The Centora Portal.
+              Are you sure you want to delete {selectedIds.length} selected user(s)? This action
+              cannot be undone and will permanently remove their accounts and data from the system.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 active:bg-red-800"
-              onClick={handleConfirmDelete}
-            >
-              Permanently Delete
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-red-600 hover:bg-red-700">
+              Delete Users
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -356,7 +413,7 @@ export const SuperAdminUserPage: React.FC = () => {
       <AuditLogsModal
         open={logsOpen}
         onOpenChange={setLogsOpen}
-        logs={AUDIT_LOGS}
+        logs={auditLogs}
         focusUser={logsFocusUser}
       />
     </div>
