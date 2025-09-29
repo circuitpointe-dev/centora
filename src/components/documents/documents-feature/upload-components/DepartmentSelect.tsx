@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Building2, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { departmentList, Department } from '@/data/departmentData';
+import { useDepartments } from '@/hooks/useDepartments';
 
 interface DepartmentSelectProps {
   value: string;
@@ -27,6 +27,7 @@ interface DepartmentSelectProps {
 const DepartmentSelect = ({ value, onChange }: DepartmentSelectProps) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const { data: departmentList = [] } = useDepartments();
 
   const selectedDepartment = departmentList.find(dept => dept.id === value);
 
@@ -65,8 +66,8 @@ const DepartmentSelect = ({ value, onChange }: DepartmentSelectProps) => {
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
           <Command>
-            <CommandInput 
-              placeholder="Search department..." 
+            <CommandInput
+              placeholder="Search department..."
               value={searchValue}
               onValueChange={setSearchValue}
             />

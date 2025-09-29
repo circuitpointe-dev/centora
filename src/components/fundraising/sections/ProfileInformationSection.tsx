@@ -5,7 +5,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { getFocusAreaColor } from "@/data/focusAreaData";
+// Focus area colors - moved to utils
+const getFocusAreaColor = (focusAreaName: string) => {
+  const colorMap: Record<string, string> = {
+    "Education": "bg-blue-100 text-blue-800",
+    "Health": "bg-green-100 text-green-800", 
+    "Infrastructure": "bg-orange-100 text-orange-800",
+    "Emergency Response": "bg-red-100 text-red-800"
+  };
+  return colorMap[focusAreaName] || "bg-gray-100 text-gray-800";
+};
 
 interface ContactPerson {
   id: string;

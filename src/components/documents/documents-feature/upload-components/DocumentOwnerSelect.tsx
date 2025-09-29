@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Search, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { staffList, Staff } from '@/data/staffData';
+import { useOrgUsers } from '@/hooks/useOrgUsers';
 
 interface DocumentOwnerSelectProps {
   value: string;
@@ -28,12 +28,13 @@ interface DocumentOwnerSelectProps {
 const DocumentOwnerSelect = ({ value, onChange }: DocumentOwnerSelectProps) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const { data: staffList = [], isLoading } = useOrgUsers();
 
   const selectedOwner = staffList.find(staff => staff.id === value);
 
   const filteredStaff = staffList.filter(staff =>
-    staff.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    staff.role.toLowerCase().includes(searchValue.toLowerCase())
+    staff.full_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+    staff.email.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   const handleSelect = (staffId: string) => {
@@ -60,7 +61,7 @@ const DocumentOwnerSelect = ({ value, onChange }: DocumentOwnerSelectProps) => {
               "text-sm",
               selectedOwner ? "text-[#383838]" : "text-[#38383880]"
             )}>
-              {selectedOwner ? selectedOwner.name : "Search people..."}
+              {selectedOwner ? selectedOwner.full_name : "Search people..."}
             </span>
             <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -90,8 +91,8 @@ const DocumentOwnerSelect = ({ value, onChange }: DocumentOwnerSelectProps) => {
                       )}
                     />
                     <div className="flex flex-col">
-                      <span className="font-medium text-sm">{staff.name}</span>
-                      <span className="text-xs text-gray-500">{staff.role}</span>
+                      <span className="font-medium text-sm">{staff.full_name}</span>
+                      <span className="text-xs text-gray-500">{staff.email}</span>
                     </div>
                   </CommandItem>
                 ))}

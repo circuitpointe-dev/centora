@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -6,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Building2, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Document } from '@/hooks/useDocuments';
-import { departmentList } from '@/data/departmentData';
+import { useDepartments } from '@/hooks/useDepartments';
 
 interface InternalDepartmentShareProps {
   document: Document;
@@ -15,10 +14,11 @@ interface InternalDepartmentShareProps {
 const InternalDepartmentShare = ({ document }: InternalDepartmentShareProps) => {
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [isSharing, setIsSharing] = useState(false);
+  const { data: departmentList = [] } = useDepartments();
   const { toast } = useToast();
 
   const handleDepartmentToggle = (departmentId: string) => {
-    setSelectedDepartments(prev => 
+    setSelectedDepartments(prev =>
       prev.includes(departmentId)
         ? prev.filter(id => id !== departmentId)
         : [...prev, departmentId]
@@ -28,26 +28,26 @@ const InternalDepartmentShare = ({ document }: InternalDepartmentShareProps) => 
   const handleShare = async () => {
     if (selectedDepartments.length === 0) {
       toast({
-        title: "No departments selected",
-        description: "Please select at least one department to share with.",
-        variant: "destructive",
+        title: 'No departments selected',
+        description: 'Please select at least one department to share with.',
+        variant: 'destructive',
       });
       return;
     }
 
     setIsSharing(true);
-    
+
     // Simulate API call
     setTimeout(() => {
-      const departmentNames = selectedDepartments.map(id => 
-        departmentList.find(dept => dept.id === id)?.name
-      ).join(', ');
+      const departmentNames = selectedDepartments
+        .map(id => departmentList.find(dept => dept.id === id)?.name)
+        .join(', ');
 
       toast({
-        title: "Document shared successfully",
+        title: 'Document shared successfully',
         description: `${document.file_name} has been shared with ${departmentNames} (View access).`,
       });
-      
+
       setIsSharing(false);
       setSelectedDepartments([]);
     }, 1000);
@@ -63,7 +63,7 @@ const InternalDepartmentShare = ({ document }: InternalDepartmentShareProps) => 
       </div>
 
       <div className="space-y-3">
-        {departmentList.map((department) => (
+        {departmentList.map(department => (
           <div
             key={department.id}
             className="flex items-center justify-between p-3 border border-gray-200 rounded-md hover:bg-gray-50"
@@ -76,7 +76,7 @@ const InternalDepartmentShare = ({ document }: InternalDepartmentShareProps) => 
               />
               <div className="flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-gray-500" />
-                <label 
+                <label
                   htmlFor={`dept-${department.id}`}
                   className="text-sm font-medium text-gray-900 cursor-pointer"
                 >

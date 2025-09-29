@@ -81,7 +81,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
     } finally {
       setIsLoading(false);
     }
-};
+  };
 
   const handleResend = async () => {
     try {
@@ -181,7 +181,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
               "Login"
             )}
           </Button>
-</form>
+        </form>
 
         {needsVerification && (
           <div className="mt-4 rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800">
@@ -209,7 +209,6 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
             New organization?{" "}
             <Link
               to="/signup"
-              state={{ backgroundLocation: location }}
               className="font-medium text-violet-600 hover:text-violet-700 underline underline-offset-4 transition-colors"
             >
               Sign up here

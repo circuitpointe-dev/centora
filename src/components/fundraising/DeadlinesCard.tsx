@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { DeadlineItem } from "@/data/fundraisingData";
+import type { DeadlineItem } from "@/types/fundraising";
 import { Calendar } from "lucide-react";
 
 interface DeadlineProps {

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { CalendarEvent } from "@/data/fundraisingData";
+import type { CalendarEvent } from "@/types/fundraising";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 

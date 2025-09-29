@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
-import { staffList } from '@/data/staffData';
+import { useOrgUsers } from '@/hooks/useOrgUsers';
 import StaffSelector from './StaffSelector';
 
 interface SendNotificationDialogProps {

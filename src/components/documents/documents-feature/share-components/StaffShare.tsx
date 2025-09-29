@@ -26,7 +26,7 @@ import { Check, X, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Document } from '@/hooks/useDocuments';
-import { staffList } from '@/data/staffData';
+import { useOrgUsers } from '@/hooks/useOrgUsers';
 
 interface StaffShare {
   staffId: string;
@@ -43,14 +43,15 @@ const StaffShare = ({ document }: StaffShareProps) => {
   const [searchValue, setSearchValue] = useState('');
   const [isSharing, setIsSharing] = useState(false);
   const { toast } = useToast();
+  const { data: staffList = [] } = useOrgUsers();
 
-  const availableStaff = staffList.filter(staff => 
+  const availableStaff = staffList.filter(staff =>
     !selectedStaff.some(selected => selected.staffId === staff.id)
   );
 
   const filteredStaff = availableStaff.filter(staff =>
-    staff.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    staff.role.toLowerCase().includes(searchValue.toLowerCase())
+    (staff.full_name || '').toLowerCase().includes(searchValue.toLowerCase()) ||
+    (staff.email || '').toLowerCase().includes(searchValue.toLowerCase())
   );
 
   const handleStaffSelect = (staffId: string) => {
@@ -60,8 +61,8 @@ const StaffShare = ({ document }: StaffShareProps) => {
   };
 
   const handlePermissionChange = (staffId: string, permission: 'view' | 'edit') => {
-    setSelectedStaff(prev => 
-      prev.map(staff => 
+    setSelectedStaff(prev =>
+      prev.map(staff =>
         staff.staffId === staffId ? { ...staff, permission } : staff
       )
     );
@@ -82,19 +83,19 @@ const StaffShare = ({ document }: StaffShareProps) => {
     }
 
     setIsSharing(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       const staffNames = selectedStaff.map(selected => {
         const staff = staffList.find(s => s.id === selected.staffId);
-        return `${staff?.name} (${selected.permission})`;
+        return `${staff?.full_name} (${selected.permission})`;
       }).join(', ');
 
       toast({
         title: "Document shared successfully",
         description: `${document.file_name} has been shared with ${staffNames}.`,
       });
-      
+
       setIsSharing(false);
       setSelectedStaff([]);
     }, 1000);
@@ -119,7 +120,7 @@ const StaffShare = ({ document }: StaffShareProps) => {
               className="w-full justify-between border-gray-300"
             >
               <span className="text-gray-600">
-                {selectedStaff.length > 0 
+                {selectedStaff.length > 0
                   ? `${selectedStaff.length} staff member(s) selected`
                   : "Search and select staff..."
                 }
@@ -129,8 +130,8 @@ const StaffShare = ({ document }: StaffShareProps) => {
           </PopoverTrigger>
           <PopoverContent className="w-full p-0" align="start">
             <Command>
-              <CommandInput 
-                placeholder="Search staff..." 
+              <CommandInput
+                placeholder="Search staff..."
                 value={searchValue}
                 onValueChange={setSearchValue}
               />
@@ -146,8 +147,8 @@ const StaffShare = ({ document }: StaffShareProps) => {
                       className="cursor-pointer"
                     >
                       <div className="flex flex-col">
-                        <span className="font-medium text-sm">{staff.name}</span>
-                        <span className="text-xs text-gray-500">{staff.role}</span>
+                        <span className="font-medium text-sm">{staff.full_name}</span>
+                        <span className="text-xs text-gray-500">{staff.email}</span>
                       </div>
                     </CommandItem>
                   ))}
@@ -169,15 +170,15 @@ const StaffShare = ({ document }: StaffShareProps) => {
                 >
                   <div className="flex flex-col">
                     <span className="font-medium text-sm text-gray-900">
-                      {staff?.name}
+                      {staff?.full_name}
                     </span>
-                    <span className="text-xs text-gray-500">{staff?.role}</span>
+                    <span className="text-xs text-gray-500">{staff?.email}</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Select
                       value={selected.permission}
-                      onValueChange={(value: 'view' | 'edit') => 
+                      onValueChange={(value: 'view' | 'edit') =>
                         handlePermissionChange(selected.staffId, value)
                       }
                     >
@@ -189,7 +190,7 @@ const StaffShare = ({ document }: StaffShareProps) => {
                         <SelectItem value="edit">Edit</SelectItem>
                       </SelectContent>
                     </Select>
-                    
+
                     <Button
                       variant="ghost"
                       size="sm"

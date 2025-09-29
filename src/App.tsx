@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 import Index from "./components/pages/Index";
@@ -30,11 +30,9 @@ import ProfessionalPDFEditor from "./components/documents/pdf-signing-platform/P
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
-  const location = useLocation();
-  const state = location.state as { backgroundLocation?: Location };
   return (
     <>
-      <Routes location={state?.backgroundLocation || location}>
+      <Routes>
         {/* Public: Landing */}
         <Route path="/" element={<Index />} />
 
@@ -159,12 +157,6 @@ const AppRoutes = () => {
         {/* Catch-all: send anything else back to "/" */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-
-      {state?.backgroundLocation && (
-        <Routes>
-          <Route path="/signup" element={<SignupPage />} />
-        </Routes>
-      )}
     </>
   );
 };

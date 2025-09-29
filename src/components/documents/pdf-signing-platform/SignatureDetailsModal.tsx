@@ -67,25 +67,25 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
     setIsDrawing(true);
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const rect = canvas.getBoundingClientRect();
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     ctx.beginPath();
     ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const rect = canvas.getBoundingClientRect();
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 2;
@@ -96,10 +96,10 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
   const stopDrawing = () => {
     if (!isDrawing) return;
     setIsDrawing(false);
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const dataURL = canvas.toDataURL();
     if (activeTab === 'signature') {
       setDrawnSignature(dataURL);
@@ -111,12 +111,12 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     if (activeTab === 'signature') {
       setDrawnSignature(null);
     } else if (activeTab === 'initials') {
@@ -128,7 +128,7 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
   const handleSignatureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
     reader.onload = (event) => {
       setUploadedSignature(event.target?.result as string);
@@ -139,7 +139,7 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
   const handleStampUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
     reader.onload = (event) => {
       setUploadedStamp(event.target?.result as string);
@@ -151,23 +151,23 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
     const signatureData = {
       fullName,
       initials,
-      selectedSignature: activeTab === 'signature' 
+      selectedSignature: activeTab === 'signature'
         ? (drawnSignature || (signatureStyles[selectedSignatureStyle] ? {
-            text: fullName,
-            font: signatureStyles[selectedSignatureStyle].font,
-            style: signatureStyles[selectedSignatureStyle].style
-          } : null) || uploadedSignature)
+          text: fullName,
+          font: signatureStyles[selectedSignatureStyle].font,
+          style: signatureStyles[selectedSignatureStyle].style
+        } : null) || uploadedSignature)
         : null,
       selectedInitials: activeTab === 'initials'
         ? (drawnInitials || (initialStyles[selectedInitialStyle] ? {
-            text: initials,
-            font: initialStyles[selectedInitialStyle].font,
-            style: initialStyles[selectedInitialStyle].style
-          } : null))
+          text: initials,
+          font: initialStyles[selectedInitialStyle].font,
+          style: initialStyles[selectedInitialStyle].style
+        } : null))
         : null,
       companyStamp: activeTab === 'company-stamp' ? uploadedStamp : null
     };
-    
+
     onApply(signatureData);
   };
 
@@ -177,7 +177,7 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
         <DialogHeader className="px-4 py-3 border-b sm:px-6 sm:py-4">
           <DialogTitle className="text-lg font-semibold sm:text-xl">Set your signature details</DialogTitle>
         </DialogHeader>
-        
+
         <div className="flex flex-col h-full max-h-[calc(85vh-120px)]">
           {/* Name and Initials Inputs */}
           <div className="px-4 py-3 border-b bg-gray-50 sm:px-6 sm:py-4">
@@ -250,21 +250,21 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
             <div className="flex-1 overflow-y-auto">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
                 <TabsList className="border-b rounded-none w-full justify-start bg-transparent p-0 overflow-x-auto">
-                  <TabsTrigger 
-                    value="signature" 
+                  <TabsTrigger
+                    value="signature"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-3 py-2 text-xs sm:px-6 sm:py-3 sm:text-sm whitespace-nowrap"
                   >
                     <PenTool className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
                     Signature
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="initials"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-3 py-2 text-xs sm:px-6 sm:py-3 sm:text-sm whitespace-nowrap"
                   >
                     <Type className="w-3 h-3 mr-1 sm:w-4 sm:h-4 sm:mr-2" />
                     Initials
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="company-stamp"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-3 py-2 text-xs sm:px-6 sm:py-3 sm:text-sm whitespace-nowrap"
                   >
@@ -448,7 +448,7 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
                       </Button>
                       <p className="text-gray-500 text-sm">or drop file here</p>
                       <p className="text-xs text-gray-400 mt-1">Accepted formats: PNG, JPG and SVG</p>
-                      
+
                       {uploadedStamp && (
                         <div className="mt-4">
                           <img src={uploadedStamp} alt="Company Stamp" className="max-h-32 mx-auto" />
@@ -466,7 +466,7 @@ const SignatureDetailsModal: React.FC<SignatureDetailsModalProps> = ({
             <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
               Cancel
             </Button>
-            <Button 
+            <Button
               className="bg-red-500 hover:bg-red-600 text-white w-full sm:w-auto"
               onClick={handleApply}
             >
