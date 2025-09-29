@@ -8,36 +8,40 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ROLE_MEMBERS, Member } from './types';
+import { Member } from './types';
 import { toast } from 'sonner';
 import { ChevronDown } from 'lucide-react';
+import { useRoleMembers, useAssignUserToRole, useRemoveUserFromRole } from '@/hooks/useRolesAndPermissions';
 
 interface RoleMembersDialogProps {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   roleId: string | null;
   roleName: string | null;
+  roleType?: 'system' | 'client';
 }
 
-export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({ open, onOpenChange, roleId, roleName }) => {
+export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({ open, onOpenChange, roleId, roleName, roleType }) => {
   const [query, setQuery] = React.useState('');
-  const [rows, setRows] = React.useState<Member[]>([]);
   const [selected, setSelected] = React.useState<Record<string, boolean>>({});
   const [newName, setNewName] = React.useState('');
   const [newEmail, setNewEmail] = React.useState('');
 
+  // Backend hooks
+  const { data: members = [], isLoading } = useRoleMembers(roleId, roleType);
+  const assignUserToRole = useAssignUserToRole();
+  const removeUserFromRole = useRemoveUserFromRole();
+
   React.useEffect(() => {
-    if (open && roleId) {
-      const data = ROLE_MEMBERS[roleId] ? [...ROLE_MEMBERS[roleId]] : [];
-      setRows(data);
+    if (open) {
       setSelected({});
       setQuery('');
       setNewName('');
       setNewEmail('');
     }
-  }, [open, roleId]);
+  }, [open]);
 
-  const filtered = rows.filter(r =>
+  const filtered = members.filter(r =>
     r.fullName.toLowerCase().includes(query.toLowerCase()) ||
     r.email.toLowerCase().includes(query.toLowerCase()) ||
     r.status.toLowerCase().includes(query.toLowerCase())
@@ -55,39 +59,39 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({ open, onOp
 
   const handleRemoveSelected = () => {
     const ids = Object.keys(selected).filter(k => selected[k]);
-    if (!ids.length) return;
-    setRows(prev => prev.filter(r => !ids.includes(r.id)));
-    setSelected({});
-    toast.success(`Removed ${ids.length} member(s) from ${roleName}.`);
+    if (!ids.length || !roleId) return;
+    
+    Promise.all(
+      ids.map(userId => 
+        removeUserFromRole.mutateAsync({ userId, roleId })
+      )
+    ).then(() => {
+      setSelected({});
+      toast.success(`Removed ${ids.length} member(s) from ${roleName}.`);
+    });
   };
 
   const handleRemoveSingle = (id: string) => {
-    setRows(prev => prev.filter(r => r.id !== id));
+    if (!roleId) return;
+    removeUserFromRole.mutate({ userId: id, roleId });
     setSelected(prev => {
       const copy = { ...prev };
       delete copy[id];
       return copy;
     });
-    toast.success(`Removed member from ${roleName}.`);
   };
 
   const updateStatus = (id: string, status: Member['status']) => {
-    setRows(prev => prev.map(r => (r.id === id ? { ...r, status } : r)));
-    toast.message(`Status set to ${status}.`);
+    // TODO: Implement status update through backend
+    toast.message(`Status update for ${status} - feature coming soon.`);
   };
 
   const handleAdd = () => {
-    if (!newName.trim() || !newEmail.trim()) return;
-    const newRow: Member = {
-      id: `tmp-${Math.random().toString(36).slice(2,8)}`,
-      fullName: newName.trim(),
-      email: newEmail.trim(),
-      status: 'Active',
-    };
-    setRows(prev => [newRow, ...prev]);
+    if (!newName.trim() || !newEmail.trim() || !roleId) return;
+    // TODO: Implement user creation and assignment
+    toast.message('User creation and assignment - feature coming soon.');
     setNewName('');
     setNewEmail('');
-    toast.success(`Added ${newRow.fullName} to ${roleName}.`);
   };
 
   const handleSave = () => {

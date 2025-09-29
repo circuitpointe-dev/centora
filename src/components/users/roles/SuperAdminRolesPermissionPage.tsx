@@ -10,10 +10,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Search, Plus, Shield, Building2, Settings, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
-import { CLIENT_ROLES_SEED, SYSTEM_ROLES_SEED, RoleMeta, RoleType } from "./types";
+import { RoleMeta, RoleType } from "./types";
 import { RoleMembersDialog } from "./RoleMembersDialog";
 import { RolePermissionsDialog } from "./RolePermissionsDialog";
 import { CreateOrEditRoleDialog } from "./CreateOrEditRoleDialog";
+import { 
+  useSystemRoles, 
+  useClientRoles, 
+  useCreateSystemRole, 
+  useCreateClientRole,
+  useUpdateSystemRole,
+  useUpdateClientRole,
+  useDeleteSystemRole,
+  useDeleteClientRole
+} from "@/hooks/useRolesAndPermissions";
 
 interface RoleCardProps {
   role: RoleMeta;
@@ -43,7 +53,7 @@ const RoleCard: React.FC<RoleCardProps> = ({ role, onOpenMembers, onOpenPermissi
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onRename(role)}>Rename</DropdownMenuItem>
-              {onDelete && <DropdownMenuItem onClick={() => onDelete(role)}>Delete (Mock)</DropdownMenuItem>}
+              {onDelete && <DropdownMenuItem onClick={() => onDelete(role)}>Delete</DropdownMenuItem>}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -62,9 +72,17 @@ const RoleCard: React.FC<RoleCardProps> = ({ role, onOpenMembers, onOpenPermissi
 );
 
 export const SuperAdminRolesPermissionPage: React.FC = () => {
-  // Local, editable mock state seeded from constants
-  const [systemRoles, setSystemRoles] = useState<RoleMeta[]>(() => [...SYSTEM_ROLES_SEED]);
-  const [clientRoles, setClientRoles] = useState<RoleMeta[]>(() => [...CLIENT_ROLES_SEED]);
+  // Backend data hooks
+  const { data: systemRoles = [], isLoading: systemLoading } = useSystemRoles();
+  const { data: clientRoles = [], isLoading: clientLoading } = useClientRoles();
+  
+  // Mutations
+  const createSystemRole = useCreateSystemRole();
+  const createClientRole = useCreateClientRole();
+  const updateSystemRole = useUpdateSystemRole();
+  const updateClientRole = useUpdateClientRole();
+  const deleteSystemRole = useDeleteSystemRole();
+  const deleteClientRole = useDeleteClientRole();
 
   const [activeTab, setActiveTab] = useState<"system-roles" | "client-roles">("system-roles");
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,12 +118,18 @@ export const SuperAdminRolesPermissionPage: React.FC = () => {
     setUpsertOpen(true);
   };
 
-  const handleCreate = (role: RoleMeta) => {
+  const handleCreate = (role: { name: string; description: string; type: RoleType }) => {
     if (role.type === 'system') {
-      setSystemRoles(prev => [role, ...prev]);
+      createSystemRole.mutate({
+        name: role.name,
+        description: role.description,
+      });
       setActiveTab('system-roles');
     } else {
-      setClientRoles(prev => [role, ...prev]);
+      createClientRole.mutate({
+        name: role.name,
+        description: role.description,
+      });
       setActiveTab('client-roles');
     }
   };
@@ -115,21 +139,28 @@ export const SuperAdminRolesPermissionPage: React.FC = () => {
     setUpsertOpen(true);
   };
 
-  const handleUpdate = (role: RoleMeta) => {
+  const handleUpdate = (role: { id: string; name: string; description: string; type: RoleType }) => {
     if (role.type === 'system') {
-      setSystemRoles(prev => prev.map(r => (r.id === role.id ? role : r)));
+      updateSystemRole.mutate({
+        id: role.id,
+        name: role.name,
+        description: role.description,
+      });
     } else {
-      setClientRoles(prev => prev.map(r => (r.id === role.id ? role : r)));
+      updateClientRole.mutate({
+        id: role.id,
+        name: role.name,
+        description: role.description,
+      });
     }
   };
 
-  const handleDeleteMock = (role: RoleMeta) => {
+  const handleDelete = (role: RoleMeta) => {
     if (role.type === 'system') {
-      setSystemRoles(prev => prev.filter(r => r.id !== role.id));
+      deleteSystemRole.mutate(role.id);
     } else {
-      setClientRoles(prev => prev.filter(r => r.id !== role.id));
+      deleteClientRole.mutate(role.id);
     }
-    toast.message(`Deleted "${role.name}" (mock).`);
   };
 
   return (
@@ -184,7 +215,7 @@ export const SuperAdminRolesPermissionPage: React.FC = () => {
                 onOpenMembers={openMembers}
                 onOpenPermissions={openPermissions}
                 onRename={handleRename}
-                onDelete={handleDeleteMock}
+                onDelete={handleDelete}
               />
             ))}
           </div>
@@ -205,7 +236,7 @@ export const SuperAdminRolesPermissionPage: React.FC = () => {
                 onOpenMembers={openMembers}
                 onOpenPermissions={openPermissions}
                 onRename={handleRename}
-                onDelete={handleDeleteMock}
+                onDelete={handleDelete}
               />
             ))}
           </div>
@@ -223,6 +254,7 @@ export const SuperAdminRolesPermissionPage: React.FC = () => {
         onOpenChange={setMembersOpen}
         roleId={currentRole?.id ?? null}
         roleName={currentRole?.name ?? null}
+        roleType={currentRole?.type}
       />
       <RolePermissionsDialog
         open={permOpen}

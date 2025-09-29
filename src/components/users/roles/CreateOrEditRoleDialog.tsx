@@ -18,10 +18,10 @@ interface CreateOrEditRoleDialogProps {
   editingRole?: RoleMeta | null;
 
   /** Called with the newly created role (create mode) */
-  onCreate?: (role: RoleMeta) => void;
+  onCreate?: (role: { name: string; description: string; type: RoleType }) => void;
 
   /** Called with the renamed/edited role (edit mode) */
-  onUpdate?: (role: RoleMeta) => void;
+  onUpdate?: (role: { id: string; name: string; description: string; type: RoleType }) => void;
 
   /** Existing names for basic uniqueness check (case-insensitive) within each type */
   existingNamesByType?: Record<RoleType, string[]>;
@@ -63,7 +63,12 @@ export const CreateOrEditRoleDialog: React.FC<CreateOrEditRoleDialogProps> = ({
     if (!canSubmit) return;
 
     if (isEdit && editingRole && onUpdate) {
-      const updated: RoleMeta = { ...editingRole, name: name.trim(), description: desc.trim() };
+      const updated = { 
+        id: editingRole.id, 
+        name: name.trim(), 
+        description: desc.trim(),
+        type: editingRole.type
+      };
       onUpdate(updated);
       toast.success('Role updated.');
       onOpenChange(false);
@@ -71,11 +76,9 @@ export const CreateOrEditRoleDialog: React.FC<CreateOrEditRoleDialogProps> = ({
     }
 
     if (!isEdit && onCreate) {
-      const role: RoleMeta = {
-        id: makeRoleId(name, type),
+      const role = {
         name: name.trim(),
         description: desc.trim() || (type === 'system' ? 'Custom System Role' : 'Custom Client Role'),
-        members: 0,
         type,
       };
       onCreate(role);

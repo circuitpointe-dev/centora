@@ -42,11 +42,6 @@ export const MODULES = [
   { key: 'reports', label: 'Analytics & Reporting', name: 'Analytics & Reporting' },
 ];
 
-export const ROLE_MEMBERS: Record<string, Member[]> = {};
-
-export const CLIENT_ROLES_SEED: RoleMeta[] = [];
-export const SYSTEM_ROLES_SEED: RoleMeta[] = [];
-
 export const makeRoleId = (name: string, type?: RoleType) => 
   `${type ? `${type}-` : ''}${name.toLowerCase().replace(/\s+/g, '-')}`;
 
