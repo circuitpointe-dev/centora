@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,6 +14,7 @@ import { Upload, FileText, FilePlus, Bot } from "lucide-react";
 import { mockOpportunities } from "@/types/opportunity";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import ProposalWizard from "@/components/fundraising/ai/ProposalWizard";
 
 type Props = {
   open: boolean;
@@ -25,6 +27,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
   const [isTemplate, setIsTemplate] = useState(false);
   const [creationMethod, setCreationMethod] = useState<string>("");
   const navigate = useNavigate();
+  const [showWizard, setShowWizard] = useState(false);
 
   // Get sorted opportunity options for select
   const opportunityOptions = mockOpportunities
@@ -47,12 +50,12 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
     // Navigate based on creation method
     switch (creationMethod) {
       case "ai-wizard":
-        navigate("/dashboard/fundraising/ai-proposal-wizard");
+        setShowWizard(true);
         break;
       case "upload-template":
         // Navigate to proposal management with browse templates tab active
         navigate("/dashboard/fundraising/proposal-management?tab=browse-templates&mode=create", {
-          state: { 
+          state: {
             creationContext: {
               method: "template",
               title,
@@ -65,7 +68,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
       case "reuse-library":
         // Navigate to proposal management with past proposal library tab active
         navigate("/dashboard/fundraising/proposal-management?tab=past-proposals&mode=create", {
-          state: { 
+          state: {
             creationContext: {
               method: "reuse",
               title,
@@ -90,6 +93,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
       <DialogContent className="max-w-[500px] w-full bg-white text-black rounded-lg shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center">Create a New Proposal</DialogTitle>
+          <DialogDescription className="text-center">Set title, pick an opportunity, then choose how to create.</DialogDescription>
         </DialogHeader>
         <form
           className="mt-6 flex flex-col gap-8 w-full"
@@ -111,7 +115,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
               required
             />
           </div>
-          
+
           {/* Opportunity Select */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="opportunity-select">
@@ -188,6 +192,17 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
           </div>
         </form>
       </DialogContent>
+      {showWizard && (
+        <ProposalWizard
+          open={showWizard}
+          onOpenChange={setShowWizard}
+          defaultOpportunity={{
+            id: opportunityId,
+            title: (mockOpportunities.find((o) => o.id === opportunityId)?.title) || "",
+          }}
+          defaultTitle={title}
+        />
+      )}
     </Dialog>
   );
 };
