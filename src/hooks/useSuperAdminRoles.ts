@@ -1,28 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { SuperAdminRole } from '@/components/users/super-admin/types';
 
-interface Role {
+interface SystemRole {
   id: string;
-  name: SuperAdminRole;
+  name: string;
   description: string;
 }
 
-// Hook to get available roles
+// Hook to get available system roles
 export const useSuperAdminRoles = () => {
   return useQuery({
     queryKey: ['super-admin-roles'],
-    queryFn: async (): Promise<Role[]> => {
+    queryFn: async (): Promise<SystemRole[]> => {
       const { data, error } = await supabase
-        .from('user_roles')
+        .from('system_roles')
         .select('id, name, description')
+        .eq('is_system', true)
         .order('name', { ascending: true });
 
       if (error) throw error;
 
       return (data || []).map((role: any) => ({
         id: role.id,
-        name: role.name as SuperAdminRole,
+        name: role.name,
         description: role.description || '',
       }));
     },

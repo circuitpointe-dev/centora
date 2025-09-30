@@ -6,17 +6,23 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DialogClose } from "@/components/ui/dialog";
 import { CheckCircle2 } from "lucide-react";
-import type { SuperAdminRole, SuperAdminUser } from "./types";
+import type { SuperAdminUser } from "./types";
 
 const BRAND_PURPLE = "bg-purple-600 hover:bg-purple-700 active:bg-purple-800";
 
+interface RoleOption {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export const NewSuperAdminDialog: React.FC<{
-  roles: SuperAdminRole[];
+  roles: RoleOption[];
   onCreate: (user: Omit<SuperAdminUser, "id" | "lastLoginAt">) => void;
 }> = ({ roles, onCreate }) => {
   const [fullName, setFullName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [role, setRole] = React.useState<SuperAdminRole | "">("");
+  const [role, setRole] = React.useState<string>("");
   const [status, setStatus] = React.useState<"active" | "suspended" | "pending">("active");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
@@ -28,10 +34,11 @@ export const NewSuperAdminDialog: React.FC<{
     if (!canSubmit) return;
     setIsSubmitting(true);
     await new Promise((r) => setTimeout(r, 450));
+    const selectedRole = roles.find(r => r.id === role);
     onCreate({
       fullName: fullName.trim(),
       email: email.trim(),
-      role: role as SuperAdminRole,
+      role: (selectedRole?.name || role) as any,
       status,
     });
     setIsSubmitting(false);
@@ -83,10 +90,14 @@ export const NewSuperAdminDialog: React.FC<{
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label className="text-sm">Role</Label>
-            <Select value={role} onValueChange={(v) => setRole(v as SuperAdminRole)}>
+            <Select value={role} onValueChange={setRole}>
               <SelectTrigger><SelectValue placeholder="Select Role" /></SelectTrigger>
               <SelectContent>
-                {roles.map((r) => (<SelectItem key={r} value={r}>{r}</SelectItem>))}
+                {roles.map((r) => (
+                  <SelectItem key={r.id} value={r.id}>
+                    {r.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
