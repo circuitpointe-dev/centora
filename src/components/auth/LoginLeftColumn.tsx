@@ -4,7 +4,11 @@ import blackLogo from "@/assets/images/black_logo.png";
 import starAsset from "@/assets/images/four_star.png";
 import violet_logo from "@/assets/images/centora_logo.png";
 
-const LoginLeftColumn = () => {
+type LoginLeftColumnProps = {
+  full?: boolean;
+};
+
+const LoginLeftColumn = ({ full = false }: LoginLeftColumnProps) => {
   // Stars configuration for the left column
   const stars = [
     { top: "8%", left: "10%", size: "24px" },
@@ -20,8 +24,8 @@ const LoginLeftColumn = () => {
   ];
 
   return (
-    <div className="hidden lg:flex lg:w-1/2 items-center justify-end mr-auto px-8">
-      <div className="relative w-full min-h-[300px] h-96 max-w-sm">
+    <div className={`hidden lg:flex ${full ? 'lg:w-full h-full' : 'lg:w-1/2'} items-center justify-end mr-auto px-8`}>
+      <div className={`relative w-full ${full ? 'h-full max-w-none' : 'min-h-[300px] h-96 max-w-sm'}`}>
         {/* Violet colored rectangle background with gradient */}
         <div
           className="absolute inset-0 rounded-xl shadow-lg z-0"

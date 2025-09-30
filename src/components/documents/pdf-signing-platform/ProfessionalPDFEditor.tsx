@@ -38,6 +38,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateSignatureRequest } from '@/hooks/useSignatureRequests';
 import { useCreateESignatureField, useESignatureFields } from '@/hooks/useESignatureFields';
+import { supabase } from '@/integrations/supabase/client';
 
 // Set up PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.3.31/build/pdf.worker.min.mjs`;
@@ -65,7 +66,7 @@ const ProfessionalPDFEditor: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
-    
+
     // State management
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -92,7 +93,12 @@ const ProfessionalPDFEditor: React.FC = () => {
     // Hooks
     const createSignatureRequest = useCreateSignatureRequest();
     const createESignatureField = useCreateESignatureField();
-    const { data: existingFields } = useESignatureFields(documentId || '');
+    // Use only a valid UUID to query remote fields to avoid 400s
+    const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    const stateDocId = (location.state as any)?.selectedDoc?.id as string | undefined;
+    const [persistedDocId, setPersistedDocId] = useState<string>('');
+    const effectiveDocId = persistedDocId || (stateDocId ? stateDocId : (documentId && uuidRegex.test(documentId) ? documentId : ''));
+    const { data: existingFields } = useESignatureFields(effectiveDocId);
 
     // Initialize document from location state
     useEffect(() => {
@@ -106,37 +112,66 @@ const ProfessionalPDFEditor: React.FC = () => {
         }
     }, [location.state]);
 
-    // Get PDF URL with better error handling
-    const getPDFUrl = useCallback(() => {
+    // Compute and store PDF URL (avoid calling setState during render)
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const [isPersisting, setIsPersisting] = useState(false);
+    useEffect(() => {
         const state = location.state as any;
-        
-        // Handle uploaded files
+        let url: string | null = null;
         if (state?.selectedFiles && state.selectedFiles.length > 0) {
             const file = state.selectedFiles[0] as File;
             if (file.type === 'application/pdf') {
-                return URL.createObjectURL(file);
+                // Persist upload to Supabase Storage + DB, then use public URL
+                (async () => {
+                    try {
+                        setIsPersisting(true);
+                        const fileName = file.name.replace(/\s+/g, '_');
+                        const path = `${(user as any)?.id || 'anonymous'}/${Date.now()}_${fileName}`;
+                        const { error: upErr } = await supabase.storage.from('documents').upload(path, file, { contentType: file.type });
+                        if (upErr) throw upErr;
+
+                        // Insert DB row
+                        const { data: insertRes, error: insErr } = await supabase
+                            .from('documents')
+                            .insert({
+                                file_name: fileName,
+                                file_path: path,
+                                created_by: (user as any)?.id || null,
+                                // Provide optional fields to satisfy generated types if present
+                                title: fileName,
+                                org_id: null,
+                            } as any)
+                            .select('id')
+                            .single();
+                        if (insErr) throw insErr;
+
+                        // Public URL
+                        const { data: pub } = supabase.storage.from('documents').getPublicUrl(path);
+                        setPdfUrl(pub.publicUrl || URL.createObjectURL(file));
+                        if (insertRes?.id) setPersistedDocId(insertRes.id);
+                    } catch (err: any) {
+                        console.error('Upload persistence failed:', err);
+                        // Fallback to local object URL so the editor still works
+                        setPdfUrl(URL.createObjectURL(file));
+                    } finally {
+                        setIsPersisting(false);
+                    }
+                })();
             } else {
                 setPdfLoadError('Please upload a valid PDF file');
-                return null;
             }
-        }
-        
-        // Handle database documents
-        if (state?.selectedDoc) {
+        } else if (state?.selectedDoc) {
             const doc = state.selectedDoc;
             if (doc.file_path) {
-                // Construct proper Supabase URL
                 const baseUrl = 'https://kspzfifdwfpirgqstzhz.supabase.co/storage/v1/object/public/documents/';
-                const fullUrl = doc.file_path.startsWith('http') ? doc.file_path : baseUrl + doc.file_path;
-                return fullUrl;
+                url = doc.file_path.startsWith('http') ? doc.file_path : baseUrl + doc.file_path;
             } else if (doc.content || doc.file_url) {
-                return doc.content || doc.file_url;
+                url = doc.content || doc.file_url;
             }
+        } else {
+            setPdfLoadError('No PDF document provided. Please select a document to continue.');
         }
-        
-        // If no document is provided, show error
-        setPdfLoadError('No PDF document provided. Please select a document to continue.');
-        return null;
+        setPdfUrl(url);
     }, [location.state]);
 
     // Initialize sidebar fields
@@ -192,12 +227,12 @@ const ProfessionalPDFEditor: React.FC = () => {
 
     // Handle field drag
     const handleFieldDrag = useCallback((fieldId: string, deltaX: number, deltaY: number) => {
-        setFields(prev => prev.map(field => 
-            field.id === fieldId 
-                ? { 
-                    ...field, 
-                    x: Math.max(0, field.x + deltaX / zoom), 
-                    y: Math.max(0, field.y + deltaY / zoom) 
+        setFields(prev => prev.map(field =>
+            field.id === fieldId
+                ? {
+                    ...field,
+                    x: Math.max(0, field.x + deltaX / zoom),
+                    y: Math.max(0, field.y + deltaY / zoom)
                 }
                 : field
         ));
@@ -248,10 +283,10 @@ const ProfessionalPDFEditor: React.FC = () => {
     // Handle field input save
     const handleFieldInputSave = (value: string) => {
         if (activeInputField) {
-            setFields(prev => prev.map(f => 
+            setFields(prev => prev.map(f =>
                 f.id === activeInputField.id ? { ...f, value } : f
             ));
-            setSidebarFields(prev => prev.map(f => 
+            setSidebarFields(prev => prev.map(f =>
                 f.id === activeInputField.id ? { ...f, value } : f
             ));
             setActiveInputField(null);
@@ -288,15 +323,15 @@ const ProfessionalPDFEditor: React.FC = () => {
         if (activeSignatureField) {
             setUserSignatureData(signatureData);
             const signatureValue = signatureData.selectedSignature;
-            
-            setFields(prev => prev.map(f => 
-                f.id === activeSignatureField.id 
-                    ? { ...f, value: signatureValue } 
+
+            setFields(prev => prev.map(f =>
+                f.id === activeSignatureField.id
+                    ? { ...f, value: signatureValue }
                     : f
             ));
-            setSidebarFields(prev => prev.map(f => 
-                f.id === activeSignatureField.id 
-                    ? { ...f, value: signatureValue } 
+            setSidebarFields(prev => prev.map(f =>
+                f.id === activeSignatureField.id
+                    ? { ...f, value: signatureValue }
                     : f
             ));
             setShowSignatureDetailsModal(false);
@@ -338,8 +373,9 @@ const ProfessionalPDFEditor: React.FC = () => {
             // For each signer, create a signature request
             for (const signer of signers) {
                 const state = location.state as any;
-                const documentId = state?.selectedDoc?.id || `temp_${Date.now()}`;
-                
+                const documentId = state?.selectedDoc?.id; // only send to backend when we have a real id
+                if (!documentId || !uuidRegex.test(documentId)) continue;
+
                 await createSignatureRequest.mutateAsync({
                     document_id: documentId,
                     signer_name: signer.name,
@@ -374,9 +410,10 @@ const ProfessionalPDFEditor: React.FC = () => {
                     default:
                         mappedFieldType = 'text';
                 }
-                
+
+                if (!effectiveDocId) continue;
                 await createESignatureField.mutateAsync({
-                    document_id: location.state?.selectedDoc?.id || `temp_${Date.now()}`,
+                    document_id: effectiveDocId,
                     field_type: mappedFieldType,
                     field_label: field.label,
                     position_x: field.x,
@@ -412,7 +449,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                                 <ArrowDown className="w-4 h-4 text-muted-foreground" />
                                 <span className="text-sm font-medium">{currentPage} / {totalPages}</span>
                             </div>
-                            <select 
+                            <select
                                 className="text-sm bg-transparent border-none font-medium focus:outline-none"
                                 value={documentTitle}
                                 onChange={(e) => setDocumentTitle(e.target.value)}
@@ -421,13 +458,13 @@ const ProfessionalPDFEditor: React.FC = () => {
                             </select>
                         </div>
                         <div className="flex items-center space-x-3">
-                            <Button 
+                            <Button
                                 variant={isSigningMode ? "default" : "outline"}
                                 size="sm"
                                 onClick={toggleSigningMode}
                                 className={cn(
-                                    isSigningMode 
-                                        ? "bg-green-600 hover:bg-green-700 text-white" 
+                                    isSigningMode
+                                        ? "bg-green-600 hover:bg-green-700 text-white"
                                         : "border-green-600 text-green-600 hover:bg-green-50"
                                 )}
                             >
@@ -454,11 +491,14 @@ const ProfessionalPDFEditor: React.FC = () => {
             <div className="flex h-[calc(100vh-80px)]">
                 {/* Professional Fields Sidebar */}
                 <ProfessionalFieldsSidebar
-                    fields={sidebarFields}
-                    onFieldEdit={handleSidebarFieldEdit}
-                    onFieldDragStart={handleSidebarFieldDragStart}
-                    onSign={handleSidebarSign}
-                    isSigningMode={isSigningMode}
+                    mode={isSigningMode ? 'sign' : 'edit'}
+                    selectedTool={selectedTool as any}
+                    onPickTool={(t: any) => setSelectedTool(t as any)}
+                    canSend={Boolean(effectiveDocId) && (fields.length > 0 || signers.length > 0)}
+                    canSaveSigned={fields.every(f => !f.required || f.value)}
+                    onSendForSigning={handleSendForSigning}
+                    onSaveSigned={handleSaveDocument}
+                    onClearAll={() => setFields([])}
                 />
 
                 {/* Main PDF Viewer */}
@@ -468,17 +508,17 @@ const ProfessionalPDFEditor: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
                                 <div className="flex items-center space-x-2">
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
                                         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                         disabled={currentPage === 1}
                                     >
                                         <ArrowUp className="w-4 h-4" />
                                     </Button>
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
                                         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                                         disabled={currentPage === totalPages}
                                     >
@@ -487,9 +527,9 @@ const ProfessionalPDFEditor: React.FC = () => {
                                 </div>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
+                                <Button
+                                    variant="outline"
+                                    size="sm"
                                     onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
                                 >
                                     <ZoomOut className="w-4 h-4" />
@@ -497,9 +537,9 @@ const ProfessionalPDFEditor: React.FC = () => {
                                 <span className="text-sm font-medium min-w-[60px] text-center">
                                     {Math.round(zoom * 100)}%
                                 </span>
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
+                                <Button
+                                    variant="outline"
+                                    size="sm"
                                     onClick={() => setZoom(Math.min(2, zoom + 0.1))}
                                 >
                                     <ZoomIn className="w-4 h-4" />
@@ -519,8 +559,8 @@ const ProfessionalPDFEditor: React.FC = () => {
                                     <h3 className="text-lg font-semibold mb-2">Failed to load PDF</h3>
                                     <p className="text-muted-foreground mb-4">{pdfLoadError}</p>
                                     <div className="space-y-2">
-                                        <Button 
-                                            variant="outline" 
+                                        <Button
+                                            variant="outline"
                                             onClick={() => {
                                                 setPdfLoadError(null);
                                                 setIsLoading(true);
@@ -528,8 +568,8 @@ const ProfessionalPDFEditor: React.FC = () => {
                                         >
                                             Try Again
                                         </Button>
-                                        <Button 
-                                            variant="secondary" 
+                                        <Button
+                                            variant="secondary"
                                             onClick={() => navigate('/dashboard/documents')}
                                         >
                                             Select Another Document
@@ -540,7 +580,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                         ) : (
                             <div className="bg-card shadow-lg mx-auto relative rounded-sm" style={{ width: 'fit-content' }}>
                                 <Document
-                                    file={getPDFUrl()}
+                                    file={pdfUrl}
                                     onLoadSuccess={({ numPages }) => {
                                         setTotalPages(numPages);
                                         setIsLoading(false);
@@ -560,142 +600,143 @@ const ProfessionalPDFEditor: React.FC = () => {
                                         </div>
                                     }
                                 >
-                                <div 
-                                    className={cn(
-                                        "relative",
-                                        selectedTool && "cursor-crosshair"
-                                    )}
-                                    onClick={handleCanvasClick}
-                                >
-                                    <Page
-                                        pageNumber={currentPage}
-                                        scale={zoom}
-                                        renderTextLayer={false}
-                                        renderAnnotationLayer={false}
-                                    />
-
-                                    {/* Render signature fields overlay */}
-                                    {fields
-                                        .filter(field => field.page === currentPage)
-                                        .map((field) => {
-                                            const fieldType = fieldTypes.find(ft => ft.type === field.type);
-                                            const Icon = fieldType?.icon || PenTool;
-                                            const hasValue = field.value && field.value.trim() !== '';
-                                            
-                                            return (
                                     <div
-                                        key={field.id}
                                         className={cn(
-                                            "absolute border-2 rounded group transition-all duration-200 select-none",
-                                            selectedField?.id === field.id 
-                                                ? "border-brand-purple bg-brand-purple/10 shadow-lg" 
-                                                : hasValue 
-                                                    ? "border-green-500 bg-green-50 shadow-md"
-                                                    : isSigningMode
-                                                        ? "border-dashed border-blue-400 bg-blue-50 hover:border-blue-500 hover:bg-blue-100 animate-pulse cursor-pointer"
-                                                        : "border-dashed border-gray-300 bg-gray-50 cursor-move",
-                                            "hover:border-brand-purple hover:shadow-lg",
-                                            isSigningMode && !hasValue && "ring-2 ring-blue-200",
-                                            !isSigningMode && "draggable"
+                                            "relative",
+                                            selectedTool && "cursor-crosshair"
                                         )}
-                                        style={{
-                                            left: field.x * zoom,
-                                            top: field.y * zoom,
-                                            width: field.width * zoom,
-                                            height: field.height * zoom,
-                                        }}
-                                        draggable={!isSigningMode}
-                                        onDragStart={(e) => {
-                                            if (!isSigningMode) {
-                                                e.dataTransfer.effectAllowed = 'move';
-                                                handleFieldDragStart(field);
-                                            } else {
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                        onDrag={(e) => {
-                                            if (!isSigningMode && draggedField?.id === field.id) {
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                        onDragEnd={(e) => {
-                                            if (!isSigningMode && draggedField?.id === field.id) {
-                                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
-                                                if (rect) {
-                                                    const newX = (e.clientX - rect.left) / zoom - field.width / 2;
-                                                    const newY = (e.clientY - rect.top) / zoom - field.height / 2;
-                                                    handleFieldDrag(field.id, newX - field.x, newY - field.y);
-                                                }
-                                                setDraggedField(null);
-                                            }
-                                        }}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (isSigningMode) {
-                                                handleFieldClick(field);
-                                            } else {
-                                                handleFieldSelect(field);
-                                            }
-                                        }}
+                                        onClick={handleCanvasClick}
                                     >
-                                    <div className="flex items-center justify-center h-full text-xs font-medium relative p-1">
-                                                        {hasValue ? (
-                                                            field.type === 'signature' ? (
-                                                                // Show signature preview
-                                                                typeof field.value === 'string' && field.value.startsWith('data:') ? (
-                                                                    <img 
-                                                                        src={field.value} 
-                                                                        alt="Signature" 
-                                                                        className="max-w-full max-h-full object-contain"
-                                                                    />
-                                                                ) : typeof field.value === 'object' && field.value && 'font' in field.value && 'text' in field.value ? (
-                                                                    <div 
-                                                                        className="text-lg"
-                                                                        style={{ fontFamily: (field.value as any).font }}
-                                                                    >
-                                                                        {(field.value as any).text}
-                                                                    </div>
+                                        <Page
+                                            pageNumber={currentPage}
+                                            scale={zoom}
+                                            renderTextLayer={false}
+                                            renderAnnotationLayer={false}
+                                        />
+
+                                        {/* Render signature fields overlay */}
+                                        {fields
+                                            .filter(field => field.page === currentPage)
+                                            .map((field) => {
+                                                const fieldType = fieldTypes.find(ft => ft.type === field.type);
+                                                const Icon = fieldType?.icon || PenTool;
+                                                const val: any = field.value as any;
+                                                const hasValue = typeof val === 'string' ? (val.trim() !== '') : (val && (typeof val === 'object') && (val.text ? String(val.text).trim() !== '' : true));
+
+                                                return (
+                                                    <div
+                                                        key={field.id}
+                                                        className={cn(
+                                                            "absolute border-2 rounded group transition-all duration-200 select-none",
+                                                            selectedField?.id === field.id
+                                                                ? "border-brand-purple bg-brand-purple/10 shadow-lg"
+                                                                : hasValue
+                                                                    ? "border-green-500 bg-green-50 shadow-md"
+                                                                    : isSigningMode
+                                                                        ? "border-dashed border-blue-400 bg-blue-50 hover:border-blue-500 hover:bg-blue-100 animate-pulse cursor-pointer"
+                                                                        : "border-dashed border-gray-300 bg-gray-50 cursor-move",
+                                                            "hover:border-brand-purple hover:shadow-lg",
+                                                            isSigningMode && !hasValue && "ring-2 ring-blue-200",
+                                                            !isSigningMode && "draggable"
+                                                        )}
+                                                        style={{
+                                                            left: field.x * zoom,
+                                                            top: field.y * zoom,
+                                                            width: field.width * zoom,
+                                                            height: field.height * zoom,
+                                                        }}
+                                                        draggable={!isSigningMode}
+                                                        onDragStart={(e) => {
+                                                            if (!isSigningMode) {
+                                                                e.dataTransfer.effectAllowed = 'move';
+                                                                handleFieldDragStart(field);
+                                                            } else {
+                                                                e.preventDefault();
+                                                            }
+                                                        }}
+                                                        onDrag={(e) => {
+                                                            if (!isSigningMode && draggedField?.id === field.id) {
+                                                                e.preventDefault();
+                                                            }
+                                                        }}
+                                                        onDragEnd={(e) => {
+                                                            if (!isSigningMode && draggedField?.id === field.id) {
+                                                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                                                                if (rect) {
+                                                                    const newX = (e.clientX - rect.left) / zoom - field.width / 2;
+                                                                    const newY = (e.clientY - rect.top) / zoom - field.height / 2;
+                                                                    handleFieldDrag(field.id, newX - field.x, newY - field.y);
+                                                                }
+                                                                setDraggedField(null);
+                                                            }
+                                                        }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (isSigningMode) {
+                                                                handleFieldClick(field);
+                                                            } else {
+                                                                handleFieldSelect(field);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <div className="flex items-center justify-center h-full text-xs font-medium relative p-1">
+                                                            {hasValue ? (
+                                                                field.type === 'signature' ? (
+                                                                    // Show signature preview
+                                                                    typeof field.value === 'string' && field.value.startsWith('data:') ? (
+                                                                        <img
+                                                                            src={field.value}
+                                                                            alt="Signature"
+                                                                            className="max-w-full max-h-full object-contain"
+                                                                        />
+                                                                    ) : typeof field.value === 'object' && field.value && 'font' in field.value && 'text' in field.value ? (
+                                                                        <div
+                                                                            className="text-lg"
+                                                                            style={{ fontFamily: (field.value as any).font }}
+                                                                        >
+                                                                            {(field.value as any).text}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="text-center">
+                                                                            <Check className="w-4 h-4 text-green-600 mx-auto mb-1" />
+                                                                            <div className="text-green-600">Signed</div>
+                                                                        </div>
+                                                                    )
                                                                 ) : (
-                                                                    <div className="text-center">
-                                                                        <Check className="w-4 h-4 text-green-600 mx-auto mb-1" />
-                                                                        <div className="text-green-600">Signed</div>
+                                                                    // Show other field values
+                                                                    <div className="text-center text-green-800 font-medium truncate px-1">
+                                                                        {field.value}
                                                                     </div>
                                                                 )
                                                             ) : (
-                                                                // Show other field values
-                                                                <div className="text-center text-green-800 font-medium truncate px-1">
-                                                                    {field.value}
+                                                                // Show empty field
+                                                                <div className="text-center">
+                                                                    <Icon className="w-3 h-3 mx-auto mb-1 text-gray-600" />
+                                                                    <div className="text-gray-600 truncate">{field.label}</div>
+                                                                    {isSigningMode && (
+                                                                        <div className="text-xs text-blue-600 mt-1">Click to {field.type}</div>
+                                                                    )}
                                                                 </div>
-                                                            )
-                                                        ) : (
-                                                            // Show empty field
-                                                            <div className="text-center">
-                                                                <Icon className="w-3 h-3 mx-auto mb-1 text-gray-600" />
-                                                                <div className="text-gray-600 truncate">{field.label}</div>
-                                                                {isSigningMode && (
-                                                                    <div className="text-xs text-blue-600 mt-1">Click to {field.type}</div>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                        
-                                                        {selectedField?.id === field.id && !isSigningMode && (
-                                                            <button
-                                                                className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center hover:scale-110 transition-transform"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleFieldDelete(field.id);
-                                                                }}
-                                                            >
-                                                                ×
-                                                            </button>
-                                                        )}
+                                                            )}
+
+                                                            {selectedField?.id === field.id && !isSigningMode && (
+                                                                <button
+                                                                    className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleFieldDelete(field.id);
+                                                                    }}
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
-                                </div>
-                            </Document>
-                        </div>
+                                                );
+                                            })}
+                                    </div>
+                                </Document>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -711,11 +752,11 @@ const ProfessionalPDFEditor: React.FC = () => {
                         <div>
                             <h3 className="text-sm font-medium text-foreground mb-3">Type</h3>
                             <div className="grid grid-cols-1 gap-3">
-                                <button 
+                                <button
                                     className={cn(
                                         "relative p-4 border-2 rounded-lg text-left transition-colors",
-                                        signatureType === 'simple' 
-                                            ? "border-red-500 bg-red-50" 
+                                        signatureType === 'simple'
+                                            ? "border-red-500 bg-red-50"
                                             : "border-border bg-muted hover:border-red-300"
                                     )}
                                     onClick={() => setSignatureType('simple')}
@@ -737,11 +778,11 @@ const ProfessionalPDFEditor: React.FC = () => {
                                     )}
                                 </button>
 
-                                <button 
+                                <button
                                     className={cn(
                                         "relative p-4 border-2 rounded-lg text-left transition-colors",
-                                        signatureType === 'digital' 
-                                            ? "border-blue-500 bg-blue-50" 
+                                        signatureType === 'digital'
+                                            ? "border-blue-500 bg-blue-50"
                                             : "border-border bg-muted hover:border-blue-300"
                                     )}
                                     onClick={() => setSignatureType('digital')}
@@ -803,8 +844,8 @@ const ProfessionalPDFEditor: React.FC = () => {
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="text-sm font-medium text-foreground">Signers</h3>
-                                <Button 
-                                    variant="outline" 
+                                <Button
+                                    variant="outline"
                                     size="sm"
                                     onClick={() => setShowAssignDialog(true)}
                                 >
@@ -812,7 +853,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                                     Assign
                                 </Button>
                             </div>
-                            
+
                             {signers.length > 0 && (
                                 <div className="space-y-2 mb-3">
                                     {signers.map((signer, index) => (
@@ -845,7 +886,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                                     value={newSigner.email}
                                     onChange={(e) => setNewSigner(prev => ({ ...prev, email: e.target.value }))}
                                 />
-                                <Button 
+                                <Button
                                     onClick={handleAddSigner}
                                     className="w-full"
                                     variant="outline"
@@ -866,14 +907,14 @@ const ProfessionalPDFEditor: React.FC = () => {
                                     {fields.map((field) => {
                                         const fieldType = fieldTypes.find(ft => ft.type === field.type);
                                         const Icon = fieldType?.icon || PenTool;
-                                        
+
                                         return (
-                                            <div 
+                                            <div
                                                 key={field.id}
                                                 className={cn(
                                                     "flex items-center justify-between p-2 rounded cursor-pointer transition-colors",
-                                                    selectedField?.id === field.id 
-                                                        ? "bg-brand-purple/10 border border-brand-purple" 
+                                                    selectedField?.id === field.id
+                                                        ? "bg-brand-purple/10 border border-brand-purple"
                                                         : "bg-muted hover:bg-muted/80"
                                                 )}
                                                 onClick={() => handleFieldSelect(field)}
@@ -903,33 +944,33 @@ const ProfessionalPDFEditor: React.FC = () => {
                         )}
                     </div>
 
-                        {/* Action Buttons - Fixed at bottom like ilovePDF */}
-                        <div className="p-6 border-t border-border space-y-3">
-                            {isSigningMode ? (
-                                <div className="space-y-2">
-                                    <Button
-                                        onClick={handleSaveDocument}
-                                        className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium py-3 rounded-lg"
-                                        disabled={fields.some(f => f.required && !f.value)}
-                                    >
-                                        <Save className="w-4 h-4 mr-2" />
-                                        Save Signed Document
-                                    </Button>
-                                    <div className="text-xs text-muted-foreground text-center">
-                                        {fields.filter(f => f.value).length} of {fields.length} fields completed
-                                    </div>
-                                </div>
-                            ) : (
+                    {/* Action Buttons - Fixed at bottom like ilovePDF */}
+                    <div className="p-6 border-t border-border space-y-3">
+                        {isSigningMode ? (
+                            <div className="space-y-2">
                                 <Button
-                                    onClick={handleSendForSigning}
-                                    className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium py-3 rounded-lg"
-                                    disabled={fields.length === 0 && signers.length === 0}
+                                    onClick={handleSaveDocument}
+                                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium py-3 rounded-lg"
+                                    disabled={fields.some(f => f.required && !f.value)}
                                 >
-                                    <Send className="w-4 h-4 mr-2" />
-                                    {signers.length > 0 ? 'Send for Signing' : 'Sign Document'}
+                                    <Save className="w-4 h-4 mr-2" />
+                                    Save Signed Document
                                 </Button>
-                            )}
-                        </div>
+                                <div className="text-xs text-muted-foreground text-center">
+                                    {fields.filter(f => f.value).length} of {fields.length} fields completed
+                                </div>
+                            </div>
+                        ) : (
+                            <Button
+                                onClick={handleSendForSigning}
+                                className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium py-3 rounded-lg"
+                                disabled={(fields.length === 0 && signers.length === 0) || !effectiveDocId}
+                            >
+                                <Send className="w-4 h-4 mr-2" />
+                                {signers.length > 0 ? 'Send for Signing' : 'Sign Document'}
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -959,7 +1000,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                                 onChange={(e) => setNewSigner(prev => ({ ...prev, email: e.target.value }))}
                             />
                         </div>
-                        <Button 
+                        <Button
                             onClick={() => {
                                 handleAddSigner();
                                 setShowAssignDialog(false);
@@ -974,29 +1015,25 @@ const ProfessionalPDFEditor: React.FC = () => {
 
             {/* Signature Details Modal */}
             <SignatureDetailsModal
-                isOpen={showSignatureDetailsModal}
-                onClose={() => {
-                    setShowSignatureDetailsModal(false);
-                    setActiveSignatureField(null);
+                open={showSignatureDetailsModal}
+                onOpenChange={(v) => {
+                    setShowSignatureDetailsModal(v);
+                    if (!v) setActiveSignatureField(null);
                 }}
                 onApply={handleSignatureDetailsApply}
-                initialData={{
-                    fullName: user?.user_metadata?.full_name || '',
-                    initials: user?.user_metadata?.initials || ''
-                }}
+                target={activeSignatureField?.type === 'initials' ? 'initials' : 'signature'}
             />
 
             {/* Field Input Modal */}
             <FieldInputModal
-                isOpen={showFieldInputModal}
-                onClose={() => {
-                    setShowFieldInputModal(false);
-                    setActiveInputField(null);
+                open={showFieldInputModal}
+                onOpenChange={(v) => {
+                    setShowFieldInputModal(v);
+                    if (!v) setActiveInputField(null);
                 }}
-                onSave={handleFieldInputSave}
-                fieldType={activeInputField?.type as any || 'text'}
-                fieldLabel={activeInputField?.label || 'Field'}
-                initialValue={activeInputField?.value || ''}
+                onApply={handleFieldInputSave}
+                type={(activeInputField?.type as any) === 'name' ? 'name' : (activeInputField?.type as any) === 'date' ? 'date' : 'text'}
+                initial={(typeof activeInputField?.value === 'string' ? activeInputField?.value : '') || ''}
             />
         </div>
     );
