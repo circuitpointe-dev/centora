@@ -9,7 +9,7 @@ import type { SuperAdminRole } from "./types";
 
 export type SuperAdminFilters = {
   statuses: Array<"active" | "suspended" | "pending">;
-  roles: SuperAdminRole[];
+  roles: string[];
 };
 
 const BRAND_PURPLE_OUTLINE =
@@ -29,7 +29,7 @@ export function SuperAdminFilter({
   onApply,
   onClear,
 }: {
-  roles: SuperAdminRole[];
+  roles: string[];
   value: SuperAdminFilters;
   onChange: (next: SuperAdminFilters) => void;
   onApply: () => void;
@@ -44,10 +44,10 @@ export function SuperAdminFilter({
     onChange({ ...value, statuses: Array.from(next) as any });
   };
 
-  const toggleRole = (r: SuperAdminRole, checked: boolean) => {
+  const toggleRole = (r: string, checked: boolean) => {
     const next = new Set(value.roles);
     checked ? next.add(r) : next.delete(r);
-    onChange({ ...value, roles: Array.from(next) as SuperAdminRole[] });
+    onChange({ ...value, roles: Array.from(next) });
   };
 
   return (

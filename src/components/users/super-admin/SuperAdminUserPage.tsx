@@ -280,7 +280,7 @@ export const SuperAdminUserPage: React.FC = () => {
                   Create a new super admin user account with access to the system.
                 </DialogDescription>
               </DialogHeader>
-              <NewSuperAdminDialog roles={roles.map(r => r.name)} onCreate={handleCreate} />
+              <NewSuperAdminDialog roles={roles} onCreate={handleCreate} />
             </DialogContent>
           </Dialog>
 
