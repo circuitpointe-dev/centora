@@ -8,8 +8,8 @@ import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Loader2, Eye, EyeOff, Check, Plus, Minus } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ArrowLeft, Loader2, Eye, EyeOff, Check } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import LoginLeftColumn from "@/components/auth/LoginLeftColumn";
 
 const SignupPage = () => {
@@ -19,7 +19,6 @@ const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [showPlanDetails, setShowPlanDetails] = useState(false);
   const [formData, setFormData] = useState({
     organizationName: "",
     organizationType: "NGO",
@@ -68,12 +67,8 @@ const SignupPage = () => {
   };
 
   const validateForm = () => {
-    const { organizationName, organizationType, email, password, contactPhone, country, selectedModules } = formData;
+    const { organizationName, organizationType, email, password, country, selectedModules } = formData;
     if (!organizationName.trim()) {
-      if (!organizationType) {
-        toast({ title: "Organization Type Required", description: "Please select NGO or Donor.", variant: "destructive" });
-        return false;
-      }
       toast({
         title: "Organization Name Required",
         description: "Please enter your organization name.",
@@ -81,18 +76,14 @@ const SignupPage = () => {
       });
       return false;
     }
+    if (!organizationType) {
+      toast({ title: "Organization Type Required", description: "Please select NGO or Donor.", variant: "destructive" });
+      return false;
+    }
     if (!country.trim()) {
       toast({
         title: "Country Required",
         description: "Please select your country.",
-        variant: "destructive",
-      });
-      return false;
-    }
-    if (!contactPhone.trim()) {
-      toast({
-        title: "Contact Phone Required",
-        description: "Please enter the contact phone number.",
         variant: "destructive",
       });
       return false;
@@ -286,21 +277,6 @@ const SignupPage = () => {
                           required
                         />
                       </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                      <div>
-                        <Label htmlFor="contactPhone" className="text-xs font-medium">Telephone</Label>
-                        <Input
-                          id="contactPhone"
-                          type="tel"
-                          placeholder=""
-                          value={formData.contactPhone}
-                          onChange={(e) => updateField('contactPhone', e.target.value)}
-                          className="h-7 sm:h-8 mt-0.5 text-xs"
-                          disabled={isLoading}
-                          required
-                        />
-                      </div>
                       <div>
                         <Label htmlFor="country" className="text-xs font-medium">Country</Label>
                         <Select
@@ -320,6 +296,7 @@ const SignupPage = () => {
                         </Select>
                       </div>
                     </div>
+
                     <div>
                       <Label htmlFor="password" className="text-xs font-medium">Password</Label>
                       <div className="relative mt-0.5">
@@ -407,10 +384,6 @@ const SignupPage = () => {
                           <div className="font-medium text-gray-900 truncate">{formData.email}</div>
                         </div>
                         <div className="space-y-1">
-                          <div className="text-[11px] text-gray-500">Phone</div>
-                          <div className="font-medium text-gray-900 truncate">{formData.contactPhone || '-'}</div>
-                        </div>
-                        <div className="space-y-1">
                           <div className="text-[11px] text-gray-500">Country</div>
                           <div className="font-medium text-gray-900 truncate">{formData.country || '-'}</div>
                         </div>
@@ -460,38 +433,25 @@ const SignupPage = () => {
                                 <div className="inline-flex items-center px-3 py-1 rounded-md bg-violet-50 text-violet-700 text-xs border border-violet-200">
                                   {count} module{count === 1 ? '' : 's'} selected
                                 </div>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <button
-                                      type="button"
-                                      onClick={() => setShowPlanDetails(v => !v)}
-                                      className="inline-flex items-center justify-center h-6 w-6 rounded-full border border-violet-200 text-violet-700 hover:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-violet-300"
-                                      aria-expanded={showPlanDetails}
-                                      aria-label={showPlanDetails ? 'Hide plan details' : 'Show plan details'}
-                                    >
-                                      {showPlanDetails ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="left" align="center" className="text-xs">
-                                    {showPlanDetails ? 'Hide plan details' : 'View plan features & notes'}
-                                  </TooltipContent>
-                                </Tooltip>
                               </div>
                             </div>
-                            {showPlanDetails && (
-                              <div className="mt-3">
-                                <ul className="space-y-1.5 text-[12px] text-gray-700">
-                                  <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> User Management included free</li>
-                                  <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> 5 Free Users Included</li>
-                                  <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> 100GB Secure Cloud Storage</li>
-                                  <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> Pre‑configured Workflows & Modules</li>
-                                  <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> Email & Ticket Support</li>
-                                  <li className="flex items-center gap-2 pt-1 border-t"><Check className="h-3.5 w-3.5 text-emerald-600" /> Admin Panel (users, roles, settings)</li>
-                                  <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> SLA: Email & Ticket (2–3 business days)</li>
-                                  <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> $5 per additional user/month</li>
-                                </ul>
-                              </div>
-                            )}
+                            <Accordion type="single" collapsible className="mt-3">
+                              <AccordionItem value="features">
+                                <AccordionTrigger className="text-sm">Plan features & notes</AccordionTrigger>
+                                <AccordionContent>
+                                  <ul className="space-y-1.5 text-[12px] text-gray-700">
+                                    <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> User Management included free</li>
+                                    <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> 5 Free Users Included</li>
+                                    <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> 100GB Secure Cloud Storage</li>
+                                    <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> Pre‑configured Workflows & Modules</li>
+                                    <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> Email & Ticket Support</li>
+                                    <li className="flex items-center gap-2 pt-1 border-t"><Check className="h-3.5 w-3.5 text-emerald-600" /> Admin Panel (users, roles, settings)</li>
+                                    <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> SLA: Email & Ticket (2–3 business days)</li>
+                                    <li className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-600" /> $5 per additional user/month</li>
+                                  </ul>
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
                           </div>
                         </div>
                       );
