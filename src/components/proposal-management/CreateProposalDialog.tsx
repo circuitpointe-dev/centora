@@ -11,10 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Upload, FileText, FilePlus, Bot } from "lucide-react";
-import { mockOpportunities } from "@/types/opportunity";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ProposalWizard from "@/components/fundraising/ai/ProposalWizard";
+import { useOpportunities } from "@/hooks/useOpportunities";
 
 type Props = {
   open: boolean;
@@ -28,9 +28,12 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
   const [creationMethod, setCreationMethod] = useState<string>("");
   const navigate = useNavigate();
   const [showWizard, setShowWizard] = useState(false);
+  
+  // Fetch real opportunities from backend
+  const { data: opportunities = [] } = useOpportunities();
 
   // Get sorted opportunity options for select
-  const opportunityOptions = mockOpportunities
+  const opportunityOptions = opportunities
     .slice()
     .sort((a, b) => a.title.localeCompare(b.title));
 
@@ -129,11 +132,17 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
                 <SelectValue placeholder="Choose opportunity" />
               </SelectTrigger>
               <SelectContent>
-                {opportunityOptions.map((op) => (
-                  <SelectItem key={op.id} value={op.id}>
-                    {op.title} {op.donorName ? `- ${op.donorName}` : ""}
+                {opportunityOptions.length === 0 ? (
+                  <SelectItem value="no-opportunities" disabled>
+                    No opportunities available
                   </SelectItem>
-                ))}
+                ) : (
+                  opportunityOptions.map((op) => (
+                    <SelectItem key={op.id} value={op.id}>
+                      {op.title} {op.donor?.name ? `- ${op.donor.name}` : ""}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -198,7 +207,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
           onOpenChange={setShowWizard}
           defaultOpportunity={{
             id: opportunityId,
-            title: (mockOpportunities.find((o) => o.id === opportunityId)?.title) || "",
+            title: (opportunities.find((o) => o.id === opportunityId)?.title) || "",
           }}
           defaultTitle={title}
         />

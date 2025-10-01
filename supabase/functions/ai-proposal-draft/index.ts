@@ -36,12 +36,14 @@ type DraftSections = {
     risks_mitigation: string;
 };
 
-const MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-1.5-flash";
+const MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-1.5-flash-latest";
 const API_KEY = Deno.env.get("GEMINI_API_KEY") || "";
 
 if (!API_KEY) {
     console.warn("[ai-proposal-draft] Missing GEMINI_API_KEY – set a secret in Supabase");
 }
+
+console.log(`[ai-proposal-draft] Using model: ${MODEL}`);
 
 const systemPrompt = (
     input: DraftInput,
@@ -104,6 +106,7 @@ async function callGemini(prompt: string) {
 
     if (!res.ok) {
         const txt = await res.text();
+        console.error(`[ai-proposal-draft] Gemini API error: ${res.status} - ${txt}`);
         throw new Error(`Gemini error ${res.status}: ${txt}`);
     }
 
@@ -148,7 +151,10 @@ serve(async (req) => {
 
     try {
         const input = (await req.json()) as DraftInput;
+        console.log(`[ai-proposal-draft] Received request for opportunity: ${input.opportunity?.title}`);
+        
         if (!API_KEY) {
+            console.error("[ai-proposal-draft] GEMINI_API_KEY not configured");
             return new Response(
                 JSON.stringify({ error: "GEMINI_API_KEY not configured" }),
                 { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } },
@@ -157,12 +163,15 @@ serve(async (req) => {
 
         const prompt = systemPrompt(input);
         const draft = await callGemini(prompt);
+        
+        console.log(`[ai-proposal-draft] Successfully generated draft with ${Object.keys(draft).length} sections`);
 
         return new Response(
             JSON.stringify({ draft, model: MODEL }),
             { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
         );
     } catch (e) {
+        console.error(`[ai-proposal-draft] Error:`, e);
         return new Response(
             JSON.stringify({ error: (e as Error).message }),
             { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } },
