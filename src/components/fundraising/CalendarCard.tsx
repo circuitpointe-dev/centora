@@ -101,7 +101,7 @@ export const CalendarCard: React.FC = () => {
           id: row.id,
           title: row.title,
           color: row.color || "#6b7280",
-          date: new Date(row.date),
+          date: row.date,
         }));
         setEvents(mapped);
       } catch (err) {
@@ -112,7 +112,10 @@ export const CalendarCard: React.FC = () => {
     fetchEvents();
   }, [orgId, currentDate]);
 
-  const isSameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
+  const isSameDay = (a: string | Date, b: Date) => {
+    const dateA = typeof a === 'string' ? new Date(a) : a;
+    return dateA.toDateString() === b.toDateString();
+  };
 
   const handleDateClick = (date: Date) => {
     const existing = events.find((e) => isSameDay(e.date, date));
@@ -191,7 +194,7 @@ export const CalendarCard: React.FC = () => {
         if (error) throw error;
         setEvents([
           ...events,
-          { id: (data as any).id, title: (data as any).title, date: new Date((data as any).date), color: (data as any).color || "#6b7280" },
+          { id: (data as any).id, title: (data as any).title, date: (data as any).date, color: (data as any).color || "#6b7280" },
         ]);
         setSelectedDate(null);
         setNewEventTitle("");
@@ -256,7 +259,7 @@ export const CalendarCard: React.FC = () => {
               key={index}
               date={date}
               events={events.filter(
-                (e) => e.date.toDateString() === date.toDateString()
+                (e) => isSameDay(e.date, date)
               )}
               onDateClick={handleDateClick}
               currentDate={currentDate}
@@ -271,7 +274,7 @@ export const CalendarCard: React.FC = () => {
             <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
               <h3 className="text-lg font-semibold mb-2 text-gray-900">{clickedEvent.title}</h3>
               <div className="text-sm text-gray-600 mb-4">
-                {clickedEvent.date.toLocaleDateString("en-US", {
+                {new Date(clickedEvent.date).toLocaleDateString("en-US", {
                   weekday: "long",
                   month: "short",
                   day: "numeric",

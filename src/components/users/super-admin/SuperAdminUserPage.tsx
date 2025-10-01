@@ -33,7 +33,7 @@ import {
 } from '@/hooks/useSuperAdminUsers';
 import { useSuperAdminAuditLogs } from '@/hooks/useSuperAdminAuditLogs';
 import { useSuperAdminRoles } from '@/hooks/useSuperAdminRoles';
-import type { SuperAdminUser } from "./types";
+import type { SuperAdminUser, SuperAdminRole } from "./types";
 
 // --- Import components ---
 import { SuperAdminStatsCards } from "./SuperAdminStatsCards";
@@ -376,7 +376,7 @@ export const SuperAdminUserPage: React.FC = () => {
       {/* Details Sheet */}
       <SuperAdminDetailsSheet
         user={detailsUser}
-        roles={roles.map(r => r.name)}
+        roles={roles.map(r => r.name) as SuperAdminRole[]}
         mode={detailsMode}
         open={!!detailsUser}
         onOpenChange={(open) => !open && setDetailsUser(null)}

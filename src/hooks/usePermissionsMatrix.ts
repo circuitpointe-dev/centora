@@ -3,7 +3,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface PermissionMatrix {
-  [moduleKey: string]: Record<'create' | 'read' | 'update' | 'delete', boolean>;
+  [moduleKey: string]: {
+    create: boolean;
+    read: boolean;
+    update: boolean;
+    delete: boolean;
+  };
 }
 
 // Hook to get role permissions
@@ -13,6 +18,7 @@ export const useRolePermissions = (roleId: string | null) => {
     queryFn: async (): Promise<PermissionMatrix> => {
       if (!roleId) return {};
 
+      // @ts-ignore - Supabase type inference issue
       const { data, error } = await supabase
         .from('user_permissions')
         .select('module_key, feature_id, permissions')
@@ -34,8 +40,9 @@ export const useRolePermissions = (roleId: string | null) => {
         
         // Convert permissions array to CRUD boolean flags
         perm.permissions.forEach((permission: string) => {
-          if (permission in matrix[perm.module_key]) {
-            matrix[perm.module_key][permission as keyof typeof matrix[typeof perm.module_key]] = true;
+          const key = permission as 'create' | 'read' | 'update' | 'delete';
+          if (key in matrix[perm.module_key]) {
+            matrix[perm.module_key][key] = true;
           }
         });
       });

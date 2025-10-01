@@ -23,6 +23,7 @@ const SendNotificationDialog = ({ isOpen, onClose, onSend }: SendNotificationDia
   });
   const [open, setOpen] = useState(false);
   const [sendToAll, setSendToAll] = useState(false);
+  const { data: usersData } = useOrgUsers({ search: '', page: 1, pageSize: 100 });
 
   const handleRecipientSelect = (staffId: string) => {
     if (sendToAll) return;
@@ -40,7 +41,7 @@ const SendNotificationDialog = ({ isOpen, onClose, onSend }: SendNotificationDia
     if (checked) {
       setNewNotification(prev => ({
         ...prev,
-        recipients: staffList.map(staff => staff.id)
+        recipients: usersData?.map(user => user.id) || []
       }));
     } else {
       setNewNotification(prev => ({
@@ -54,7 +55,7 @@ const SendNotificationDialog = ({ isOpen, onClose, onSend }: SendNotificationDia
     const recipientNames = sendToAll 
       ? ['All Staff']
       : newNotification.recipients.map(id => 
-          staffList.find(staff => staff.id === id)?.name
+          usersData?.find(user => user.id === id)?.full_name
         ).filter(Boolean);
 
     onSend(newNotification);
