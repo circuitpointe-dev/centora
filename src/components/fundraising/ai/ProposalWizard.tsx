@@ -76,24 +76,52 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
         try {
             const { data: userRes } = await supabase.auth.getUser();
             const userId = userRes?.user?.id ?? null;
-            const payload: any = {
+            
+            // Get user's org_id
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('org_id')
+                .eq('id', userId!)
+                .single();
+            
+            if (!profile?.org_id) throw new Error('User organization not found');
+            
+            // Format the AI-generated content as narrative fields
+            const narrativeFields = [
+                { label: 'Executive Summary', value: draft.executive_summary, type: 'textarea' },
+                { label: 'Problem Statement', value: draft.problem_statement, type: 'textarea' },
+                { label: 'Objectives', value: draft.objectives.join('\n'), type: 'textarea' },
+                { label: 'Activities', value: draft.activities.join('\n'), type: 'textarea' },
+                { label: 'Methodology', value: draft.methodology, type: 'textarea' },
+                { label: 'Monitoring & Evaluation', value: draft.monitoring_evaluation, type: 'textarea' },
+                { label: 'Budget Narrative', value: draft.budget_narrative, type: 'textarea' },
+                { label: 'Sustainability', value: draft.sustainability, type: 'textarea' },
+                { label: 'Risks & Mitigation', value: draft.risks_mitigation, type: 'textarea' },
+            ];
+            
+            const payload = {
+                org_id: profile.org_id,
+                name: title.trim(),
                 title: title.trim(),
                 opportunity_id: opportunity.id,
                 status: 'draft',
-                content: { sections: draft, source: 'ai_wizard' },
+                narrative_fields: narrativeFields,
                 created_by: userId,
             };
-            const { data, error } = await (supabase as any)
+            
+            const { data, error } = await supabase
                 .from('proposals')
                 .insert(payload)
                 .select('id')
                 .single();
+                
             if (error) throw error;
             onOpenChange(false);
             toast({ title: 'Proposal saved', description: 'AI draft created successfully.' });
             navigate('/dashboard/fundraising/proposal-management');
         } catch (e: any) {
-            alert(e.message || 'Failed to save proposal');
+            console.error('Save error:', e);
+            toast({ title: 'Error', description: e.message || 'Failed to save proposal', variant: 'destructive' });
         } finally {
             setLoading(false);
         }

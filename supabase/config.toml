@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.admin-create-org-user]
 verify_jwt = false
+
+[functions.ai-proposal-draft]
+verify_jwt = false
