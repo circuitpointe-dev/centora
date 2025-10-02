@@ -1,16 +1,22 @@
 import React, { useState } from "react";
-import { Search, Filter, Eye, Download } from "lucide-react";
+import { Search, Filter, Eye, Download, Upload, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import BrowseTemplateDetailView from "./BrowseTemplateDetailView";
+import { useTemplates } from "@/hooks/useTemplates";
+import { Button } from "@/components/ui/button";
+import UploadDocumentDialog from "@/components/documents/documents-feature/UploadDocumentDialog";
 
 interface Template {
+  id?: string;
   title: string;
   description: string;
   fileType: string;
   uses: number;
   imageSrc: string;
   rating?: number;
+  file_path?: string;
+  file_name?: string;
 }
 
 interface CreationContext {
@@ -24,7 +30,7 @@ interface BrowseTemplatesTabProps {
   creationContext?: CreationContext;
 }
 
-// ... keep existing code (sampleTemplates array)
+// Sample templates for demo purposes (shown when no real templates exist)
 const sampleTemplates: Template[] = [
   {
     title: "Empower Change: A Fundraising Proposal",
@@ -82,7 +88,6 @@ const BrowseTemplateCard: React.FC<{
   onUseTemplate: (template: Template) => void;
   creationContext?: CreationContext;
 }> = ({ template, onPreview, onUseTemplate, creationContext }) => {
-  // ... keep existing code (renderStars, getFileTypeColor functions)
   const renderStars = (rating: number = 0) => {
     return Array.from({ length: 5 }, (_, index) => (
       <svg
@@ -98,67 +103,64 @@ const BrowseTemplateCard: React.FC<{
     ));
   };
 
-  const getFileTypeColor = (fileType: string) => {
-    switch (fileType.toLowerCase()) {
-      case "word":
+  const getFileTypeColor = (type: string) => {
+    switch (type) {
+      case "Word":
         return "bg-blue-100 text-blue-800";
-      case "powerpoint":
+      case "PowerPoint":
         return "bg-orange-100 text-orange-800";
+      case "PDF":
+        return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-      <div className="w-full h-48 bg-gray-100">
-        <img
-          src={template.imageSrc}
-          alt={template.title}
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+      <div className="relative h-48 overflow-hidden">
+        <img 
+          src={template.imageSrc} 
+          alt={template.title} 
           className="w-full h-full object-cover"
         />
+        <div className="absolute top-3 right-3">
+          <span className={`text-xs font-medium px-3 py-1 rounded-full ${getFileTypeColor(template.fileType)}`}>
+            {template.fileType}
+          </span>
+        </div>
       </div>
 
       <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className={`px-2 py-1 text-xs font-medium rounded ${getFileTypeColor(template.fileType)}`}>
-            {template.fileType}
-          </span>
-          {template.rating && (
-            <div className="flex items-center gap-1">
-              {renderStars(template.rating)}
-            </div>
-          )}
-        </div>
-
-        <h3 className="font-semibold text-gray-900 mb-2 truncate">
+        <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-1">
           {template.title}
         </h3>
-
-        <p className="text-sm text-gray-600 mb-4 overflow-hidden">
-          <span className="line-clamp-2">{template.description}</span>
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+          {template.description}
         </p>
 
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500">
-            {template.uses} uses
-          </span>
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => onPreview(template)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
-            >
-              <Eye className="h-4 w-4" />
-              Preview
-            </button>
-            <button 
-              onClick={() => onUseTemplate(template)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-violet-600 rounded hover:bg-violet-700 transition-colors"
-            >
-              <Download className="h-4 w-4" />
-              {creationContext ? "Use Template" : "Use Template"}
-            </button>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            {renderStars(template.rating)}
           </div>
+          <span className="text-xs text-gray-500">{template.uses} uses</span>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => onPreview(template)}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+          >
+            <Eye className="h-4 w-4" />
+            Preview
+          </button>
+          <button
+            onClick={() => onUseTemplate(template)}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition-colors"
+          >
+            <Download className="h-4 w-4" />
+            {creationContext ? "Use Template" : "Use Template"}
+          </button>
         </div>
       </div>
     </div>
@@ -169,20 +171,41 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
   const [searchTerm, setSearchTerm] = useState("");
   const [fileTypeFilter, setFileTypeFilter] = useState("all");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
   const navigate = useNavigate();
-
-  const filteredTemplates = sampleTemplates.filter((template) => {
-    const matchesSearch = 
-      template.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesFileType = 
-      fileTypeFilter === "all" || template.fileType === fileTypeFilter;
-    
-    return matchesSearch && matchesFileType;
+  
+  // Fetch real templates from backend
+  const { data: backendTemplates = [], isLoading } = useTemplates({
+    search: searchTerm,
   });
 
-  const uniqueFileTypes = Array.from(new Set(sampleTemplates.map(t => t.fileType)));
+  // Convert backend templates to display format and combine with sample templates for demo
+  const displayTemplates: Template[] = [
+    ...backendTemplates.map(t => ({
+      id: t.id,
+      title: t.title,
+      description: t.description || '',
+      fileType: t.mime_type?.includes('word') ? 'Word' : 
+                t.mime_type?.includes('pdf') ? 'PDF' : 
+                t.mime_type?.includes('presentation') ? 'PowerPoint' : 'Document',
+      uses: 0,
+      imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+      rating: 5,
+      file_path: t.file_path,
+      file_name: t.file_name
+    })),
+    // Include sample templates only if no backend templates exist
+    ...(backendTemplates.length === 0 ? sampleTemplates : [])
+  ];
+
+  const filteredTemplates = displayTemplates.filter((template) => {
+    const matchesFileType = 
+      fileTypeFilter === "all" || 
+      template.fileType.toLowerCase() === fileTypeFilter.toLowerCase();
+    return matchesFileType;
+  });
+
+  const uniqueFileTypes = Array.from(new Set(displayTemplates.map(t => t.fileType)));
 
   const handlePreviewTemplate = (template: Template) => {
     setSelectedTemplate(template);
@@ -216,18 +239,28 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
   }
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Browse Templates</h2>
-          {creationContext && (
-            <p className="text-sm text-gray-600 mt-1">
-              Select a template to use for "{creationContext.title}"
-            </p>
-          )}
+    <>
+      <div className="w-full">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Browse Templates</h2>
+            {creationContext && (
+              <p className="text-sm text-gray-600 mt-1">
+                Select a template to use for "{creationContext.title}"
+              </p>
+            )}
+          </div>
+          
+          <Button 
+            onClick={() => setShowUploadDialog(true)}
+            className="flex items-center gap-2"
+          >
+            <Upload className="w-4 h-4" />
+            Upload Template
+          </Button>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 mb-6">
           <Select value={fileTypeFilter} onValueChange={setFileTypeFilter}>
             <SelectTrigger className="w-[140px] bg-white border-gray-200">
               <Filter className="h-4 w-4 mr-2 text-gray-400" />
@@ -241,7 +274,7 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
             </SelectContent>
           </Select>
 
-          <div className="relative w-64">
+          <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
@@ -252,33 +285,55 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
             />
           </div>
         </div>
-      </div>
 
-      <div className="mb-4">
-        <p className="text-sm text-gray-600">
-          Showing {filteredTemplates.length} of {sampleTemplates.length} templates
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map((template, index) => (
-          <BrowseTemplateCard
-            key={index}
-            template={template}
-            onPreview={handlePreviewTemplate}
-            onUseTemplate={handleUseTemplate}
-            creationContext={creationContext}
-          />
-        ))}
-      </div>
-
-      {filteredTemplates.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No templates found matching your criteria.</p>
-          <p className="text-sm text-gray-400 mt-2">Try adjusting your search or filter options.</p>
+        <div className="mb-4">
+          <p className="text-sm text-gray-600">
+            Showing {filteredTemplates.length} template{filteredTemplates.length !== 1 ? 's' : ''}
+          </p>
         </div>
-      )}
-    </div>
+
+        {/* Templates Grid */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+          </div>
+        ) : filteredTemplates.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTemplates.map((template, index) => (
+              <BrowseTemplateCard
+                key={template.id || index}
+                template={template}
+                onPreview={handlePreviewTemplate}
+                onUseTemplate={handleUseTemplate}
+                creationContext={creationContext}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No templates found matching your criteria.</p>
+            <p className="text-sm text-gray-400 mt-2">
+              {backendTemplates.length === 0 
+                ? "Upload your first template to get started." 
+                : "Try adjusting your search or filter options."}
+            </p>
+            <Button 
+              onClick={() => setShowUploadDialog(true)}
+              variant="outline"
+              className="mt-4"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Template
+            </Button>
+          </div>
+        )}
+      </div>
+      
+      <UploadDocumentDialog 
+        open={showUploadDialog}
+        onOpenChange={setShowUploadDialog}
+      />
+    </>
   );
 };
 
