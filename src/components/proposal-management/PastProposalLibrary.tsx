@@ -3,6 +3,7 @@ import { Search, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProposalLibraryCard from "./ProposalLibraryCard";
 import PastProposalDetailView from "./PastProposalDetailView";
+import { useProposals } from "@/hooks/useProposals";
 
 interface Proposal {
   title: string;
@@ -24,63 +25,25 @@ interface PastProposalLibraryProps {
   creationContext?: CreationContext;
 }
 
-const sampleProposals: Proposal[] = [
-  {
-    title: "Empower Change: A Fundraising Proposal",
-    description: "Hey there! Have you ever thought about exploring new horizons together?",
-    fileType: "Word",
-    uses: 742,
-    imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Together We Rise: Community Support Initiative",
-    description: "Imagine the possibilities if we teamed up on this project!",
-    fileType: "PowerPoint",
-    uses: 1256,
-    imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Seeds of Hope: A Green Fundraising Campaign",
-    description: "What if we joined forces to create something truly amazing?",
-    fileType: "Word",
-    uses: 934,
-    imageSrc: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Building Futures: Education Fundraising Proposal",
-    description: "Let's brainstorm some exciting ideas that could transform our community.",
-    fileType: "Word",
-    uses: 389,
-    imageSrc: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Hearts United: A Charitable Giving Proposal",
-    description: "How about we collaborate and bring innovative solutions to life?",
-    fileType: "PowerPoint",
-    uses: 1024,
-    imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Voices for Change: Advocacy Fundraising Proposal",
-    description: "I have a vision that I think we could turn into reality together.",
-    fileType: "Word",
-    uses: 562,
-    imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-];
-
 const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationContext }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [fileTypeFilter, setFileTypeFilter] = useState("all");
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
+  
+  // Fetch real proposals from backend
+  const { data: backendProposals = [], isLoading } = useProposals();
+  
+  // Convert backend proposals to the expected format
+  const proposals: Proposal[] = backendProposals.map((p: any) => ({
+    title: p.name || p.title || 'Untitled Proposal',
+    description: p.narrative_fields?.[0]?.value || 'No description available',
+    fileType: 'Word',
+    uses: 0,
+    imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+    rating: 5,
+  }));
 
-  const filteredProposals = sampleProposals.filter((proposal) => {
+  const filteredProposals = proposals.filter((proposal) => {
     const matchesSearch = 
       proposal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       proposal.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -91,7 +54,7 @@ const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationConte
     return matchesSearch && matchesFileType;
   });
 
-  const uniqueFileTypes = Array.from(new Set(sampleProposals.map(p => p.fileType)));
+  const uniqueFileTypes = Array.from(new Set(proposals.map(p => p.fileType)));
 
   const handleViewProposal = (proposal: Proposal) => {
     setSelectedProposal(proposal);
@@ -109,6 +72,15 @@ const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationConte
         onBack={handleBackToLibrary}
         creationContext={creationContext}
       />
+    );
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-gray-500">Loading proposals...</p>
+      </div>
     );
   }
 
@@ -158,7 +130,7 @@ const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationConte
       {/* Results Count */}
       <div className="mb-4">
         <p className="text-sm text-gray-600">
-          Showing {filteredProposals.length} of {sampleProposals.length} proposals
+          Showing {filteredProposals.length} of {proposals.length} proposals
         </p>
       </div>
 

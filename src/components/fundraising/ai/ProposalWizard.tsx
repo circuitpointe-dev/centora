@@ -63,8 +63,12 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
             setDraft(draft);
             setStep(3);
         } catch (e: any) {
-            console.error(e);
-            alert(e.message || 'Failed to generate draft');
+            console.error('AI generation error:', e);
+            toast({
+                title: 'Generation Failed',
+                description: e.message || 'Failed to generate draft. Please try again.',
+                variant: 'destructive'
+            });
         } finally {
             setLoading(false);
         }
