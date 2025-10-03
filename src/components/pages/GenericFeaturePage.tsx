@@ -1,4 +1,3 @@
-
 // src/components/generic/GenericFeaturePage.tsx
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -43,6 +42,9 @@ import SupportTicketsPage from "../users/support/tickets/SupportTicketsPage";
 import TenantIntegrationsPage from "../users/integrations/TenantIntegrationsPage";
 import CataloguePage from "../learning/CataloguePage";
 import CourseDetailPage from "../learning/CourseDetailPage";
+import CourseWorkspacePage from "../learning/CourseWorkspacePage";
+import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
+import LessonPage from "../learning/LessonPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -124,7 +126,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'grants' && feature === 'templates') {
-    return <GrantsTemplatesPage />;
+    return <GrantsSettingsPage />;
   }
 
   if (module === 'grants' && feature === 'settings') {
@@ -191,6 +193,26 @@ const GenericFeaturePage = () => {
   // Learning Management module routes
   if (module === 'learning' && feature === 'catalogue') {
     return <CataloguePage />;
+  }
+
+  if (module === 'learning' && feature === 'course-workspace') {
+    return <CourseWorkspacePage />;
+  }
+
+  // Student course detail page (from course workspace start/continue buttons)
+  if (module === 'learning' && feature?.startsWith('enrolled-course-')) {
+    const courseId = feature.replace('enrolled-course-', '');
+    return <StudentCourseDetailPage courseId={courseId} />;
+  }
+
+  // Lesson page (when clicking video lessons from modules tab)
+  if (module === 'learning' && feature?.startsWith('lesson-')) {
+    const lessonId = feature.replace('lesson-', '');
+    // Extract courseId from lessonId if needed (e.g., lesson-1-course-2)
+    const parts = lessonId.split('-');
+    const lessonNum = parts[0];
+    const courseId = parts[1] || '1'; // Default courseId
+    return <LessonPage lessonId={lessonNum} courseId={courseId} />;
   }
 
   if (module === 'learning' && feature?.startsWith('course-')) {
