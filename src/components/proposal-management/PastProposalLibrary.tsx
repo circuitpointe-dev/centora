@@ -33,8 +33,9 @@ const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationConte
   // Fetch real proposals from backend
   const { data: backendProposals = [], isLoading } = useProposals();
   
-  // Convert backend proposals to the expected format
-  const proposals: Proposal[] = backendProposals.map((p: any) => ({
+  // Convert backend proposals to the expected format, keeping full proposal data
+  const proposals = backendProposals.map((p: any) => ({
+    ...p, // Keep all original proposal data
     title: p.name || p.title || 'Untitled Proposal',
     description: p.narrative_fields?.[0]?.value || 'No description available',
     fileType: 'Word',

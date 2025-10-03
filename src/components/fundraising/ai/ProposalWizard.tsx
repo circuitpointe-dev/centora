@@ -80,16 +80,16 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
         try {
             const { data: userRes } = await supabase.auth.getUser();
             const userId = userRes?.user?.id ?? null;
-            
+
             // Get user's org_id
             const { data: profile } = await supabase
                 .from('profiles')
                 .select('org_id')
                 .eq('id', userId!)
                 .single();
-            
+
             if (!profile?.org_id) throw new Error('User organization not found');
-            
+
             // Format the AI-generated content as narrative fields
             const narrativeFields = [
                 { label: 'Executive Summary', value: draft.executive_summary, type: 'textarea' },
@@ -102,7 +102,7 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
                 { label: 'Sustainability', value: draft.sustainability, type: 'textarea' },
                 { label: 'Risks & Mitigation', value: draft.risks_mitigation, type: 'textarea' },
             ];
-            
+
             const payload = {
                 org_id: profile.org_id,
                 name: title.trim(),
@@ -112,13 +112,13 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
                 narrative_fields: narrativeFields,
                 created_by: userId,
             };
-            
+
             const { data, error } = await supabase
                 .from('proposals')
                 .insert(payload)
                 .select('id')
                 .single();
-                
+
             if (error) throw error;
             onOpenChange(false);
             toast({ title: 'Proposal saved', description: 'AI draft created successfully.' });
@@ -133,7 +133,7 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[760px]">
+            <DialogContent className="w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-[80vw] xl:w-[75vw] max-w-[1200px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>AI Proposal Wizard</DialogTitle>
                     <DialogDescription>Provide a brief description and generate a complete first draft.</DialogDescription>
@@ -241,52 +241,171 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
                 )}
 
                 {step === 3 && draft && (
-                    <div className="space-y-4">
-                        <div>
-                            <Label>Executive Summary</Label>
-                            <Textarea rows={4} value={draft.executive_summary} onChange={(e) => setDraft({ ...draft, executive_summary: e.target.value })} />
-                        </div>
-                        <div>
-                            <Label>Problem Statement</Label>
-                            <Textarea rows={4} value={draft.problem_statement} onChange={(e) => setDraft({ ...draft, problem_statement: e.target.value })} />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-6">
+                        {/* Header with progress indicator */}
+                        <div className="flex items-center justify-between border-b pb-4">
                             <div>
-                                <Label>Objectives</Label>
-                                <Textarea rows={4} value={draft.objectives.join('\n')} onChange={(e) => setDraft({ ...draft, objectives: e.target.value.split('\n').filter(Boolean) })} />
+                                <h3 className="text-lg font-semibold text-gray-900">Review & Edit Your Proposal</h3>
+                                <p className="text-sm text-gray-600">Make any final adjustments before saving</p>
                             </div>
-                            <div>
-                                <Label>Activities</Label>
-                                <Textarea rows={4} value={draft.activities.join('\n')} onChange={(e) => setDraft({ ...draft, activities: e.target.value.split('\n').filter(Boolean) })} />
+                            <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span className="text-sm text-gray-600">AI Generated</span>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <Label>Methodology</Label>
-                                <Textarea rows={4} value={draft.methodology} onChange={(e) => setDraft({ ...draft, methodology: e.target.value })} />
+
+                        {/* Scrollable content area */}
+                        <div className="max-h-[60vh] overflow-y-auto space-y-6 pr-2">
+                            {/* Executive Summary */}
+                            <div className="bg-gray-50 rounded-lg p-4">
+                                <Label className="text-base font-medium text-gray-900 mb-2 block">Executive Summary</Label>
+                                <Textarea
+                                    rows={5}
+                                    value={draft.executive_summary}
+                                    onChange={(e) => setDraft({ ...draft, executive_summary: e.target.value })}
+                                    className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                    placeholder="Brief overview of the project..."
+                                />
                             </div>
-                            <div>
-                                <Label>Monitoring & Evaluation</Label>
-                                <Textarea rows={4} value={draft.monitoring_evaluation} onChange={(e) => setDraft({ ...draft, monitoring_evaluation: e.target.value })} />
+
+                            {/* Problem Statement */}
+                            <div className="bg-gray-50 rounded-lg p-4">
+                                <Label className="text-base font-medium text-gray-900 mb-2 block">Problem Statement</Label>
+                                <Textarea
+                                    rows={5}
+                                    value={draft.problem_statement}
+                                    onChange={(e) => setDraft({ ...draft, problem_statement: e.target.value })}
+                                    className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                    placeholder="Describe the problem this project addresses..."
+                                />
+                            </div>
+
+                            {/* Two column layout for better space utilization */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Objectives */}
+                                <div className="bg-blue-50 rounded-lg p-4">
+                                    <Label className="text-base font-medium text-gray-900 mb-2 block">Project Objectives</Label>
+                                    <Textarea
+                                        rows={6}
+                                        value={draft.objectives.join('\n')}
+                                        onChange={(e) => setDraft({ ...draft, objectives: e.target.value.split('\n').filter(Boolean) })}
+                                        className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                        placeholder="List your project objectives..."
+                                    />
+                                </div>
+
+                                {/* Activities */}
+                                <div className="bg-green-50 rounded-lg p-4">
+                                    <Label className="text-base font-medium text-gray-900 mb-2 block">Key Activities</Label>
+                                    <Textarea
+                                        rows={6}
+                                        value={draft.activities.join('\n')}
+                                        onChange={(e) => setDraft({ ...draft, activities: e.target.value.split('\n').filter(Boolean) })}
+                                        className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                        placeholder="List key project activities..."
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Methodology */}
+                            <div className="bg-purple-50 rounded-lg p-4">
+                                <Label className="text-base font-medium text-gray-900 mb-2 block">Methodology</Label>
+                                <Textarea
+                                    rows={5}
+                                    value={draft.methodology}
+                                    onChange={(e) => setDraft({ ...draft, methodology: e.target.value })}
+                                    className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                    placeholder="Describe your project methodology..."
+                                />
+                            </div>
+
+                            {/* Two column layout for M&E and Budget */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Monitoring & Evaluation */}
+                                <div className="bg-orange-50 rounded-lg p-4">
+                                    <Label className="text-base font-medium text-gray-900 mb-2 block">Monitoring & Evaluation</Label>
+                                    <Textarea
+                                        rows={5}
+                                        value={draft.monitoring_evaluation}
+                                        onChange={(e) => setDraft({ ...draft, monitoring_evaluation: e.target.value })}
+                                        className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                        placeholder="Describe your M&E approach..."
+                                    />
+                                </div>
+
+                                {/* Budget Narrative */}
+                                <div className="bg-yellow-50 rounded-lg p-4">
+                                    <Label className="text-base font-medium text-gray-900 mb-2 block">Budget Narrative</Label>
+                                    <Textarea
+                                        rows={5}
+                                        value={draft.budget_narrative}
+                                        onChange={(e) => setDraft({ ...draft, budget_narrative: e.target.value })}
+                                        className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                        placeholder="Explain your budget allocation..."
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Sustainability */}
+                            <div className="bg-teal-50 rounded-lg p-4">
+                                <Label className="text-base font-medium text-gray-900 mb-2 block">Sustainability</Label>
+                                <Textarea
+                                    rows={4}
+                                    value={draft.sustainability}
+                                    onChange={(e) => setDraft({ ...draft, sustainability: e.target.value })}
+                                    className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                    placeholder="Describe project sustainability..."
+                                />
+                            </div>
+
+                            {/* Risks & Mitigation */}
+                            <div className="bg-red-50 rounded-lg p-4">
+                                <Label className="text-base font-medium text-gray-900 mb-2 block">Risks & Mitigation</Label>
+                                <Textarea
+                                    rows={4}
+                                    value={draft.risks_mitigation}
+                                    onChange={(e) => setDraft({ ...draft, risks_mitigation: e.target.value })}
+                                    className="resize-none border-gray-200 focus:border-violet-500 focus:ring-violet-500"
+                                    placeholder="Identify risks and mitigation strategies..."
+                                />
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <Label>Budget Narrative</Label>
-                                <Textarea rows={4} value={draft.budget_narrative} onChange={(e) => setDraft({ ...draft, budget_narrative: e.target.value })} />
+
+                        {/* Action buttons */}
+                        <div className="flex justify-between items-center pt-4 border-t bg-gray-50 -mx-6 px-6 py-4">
+                            <Button variant="outline" onClick={() => setStep(2)} className="flex items-center gap-2">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                                Back to Edit
+                            </Button>
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm text-gray-500">
+                                    {draft.executive_summary.length + draft.problem_statement.length + draft.methodology.length} characters
+                                </span>
+                                <Button
+                                    onClick={handleSave}
+                                    disabled={loading}
+                                    className="bg-violet-600 hover:bg-violet-700 flex items-center gap-2"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
+                                            </svg>
+                                            Save Proposal
+                                        </>
+                                    )}
+                                </Button>
                             </div>
-                            <div>
-                                <Label>Sustainability</Label>
-                                <Textarea rows={4} value={draft.sustainability} onChange={(e) => setDraft({ ...draft, sustainability: e.target.value })} />
-                            </div>
-                        </div>
-                        <div>
-                            <Label>Risks & Mitigation</Label>
-                            <Textarea rows={4} value={draft.risks_mitigation} onChange={(e) => setDraft({ ...draft, risks_mitigation: e.target.value })} />
-                        </div>
-                        <div className="flex justify-end gap-2">
-                            <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
-                            <Button onClick={handleSave} disabled={loading}>{loading ? 'Saving…' : 'Save Proposal'}</Button>
                         </div>
                     </div>
                 )}

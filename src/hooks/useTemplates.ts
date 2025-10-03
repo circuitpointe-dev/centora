@@ -12,6 +12,8 @@ export interface Template {
   department?: string;
   file_name: string;
   file_path: string;
+  preview_url?: string;
+  office_preview_url?: string;
   mime_type?: string;
   file_size?: number;
   created_at: string;
@@ -49,7 +51,7 @@ export const useTemplates = (filters?: {
 
       // Apply filters
       if (filters?.category && filters.category !== 'all') {
-        filteredData = filteredData.filter(template => 
+        filteredData = filteredData.filter(template =>
           template.template_category === filters.category ||
           template.category === filters.category
         );
@@ -57,28 +59,53 @@ export const useTemplates = (filters?: {
 
       if (filters?.search) {
         const searchLower = filters.search.toLowerCase();
-        filteredData = filteredData.filter(template => 
+        filteredData = filteredData.filter(template =>
           template.title.toLowerCase().includes(searchLower) ||
           template.description?.toLowerCase().includes(searchLower) ||
           template.template_category?.toLowerCase().includes(searchLower)
         );
       }
 
-      return filteredData.map(template => ({
-        id: template.id,
-        title: template.title,
-        description: template.description,
-        category: template.template_category || template.category,
-        template_category: template.template_category,
-        file_name: template.file_name,
-        file_path: template.file_path,
-        mime_type: template.mime_type,
-        file_size: template.file_size,
-        created_at: template.created_at,
-        updated_at: template.updated_at,
-        created_by: template.created_by,
-        creator: template.profiles,
-      })) as Template[];
+      // Create signed preview URLs for storage paths (if bucket is private)
+      const signedUrls = await Promise.all(
+        (filteredData || []).map(async (t: any) => {
+          if (!t.file_path) return undefined;
+          try {
+            const { data: signed } = await supabase.storage
+              .from('documents')
+              .createSignedUrl(t.file_path, 60 * 10);
+            return signed?.signedUrl;
+          } catch {
+            return undefined;
+          }
+        })
+      );
+
+      return filteredData.map((template: any, idx: number) => {
+        const signed = signedUrls[idx];
+        const lower = (template.file_name || '').toLowerCase();
+        const isOffice = lower.endsWith('.doc') || lower.endsWith('.docx') || lower.endsWith('.ppt') || lower.endsWith('.pptx');
+        const officeUrl = signed && isOffice
+          ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(signed)}`
+          : undefined;
+        return ({
+          id: template.id,
+          title: template.title,
+          description: template.description,
+          category: template.template_category || template.category,
+          template_category: template.template_category,
+          file_name: template.file_name,
+          file_path: template.file_path,
+          preview_url: signed,
+          office_preview_url: officeUrl,
+          mime_type: template.mime_type,
+          file_size: template.file_size,
+          created_at: template.created_at,
+          updated_at: template.updated_at,
+          created_by: template.created_by,
+          creator: template.profiles,
+        }) as Template;
+      }) as Template[];
     },
     enabled: !!user,
   });
@@ -292,6 +319,81 @@ export const useCreateDocumentFromTemplate = () => {
     },
     onError: (error: any) => {
       toast.error(`Failed to create document from template: ${error.message}`);
+    },
+  });
+};
+
+// Seed a few sample templates for the current org (respects RLS)
+export const useSeedSampleTemplates = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error('User not authenticated');
+
+      const { data: profile, error: profileErr } = await supabase
+        .from('profiles')
+        .select('org_id')
+        .eq('id', user.id)
+        .single();
+      if (profileErr) throw profileErr;
+      if (!profile?.org_id) throw new Error('Missing org_id');
+
+      const samples = [
+        {
+          title: 'General Grant Proposal Template',
+          description: 'A clean structure for typical grant submissions.',
+          category: 'templates',
+          template_category: 'proposal',
+          file_name: 'general-grant-proposal.docx',
+          file_path: '/templates/general-grant-proposal.docx',
+          mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          file_size: 102400,
+          is_template: true,
+          status: 'active' as const,
+        },
+        {
+          title: 'Project Report Template',
+          description: 'Standard reporting structure with executive summary and results.',
+          category: 'templates',
+          template_category: 'report',
+          file_name: 'project-report-template.pdf',
+          file_path: '/templates/project-report-template.pdf',
+          mime_type: 'application/pdf',
+          file_size: 204800,
+          is_template: true,
+          status: 'active' as const,
+        },
+        {
+          title: 'Donor Budget Presentation',
+          description: 'PowerPoint deck for donor-facing budget presentations.',
+          category: 'templates',
+          template_category: 'financial',
+          file_name: 'donor-budget-presentation.pptx',
+          file_path: '/templates/donor-budget-presentation.pptx',
+          mime_type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          file_size: 307200,
+          is_template: true,
+          status: 'active' as const,
+        },
+      ];
+
+      const payload = samples.map(s => ({
+        ...s,
+        org_id: profile.org_id,
+        created_by: user.id,
+      }));
+
+      const { error } = await supabase.from('documents').insert(payload as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      toast.success('Sample templates added');
+    },
+    onError: (err: any) => {
+      toast.error(`Failed to add samples: ${err.message}`);
     },
   });
 };

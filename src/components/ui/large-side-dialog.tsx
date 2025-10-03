@@ -37,7 +37,8 @@ const LargeSideDialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed right-0 top-0 z-50 h-full bg-background shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right border-l flex flex-col overflow-hidden",
-        "w-full max-w-[95vw] lg:max-w-[85vw] xl:max-w-[80vw] 2xl:max-w-[75vw]",
+        "w-full sm:w-[95vw] md:w-[90vw] lg:w-[85vw] xl:w-[80vw] 2xl:w-[75vw]",
+        "max-h-screen",
         className
       )}
       {...props}

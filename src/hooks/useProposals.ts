@@ -10,7 +10,7 @@ export interface Proposal {
   dueDate: string;
   team: ProposalTeamMember[];
   reviewer: string;
-  status: 'Draft' | 'In Progress' | 'Under Review' | 'Approved' | 'Rejected';
+  status: 'draft' | 'in_progress' | 'under_review' | 'approved' | 'rejected';
   opportunity_id?: string;
   overview_fields?: any[];
   narrative_fields?: any[];
@@ -33,12 +33,12 @@ export interface ProposalTeamMember {
 
 export const useProposals = () => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ['proposals', user?.org_id],
     queryFn: async (): Promise<Proposal[]> => {
       if (!user?.org_id) throw new Error('No organization');
-      
+
       const { data: proposalsData, error } = await supabase
         .from('proposals')
         .select(`
@@ -63,22 +63,18 @@ export const useProposals = () => {
       return (proposalsData || []).map((proposal: any): Proposal => ({
         id: proposal.id,
         name: proposal.name || proposal.title || 'Untitled Proposal',
-        dueDate: proposal.due_date ? new Date(proposal.due_date).toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric' 
+        dueDate: proposal.due_date ? new Date(proposal.due_date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric'
         }) : proposal.duedate || 'No due date',
         team: Array.isArray(proposal.team) ? proposal.team.map((member: any) => ({
-          label: typeof member === 'string' ? member.substring(0, 2).toUpperCase() : 
-                 member.label || member.name?.substring(0, 2).toUpperCase() || 'NA',
+          label: typeof member === 'string' ? member.substring(0, 2).toUpperCase() :
+            member.label || member.name?.substring(0, 2).toUpperCase() || 'NA',
           img: member.img || member.avatar_url,
           bg: member.bg || (member.img || member.avatar_url ? undefined : 'bg-purple-100')
         })) : [],
         reviewer: proposal.reviewer || 'Unassigned',
-        status: proposal.status === 'draft' ? 'Draft' :
-                proposal.status === 'in_progress' ? 'In Progress' :
-                proposal.status === 'under_review' ? 'Under Review' :
-                proposal.status === 'approved' ? 'Approved' :
-                proposal.status === 'rejected' ? 'Rejected' : 'Draft',
+        status: proposal.status || 'draft',
         created_at: proposal.created_at,
         updated_at: proposal.updated_at,
         created_by: proposal.created_by,
@@ -92,7 +88,7 @@ export const useProposals = () => {
 export const useCreateProposal = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (data: {
       name: string;
@@ -109,7 +105,7 @@ export const useCreateProposal = () => {
       submission_status?: string;
     }) => {
       if (!user?.org_id) throw new Error('No organization');
-      
+
       const { data: proposal, error } = await supabase
         .from('proposals')
         .insert({
@@ -154,7 +150,7 @@ export const useCreateProposal = () => {
 
 export const useUpdateProposal = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (data: {
       id: string;
@@ -186,7 +182,7 @@ export const useUpdateProposal = () => {
       if (data.logframe_fields !== undefined) updateData.logframe_fields = data.logframe_fields;
       if (data.attachments !== undefined) updateData.attachments = data.attachments;
       if (data.submission_status !== undefined) updateData.submission_status = data.submission_status;
-      
+
       const { data: proposal, error } = await supabase
         .from('proposals')
         .update(updateData)
@@ -216,7 +212,7 @@ export const useUpdateProposal = () => {
 
 export const useDeleteProposal = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Search, Filter, Eye, Download, Upload, Loader2 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Search, Filter, Eye, Download, Upload, Loader2, FileText } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import BrowseTemplateDetailView from "./BrowseTemplateDetailView";
-import { useTemplates } from "@/hooks/useTemplates";
+import { useTemplates, useSeedSampleTemplates } from "@/hooks/useTemplates";
 import { Button } from "@/components/ui/button";
 import UploadDocumentDialog from "@/components/documents/documents-feature/UploadDocumentDialog";
 
@@ -17,6 +17,7 @@ interface Template {
   rating?: number;
   file_path?: string;
   file_name?: string;
+  preview_url?: string;
 }
 
 interface CreationContext {
@@ -30,60 +31,10 @@ interface BrowseTemplatesTabProps {
   creationContext?: CreationContext;
 }
 
-// Sample templates for demo purposes (shown when no real templates exist)
-const sampleTemplates: Template[] = [
-  {
-    title: "Empower Change: A Fundraising Proposal",
-    description: "Hey there! Have you ever thought about exploring new horizons together?",
-    fileType: "Word",
-    uses: 742,
-    imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Together We Rise: Community Support Initiative",
-    description: "Imagine the possibilities if we teamed up on this project!",
-    fileType: "PowerPoint",
-    uses: 1256,
-    imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Seeds of Hope: A Green Fundraising Campaign",
-    description: "What if we joined forces to create something truly amazing?",
-    fileType: "Word",
-    uses: 934,
-    imageSrc: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Building Futures: Education Fundraising Proposal",
-    description: "Let's brainstorm some exciting ideas that could transform our community.",
-    fileType: "Word",
-    uses: 389,
-    imageSrc: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Hearts United: A Charitable Giving Proposal",
-    description: "How about we collaborate and bring innovative solutions to life?",
-    fileType: "PowerPoint",
-    uses: 1024,
-    imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-  {
-    title: "Voices for Change: Advocacy Fundraising Proposal",
-    description: "I have a vision that I think we could turn into reality together.",
-    fileType: "Word",
-    uses: 562,
-    imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-    rating: 5,
-  },
-];
+// No demo data - only real templates from database
 
-const BrowseTemplateCard: React.FC<{ 
-  template: Template; 
+const BrowseTemplateCard: React.FC<{
+  template: Template;
   onPreview: (template: Template) => void;
   onUseTemplate: (template: Template) => void;
   creationContext?: CreationContext;
@@ -92,9 +43,8 @@ const BrowseTemplateCard: React.FC<{
     return Array.from({ length: 5 }, (_, index) => (
       <svg
         key={index}
-        className={`h-4 w-4 ${
-          index < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-        }`}
+        className={`h-4 w-4 ${index < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+          }`}
         viewBox="0 0 24 24"
         fill="currentColor"
       >
@@ -119,9 +69,9 @@ const BrowseTemplateCard: React.FC<{
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={template.imageSrc} 
-          alt={template.title} 
+        <img
+          src={template.imageSrc}
+          alt={template.title}
           className="w-full h-full object-cover"
         />
         <div className="absolute top-3 right-3">
@@ -173,34 +123,41 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const navigate = useNavigate();
-  
+
   // Fetch real templates from backend
   const { data: backendTemplates = [], isLoading } = useTemplates({
     search: searchTerm,
   });
 
-  // Convert backend templates to display format and combine with sample templates for demo
-  const displayTemplates: Template[] = [
-    ...backendTemplates.map(t => ({
-      id: t.id,
-      title: t.title,
-      description: t.description || '',
-      fileType: t.mime_type?.includes('word') ? 'Word' : 
-                t.mime_type?.includes('pdf') ? 'PDF' : 
-                t.mime_type?.includes('presentation') ? 'PowerPoint' : 'Document',
-      uses: 0,
-      imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
-      rating: 5,
-      file_path: t.file_path,
-      file_name: t.file_name
-    })),
-    // Include sample templates only if no backend templates exist
-    ...(backendTemplates.length === 0 ? sampleTemplates : [])
-  ];
+  const seedSamples = useSeedSampleTemplates();
+
+  // Auto-seed once if empty
+  const seededRef = useRef(false);
+  useEffect(() => {
+    if (!isLoading && backendTemplates.length === 0 && !seededRef.current && !seedSamples.isPending) {
+      seededRef.current = true;
+      seedSamples.mutate();
+    }
+  }, [isLoading, backendTemplates.length, seedSamples]);
+
+  // Convert backend templates to display format
+  const displayTemplates: Template[] = backendTemplates.map(t => ({
+    id: t.id,
+    title: t.title,
+    description: t.description || '',
+    fileType: t.mime_type?.includes('word') ? 'Word' :
+      t.mime_type?.includes('pdf') ? 'PDF' :
+        t.mime_type?.includes('presentation') ? 'PowerPoint' : 'Document',
+    uses: 0,
+    imageSrc: t.preview_url || "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+    rating: 5,
+    file_path: t.file_path,
+    file_name: t.file_name
+  }));
 
   const filteredTemplates = displayTemplates.filter((template) => {
-    const matchesFileType = 
-      fileTypeFilter === "all" || 
+    const matchesFileType =
+      fileTypeFilter === "all" ||
       template.fileType.toLowerCase() === fileTypeFilter.toLowerCase();
     return matchesFileType;
   });
@@ -218,7 +175,7 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
       template: template,
       creationContext: creationContext
     };
-    
+
     navigate("/dashboard/fundraising/manual-proposal-creation", {
       state: { prefilledData: templateData }
     });
@@ -250,8 +207,8 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
               </p>
             )}
           </div>
-          
-          <Button 
+
+          <Button
             onClick={() => setShowUploadDialog(true)}
             className="flex items-center gap-2"
           >
@@ -259,7 +216,7 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
             Upload Template
           </Button>
         </div>
-        
+
         <div className="flex items-center gap-4 mb-6">
           <Select value={fileTypeFilter} onValueChange={setFileTypeFilter}>
             <SelectTrigger className="w-[140px] bg-white border-gray-200">
@@ -311,25 +268,43 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500">No templates found matching your criteria.</p>
-            <p className="text-sm text-gray-400 mt-2">
-              {backendTemplates.length === 0 
-                ? "Upload your first template to get started." 
-                : "Try adjusting your search or filter options."}
-            </p>
-            <Button 
-              onClick={() => setShowUploadDialog(true)}
-              variant="outline"
-              className="mt-4"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Upload Template
-            </Button>
+            <div className="mb-6">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <FileText className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Templates Available</h3>
+              <p className="text-gray-500 mb-4">
+                {backendTemplates.length === 0
+                  ? "Get started by uploading your first proposal template."
+                  : "No templates match your current search or filter criteria."}
+              </p>
+            </div>
+            <div className="space-y-3">
+              <Button
+                onClick={() => setShowUploadDialog(true)}
+                className="bg-violet-600 hover:bg-violet-700"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Template
+              </Button>
+              {backendTemplates.length === 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => seedSamples.mutate()}
+                  disabled={seedSamples.isPending}
+                >
+                  {seedSamples.isPending ? 'Seeding samples...' : 'Add Sample Templates'}
+                </Button>
+              )}
+              <div className="text-sm text-gray-400">
+                Supported formats: Word, PDF, PowerPoint
+              </div>
+            </div>
           </div>
         )}
       </div>
-      
-      <UploadDocumentDialog 
+
+      <UploadDocumentDialog
         open={showUploadDialog}
         onOpenChange={setShowUploadDialog}
       />

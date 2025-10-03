@@ -17,14 +17,7 @@ interface CreationContext {
 }
 
 interface PastProposalDetailViewProps {
-  proposal: {
-    title: string;
-    description: string;
-    fileType: string;
-    uses: number;
-    imageSrc: string;
-    rating?: number;
-  };
+  proposal: any; // Full proposal object from backend
   onBack: () => void;
   creationContext?: CreationContext;
 }
@@ -37,13 +30,13 @@ const PastProposalDetailView: React.FC<PastProposalDetailViewProps> = ({
   const navigate = useNavigate();
 
   const handleReuseProposal = () => {
-    // Navigate to manual proposal creation with proposal data
+    // Navigate to manual proposal creation with full proposal data
     const proposalData = {
       source: "proposal",
-      proposal: proposal,
+      proposal: proposal, // Full proposal object with all fields
       creationContext: creationContext
     };
-    
+
     navigate("/dashboard/fundraising/manual-proposal-creation", {
       state: { prefilledData: proposalData }
     });

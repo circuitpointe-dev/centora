@@ -16,6 +16,10 @@ type Props = {
   onAddField: () => void;
   onRemoveField: (fieldId: string) => void;
   onFieldValueChange: (fieldId: string, value: string) => void;
+  summaryValue: string;
+  objectivesValue: string;
+  onSummaryChange: (value: string) => void;
+  onObjectivesChange: (value: string) => void;
 };
 
 const OverviewTabContent: React.FC<Props> = ({
@@ -23,6 +27,10 @@ const OverviewTabContent: React.FC<Props> = ({
   onAddField,
   onRemoveField,
   onFieldValueChange,
+  summaryValue,
+  objectivesValue,
+  onSummaryChange,
+  onObjectivesChange,
 }) => {
   return (
     <div className="space-y-4">
@@ -32,6 +40,8 @@ const OverviewTabContent: React.FC<Props> = ({
           id="summary"
           placeholder="Enter project summary..."
           className="mt-2 min-h-[120px]"
+          value={summaryValue}
+          onChange={(e) => onSummaryChange(e.target.value)}
         />
       </div>
       <div>
@@ -40,9 +50,11 @@ const OverviewTabContent: React.FC<Props> = ({
           id="objectives"
           placeholder="Enter project objectives..."
           className="mt-2 min-h-[120px]"
+          value={objectivesValue}
+          onChange={(e) => onObjectivesChange(e.target.value)}
         />
       </div>
-      
+
       {/* Custom Fields */}
       {overviewFields.map((field) => (
         <div key={field.id} className="space-y-2">
@@ -66,10 +78,10 @@ const OverviewTabContent: React.FC<Props> = ({
           />
         </div>
       ))}
-      
-      <Button 
-        variant="outline" 
-        size="sm" 
+
+      <Button
+        variant="outline"
+        size="sm"
         className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200"
         onClick={onAddField}
       >

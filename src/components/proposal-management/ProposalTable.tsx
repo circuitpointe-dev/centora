@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { useProposals, useUpdateProposal, useDeleteProposal } from "@/hooks/useProposals";
-import { Search } from "lucide-react";
+import { useUsers } from "@/hooks/useUsers";
+import { useAddProposalTeamMember } from "@/hooks/useProposalTeamMembers";
+import { Search, Plus } from "lucide-react";
 import ProposalRowActions from "./ProposalRowActions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -23,19 +29,27 @@ const ProposalTable: React.FC<{
   const { data: proposals = [], isLoading } = useProposals();
   const updateProposalMutation = useUpdateProposal();
   const deleteProposalMutation = useDeleteProposal();
-  
+  const addTeamMemberMutation = useAddProposalTeamMember();
+  const { data: users = [] } = useUsers({ pageSize: 50 });
+
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showTeamDialog, setShowTeamDialog] = useState(false);
+  const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
+  const [teamMemberName, setTeamMemberName] = useState("");
+  const [teamMemberRole, setTeamMemberRole] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [showFilterDialog, setShowFilterDialog] = useState(false);
 
   // For delete confirmation dialog
   const proposalToDelete = deleteId ? proposals.find(p => p.id === deleteId) : undefined;
 
   // Filtering
-  const filtered = !search
-    ? proposals
-    : proposals.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase())
-      );
+  const filtered = proposals.filter((p) => {
+    const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === "all" || p.status.toLowerCase() === statusFilter.toLowerCase();
+    return matchesSearch && matchesStatus;
+  });
 
   // Reviewer update
   const handleReviewerChange = async (proposalId: string, newReviewer: string) => {
@@ -51,12 +65,12 @@ const ProposalTable: React.FC<{
 
   // Action menu handlers
   const handleDelete = (id: string) => setDeleteId(id);
-  
+
   const handleEdit = (id: string) => {
     const proposalToEdit = proposals.find(p => p.id === id);
     if (proposalToEdit) {
       // Navigate to manual proposal creation with pre-filled data
-      navigate("/modules/fundraising/proposal-creation", {
+      navigate("/dashboard/fundraising/manual-proposal-creation", {
         state: {
           prefilledData: {
             source: "proposal",
@@ -69,6 +83,38 @@ const ProposalTable: React.FC<{
           }
         }
       });
+    }
+  };
+
+  // Team member handlers
+  const handleAddTeamMember = (proposalId: string) => {
+    setSelectedProposalId(proposalId);
+    setShowTeamDialog(true);
+  };
+
+  const handleAddTeamMemberSubmit = async () => {
+    if (!selectedProposalId || !teamMemberName.trim() || !teamMemberRole.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await addTeamMemberMutation.mutateAsync({
+        proposal_id: selectedProposalId,
+        name: teamMemberName.trim(),
+        role: teamMemberRole.trim(),
+      });
+
+      setShowTeamDialog(false);
+      setTeamMemberName("");
+      setTeamMemberRole("");
+      setSelectedProposalId(null);
+    } catch (error) {
+      console.error('Failed to add team member:', error);
     }
   };
 
@@ -108,10 +154,18 @@ const ProposalTable: React.FC<{
             />
           </div>
           {/* Filter */}
-          <button className="flex items-center gap-2 border border-gray-200 rounded px-4 py-2 bg-white hover:bg-gray-50 text-[15px] text-[#383839a6] font-medium">
+          <button
+            onClick={() => setShowFilterDialog(true)}
+            className="flex items-center gap-2 border border-gray-200 rounded px-4 py-2 bg-white hover:bg-gray-50 text-[15px] text-[#383839a6] font-medium"
+          >
             <span className="sr-only">Filter</span>
             <svg className="w-5 h-5" fill="none" stroke="#7c3aed" strokeWidth={2} viewBox="0 0 20 20"><path d="M3 3h14M5 7h10M7 11h6M9 15h2" /></svg>
             Filter
+            {statusFilter !== "all" && (
+              <span className="bg-violet-600 text-white text-xs rounded-full px-2 py-0.5">
+                1
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -154,7 +208,13 @@ const ProposalTable: React.FC<{
                           </div>
                         )
                       )}
-                      <span className="text-gray-300 ml-1 font-bold text-lg leading-none">+</span>
+                      <button
+                        onClick={() => handleAddTeamMember(row.id)}
+                        className="text-gray-400 hover:text-violet-600 ml-1 font-bold text-lg leading-none transition-colors"
+                        title="Add team member"
+                      >
+                        +
+                      </button>
                     </div>
                   </td>
                   <td className="py-3 pr-2 max-w-[180px]">
@@ -166,11 +226,21 @@ const ProposalTable: React.FC<{
                         <SelectValue placeholder="Reviewer" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Winifred John">Winifred John</SelectItem>
-                        <SelectItem value="Somachi Okafor">Somachi Okafor</SelectItem>
-                        <SelectItem value="Chioma Ike">Chioma Ike</SelectItem>
-                        <SelectItem value="Richard Nwamadi">Richard Nwamadi</SelectItem>
-                        <SelectItem value="Amina Yusuf">Amina Yusuf</SelectItem>
+                        {users.length > 0 ? (
+                          users.map((user) => (
+                            <SelectItem key={user.id} value={user.full_name}>
+                              {user.full_name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <>
+                            <SelectItem value="Winifred John">Winifred John</SelectItem>
+                            <SelectItem value="Somachi Okafor">Somachi Okafor</SelectItem>
+                            <SelectItem value="Chioma Ike">Chioma Ike</SelectItem>
+                            <SelectItem value="Richard Nwamadi">Richard Nwamadi</SelectItem>
+                            <SelectItem value="Amina Yusuf">Amina Yusuf</SelectItem>
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                   </td>
@@ -209,6 +279,101 @@ const ProposalTable: React.FC<{
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Add Team Member Dialog */}
+      <Dialog open={showTeamDialog} onOpenChange={setShowTeamDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add Team Member</DialogTitle>
+            <DialogDescription>
+              Add a new team member to this proposal.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={teamMemberName}
+                onChange={(e) => setTeamMemberName(e.target.value)}
+                className="col-span-3"
+                placeholder="Enter team member name"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="role" className="text-right">
+                Role
+              </Label>
+              <Input
+                id="role"
+                value={teamMemberRole}
+                onChange={(e) => setTeamMemberRole(e.target.value)}
+                className="col-span-3"
+                placeholder="Enter team member role"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowTeamDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddTeamMemberSubmit}
+              disabled={addTeamMemberMutation.isPending}
+            >
+              {addTeamMemberMutation.isPending ? 'Adding...' : 'Add Member'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Filter Dialog */}
+      <Dialog open={showFilterDialog} onOpenChange={setShowFilterDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Filter Proposals</DialogTitle>
+            <DialogDescription>
+              Filter proposals by status and other criteria.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="status" className="text-right">
+                Status
+              </Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="under_review">Under Review</SelectItem>
+                  <SelectItem value="approved">Approved</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setStatusFilter("all");
+                setShowFilterDialog(false);
+              }}
+            >
+              Clear
+            </Button>
+            <Button onClick={() => setShowFilterDialog(false)}>
+              Apply Filter
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { PlusIcon, XIcon } from 'lucide-react';
 import { useCreateDocument, useDocumentTags, useCreateDocumentTag } from '@/hooks/useDocuments';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface DocumentDetailsSectionProps {
@@ -20,6 +21,8 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
   const [category, setCategory] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [newTagName, setNewTagName] = useState('');
+  const [isTemplate, setIsTemplate] = useState(false);
+  const [templateCategory, setTemplateCategory] = useState<string>('');
 
   const { data: availableTags } = useDocumentTags();
   const createDocument = useCreateDocument();
@@ -27,7 +30,7 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
 
   const handleCreateTag = async () => {
     if (!newTagName.trim()) return;
-    
+
     try {
       await createTag.mutateAsync({
         name: newTagName.trim(),
@@ -58,18 +61,34 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
     }
 
     try {
-      // In a real app, you would upload the file to storage first
-      // For now, we'll use a mock path
-      const mockFilePath = `documents/${Date.now()}-${selectedFile.name}`;
-      
+      // Upload to Supabase Storage (bucket: documents)
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('org_id')
+        .single();
+
+      const orgId = profile?.org_id || 'public';
+      const storagePath = `${orgId}/${Date.now()}-${selectedFile.name}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(storagePath, selectedFile, {
+          upsert: true,
+          contentType: selectedFile.type,
+        });
+
+      if (uploadError) throw uploadError;
+
       await createDocument.mutateAsync({
         title: title.trim(),
         description: description.trim() || undefined,
         file_name: selectedFile.name,
-        file_path: mockFilePath,
+        file_path: storagePath,
         file_size: selectedFile.size,
         mime_type: selectedFile.type,
-        category: category as any || 'uncategorized',
+        category: isTemplate ? 'templates' : (category as any || 'uncategorized'),
+        is_template: isTemplate,
+        template_category: isTemplate ? templateCategory : undefined,
         tag_ids: selectedTags,
       });
 
@@ -78,8 +97,10 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
       setDescription('');
       setCategory('');
       setSelectedTags([]);
+      setIsTemplate(false);
+      setTemplateCategory('');
       onUploadComplete();
-      
+
     } catch (error) {
       toast.error('Failed to create document');
     }
@@ -91,7 +112,7 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Document Details
         </h3>
-        
+
         {selectedFile && (
           <div className="bg-gray-50 rounded-lg p-3 mb-4">
             <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
@@ -131,7 +152,7 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
 
         <div>
           <Label className="text-sm font-medium">Category</Label>
-          <Select value={category} onValueChange={setCategory}>
+          <Select value={category} onValueChange={setCategory} disabled={isTemplate}>
             <SelectTrigger className="mt-1">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
@@ -147,9 +168,40 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
           </Select>
         </div>
 
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="is-template"
+            checked={isTemplate}
+            onChange={(e) => setIsTemplate(e.target.checked)}
+            className="rounded border-gray-300"
+          />
+          <Label htmlFor="is-template" className="text-sm font-medium">
+            Save as template
+          </Label>
+        </div>
+
+        {isTemplate && (
+          <div>
+            <Label className="text-sm font-medium">Template Category</Label>
+            <Select value={templateCategory} onValueChange={setTemplateCategory}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select template category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="proposal">Proposal</SelectItem>
+                <SelectItem value="report">Report</SelectItem>
+                <SelectItem value="agreement">Agreement</SelectItem>
+                <SelectItem value="financial">Financial</SelectItem>
+                <SelectItem value="document">Document</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         <div>
           <Label className="text-sm font-medium">Tags</Label>
-          
+
           {/* Selected Tags */}
           {selectedTags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
