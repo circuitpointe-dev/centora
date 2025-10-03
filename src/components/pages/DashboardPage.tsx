@@ -6,6 +6,7 @@ import FundraisingDashboard from '@/components/fundraising/FundraisingDashboard'
 import GrantsNGODashboard from '@/components/grants/GrantsNGODashboard';
 import GrantsDonorDashboard from '@/components/grants/GrantsDonorDashboard';
 import ProgrammeDashboard from '@/components/programme/ProgrammeDashboard';
+import LearningDashboard from '@/components/learning/LearningDashboard';
 import GenericDashboard from '@/components/dashboard/GenericDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -52,6 +53,11 @@ const DashboardPage = () => {
   // Programme Management specific content
   if (module === 'programme') {
     return <ProgrammeDashboard />;
+  }
+
+  // Learning Management specific content
+  if (module === 'learning') {
+    return <LearningDashboard />;
   }
 
   // Default content for other modules
