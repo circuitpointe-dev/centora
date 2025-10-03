@@ -37,6 +37,10 @@ import {
   CreditCard,
   MessageCircle,
   Info,
+  Grid3X3,
+  FolderOpen,
+  Video,
+  HelpCircle,
 } from 'lucide-react';
 
 interface ModuleFeature {
@@ -164,9 +168,10 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     color: 'text-yellow-600',
     features: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'course-management', name: 'Course Management', icon: BookOpen },
-      { id: 'training-records', name: 'Training Records', icon: FileText },
-      { id: 'learning-analytics', name: 'Analytics', icon: BarChart3 },
+      { id: 'catalogue', name: 'Catalogue', icon: Grid3X3 },
+      { id: 'course-workspace', name: 'Course workspace', icon: FolderOpen },
+      { id: 'live-sessions', name: 'Live sessions', icon: Video },
+      { id: 'help-center', name: 'Help center', icon: HelpCircle },
     ]
   },
   hr: {
