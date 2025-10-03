@@ -41,6 +41,8 @@ import SuperAdminAuditLogsPage from "../users/audit/SuperAdminAuditLogsPage";
 import TenantSubscriptionsPage from "../users/tenant-subscriptions/TenantSubscriptionsPage";
 import SupportTicketsPage from "../users/support/tickets/SupportTicketsPage";
 import TenantIntegrationsPage from "../users/integrations/TenantIntegrationsPage";
+import CataloguePage from "../learning/CataloguePage";
+import CourseDetailPage from "../learning/CourseDetailPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -186,6 +188,15 @@ const GenericFeaturePage = () => {
     return <SupportTicketsPage />;
   }
 
+  // Learning Management module routes
+  if (module === 'learning' && feature === 'catalogue') {
+    return <CataloguePage />;
+  }
+
+  if (module === 'learning' && feature?.startsWith('course-')) {
+    const courseId = feature.replace('course-', '');
+    return <CourseDetailPage courseId={courseId} />;
+  }
 
   if (module === 'users' && feature === 'roles-permissions') {
     // Differentiate between tenant admin and super admin roles & permissions
