@@ -124,7 +124,7 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch real templates from backend
+  // Fetch real templates from backend (limit to 10)
   const { data: backendTemplates = [], isLoading } = useTemplates({
     search: searchTerm,
   });
@@ -140,8 +140,8 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
     }
   }, [isLoading, backendTemplates.length, seedSamples]);
 
-  // Convert backend templates to display format
-  const displayTemplates: Template[] = backendTemplates.map(t => ({
+  // Convert backend templates to display format (limit to 10)
+  const displayTemplates: Template[] = backendTemplates.slice(0, 10).map(t => ({
     id: t.id,
     title: t.title,
     description: t.description || '',
@@ -293,7 +293,7 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
                   onClick={() => seedSamples.mutate()}
                   disabled={seedSamples.isPending}
                 >
-                  {seedSamples.isPending ? 'Seeding samples...' : 'Add Sample Templates'}
+                  {seedSamples.isPending ? 'Adding templates...' : 'Add 10 Sample Templates'}
                 </Button>
               )}
               <div className="text-sm text-gray-400">

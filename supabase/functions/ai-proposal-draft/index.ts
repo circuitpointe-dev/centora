@@ -36,14 +36,14 @@ type DraftSections = {
     risks_mitigation: string;
 };
 
-const MODEL = "google/gemini-2.5-flash";
+const MODEL = "google/gemini-flash-2.0";
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") || "";
 
 if (!LOVABLE_API_KEY) {
-    console.error("[ai-proposal-draft] Missing LOVABLE_API_KEY");
+    console.error("[ai-proposal-draft] Missing LOVABLE_API_KEY - edge function will fail");
+} else {
+    console.log(`[ai-proposal-draft] API key configured, using model: ${MODEL}`);
 }
-
-console.log(`[ai-proposal-draft] Using Lovable AI with model: ${MODEL}`);
 
 const systemPrompt = (
     input: DraftInput,
@@ -106,12 +106,16 @@ async function callLovableAI(prompt: string) {
     if (!res.ok) {
         const txt = await res.text();
         console.error(`[ai-proposal-draft] Lovable AI error: ${res.status} - ${txt}`);
+        console.error(`[ai-proposal-draft] Request was: ${JSON.stringify({ model: MODEL, messagesCount: 1 })}`);
         
         if (res.status === 429) {
             throw new Error("Rate limit exceeded. Please try again in a moment.");
         }
         if (res.status === 402) {
             throw new Error("AI credits exhausted. Please add credits to your workspace.");
+        }
+        if (res.status === 401 || res.status === 403) {
+            throw new Error("API authentication failed. Please check your API key configuration.");
         }
         throw new Error(`AI Gateway error ${res.status}: ${txt}`);
     }
