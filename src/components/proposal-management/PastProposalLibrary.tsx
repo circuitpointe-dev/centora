@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import ProposalLibraryCard from "./ProposalLibraryCard";
 import PastProposalDetailView from "./PastProposalDetailView";
-import { useProposals } from "@/hooks/useProposals";
+import { useProposals, useDeleteAllProposals } from "@/hooks/useProposals";
 
 interface Proposal {
   title: string;
@@ -32,6 +33,13 @@ const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationConte
   
   // Fetch real proposals from backend
   const { data: backendProposals = [], isLoading } = useProposals();
+  const deleteAllMutation = useDeleteAllProposals();
+
+  const handleDeleteAll = () => {
+    if (window.confirm('Are you sure you want to delete ALL proposals? This action cannot be undone.')) {
+      deleteAllMutation.mutate();
+    }
+  };
   
   // Convert backend proposals to the expected format, keeping full proposal data
   const proposals = backendProposals.map((p: any) => ({
@@ -99,7 +107,18 @@ const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationConte
           )}
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Delete All Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDeleteAll}
+            disabled={deleteAllMutation.isPending || proposals.length === 0}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Clear All
+          </Button>
           {/* Filter Dropdown */}
           <Select value={fileTypeFilter} onValueChange={setFileTypeFilter}>
             <SelectTrigger className="w-[140px] bg-white border-gray-200">

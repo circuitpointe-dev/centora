@@ -239,3 +239,35 @@ export const useDeleteProposal = () => {
     }
   });
 };
+
+export const useDeleteAllProposals = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!user?.org_id) throw new Error('No organization');
+
+      const { error } = await supabase
+        .from('proposals')
+        .delete()
+        .eq('org_id', user.org_id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['proposals'] });
+      toast({
+        title: "Success",
+        description: "All proposals deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete proposals",
+        variant: "destructive",
+      });
+    }
+  });
+};
