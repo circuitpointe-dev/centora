@@ -36,7 +36,7 @@ type DraftSections = {
     risks_mitigation: string;
 };
 
-const MODEL = "google/gemini-flash-2.0";
+const MODEL = "google/gemini-2.5-flash";
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") || "";
 
 if (!LOVABLE_API_KEY) {

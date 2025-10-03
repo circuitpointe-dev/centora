@@ -57,13 +57,13 @@ const PastProposalDetailView: React.FC<PastProposalDetailViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column */}
         <div className="space-y-6">
-          <ProposalOverviewCard />
-          <ProposalLogframeCard />
+          <ProposalOverviewCard proposal={proposal} />
+          <ProposalLogframeCard proposal={proposal} />
         </div>
 
         {/* Right Column */}
         <div className="space-y-6">
-          <ProposalNarrativeCard narrativeTitle="Proposal Narrative" />
+          <ProposalNarrativeCard narrativeTitle="Proposal Narrative" proposal={proposal} />
           <ProposalBudgetCard budgetDescription="Total project budget" />
           <ProposalTeamCard />
         </div>

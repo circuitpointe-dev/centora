@@ -42,15 +42,22 @@ const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationConte
   };
   
   // Convert backend proposals to the expected format, keeping full proposal data
-  const proposals = backendProposals.map((p: any) => ({
-    ...p, // Keep all original proposal data
-    title: p.name || p.title || 'Untitled Proposal',
-    description: p.narrative_fields?.[0]?.value || 'No description available',
-    fileType: 'Word',
-    uses: 0,
-    imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
-    rating: 5,
-  }));
+  const proposals = backendProposals.map((p: any) => {
+    // Extract summary from overview_fields
+    const summaryField = p.overview_fields?.find((f: any) => f.id === 'summary' || f.name?.toLowerCase() === 'summary');
+    const firstNarrativeField = p.narrative_fields?.[0]?.value;
+    const description = summaryField?.value || firstNarrativeField || p.summary || 'No description available';
+    
+    return {
+      ...p, // Keep all original proposal data
+      title: p.name || p.title || 'Untitled Proposal',
+      description: description,
+      fileType: 'Word',
+      uses: 0,
+      imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+      rating: 5,
+    };
+  });
 
   const filteredProposals = proposals.filter((proposal) => {
     const matchesSearch = 
