@@ -255,12 +255,14 @@ export const ComplianceChecklistPage = () => {
         requirement={selectedRequirement}
       />
 
-      <UploadEvidenceDialog
-        open={uploadDialogOpen}
-        onOpenChange={setUploadDialogOpen}
-        requirement={selectedRequirement!}
-        onUpload={handleUploadComplete}
-      />
+      {selectedRequirement && (
+        <UploadEvidenceDialog
+          open={uploadDialogOpen}
+          onOpenChange={setUploadDialogOpen}
+          requirement={selectedRequirement}
+          onUpload={handleUploadComplete}
+        />
+      )}
     </div>
   );
 };
