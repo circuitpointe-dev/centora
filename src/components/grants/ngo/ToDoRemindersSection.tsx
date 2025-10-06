@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Clock, MessageSquare, FileEdit, AlertTriangle } from 'lucide-react';
 import { useGrantTodos } from '@/hooks/grants/useGrantTodos';
+import { useGrantReports } from '@/hooks/grants/useGrantReports';
+import { useGrants } from '@/hooks/grants/useGrants';
+import { ReportViewDialog } from '@/components/grants/view/ReportViewDialog';
+import { toast } from 'sonner';
 
 interface ToDoItem {
   id: string;
@@ -42,17 +46,54 @@ const getTypeColor = (type: string) => {
 
 export const ToDoRemindersSection = () => {
   const { todos, loading, markAsCompleted, deleteTodo } = useGrantTodos();
+  const { reports, updateReport } = useGrantReports();
+  const { grants } = useGrants();
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [showViewDialog, setShowViewDialog] = useState(false);
 
-  const handleEdit = (item: ToDoItem) => {
-    // Navigate to relevant grant/compliance/report page
-    console.log('Edit item:', item);
+  const handleView = (item: ToDoItem) => {
+    console.log('View clicked for item:', item);
+    
+    // For Deadline type items, open the report dialog
+    if (item.type === 'Deadline' && item.relatedId) {
+      const report = reports.find(r => r.id === item.relatedId);
+      console.log('Found report:', report);
+      
+      if (report) {
+        // Attach grant information to the report
+        const grant = grants.find(g => g.id === report.grant_id);
+        console.log('Found grant:', grant);
+        
+        const reportWithGrant = {
+          ...report,
+          grant
+        };
+        
+        setSelectedReport(reportWithGrant);
+        setShowViewDialog(true);
+      } else {
+        toast.error('Report not found');
+      }
+    }
   };
 
-  const handleDelete = async (item: ToDoItem) => {
+  const handleMarkAsDone = async (item: ToDoItem) => {
     try {
+      // If it's a deadline for a report, mark the report as submitted
+      if (item.type === 'Deadline' && item.relatedId) {
+        await updateReport(item.relatedId, {
+          status: 'submitted',
+          submitted: true,
+          submitted_date: new Date().toISOString().split('T')[0]
+        });
+      }
+      
+      // Delete the todo item
       await deleteTodo(item.id);
+      toast.success('Marked as done');
     } catch (error) {
-      console.error('Failed to delete todo:', error);
+      console.error('Failed to mark as done:', error);
+      toast.error('Failed to mark as done');
     }
   };
 
@@ -105,7 +146,7 @@ export const ToDoRemindersSection = () => {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 text-xs"
-                      onClick={() => handleEdit(item)}
+                      onClick={() => handleView(item)}
                     >
                       <Edit2 className="h-3 w-3 mr-1" />
                       View
@@ -114,7 +155,7 @@ export const ToDoRemindersSection = () => {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 text-xs"
-                      onClick={() => handleDelete(item)}
+                      onClick={() => handleMarkAsDone(item)}
                     >
                       <Trash2 className="h-3 w-3 mr-1" />
                       Done
@@ -127,6 +168,14 @@ export const ToDoRemindersSection = () => {
           </div>
         )}
       </CardContent>
+      
+      {showViewDialog && selectedReport && (
+        <ReportViewDialog
+          report={selectedReport}
+          open={showViewDialog}
+          onOpenChange={setShowViewDialog}
+        />
+      )}
     </Card>
   );
 };
