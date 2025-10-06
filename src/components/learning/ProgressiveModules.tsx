@@ -88,11 +88,27 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
   };
 
   const handleLessonClick = (lesson: Lesson, moduleId: string) => {
-    if (lesson.type === 'lesson') {
-      // Navigate to video lesson page
-      navigate(`/dashboard/learning/lesson-${lesson.id}-${courseId}`);
+    switch (lesson.type) {
+      case 'lesson':
+        // Navigate to video lesson page
+        navigate(`/dashboard/learning/lesson-${lesson.id}-${courseId}`);
+        break;
+      case 'assignment':
+        // Navigate to assignment page
+        navigate(`/dashboard/learning/assignment-${lesson.id}-${courseId}`);
+        break;
+      case 'quiz':
+        // Navigate to quiz page
+        navigate(`/dashboard/learning/quiz-${lesson.id}-${courseId}`);
+        break;
+      case 'resources':
+        // Handle resources (could be a modal or separate page)
+        console.log('Navigate to resources:', lesson.id);
+        break;
+      default:
+        console.log('Unknown lesson type:', lesson.type);
+        break;
     }
-    // Other lesson types can be handled differently (resources, assignments, quizzes)
   };
 
   const getLessonIcon = (type: string) => {
@@ -194,8 +210,8 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
                 {module.lessons.map((lesson) => (
                   <div 
                     key={lesson.id} 
-                    className={`flex items-center justify-between py-2 ${lesson.type === 'lesson' ? 'cursor-pointer hover:bg-gray-50 px-2 rounded-lg' : ''}`}
-                    onClick={() => lesson.type === 'lesson' && handleLessonClick(lesson, module.id)}
+                    className={`flex items-center justify-between py-2 ${['lesson', 'assignment', 'quiz'].includes(lesson.type) ? 'cursor-pointer hover:bg-gray-50 px-2 rounded-lg' : ''}`}
+                    onClick={() => ['lesson', 'assignment', 'quiz'].includes(lesson.type) && handleLessonClick(lesson, module.id)}
                   >
                     <div className="flex items-center space-x-3 flex-1">
                       {getLessonIcon(lesson.type)}
@@ -221,15 +237,6 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
         </div>
       ))}
 
-      {/* Bottom Navigation */}
-      <div className="flex justify-between items-center pt-6 border-t border-gray-200">
-        <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-          Previous lesson
-        </button>
-        <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium">
-          Next lesson
-        </button>
-      </div>
     </div>
   );
 };

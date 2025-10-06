@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { ArrowLeft, Circle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProgressiveModules from './ProgressiveModules';
+import ResourcesTab from './ResourcesTab';
+import DiscussionTab from './DiscussionTab';
+import CertificateModal from './CertificateModal';
 
 interface StudentCourseDetailPageProps {
   courseId?: string;
@@ -10,6 +13,7 @@ interface StudentCourseDetailPageProps {
 const StudentCourseDetailPage: React.FC<StudentCourseDetailPageProps> = ({ courseId = '1' }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [showCertificate, setShowCertificate] = useState(false);
 
   // Mock course data with student progress
   const course = {
@@ -211,23 +215,39 @@ const StudentCourseDetailPage: React.FC<StudentCourseDetailPageProps> = ({ cours
 
           {activeTab === 'resources' && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Course Resources</h3>
-              <div className="space-y-3">
-                <p className="text-gray-500">Resources and materials will be displayed here.</p>
-              </div>
+              <ResourcesTab courseId={courseId} />
             </div>
           )}
 
           {activeTab === 'discussion' && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Course Discussion</h3>
-              <div className="space-y-3">
-                <p className="text-gray-500">Discussion forum will be displayed here.</p>
-              </div>
+              <DiscussionTab courseId={courseId} />
             </div>
           )}
         </div>
+
+        {/* Bottom Navigation - Consistent across all tabs */}
+        <div className="flex justify-between items-center bg-white rounded-lg shadow-sm border p-6 mt-6">
+          <button className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium transition-colors">
+            Previous lesson
+          </button>
+          <button 
+            onClick={() => setShowCertificate(true)}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+          >
+            Preview certificate
+          </button>
+        </div>
       </div>
+
+      {/* Certificate Modal */}
+      <CertificateModal
+        isOpen={showCertificate}
+        onClose={() => setShowCertificate(false)}
+        courseTitle={course.title}
+        studentName="Olivia Ford"
+        completionDate="January 1, 2027"
+      />
     </div>
   );
 };

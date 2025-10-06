@@ -46,6 +46,8 @@ import CourseDetailPage from "../learning/CourseDetailPage";
 import CourseWorkspacePage from "../learning/CourseWorkspacePage";
 import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
 import LessonPage from "../learning/LessonPage";
+import AssignmentPage from "../learning/AssignmentPage";
+import QuizPage from "../learning/QuizPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -220,6 +222,26 @@ const GenericFeaturePage = () => {
     const lessonNum = parts[0];
     const courseId = parts[1] || '1'; // Default courseId
     return <LessonPage lessonId={lessonNum} courseId={courseId} />;
+  }
+
+  // Quiz page (when clicking quiz lessons from modules tab)
+  if (module === 'learning' && feature?.startsWith('quiz-')) {
+    const quizId = feature.replace('quiz-', '');
+    // Extract courseId from quizId if needed (e.g., quiz-2.6-1)
+    const parts = quizId.split('-');
+    const quizNum = parts[0];
+    const courseId = parts[1] || '1'; // Default courseId
+    return <QuizPage quizId={quizNum} courseId={courseId} />;
+  }
+
+  // Assignment page (when clicking assignment lessons from modules tab)
+  if (module === 'learning' && feature?.startsWith('assignment-')) {
+    const assignmentId = feature.replace('assignment-', '');
+    // Extract courseId from assignmentId if needed (e.g., assignment-1-course-2)
+    const parts = assignmentId.split('-');
+    const assignmentNum = parts[0];
+    const courseId = parts[1] || '1'; // Default courseId
+    return <AssignmentPage assignmentId={assignmentNum} courseId={courseId} />;
   }
 
   if (module === 'learning' && feature?.startsWith('course-')) {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Play, Video, FileText, HelpCircle, Circle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Lesson {
   id: string;
@@ -11,6 +12,10 @@ interface Module {
   id: string;
   title: string;
   lessons: Lesson[];
+}
+
+interface CourseModulesProps {
+  courseId?: string;
 }
 
 const mockModules: Module[] = [
@@ -57,11 +62,43 @@ const getLessonIcon = (type: Lesson['type']) => {
   }
 };
 
-const CourseModules: React.FC = () => {
+const CourseModules: React.FC<CourseModulesProps> = ({ courseId = '1' }) => {
+  const navigate = useNavigate();
   const [expandedModule, setExpandedModule] = useState<string | null>('2'); // Module 2 is expanded by default as per image
+  
+  console.log('CourseModules rendered with courseId:', courseId);
+  console.log('Expanded module:', expandedModule);
 
   const toggleModule = (moduleId: string) => {
     setExpandedModule(expandedModule === moduleId ? null : moduleId);
+  };
+
+  const handleLessonClick = (lesson: Lesson) => {
+    console.log('handleLessonClick called with:', lesson);
+    console.log('Current courseId:', courseId);
+    
+    switch (lesson.type) {
+      case 'play':
+      case 'video':
+        const lessonUrl = `/dashboard/learning/lesson-${lesson.id}-${courseId}`;
+        console.log('Navigating to lesson:', lessonUrl);
+        navigate(lessonUrl);
+        break;
+      case 'assignment':
+        const assignmentUrl = `/dashboard/learning/assignment-${lesson.id}-${courseId}`;
+        console.log('Navigating to assignment:', assignmentUrl);
+        console.log('About to call navigate with:', assignmentUrl);
+        navigate(assignmentUrl);
+        console.log('Navigate called');
+        break;
+      case 'quiz':
+        // Handle quiz navigation
+        console.log('Navigate to quiz:', lesson.id);
+        break;
+      default:
+        console.log('Unknown lesson type:', lesson.type);
+        break;
+    }
   };
 
   return (
@@ -86,12 +123,30 @@ const CourseModules: React.FC = () => {
           {expandedModule === module.id && module.lessons.length > 0 && (
             <div className="border-t border-gray-100 px-4 py-2">
               <div className="space-y-2 pl-8">
-                {module.lessons.map((lesson) => (
-                  <div key={lesson.id} className="flex items-center space-x-3 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors">
-                    {getLessonIcon(lesson.type)}
-                    <span>{lesson.title}</span>
-                  </div>
-                ))}
+                {module.lessons.map((lesson) => {
+                  const isClickable = lesson.type === 'play' || lesson.type === 'video' || lesson.type === 'assignment';
+                  console.log('Lesson:', lesson.title, 'Type:', lesson.type, 'IsClickable:', isClickable);
+                  
+                  return (
+                    <div 
+                      key={lesson.id} 
+                      className={`flex items-center space-x-3 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors ${
+                        isClickable 
+                          ? 'cursor-pointer hover:bg-gray-50 px-2 rounded-lg' 
+                          : ''
+                      }`}
+                      onClick={() => {
+                        console.log('Lesson clicked:', lesson.title, 'Type:', lesson.type);
+                        if (isClickable) {
+                          handleLessonClick(lesson);
+                        }
+                      }}
+                    >
+                      {getLessonIcon(lesson.type)}
+                      <span>{lesson.title}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

@@ -146,7 +146,7 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId = '1' }) =
           {activeTab === 'modules' && (
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Course Modules</h3>
-              <CourseModules />
+              <CourseModules courseId={courseId} />
             </div>
           )}
         </div>
