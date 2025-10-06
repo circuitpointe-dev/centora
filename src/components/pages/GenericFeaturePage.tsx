@@ -52,6 +52,8 @@ const GenericFeaturePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const userType = user?.userType;
+  
+  console.log('[GenericFeaturePage] module:', module, 'feature:', feature);
 
   // Redirect /dashboard/documents to /dashboard/documents/documents
   useEffect(() => {

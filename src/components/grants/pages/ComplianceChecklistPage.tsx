@@ -15,6 +15,8 @@ export const ComplianceChecklistPage = () => {
   const { compliance, loading, createCompliance, updateCompliance } = useGrantCompliance();
   const [isCreating, setIsCreating] = useState(false);
   
+  console.log('[ComplianceChecklistPage] Rendered', { compliance, loading });
+  
   // Dialog states
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
