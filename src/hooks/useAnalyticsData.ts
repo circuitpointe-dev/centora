@@ -33,17 +33,17 @@ export const useAnalyticsData = () => {
                 .from('grants')
                 .select(`
           amount,
-          sector
+          program_area
         `)
                 .eq('org_id', user.org_id)
                 .eq('status', 'active');
 
-            // Get funding raised by donor type
+            // Get funding raised by donor type (using status as type)
             const { data: donorTypeData } = await supabase
                 .from('grants')
                 .select(`
           amount,
-          donor:donors!donor_id(type)
+          status
         `)
                 .eq('org_id', user.org_id)
                 .eq('status', 'active');
@@ -66,8 +66,7 @@ export const useAnalyticsData = () => {
             const { data: donorData } = await supabase
                 .from('donors')
                 .select(`
-          type,
-          focus_areas
+          status
         `)
                 .eq('org_id', user.org_id);
 
@@ -75,8 +74,8 @@ export const useAnalyticsData = () => {
             const fundingBySector: FundingRaisedData[] = [];
             if (sectorData) {
                 const sectorTotals = sectorData.reduce((acc, grant) => {
-                    const sector = grant.sector || 'Other';
-                    acc[sector] = (acc[sector] || 0) + (grant.amount || 0);
+                    const sector = (grant as any).program_area || 'Other';
+                    acc[sector] = (acc[sector] || 0) + ((grant as any).amount || 0);
                     return acc;
                 }, {} as Record<string, number>);
 
@@ -90,8 +89,8 @@ export const useAnalyticsData = () => {
             const fundingByDonorType: FundingRaisedData[] = [];
             if (donorTypeData) {
                 const donorTypeTotals = donorTypeData.reduce((acc, grant) => {
-                    const donorType = (grant.donor as any)?.type || 'Other';
-                    acc[donorType] = (acc[donorType] || 0) + (grant.amount || 0);
+                    const donorType = (grant as any).status || 'Other';
+                    acc[donorType] = (acc[donorType] || 0) + ((grant as any).amount || 0);
                     return acc;
                 }, {} as Record<string, number>);
 
@@ -128,11 +127,11 @@ export const useAnalyticsData = () => {
                 }));
             }
 
-            // Process donor segmentation by type
+            // Process donor segmentation by type (using status as type for now)
             const donorSegmentationByType: DonorSegmentationData[] = [];
             if (donorData) {
                 const typeCounts = donorData.reduce((acc, donor) => {
-                    const type = donor.type || 'Other';
+                    const type = (donor as any).status || 'Other';
                     acc[type] = (acc[type] || 0) + 1;
                     return acc;
                 }, {} as Record<string, number>);
@@ -143,24 +142,8 @@ export const useAnalyticsData = () => {
                 })));
             }
 
-            // Process donor segmentation by focus areas
+            // Process donor segmentation by focus areas (empty for now)
             const donorSegmentationByFocus: DonorSegmentationData[] = [];
-            if (donorData) {
-                const focusCounts = donorData.reduce((acc, donor) => {
-                    if (donor.focus_areas && Array.isArray(donor.focus_areas)) {
-                        donor.focus_areas.forEach((focus: any) => {
-                            const focusName = focus.focus_area || 'Other';
-                            acc[focusName] = (acc[focusName] || 0) + 1;
-                        });
-                    }
-                    return acc;
-                }, {} as Record<string, number>);
-
-                donorSegmentationByFocus.push(...Object.entries(focusCounts).map(([name, value]) => ({
-                    name,
-                    value
-                })));
-            }
 
             return {
                 fundingRaised: {

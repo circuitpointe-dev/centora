@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import GrantsDonorDashboard from '@/components/grants/GrantsDonorDashboard';
 import { ReportsSubmissionsPage } from '@/components/grants/pages/ReportsSubmissionsPage';
-import { ComplianceChecklistPage } from '@/components/grants/pages/ComplianceChecklistPage';
 import { DisbursementSchedulePage } from '@/components/grants/pages/DisbursementSchedulePage';
 import { ProfilePage } from '@/components/grants/pages/ProfilePage';
 import { FileSpreadsheet, BarChart3, Users, ClipboardList } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const GrantsPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const navigate = useNavigate();
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -29,7 +30,11 @@ const GrantsPage = () => {
             <FileSpreadsheet className="h-4 w-4" />
             Reports Submissions
           </TabsTrigger>
-          <TabsTrigger value="compliance-checklist" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="compliance-checklist" 
+            className="flex items-center gap-2"
+            onClick={() => navigate('/dashboard/compliance-monitor')}
+          >
             <ClipboardList className="h-4 w-4" />
             Compliance Checklist
           </TabsTrigger>
@@ -49,10 +54,6 @@ const GrantsPage = () => {
 
         <TabsContent value="reports-submissions" className="space-y-6">
           <ReportsSubmissionsPage />
-        </TabsContent>
-
-        <TabsContent value="compliance-checklist" className="space-y-6">
-          <ComplianceChecklistPage />
         </TabsContent>
 
         <TabsContent value="disbursement-schedule" className="space-y-6">

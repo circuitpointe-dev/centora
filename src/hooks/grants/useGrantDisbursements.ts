@@ -27,7 +27,7 @@ export const useGrantDisbursements = (grantId?: string) => {
         query = query.eq('grant_id', grantId);
       }
       
-      const { data, error } = await query.order('due_date', { ascending: true });
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
       setDisbursements(data || []);
