@@ -20,7 +20,15 @@ const getDaysUntilDue = (dueDate: string): number => {
 
 // Helper function to get urgency color and info based on days
 const getUrgencyInfo = (days: number) => {
-  if (days <= 3) {
+  if (days < 0) {
+    return {
+      color: '#DC2626', // red-600
+      bgColor: 'bg-red-100',
+      textColor: 'text-red-800',
+      text: 'Overdue',
+      priority: 0
+    };
+  } else if (days <= 3) {
     return {
       color: '#EF4444', // red-500
       bgColor: 'bg-red-100',
@@ -79,7 +87,7 @@ const UpcomingReportingDeadlines = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CalendarClock className="h-5 w-5 text-blue-600" />
-            Upcoming Reporting Deadlines
+            Upcoming & Overdue Reporting Deadlines
             <Skeleton className="h-5 w-8 rounded-full" />
           </CardTitle>
         </CardHeader>
@@ -99,9 +107,9 @@ const UpcomingReportingDeadlines = () => {
     );
   }
 
-  // Filter for upcoming reports that are not submitted
+  // Filter for upcoming and overdue reports that are not submitted
   const upcomingReports = reports
-    .filter(report => !report.submitted && report.status === 'upcoming')
+    .filter(report => !report.submitted && (report.status === 'upcoming' || report.status === 'overdue' || report.status === 'in_progress'))
     .map(report => {
       const days = getDaysUntilDue(report.due_date);
       const urgency = getUrgencyInfo(days);
@@ -121,7 +129,7 @@ const UpcomingReportingDeadlines = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CalendarClock className="h-5 w-5 text-blue-600" />
-          Upcoming Reporting Deadlines
+          Upcoming & Overdue Reporting Deadlines
           {upcomingReports.length > 0 && (
             <Badge variant="secondary" className="bg-blue-100 text-blue-800">
               {upcomingReports.length}
@@ -161,15 +169,23 @@ const UpcomingReportingDeadlines = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <CalendarClock className="h-4 w-4" />
-                    <span>
-                      Due in {report.days} day{report.days !== 1 ? 's' : ''} 
-                      ({new Date(report.due_date).toLocaleDateString()})
+                    <span className={report.days < 0 ? 'text-red-600 font-medium' : ''}>
+                      {report.days < 0 
+                        ? `Overdue by ${Math.abs(report.days)} day${Math.abs(report.days) !== 1 ? 's' : ''}` 
+                        : `Due in ${report.days} day${report.days !== 1 ? 's' : ''}`}
+                      {' '}({new Date(report.due_date).toLocaleDateString()})
                     </span>
                   </div>
-                  {report.days <= 3 && (
+                  {(report.days <= 3 && report.days >= 0) && (
                     <div className="flex items-center gap-1 text-red-600">
                       <AlertTriangle className="h-4 w-4" />
                       <span className="font-medium">Urgent</span>
+                    </div>
+                  )}
+                  {report.days < 0 && (
+                    <div className="flex items-center gap-1 text-red-600">
+                      <AlertTriangle className="h-4 w-4" />
+                      <span className="font-medium">Overdue</span>
                     </div>
                   )}
                 </div>
