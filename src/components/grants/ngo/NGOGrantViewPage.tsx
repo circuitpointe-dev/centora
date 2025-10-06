@@ -1,22 +1,31 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, FileText, DollarSign, Calendar, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Download, FileText, DollarSign, Calendar, CheckCircle, Clock, AlertTriangle, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useGrants } from '@/hooks/grants/useGrants';
 import { useGrantCompliance } from '@/hooks/grants/useGrantCompliance';
 import { useGrantDisbursements } from '@/hooks/grants/useGrantDisbursements';
 import { useGrantReports } from '@/hooks/grants/useGrantReports';
 import { GrantStatsCards } from './NGOGrantStatsCards';
 import { NGODisbursementTable } from './NGODisbursementTable';
+import { exportGrantToPDF, exportGrantToExcel } from '@/utils/exportUtils';
+import { toast } from 'sonner';
 
 const NGOGrantViewPage = () => {
   const { grantId } = useParams<{ grantId: string }>();
   const navigate = useNavigate();
+  const [isExporting, setIsExporting] = useState(false);
   const { grants, loading: grantsLoading } = useGrants();
   const { compliance, loading: complianceLoading } = useGrantCompliance(grantId);
   const { disbursements, loading: disbursementsLoading } = useGrantDisbursements(grantId);
@@ -24,6 +33,46 @@ const NGOGrantViewPage = () => {
 
   const grant = grants.find(g => g.id === grantId);
   const loading = grantsLoading || complianceLoading || disbursementsLoading || reportsLoading;
+
+  const handleExportPDF = async () => {
+    if (!grant) return;
+    
+    try {
+      setIsExporting(true);
+      await exportGrantToPDF({
+        grant,
+        reports,
+        disbursements,
+        compliance
+      });
+      toast.success('PDF report generated successfully');
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to generate PDF report');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportExcel = () => {
+    if (!grant) return;
+    
+    try {
+      setIsExporting(true);
+      exportGrantToExcel({
+        grant,
+        reports,
+        disbursements,
+        compliance
+      });
+      toast.success('Excel report downloaded successfully');
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to download Excel report');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -124,10 +173,33 @@ const NGOGrantViewPage = () => {
           <Badge className={getStatusColor(grant.status)}>
             {grant.status.charAt(0).toUpperCase() + grant.status.slice(1)}
           </Badge>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" disabled={isExporting}>
+                {isExporting ? (
+                  <>
+                    <FileDown className="h-4 w-4 mr-2 animate-pulse" />
+                    Exporting...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export Report
+                  </>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportPDF} disabled={isExporting}>
+                <FileText className="h-4 w-4 mr-2" />
+                Export as PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportExcel} disabled={isExporting}>
+                <FileDown className="h-4 w-4 mr-2" />
+                Export as Excel (CSV)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

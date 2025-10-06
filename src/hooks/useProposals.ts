@@ -248,6 +248,27 @@ export const useDeleteAllProposals = () => {
     mutationFn: async () => {
       if (!user?.org_id) throw new Error('No organization');
 
+      // First get all proposal IDs for this org
+      const { data: proposals, error: proposalError } = await supabase
+        .from('proposals')
+        .select('id')
+        .eq('org_id', user.org_id);
+
+      if (proposalError) throw proposalError;
+      
+      const proposalIds = proposals?.map(p => p.id) || [];
+      
+      if (proposalIds.length > 0) {
+        // Delete all proposal team members first
+        const { error: teamError } = await supabase
+          .from('proposal_team_members')
+          .delete()
+          .in('proposal_id', proposalIds);
+
+        if (teamError) console.error('Error deleting team members:', teamError);
+      }
+
+      // Then delete all proposals
       const { error } = await supabase
         .from('proposals')
         .delete()
