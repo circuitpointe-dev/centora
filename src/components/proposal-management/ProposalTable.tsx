@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useProposals, useUpdateProposal, useDeleteProposal, useDeleteAllProposals } from "@/hooks/useProposals";
+import { useProposals, useUpdateProposal, useDeleteProposal } from "@/hooks/useProposals";
 import { useUsers } from "@/hooks/useUsers";
 import { useAddProposalTeamMember } from "@/hooks/useProposalTeamMembers";
 import { Search, Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import ProposalRowActions from "./ProposalRowActions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -29,13 +30,13 @@ const ProposalTable: React.FC<{
   const { data: proposals = [], isLoading } = useProposals();
   const updateProposalMutation = useUpdateProposal();
   const deleteProposalMutation = useDeleteProposal();
-  const deleteAllProposalsMutation = useDeleteAllProposals();
   const addTeamMemberMutation = useAddProposalTeamMember();
   const { data: users = [] } = useUsers({ pageSize: 50 });
 
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
   const [showTeamDialog, setShowTeamDialog] = useState(false);
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
   const [teamMemberName, setTeamMemberName] = useState("");
@@ -139,13 +140,46 @@ const ProposalTable: React.FC<{
     }
   };
 
-  // Confirm delete all
+  // Confirm delete all using edge function for better reliability
   const confirmDeleteAll = async () => {
+    setIsDeletingAll(true);
     try {
-      await deleteAllProposalsMutation.mutateAsync();
-      setShowDeleteAllDialog(false);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not authenticated');
+
+      const response = await fetch(
+        `https://kspzfifdwfpirgqstzhz.supabase.co/functions/v1/delete-all-proposals`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete proposals');
+      }
+
+      toast({
+        title: "Success",
+        description: `Deleted ${result.deletedProposals} proposals and ${result.deletedTeamMembers} team members`,
+      });
+
+      // Refresh the proposals list
+      window.location.reload();
     } catch (error) {
       console.error('Failed to delete all proposals:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete proposals",
+        variant: "destructive",
+      });
+      setIsDeletingAll(false);
+      setShowDeleteAllDialog(false);
     }
   };
 
@@ -404,7 +438,7 @@ const ProposalTable: React.FC<{
       </Dialog>
 
       {/* Delete All Confirmation Dialog */}
-      <AlertDialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+      <AlertDialog open={showDeleteAllDialog} onOpenChange={(open) => !isDeletingAll && setShowDeleteAllDialog(open)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete All Proposals?</AlertDialogTitle>
@@ -413,13 +447,15 @@ const ProposalTable: React.FC<{
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDeleteAllDialog(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setShowDeleteAllDialog(false)} disabled={isDeletingAll}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction 
               className="bg-rose-600 text-white hover:bg-rose-700" 
               onClick={confirmDeleteAll}
-              disabled={deleteAllProposalsMutation.isPending}
+              disabled={isDeletingAll}
             >
-              {deleteAllProposalsMutation.isPending ? "Deleting..." : "Yes, Delete All"}
+              {isDeletingAll ? "Deleting..." : "Yes, Delete All"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
