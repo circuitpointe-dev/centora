@@ -9,82 +9,32 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  FileImage, 
-  Plus, 
-  Search, 
-  Filter, 
-  Eye, 
-  Edit, 
-  Copy, 
-  Download, 
+import { useTemplates, useCreateTemplate, useUpdateTemplate, useDeleteTemplate } from '@/hooks/useTemplates';
+import {
+  FileImage,
+  Plus,
+  Search,
+  Filter,
+  Eye,
+  Edit,
+  Copy,
+  Download,
   Trash2,
   FileText,
   BarChart3,
   Calendar,
   Users,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from 'lucide-react';
 
-interface Template {
-  id: number;
-  name: string;
-  type: 'Report' | 'Proposal' | 'Financial' | 'Compliance';
-  category: string;
-  description: string;
-  lastModified: string;
-  usageCount: number;
-  createdBy: string;
-}
-
-const templatesData: Template[] = [
-  {
-    id: 1,
-    name: 'Quarterly Progress Report',
-    type: 'Report',
-    category: 'Progress Reports',
-    description: 'Standard template for quarterly grant progress reporting',
-    lastModified: 'Jul 20, 2025',
-    usageCount: 45,
-    createdBy: 'Admin'
-  },
-  {
-    id: 2,
-    name: 'Financial Summary Template',
-    type: 'Financial',
-    category: 'Financial Reports',
-    description: 'Template for financial summaries and budget reports',
-    lastModified: 'Jul 15, 2025',
-    usageCount: 32,
-    createdBy: 'Finance Team'
-  },
-  {
-    id: 3,
-    name: 'Grant Proposal Framework',
-    type: 'Proposal',
-    category: 'Grant Applications',
-    description: 'Comprehensive template for grant proposal submissions',
-    lastModified: 'Jul 10, 2025',
-    usageCount: 28,
-    createdBy: 'Program Manager'
-  },
-  {
-    id: 4,
-    name: 'Compliance Checklist',
-    type: 'Compliance',
-    category: 'Compliance Reports',
-    description: 'Standard compliance requirements checklist template',
-    lastModified: 'Jul 5, 2025',
-    usageCount: 67,
-    createdBy: 'Compliance Officer'
-  }
-];
+// Using the Template interface from useTemplates hook
+import type { Template } from '@/hooks/useTemplates';
 
 const TemplatesPage = () => {
-  const [templates, setTemplates] = useState<Template[]>(templatesData);
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showViewDialog, setShowViewDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -93,111 +43,108 @@ const TemplatesPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [newTemplate, setNewTemplate] = useState({
-    name: '',
-    type: 'Report' as Template['type'],
-    category: '',
+    title: '',
     description: '',
+    category: '',
     file: null as File | null
   });
   const { toast } = useToast();
 
+  // Backend integration
+  const { data: templates = [], isLoading, error } = useTemplates({
+    search: searchTerm,
+    category: categoryFilter === 'all' ? undefined : categoryFilter
+  });
+  const createTemplate = useCreateTemplate();
+  const updateTemplate = useUpdateTemplate();
+  const deleteTemplate = useDeleteTemplate();
+
   const templatesPerPage = 8;
 
-  const filteredTemplates = templates.filter(template => {
-    const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         template.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === 'all' || template.type.toLowerCase() === typeFilter.toLowerCase();
-    return matchesSearch && matchesType;
-  });
-
-  const totalPages = Math.ceil(filteredTemplates.length / templatesPerPage);
+  // Templates are already filtered by the backend hook
+  const totalPages = Math.ceil(templates.length / templatesPerPage);
   const startIndex = (currentPage - 1) * templatesPerPage;
-  const paginatedTemplates = filteredTemplates.slice(startIndex, startIndex + templatesPerPage);
+  const paginatedTemplates = templates.slice(startIndex, startIndex + templatesPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const getTypeIcon = (type: Template['type']) => {
-    switch (type) {
-      case 'Report': return <FileText className="h-4 w-4" />;
-      case 'Financial': return <BarChart3 className="h-4 w-4" />;
-      case 'Proposal': return <FileImage className="h-4 w-4" />;
-      case 'Compliance': return <Users className="h-4 w-4" />;
+  const getTypeIcon = (category: string) => {
+    switch (category.toLowerCase()) {
+      case 'report': return <FileText className="h-4 w-4" />;
+      case 'financial': return <BarChart3 className="h-4 w-4" />;
+      case 'proposal': return <FileImage className="h-4 w-4" />;
+      case 'compliance': return <Users className="h-4 w-4" />;
       default: return <FileText className="h-4 w-4" />;
     }
   };
 
-  const getTypeBadgeClass = (type: Template['type']) => {
-    switch (type) {
-      case 'Report': return 'bg-blue-100 text-blue-800';
-      case 'Financial': return 'bg-green-100 text-green-800';
-      case 'Proposal': return 'bg-purple-100 text-purple-800';
-      case 'Compliance': return 'bg-orange-100 text-orange-800';
+  const getTypeBadgeClass = (category: string) => {
+    switch (category.toLowerCase()) {
+      case 'report': return 'bg-blue-100 text-blue-800';
+      case 'financial': return 'bg-green-100 text-green-800';
+      case 'proposal': return 'bg-purple-100 text-purple-800';
+      case 'compliance': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const handleCreateTemplate = () => {
-    if (isEditMode && selectedTemplate) {
-      // Update existing template
-      const updatedTemplates = templates.map(t => 
-        t.id === selectedTemplate.id 
-          ? {
-              ...t,
-              name: newTemplate.name,
-              type: newTemplate.type,
-              category: newTemplate.category,
-              description: newTemplate.description,
-              lastModified: new Date().toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric', 
-                year: 'numeric' 
-              })
-            }
-          : t
-      );
-      setTemplates(updatedTemplates);
-      
-      toast({
-        title: "Template Updated",
-        description: `${newTemplate.name} has been updated successfully.`,
-      });
-    } else {
-      // Create new template
-      const template: Template = {
-        id: templates.length + 1,
-        name: newTemplate.name,
-        type: newTemplate.type,
-        category: newTemplate.category,
-        description: newTemplate.description,
-        lastModified: new Date().toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        }),
-        usageCount: 0,
-        createdBy: 'Current User'
-      };
+  const handleCreateTemplate = async () => {
+    try {
+      if (isEditMode && selectedTemplate) {
+        // Update existing template
+        await updateTemplate.mutateAsync({
+          id: selectedTemplate.id,
+          title: newTemplate.title,
+          description: newTemplate.description,
+          category: newTemplate.category,
+        });
+        toast({
+          title: "Template Updated",
+          description: `${newTemplate.title} has been updated successfully.`,
+        });
+      } else {
+        // Create new template
+        await createTemplate.mutateAsync({
+          title: newTemplate.title,
+          description: newTemplate.description,
+          category: newTemplate.category,
+          file_name: newTemplate.file?.name || 'template',
+          file_path: newTemplate.file ? URL.createObjectURL(newTemplate.file) : '',
+          mime_type: newTemplate.file?.type,
+          file_size: newTemplate.file?.size,
+        });
+        toast({
+          title: "Template Created",
+          description: `${newTemplate.title} has been created successfully.`,
+        });
+      }
 
-      setTemplates([...templates, template]);
-      
+      setNewTemplate({
+        title: '',
+        description: '',
+        category: '',
+        file: null
+      });
+      setShowCreateDialog(false);
+      setSelectedTemplate(null);
+      setIsEditMode(false);
+    } catch (error) {
       toast({
-        title: "Template Created",
-        description: `${template.name} has been created successfully.`,
+        title: "Error",
+        description: "Failed to save template",
+        variant: "destructive",
       });
     }
-
-    resetDialog();
   };
 
   const handleEditTemplate = (template: Template) => {
     setSelectedTemplate(template);
     setNewTemplate({
-      name: template.name,
-      type: template.type,
+      title: template.title,
+      description: template.description || '',
       category: template.category,
-      description: template.description,
       file: null
     });
     setIsEditMode(true);
@@ -209,153 +156,217 @@ const TemplatesPage = () => {
     setShowViewDialog(true);
   };
 
-  const handleDeleteTemplate = (template: Template) => {
-    setTemplateToDelete(template);
-    setShowDeleteDialog(true);
-  };
-
-  const confirmDeleteTemplate = () => {
-    if (templateToDelete) {
-      setTemplates(templates.filter(t => t.id !== templateToDelete.id));
-      
+  const handleDeleteTemplate = async (template: Template) => {
+    try {
+      await deleteTemplate.mutateAsync(template.id);
       toast({
         title: "Template Deleted",
-        description: `${templateToDelete.name} has been deleted.`,
+        description: `${template.title} has been deleted successfully.`,
+      });
+      setShowDeleteDialog(false);
+      setTemplateToDelete(null);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete template",
+        variant: "destructive",
       });
     }
-    setShowDeleteDialog(false);
-    setTemplateToDelete(null);
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setNewTemplate({ ...newTemplate, file });
+  const handleDownloadTemplate = async (template: Template) => {
+    try {
+      // Download logic would go here
+      toast({
+        title: "Download Started",
+        description: `Downloading ${template.title}...`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download template",
+        variant: "destructive",
+      });
     }
   };
 
-  const resetDialog = () => {
-    setNewTemplate({ name: '', type: 'Report', category: '', description: '', file: null });
-    setShowCreateDialog(false);
+  const handleCopyTemplate = (template: Template) => {
+    setNewTemplate({
+      title: `${template.title} (Copy)`,
+      description: template.description || '',
+      category: template.category,
+      file: null
+    });
     setIsEditMode(false);
-    setSelectedTemplate(null);
-  };
-
-  const handleCreateNewTemplate = () => {
-    setIsEditMode(false);
-    setSelectedTemplate(null);
-    setNewTemplate({ name: '', type: 'Report', category: '', description: '', file: null });
     setShowCreateDialog(true);
   };
 
-  return (
-    <div className="p-8 space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-xl font-medium text-gray-900">Templates</h1>
+  // Get unique categories for filter
+  const uniqueCategories = Array.from(new Set(templates.map(t => t.category)));
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading templates...</p>
         </div>
-        <Button variant="brand-purple" onClick={handleCreateNewTemplate}>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Failed to load templates</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Templates</h1>
+          <p className="text-muted-foreground">
+            Manage and organize your document templates
+          </p>
+        </div>
+        <Button onClick={() => setShowCreateDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Upload Template
+          New Template
         </Button>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search templates..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full sm:w-48">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filter by type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="report">Report</SelectItem>
-                <SelectItem value="financial">Financial</SelectItem>
-                <SelectItem value="proposal">Proposal</SelectItem>
-                <SelectItem value="compliance">Compliance</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Search and Filters */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search templates..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Filter by category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {uniqueCategories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Templates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {paginatedTemplates.map((template) => (
-          <Card key={template.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  {getTypeIcon(template.type)}
-                  <CardTitle className="text-base font-medium">{template.name}</CardTitle>
+      {paginatedTemplates.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <FileText className="h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No templates found</h3>
+            <p className="text-gray-500 text-center mb-4">
+              {searchTerm || categoryFilter !== 'all'
+                ? 'No templates match your current search or filter criteria.'
+                : 'Get started by creating your first template.'}
+            </p>
+            <Button onClick={() => setShowCreateDialog(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Template
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {paginatedTemplates.map((template) => (
+            <Card key={template.id} className="hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-2">
+                    {getTypeIcon(template.category)}
+                    <div>
+                      <CardTitle className="text-lg">{template.title}</CardTitle>
+                      <Badge className={getTypeBadgeClass(template.category)}>
+                        {template.category}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleViewTemplate(template)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditTemplate(template)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setTemplateToDelete(template);
+                        setShowDeleteDialog(true);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <Badge className={getTypeBadgeClass(template.type)}>
-                  {template.type}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-sm text-gray-600">{template.description}</p>
-                <div className="flex items-center gap-4 text-xs text-gray-500">
-                  <span>Category: {template.category}</span>
-                  <span>Used: {template.usageCount} times</span>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                  {template.description || 'No description provided'}
+                </p>
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <span>Created {new Date(template.created_at).toLocaleDateString()}</span>
+                  <span>{template.creator?.full_name || 'Unknown'}</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <Calendar className="h-3 w-3" />
-                  <span>Modified: {template.lastModified}</span>
+                <div className="flex space-x-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDownloadTemplate(template)}
+                    className="flex-1"
+                  >
+                    <Download className="h-4 w-4 mr-1" />
+                    Download
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCopyTemplate(template)}
+                    className="flex-1"
+                  >
+                    <Copy className="h-4 w-4 mr-1" />
+                    Copy
+                  </Button>
                 </div>
-                <div className="text-xs text-gray-500">
-                  Created by: {template.createdBy}
-                </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => handleViewTemplate(template)}
-                >
-                  <Eye className="h-3 w-3 mr-1" />
-                  View
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => handleEditTemplate(template)}
-                >
-                  <Edit className="h-3 w-3 mr-1" />
-                  Edit
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => handleDeleteTemplate(template)}
-                >
-                  <Trash2 className="h-3 w-3 mr-1" />
-                  Delete
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -365,21 +376,9 @@ const TemplatesPage = () => {
             <ChevronLeft className="h-4 w-4" />
             Previous
           </Button>
-          
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Button
-                key={page}
-                variant={currentPage === page ? "brand-purple" : "outline"}
-                size="sm"
-                onClick={() => handlePageChange(page)}
-                className="w-10"
-              >
-                {page}
-              </Button>
-            ))}
-          </div>
-
+          <span className="text-sm text-gray-500">
+            Page {currentPage} of {totalPages}
+          </span>
           <Button
             variant="outline"
             size="sm"
@@ -392,96 +391,77 @@ const TemplatesPage = () => {
         </div>
       )}
 
-      {filteredTemplates.length === 0 && (
-        <Card className="text-center py-12">
-          <CardContent>
-            <FileImage className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">No templates found matching your criteria.</p>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Create/Edit Template Dialog */}
-      <Dialog open={showCreateDialog} onOpenChange={() => resetDialog()}>
-        <DialogContent className="max-w-md">
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{isEditMode ? 'Edit Template' : 'Create New Template'}</DialogTitle>
+            <DialogTitle>
+              {isEditMode ? 'Edit Template' : 'Create New Template'}
+            </DialogTitle>
             <DialogDescription>
-              {isEditMode ? 'Update template details and document' : 'Create a new report template for grants management'}
+              {isEditMode
+                ? 'Update the template information below.'
+                : 'Fill in the details to create a new template.'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="template-name">Template Name</Label>
+              <Label htmlFor="title">Template Name</Label>
               <Input
-                id="template-name"
-                value={newTemplate.name}
-                onChange={(e) => setNewTemplate({ ...newTemplate, name: e.target.value })}
+                id="title"
+                value={newTemplate.title}
+                onChange={(e) => setNewTemplate({ ...newTemplate, title: e.target.value })}
                 placeholder="Enter template name"
               />
             </div>
             <div>
-              <Label htmlFor="template-type">Template Type</Label>
-              <Select 
-                value={newTemplate.type} 
-                onValueChange={(value) => setNewTemplate({ ...newTemplate, type: value as Template['type'] })}
+              <Label htmlFor="category">Category</Label>
+              <Select
+                value={newTemplate.category}
+                onValueChange={(value) => setNewTemplate({ ...newTemplate, category: value })}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Report">Report</SelectItem>
-                  <SelectItem value="Financial">Financial</SelectItem>
-                  <SelectItem value="Proposal">Proposal</SelectItem>
-                  <SelectItem value="Compliance">Compliance</SelectItem>
+                  <SelectItem value="report">Report</SelectItem>
+                  <SelectItem value="financial">Financial</SelectItem>
+                  <SelectItem value="proposal">Proposal</SelectItem>
+                  <SelectItem value="compliance">Compliance</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label htmlFor="template-category">Category</Label>
-              <Input
-                id="template-category"
-                value={newTemplate.category}
-                onChange={(e) => setNewTemplate({ ...newTemplate, category: e.target.value })}
-                placeholder="Enter category"
-              />
-            </div>
-            <div>
-              <Label htmlFor="template-file">Upload Template Document</Label>
-              <Input
-                id="template-file"
-                type="file"
-                accept=".pdf,.doc,.docx,.txt"
-                onChange={handleFileUpload}
-                className="cursor-pointer"
-              />
-              {newTemplate.file && (
-                <p className="text-sm text-gray-500 mt-1">
-                  Selected: {newTemplate.file.name}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="template-description">Description</Label>
+              <Label htmlFor="description">Description</Label>
               <Textarea
-                id="template-description"
+                id="description"
                 value={newTemplate.description}
                 onChange={(e) => setNewTemplate({ ...newTemplate, description: e.target.value })}
                 placeholder="Enter template description"
                 rows={3}
               />
             </div>
+            {!isEditMode && (
+              <div>
+                <Label htmlFor="file">Template File</Label>
+                <Input
+                  id="file"
+                  type="file"
+                  onChange={(e) => setNewTemplate({ ...newTemplate, file: e.target.files?.[0] || null })}
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => resetDialog()}>
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
               Cancel
             </Button>
-            <Button 
-              variant="brand-purple"
+            <Button
               onClick={handleCreateTemplate}
-              disabled={!newTemplate.name || !newTemplate.category || !newTemplate.description || (!isEditMode && !newTemplate.file)}
+              disabled={!newTemplate.title || !newTemplate.category || (!isEditMode && !newTemplate.file)}
             >
-              {isEditMode ? 'Update Template' : 'Upload Template'}
+              {isEditMode ? 'Update Template' : 'Create Template'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -489,84 +469,63 @@ const TemplatesPage = () => {
 
       {/* View Template Dialog */}
       <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {selectedTemplate && getTypeIcon(selectedTemplate.type)}
-              {selectedTemplate?.name}
-            </DialogTitle>
+            <DialogTitle>{selectedTemplate?.title}</DialogTitle>
             <DialogDescription>
-              Template details and preview
+              Template details and information
             </DialogDescription>
           </DialogHeader>
           {selectedTemplate && (
             <div className="space-y-4">
+              <div>
+                <Label>Category</Label>
+                <Badge className={getTypeBadgeClass(selectedTemplate.category)}>
+                  {selectedTemplate.category}
+                </Badge>
+              </div>
+              <div>
+                <Label>Description</Label>
+                <p className="text-sm text-gray-600">
+                  {selectedTemplate.description || 'No description provided'}
+                </p>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium">Type</Label>
-                  <p className="text-sm text-gray-600">{selectedTemplate.type}</p>
+                  <Label>Created</Label>
+                  <p className="text-sm text-gray-600">
+                    {new Date(selectedTemplate.created_at).toLocaleDateString()}
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Category</Label>
-                  <p className="text-sm text-gray-600">{selectedTemplate.category}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Usage Count</Label>
-                  <p className="text-sm text-gray-600">{selectedTemplate.usageCount} times</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Last Modified</Label>
-                  <p className="text-sm text-gray-600">{selectedTemplate.lastModified}</p>
+                  <Label>Created By</Label>
+                  <p className="text-sm text-gray-600">
+                    {selectedTemplate.creator?.full_name || 'Unknown'}
+                  </p>
                 </div>
               </div>
-              <div>
-                <Label className="text-sm font-medium">Description</Label>
-                <p className="text-sm text-gray-600 mt-1">{selectedTemplate.description}</p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Created By</Label>
-                <p className="text-sm text-gray-600">{selectedTemplate.createdBy}</p>
-              </div>
-              
-              {/* Sample Document Section */}
-              <div className="border-t pt-4">
-                <Label className="text-sm font-medium">Sample Document</Label>
-                <div className="flex items-center justify-between mt-2 p-3 border rounded-md bg-gray-50">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">
-                      {selectedTemplate.name.replace(/\s+/g, '_')}_sample.pdf
-                    </span>
-                  </div>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => {
-                      // Simulate download
-                      toast({
-                        title: "Download Started",
-                        description: "Sample document is being downloaded.",
-                      });
-                    }}
-                  >
-                    <Download className="h-3 w-3 mr-1" />
-                    Download
-                  </Button>
-                </div>
+              <div className="flex space-x-2">
+                <Button
+                  onClick={() => handleDownloadTemplate(selectedTemplate)}
+                  className="flex-1"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowViewDialog(false);
+                    handleEditTemplate(selectedTemplate);
+                  }}
+                  className="flex-1"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
               </div>
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowViewDialog(false)}>
-              Close
-            </Button>
-            <Button 
-              variant="brand-purple" 
-              onClick={() => selectedTemplate && handleEditTemplate(selectedTemplate)}
-            >
-              Edit Template
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -576,12 +535,15 @@ const TemplatesPage = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Template</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{templateToDelete?.name}"? This action cannot be undone.
+              Are you sure you want to delete "{templateToDelete?.title}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteTemplate} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={() => templateToDelete && handleDeleteTemplate(templateToDelete)}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

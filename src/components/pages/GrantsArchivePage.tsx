@@ -24,7 +24,7 @@ const GrantsArchivePage = () => {
 
   const filteredGrants = grants.filter(grant => {
     const matchesSearch = grant.grant_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         grant.donor_name.toLowerCase().includes(searchQuery.toLowerCase());
+      grant.donor_name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesProgram = selectedProgram === 'all' || grant.program_area === selectedProgram;
     return matchesSearch && matchesProgram;
   });
@@ -58,6 +58,15 @@ const GrantsArchivePage = () => {
   const totalPages = Math.ceil(filteredGrants.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = filteredGrants.slice(startIndex, startIndex + itemsPerPage);
+
+  // Calculate average grant duration from real data
+  const averageGrantDuration = grants.length > 0 ?
+    grants.reduce((total, grant) => {
+      const startDate = new Date(grant.start_date);
+      const endDate = new Date(grant.end_date);
+      const durationInMonths = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44); // Average days per month
+      return total + durationInMonths;
+    }, 0) / grants.length : 0;
 
   const getComplianceColor = (compliance: number) => {
     if (compliance >= 90) return 'bg-green-100 text-green-800';
@@ -109,14 +118,16 @@ const GrantsArchivePage = () => {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col items-center text-center space-y-3">
                 <div className="p-3 rounded-lg bg-blue-50">
                   <FileText className="h-5 w-5 text-blue-600" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">18 months</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {averageGrantDuration > 0 ? `${Math.round(averageGrantDuration)} months` : 'N/A'}
+                </p>
                 <p className="text-sm text-gray-600">Average Grant Duration</p>
               </div>
             </CardContent>
@@ -320,8 +331,8 @@ const GrantsArchivePage = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => {
                           setSelectedGrant(grant);
@@ -368,9 +379,9 @@ const GrantsArchivePage = () => {
                         </Badge>
                       </div>
                       <div className="pt-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="w-full"
                           onClick={() => {
                             setSelectedGrant(grant);

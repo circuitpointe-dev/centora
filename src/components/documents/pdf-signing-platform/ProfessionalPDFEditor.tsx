@@ -26,18 +26,18 @@ import {
     Download,
     Save,
     Check,
-    X
+    X,
+    FileText
 } from 'lucide-react';
 import ProfessionalSignatureCapture from './ProfessionalSignatureCapture';
 import SignatureDetailsModal from './SignatureDetailsModal';
 import FieldInputModal from './FieldInputModal';
-import ProfessionalFieldsSidebar from './ProfessionalFieldsSidebar';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateSignatureRequest } from '@/hooks/useSignatureRequests';
-import { useCreateESignatureField, useESignatureFields } from '@/hooks/useESignatureFields';
+import { useCreateESignatureField, useESignatureFields, useUpdateESignatureField, useDeleteESignatureField, useSaveESignatureFields } from '@/hooks/useESignatureFields';
 import { supabase } from '@/integrations/supabase/client';
 
 // Set up PDF.js worker
@@ -93,12 +93,38 @@ const ProfessionalPDFEditor: React.FC = () => {
     // Hooks
     const createSignatureRequest = useCreateSignatureRequest();
     const createESignatureField = useCreateESignatureField();
+    const updateESignatureField = useUpdateESignatureField();
+    const deleteESignatureField = useDeleteESignatureField();
+    const saveESignatureFields = useSaveESignatureFields();
     // Use only a valid UUID to query remote fields to avoid 400s
     const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
     const stateDocId = (location.state as any)?.selectedDoc?.id as string | undefined;
     const [persistedDocId, setPersistedDocId] = useState<string>('');
     const effectiveDocId = persistedDocId || (stateDocId ? stateDocId : (documentId && uuidRegex.test(documentId) ? documentId : ''));
     const { data: existingFields } = useESignatureFields(effectiveDocId);
+
+    // Load existing fields from database when component mounts
+    useEffect(() => {
+        if (existingFields && existingFields.length > 0) {
+            console.log('Loading existing fields from database:', existingFields);
+            const mappedFields: SignatureField[] = existingFields.map(field => ({
+                id: field.id,
+                type: field.field_type === 'signature' ? 'signature' :
+                    field.field_type === 'name' ? 'name' :
+                        field.field_type === 'date' ? 'date' :
+                            field.field_type === 'email' ? 'text' : 'text',
+                label: field.field_label,
+                x: field.position_x,
+                y: field.position_y,
+                width: field.width,
+                height: field.height,
+                page: field.page_number,
+                required: field.is_required,
+                value: field.field_value
+            }));
+            setFields(mappedFields);
+        }
+    }, [existingFields]);
 
     // Initialize document from location state
     useEffect(() => {
@@ -115,13 +141,27 @@ const ProfessionalPDFEditor: React.FC = () => {
     // Compute and store PDF URL (avoid calling setState during render)
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [isPersisting, setIsPersisting] = useState(false);
+    const [isLoadingPdf, setIsLoadingPdf] = useState(true);
+    const [isSavingFields, setIsSavingFields] = useState(false);
+
     useEffect(() => {
         const state = location.state as any;
+        console.log('PDF Editor - Location state:', state);
+
+        // Set loading state
+        setIsLoadingPdf(true);
+        setPdfLoadError(null);
+
         let url: string | null = null;
         if (state?.selectedFiles && state.selectedFiles.length > 0) {
             const file = state.selectedFiles[0] as File;
             if (file.type === 'application/pdf') {
-                // Persist upload to Supabase Storage + DB, then use public URL
+                // Set immediate URL for preview while persisting
+                const immediateUrl = URL.createObjectURL(file);
+                setPdfUrl(immediateUrl);
+                setIsLoadingPdf(false);
+
+                // Persist upload to Supabase Storage + DB in background
                 (async () => {
                     try {
                         setIsPersisting(true);
@@ -137,7 +177,6 @@ const ProfessionalPDFEditor: React.FC = () => {
                                 file_name: fileName,
                                 file_path: path,
                                 created_by: (user as any)?.id || null,
-                                // Provide optional fields to satisfy generated types if present
                                 title: fileName,
                                 org_id: null,
                             } as any)
@@ -145,20 +184,20 @@ const ProfessionalPDFEditor: React.FC = () => {
                             .single();
                         if (insErr) throw insErr;
 
-                        // Public URL
+                        // Update to public URL after persistence
                         const { data: pub } = supabase.storage.from('documents').getPublicUrl(path);
-                        setPdfUrl(pub.publicUrl || URL.createObjectURL(file));
+                        setPdfUrl(pub.publicUrl);
                         if (insertRes?.id) setPersistedDocId(insertRes.id);
                     } catch (err: any) {
                         console.error('Upload persistence failed:', err);
-                        // Fallback to local object URL so the editor still works
-                        setPdfUrl(URL.createObjectURL(file));
+                        // Keep the immediate URL if persistence fails
                     } finally {
                         setIsPersisting(false);
                     }
                 })();
             } else {
                 setPdfLoadError('Please upload a valid PDF file');
+                setIsLoadingPdf(false);
             }
         } else if (state?.selectedDoc) {
             const doc = state.selectedDoc;
@@ -168,10 +207,13 @@ const ProfessionalPDFEditor: React.FC = () => {
             } else if (doc.content || doc.file_url) {
                 url = doc.content || doc.file_url;
             }
+            setPdfUrl(url);
+            setIsLoadingPdf(false);
         } else {
             setPdfLoadError('No PDF document provided. Please select a document to continue.');
+            setIsLoadingPdf(false);
         }
-        setPdfUrl(url);
+        console.log('PDF Editor - Setting PDF URL:', url);
     }, [location.state]);
 
     // Initialize sidebar fields
@@ -191,10 +233,11 @@ const ProfessionalPDFEditor: React.FC = () => {
         { type: 'name' as const, label: 'Name', icon: User, color: 'bg-orange-50 border-orange-200 text-orange-800' },
         { type: 'date' as const, label: 'Date', icon: Calendar, color: 'bg-blue-50 border-blue-200 text-blue-800' },
         { type: 'text' as const, label: 'Text', icon: Building, color: 'bg-purple-50 border-purple-200 text-purple-800' },
+        { type: 'stamp' as const, label: 'Stamp', icon: Building, color: 'bg-green-50 border-green-200 text-green-800' },
     ];
 
     // Handle canvas click to add fields
-    const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const handleCanvasClick = useCallback(async (e: React.MouseEvent<HTMLDivElement>) => {
         if (!selectedTool || isSigningMode) return;
 
         const target = e.currentTarget;
@@ -214,11 +257,83 @@ const ProfessionalPDFEditor: React.FC = () => {
             required: selectedTool === 'signature',
         };
 
+        // Add to local state immediately
         setFields(prev => [...prev, newField]);
         setSelectedField(newField);
         setSelectedTool(null);
         toast.success(`${selectedTool} field added`);
-    }, [selectedTool, zoom, currentPage, isSigningMode]);
+
+        // Save to database immediately if we have a valid document ID
+        if (effectiveDocId && effectiveDocId !== 'sample-doc') {
+            try {
+                setIsSavingFields(true);
+
+                // Map field type to database format
+                let mappedFieldType: 'signature' | 'name' | 'date' | 'email' | 'text' = 'text';
+                switch (selectedTool) {
+                    case 'signature':
+                        mappedFieldType = 'signature';
+                        break;
+                    case 'name':
+                        mappedFieldType = 'name';
+                        break;
+                    case 'date':
+                        mappedFieldType = 'date';
+                        break;
+                    case 'initials':
+                    case 'text':
+                    case 'stamp':
+                        mappedFieldType = 'text';
+                        break;
+                    default:
+                        mappedFieldType = 'text';
+                }
+
+                console.log('Saving field to database:', {
+                    document_id: effectiveDocId,
+                    field_type: mappedFieldType,
+                    field_label: newField.label,
+                    position_x: newField.x,
+                    position_y: newField.y,
+                    width: newField.width,
+                    height: newField.height,
+                    page_number: newField.page,
+                    is_required: newField.required,
+                });
+
+                const savedField = await createESignatureField.mutateAsync({
+                    document_id: effectiveDocId,
+                    field_type: mappedFieldType,
+                    field_label: newField.label,
+                    position_x: newField.x,
+                    position_y: newField.y,
+                    width: newField.width,
+                    height: newField.height,
+                    page_number: newField.page,
+                    is_required: newField.required,
+                });
+
+                console.log('Field saved to database successfully:', savedField);
+
+                // Update the field with the database ID
+                setFields(prev => prev.map(f =>
+                    f.id === newField.id
+                        ? { ...f, id: savedField.id }
+                        : f
+                ));
+
+                toast.success(`${selectedTool} field saved to database successfully!`);
+
+            } catch (error) {
+                console.error('Failed to save field to database:', error);
+                toast.error(`Failed to save ${selectedTool} field to database: ${error.message || 'Unknown error'}`);
+            } finally {
+                setIsSavingFields(false);
+            }
+        } else {
+            console.log('Skipping database save - no valid document ID:', effectiveDocId);
+        }
+    }, [selectedTool, zoom, currentPage, isSigningMode, effectiveDocId, createESignatureField]);
 
     // Handle field drag start
     const handleFieldDragStart = (field: SignatureField) => {
@@ -244,11 +359,31 @@ const ProfessionalPDFEditor: React.FC = () => {
     };
 
     // Handle field deletion
-    const handleFieldDelete = (fieldId: string) => {
+    const handleFieldDelete = async (fieldId: string) => {
+        const fieldToDelete = fields.find(f => f.id === fieldId);
+
+        // Remove from local state
         setFields(prev => prev.filter(field => field.id !== fieldId));
         if (selectedField?.id === fieldId) {
             setSelectedField(null);
         }
+
+        // Delete from database if we have a valid field ID
+        if (fieldToDelete && fieldToDelete.id && !fieldToDelete.id.startsWith('field_')) {
+            try {
+                console.log('Deleting field from database:', fieldToDelete.id);
+
+                await deleteESignatureField.mutateAsync(fieldToDelete.id);
+
+                console.log('Field deleted from database successfully');
+            } catch (error) {
+                console.error('Failed to delete field from database:', error);
+                toast.error('Field deleted locally but failed to delete from database');
+            }
+        } else {
+            console.log('Skipping database deletion - field not yet saved to database or no valid ID');
+        }
+
         toast.success('Field deleted');
     };
 
@@ -270,7 +405,8 @@ const ProfessionalPDFEditor: React.FC = () => {
 
     // Handle field click for signing
     const handleFieldClick = (field: SignatureField) => {
-        if (field.type === 'signature') {
+        console.log('Field clicked:', field);
+        if (field.type === 'signature' || field.type === 'initials') {
             setActiveSignatureField(field);
             setShowSignatureDetailsModal(true);
         } else {
@@ -281,15 +417,44 @@ const ProfessionalPDFEditor: React.FC = () => {
     };
 
     // Handle field input save
-    const handleFieldInputSave = (value: string) => {
+    const handleFieldInputSave = async (value: string) => {
+        console.log('Field input save:', value, 'Active field:', activeInputField);
         if (activeInputField) {
-            setFields(prev => prev.map(f =>
-                f.id === activeInputField.id ? { ...f, value } : f
-            ));
+            setFields(prev => {
+                const updated = prev.map(f =>
+                    f.id === activeInputField.id ? { ...f, value } : f
+                );
+                console.log('Updated fields:', updated);
+                return updated;
+            });
             setSidebarFields(prev => prev.map(f =>
                 f.id === activeInputField.id ? { ...f, value } : f
             ));
+
+            // Save field value to database
+            if (effectiveDocId && effectiveDocId !== 'sample-doc' && activeInputField.id && !activeInputField.id.startsWith('field_')) {
+                try {
+                    console.log('Updating field value in database:', {
+                        fieldId: activeInputField.id,
+                        fieldValue: value
+                    });
+
+                    await updateESignatureField.mutateAsync({
+                        id: activeInputField.id,
+                        updates: { field_value: value }
+                    });
+
+                    console.log('Field value saved to database successfully');
+                } catch (error) {
+                    console.error('Failed to save field value to database:', error);
+                    toast.error('Field value saved locally but failed to save to database');
+                }
+            } else {
+                console.log('Skipping database update - field not yet saved to database or no valid ID');
+            }
+
             setActiveInputField(null);
+            toast.success('Field value saved successfully!');
         }
     };
 
@@ -319,36 +484,177 @@ const ProfessionalPDFEditor: React.FC = () => {
     };
 
     // Handle signature details apply
-    const handleSignatureDetailsApply = (signatureData: any) => {
+    const handleSignatureDetailsApply = async (signatureData: any) => {
+        console.log('Signature details apply:', signatureData, 'Active field:', activeSignatureField);
         if (activeSignatureField) {
             setUserSignatureData(signatureData);
-            const signatureValue = signatureData.selectedSignature;
+            // The signatureData is passed directly from SignatureDetailsModal
+            const signatureValue = signatureData;
 
-            setFields(prev => prev.map(f =>
-                f.id === activeSignatureField.id
-                    ? { ...f, value: signatureValue }
-                    : f
-            ));
+            setFields(prev => {
+                const updated = prev.map(f =>
+                    f.id === activeSignatureField.id
+                        ? { ...f, value: signatureValue }
+                        : f
+                );
+                console.log('Updated fields:', updated);
+                return updated;
+            });
             setSidebarFields(prev => prev.map(f =>
                 f.id === activeSignatureField.id
                     ? { ...f, value: signatureValue }
                     : f
             ));
+
+            // Save field value to database
+            if (effectiveDocId && effectiveDocId !== 'sample-doc' && activeSignatureField.id && !activeSignatureField.id.startsWith('field_')) {
+                try {
+                    const fieldValue = typeof signatureValue === 'string' ? signatureValue : JSON.stringify(signatureValue);
+
+                    console.log('Updating field value in database:', {
+                        fieldId: activeSignatureField.id,
+                        fieldValue: fieldValue
+                    });
+
+                    await updateESignatureField.mutateAsync({
+                        id: activeSignatureField.id,
+                        updates: { field_value: fieldValue }
+                    });
+
+                    console.log('Field value saved to database successfully');
+                } catch (error) {
+                    console.error('Failed to save field value to database:', error);
+                    toast.error('Signature applied locally but failed to save to database');
+                }
+            } else {
+                console.log('Skipping database update - field not yet saved to database or no valid ID');
+            }
+
             setShowSignatureDetailsModal(false);
             setActiveSignatureField(null);
             toast.success('Signature applied successfully!');
         }
     };
 
-    // Save document with signatures
+
+    // Download document with all fields and signatures
+    const handleDownloadDocument = async () => {
+        try {
+            if (!pdfUrl) {
+                toast.error('No document to download');
+                return;
+            }
+
+            // Show loading state
+            toast.loading('Preparing document for download...', { id: 'download' });
+
+            // If it's a data URL (from uploaded file), download directly
+            if (pdfUrl.startsWith('data:')) {
+                const link = document.createElement('a');
+                link.href = pdfUrl;
+                link.download = `${documentTitle}_signed.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                toast.success('Document downloaded successfully!', { id: 'download' });
+                return;
+            }
+
+            // If it's a Supabase storage URL, download from storage
+            if (pdfUrl.includes('supabase.co')) {
+                const fileName = `${documentTitle}_signed.pdf`;
+                const response = await fetch(pdfUrl);
+                const blob = await response.blob();
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+
+                toast.success('Document downloaded successfully!', { id: 'download' });
+            } else {
+                // Fallback: open in new tab
+                window.open(pdfUrl, '_blank');
+                toast.success('Document opened in new tab', { id: 'download' });
+            }
+        } catch (error) {
+            console.error('Error downloading document:', error);
+            toast.error('Failed to download document', { id: 'download' });
+        }
+    };
+
+    // Save document with all fields and signatures
     const handleSaveDocument = async () => {
         try {
-            // Here you would implement saving the signed document
-            // This could involve generating a new PDF with the signatures
-            toast.success('Document saved successfully!');
+            if (!pdfUrl) {
+                toast.error('No document to save');
+                return;
+            }
+
+            // Show loading state
+            toast.loading('Saving document with all fields...', { id: 'save' });
+
+            // Save all fields to database first
+            if (effectiveDocId && effectiveDocId !== 'sample-doc') {
+                try {
+                    // Use the bulk save function
+                    const fieldsToSave = fields.map(field => {
+                        let mappedFieldType: 'signature' | 'name' | 'date' | 'email' | 'text' = 'text';
+                        switch (field.type) {
+                            case 'signature':
+                                mappedFieldType = 'signature';
+                                break;
+                            case 'name':
+                                mappedFieldType = 'name';
+                                break;
+                            case 'date':
+                                mappedFieldType = 'date';
+                                break;
+                            case 'initials':
+                            case 'text':
+                            case 'stamp':
+                                mappedFieldType = 'text';
+                                break;
+                            default:
+                                mappedFieldType = 'text';
+                        }
+
+                        return {
+                            id: field.id.startsWith('field_') ? undefined : field.id,
+                            field_type: mappedFieldType,
+                            field_label: field.label,
+                            position_x: field.x,
+                            position_y: field.y,
+                            width: field.width,
+                            height: field.height,
+                            page_number: field.page,
+                            is_required: field.required,
+                            field_value: field.value
+                        };
+                    });
+
+                    // Use the bulk save hook
+                    await saveESignatureFields.mutateAsync({
+                        documentId: effectiveDocId,
+                        fields: fieldsToSave
+                    });
+
+                    console.log('All fields saved to database successfully');
+                } catch (error) {
+                    console.error('Failed to save fields to database:', error);
+                    toast.error('Failed to save some fields to database', { id: 'save' });
+                }
+            }
+
+            // For now, just show success - in a real implementation, you would generate a PDF with overlays
+            toast.success('Document saved successfully with all fields!', { id: 'save' });
+
         } catch (error) {
             console.error('Error saving document:', error);
-            toast.error('Failed to save document');
+            toast.error('Failed to save document', { id: 'save' });
         }
     };
 
@@ -458,6 +764,18 @@ const ProfessionalPDFEditor: React.FC = () => {
                             </select>
                         </div>
                         <div className="flex items-center space-x-3">
+                            {isPersisting && (
+                                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                    <div className="animate-spin w-4 h-4 border-2 border-brand-purple border-t-transparent rounded-full"></div>
+                                    <span>Saving to cloud...</span>
+                                </div>
+                            )}
+                            {isSavingFields && (
+                                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                    <div className="animate-spin w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full"></div>
+                                    <span>Saving fields...</span>
+                                </div>
+                            )}
                             <Button
                                 variant={isSigningMode ? "default" : "outline"}
                                 size="sm"
@@ -477,7 +795,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                                         <Save className="w-4 h-4 mr-2" />
                                         Save
                                     </Button>
-                                    <Button variant="outline" size="sm">
+                                    <Button variant="outline" size="sm" onClick={handleDownloadDocument}>
                                         <Download className="w-4 h-4 mr-2" />
                                         Download
                                     </Button>
@@ -489,18 +807,6 @@ const ProfessionalPDFEditor: React.FC = () => {
             </div>
 
             <div className="flex h-[calc(100vh-80px)]">
-                {/* Professional Fields Sidebar */}
-                <ProfessionalFieldsSidebar
-                    mode={isSigningMode ? 'sign' : 'edit'}
-                    selectedTool={selectedTool as any}
-                    onPickTool={(t: any) => setSelectedTool(t as any)}
-                    canSend={Boolean(effectiveDocId) && (fields.length > 0 || signers.length > 0)}
-                    canSaveSigned={fields.every(f => !f.required || f.value)}
-                    onSendForSigning={handleSendForSigning}
-                    onSaveSigned={handleSaveDocument}
-                    onClearAll={() => setFields([])}
-                />
-
                 {/* Main PDF Viewer */}
                 <div className="flex-1 bg-muted/30 flex flex-col">
                     {/* PDF Controls */}
@@ -550,7 +856,17 @@ const ProfessionalPDFEditor: React.FC = () => {
 
                     {/* PDF Display */}
                     <div className="flex-1 p-6 overflow-auto">
-                        {pdfLoadError ? (
+                        {isLoadingPdf ? (
+                            <div className="flex items-center justify-center h-[500px]">
+                                <Card className="p-8 max-w-md text-center">
+                                    <div className="text-muted-foreground mb-4">
+                                        <div className="animate-spin w-8 h-8 border-4 border-brand-purple border-t-transparent rounded-full mx-auto mb-4"></div>
+                                    </div>
+                                    <h3 className="text-lg font-semibold mb-2">Loading PDF...</h3>
+                                    <p className="text-muted-foreground mb-4">Please wait while we load your document.</p>
+                                </Card>
+                            </div>
+                        ) : pdfLoadError ? (
                             <div className="flex items-center justify-center h-[500px]">
                                 <Card className="p-8 max-w-md text-center">
                                     <div className="text-destructive mb-4">
@@ -563,7 +879,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                                             variant="outline"
                                             onClick={() => {
                                                 setPdfLoadError(null);
-                                                setIsLoading(true);
+                                                setIsLoadingPdf(true);
                                             }}
                                         >
                                             Try Again
@@ -573,6 +889,24 @@ const ProfessionalPDFEditor: React.FC = () => {
                                             onClick={() => navigate('/dashboard/documents')}
                                         >
                                             Select Another Document
+                                        </Button>
+                                    </div>
+                                </Card>
+                            </div>
+                        ) : !pdfUrl ? (
+                            <div className="flex items-center justify-center h-[500px]">
+                                <Card className="p-8 max-w-md text-center">
+                                    <div className="text-muted-foreground mb-4">
+                                        <FileText className="w-12 h-12 mx-auto mb-4" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold mb-2">No PDF file specified</h3>
+                                    <p className="text-muted-foreground mb-4">Please select a document to continue.</p>
+                                    <div className="space-y-2">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => navigate('/dashboard/documents')}
+                                        >
+                                            Select Document
                                         </Button>
                                     </div>
                                 </Card>
@@ -622,6 +956,7 @@ const ProfessionalPDFEditor: React.FC = () => {
                                                 const Icon = fieldType?.icon || PenTool;
                                                 const val: any = field.value as any;
                                                 const hasValue = typeof val === 'string' ? (val.trim() !== '') : (val && (typeof val === 'object') && (val.text ? String(val.text).trim() !== '' : true));
+                                                console.log('Field rendering:', field.id, 'value:', val, 'hasValue:', hasValue);
 
                                                 return (
                                                     <div

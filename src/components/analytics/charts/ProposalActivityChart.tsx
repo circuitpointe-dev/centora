@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { proposalActivityData, availableYears } from "../data/analyticsData";
+import { useAnalyticsData } from "@/hooks/useAnalyticsData";
 import { CustomLegend } from "./CustomLegend";
 
 export function ProposalActivityChart() {
@@ -31,17 +31,12 @@ export function ProposalActivityChart() {
     approved: true,
   });
 
-  // Get proposal activity data based on selected year and filter
+  const { data: analyticsData, isLoading } = useAnalyticsData();
+
+  // Get proposal activity data based on selected filter
   const getProposalActivityData = () => {
-    const yearData = proposalActivityData[selectedYear];
-    if (
-      (selectedYear === "2024" || selectedYear === "2025") &&
-      typeof yearData === "object" &&
-      !Array.isArray(yearData)
-    ) {
-      return yearData[proposalActivityFilter as keyof typeof yearData] || [];
-    }
-    return Array.isArray(yearData) ? yearData : [];
+    if (!analyticsData?.proposalActivity) return [];
+    return analyticsData.proposalActivity[proposalActivityFilter as keyof typeof analyticsData.proposalActivity] || [];
   };
 
   const currentActivityData = getProposalActivityData();
@@ -72,11 +67,9 @@ export function ProposalActivityChart() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {availableYears.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
+                <SelectItem value="2025">2025</SelectItem>
+                <SelectItem value="2024">2024</SelectItem>
+                <SelectItem value="2023">2023</SelectItem>
               </SelectContent>
             </Select>
             <Select
@@ -95,39 +88,49 @@ export function ProposalActivityChart() {
         </div>
       </CardHeader>
       <CardContent className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={currentActivityData}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            {lineConfigs.map(
-              (line) =>
-                visibleLines[line.key as keyof typeof visibleLines] && (
-                  <Line
-                    key={line.key}
-                    type="natural"
-                    dataKey={line.key}
-                    name={line.name}
-                    stroke={line.color}
-                    dot={false}
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-gray-500">Loading proposal activity...</div>
+          </div>
+        ) : currentActivityData.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-gray-500">No proposal activity data available</div>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={currentActivityData}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              {lineConfigs.map(
+                (line) =>
+                  visibleLines[line.key as keyof typeof visibleLines] && (
+                    <Line
+                      key={line.key}
+                      type="natural"
+                      dataKey={line.key}
+                      name={line.name}
+                      stroke={line.color}
+                      dot={false}
+                    />
+                  )
+              )}
+              <Legend
+                content={
+                  <CustomLegend
+                    visibleLines={visibleLines}
+                    toggleLine={toggleLine}
+                    lineConfigs={lineConfigs}
                   />
-                )
-            )}
-            <Legend
-              content={
-                <CustomLegend
-                  visibleLines={visibleLines}
-                  toggleLine={toggleLine}
-                  lineConfigs={lineConfigs}
-                />
-              }
-            />
-            <RechartsTooltip />
-          </LineChart>
-        </ResponsiveContainer>
+                }
+              />
+              <RechartsTooltip />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );

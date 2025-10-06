@@ -5,12 +5,13 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { fundingRaisedData } from "../data/analyticsData";
+import { useAnalyticsData } from "@/hooks/useAnalyticsData";
 
 export function FundingRaisedChart() {
   const [fundingRaisedFilter, setFundingRaisedFilter] = useState("Sector");
-  
-  const currentFundingData = fundingRaisedData[fundingRaisedFilter as keyof typeof fundingRaisedData];
+  const { data: analyticsData, isLoading } = useAnalyticsData();
+
+  const currentFundingData = analyticsData?.fundingRaised?.[fundingRaisedFilter as keyof typeof analyticsData.fundingRaised] || [];
 
   return (
     <Card className="col-span-1 md:col-span-2">
@@ -30,26 +31,36 @@ export function FundingRaisedChart() {
         </div>
       </CardHeader>
       <CardContent className="h-60">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={currentFundingData}
-            margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="2 2" />
-            <XAxis dataKey="category" />
-            <YAxis tickFormatter={(value) => `$${value / 1000}K`} />
-            <Bar 
-              dataKey="value" 
-              fill="#22C55E" 
-              barSize={30} 
-              radius={[8, 8, 0, 0]}
-            />
-            <RechartsTooltip 
-              formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]} 
-              cursor={false}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-gray-500">Loading funding data...</div>
+          </div>
+        ) : currentFundingData.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-gray-500">No funding data available</div>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={currentFundingData}
+              margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="2 2" />
+              <XAxis dataKey="category" />
+              <YAxis tickFormatter={(value) => `$${value / 1000}K`} />
+              <Bar
+                dataKey="value"
+                fill="#22C55E"
+                barSize={30}
+                radius={[8, 8, 0, 0]}
+              />
+              <RechartsTooltip
+                formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]}
+                cursor={false}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );

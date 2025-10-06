@@ -4,10 +4,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CheckCircle } from 'lucide-react';
 import { ActiveGrantsTable } from '@/components/grants/ActiveGrantsTable';
 import { ActiveGrantsStatCards } from '@/components/grants/ActiveGrantsStatCards';
+import { useGrants } from '@/hooks/grants/useGrants';
 
 const ActiveGrantsPage = () => {
   const { user } = useAuth();
   const userType = user?.userType;
+  const { grants, loading } = useGrants();
+
+  // Calculate real statistics from backend data
+  const activeGrants = grants.filter(g => g.status === 'active');
+  const totalValue = activeGrants.reduce((sum, g) => sum + Number(g.amount), 0);
+  const endingSoon = activeGrants.filter(g => {
+    const endDate = new Date(g.end_date);
+    const now = new Date();
+    const daysUntilEnd = (endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    return daysUntilEnd <= 30 && daysUntilEnd > 0; // Ending within 30 days
+  }).length;
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: amount >= 1000000 ? 'compact' : 'standard',
+      maximumFractionDigits: 1,
+    }).format(amount);
+  };
 
   // Show donor-specific view for donors
   if (userType === 'Donor') {
@@ -74,15 +95,15 @@ const ActiveGrantsPage = () => {
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Active Grants</span>
-                  <span className="font-semibold">12</span>
+                  <span className="font-semibold">{loading ? '...' : activeGrants.length}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Total Value</span>
-                  <span className="font-semibold">$2.1M</span>
+                  <span className="font-semibold">{loading ? '...' : formatCurrency(totalValue)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Ending Soon</span>
-                  <span className="font-semibold">3</span>
+                  <span className="font-semibold">{loading ? '...' : endingSoon}</span>
                 </div>
               </div>
             </CardContent>

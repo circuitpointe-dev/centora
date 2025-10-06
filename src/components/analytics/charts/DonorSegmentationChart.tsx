@@ -5,32 +5,27 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useDonors } from "@/hooks/useDonors";
+import { useAnalyticsData } from "@/hooks/useAnalyticsData";
 
 const PIE_COLORS = ["#8B5CF6", "#F59E0B", "#10B981", "#EF4444", "#6B7280"];
 
 export function DonorSegmentationChart() {
-  const [donorSegmentFilter, setDonorSegmentFilter] = useState("Status");
-  const { data: donors = [] } = useDonors();
-  
+  const [donorSegmentFilter, setDonorSegmentFilter] = useState("Type");
+  const { data: analyticsData, isLoading } = useAnalyticsData();
+
   const currentDonorData = useMemo(() => {
-    if (donors.length === 0) return [];
-    
-    let segmentCounts: Record<string, number> = {};
-    
-    if (donorSegmentFilter === "Status") {
-      segmentCounts = donors.reduce((acc, donor) => {
-        acc[donor.status] = (acc[donor.status] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-    }
-    
-    const total = donors.length;
-    return Object.entries(segmentCounts).map(([key, count]) => ({
-      name: key.charAt(0).toUpperCase() + key.slice(1),
-      value: Math.round((count / total) * 100)
+    if (!analyticsData?.donorSegmentation) return [];
+
+    const segmentData = analyticsData.donorSegmentation[donorSegmentFilter as keyof typeof analyticsData.donorSegmentation] || [];
+
+    if (segmentData.length === 0) return [];
+
+    const total = segmentData.reduce((sum, item) => sum + item.value, 0);
+    return segmentData.map(item => ({
+      name: item.name,
+      value: total > 0 ? Math.round((item.value / total) * 100) : 0
     }));
-  }, [donors, donorSegmentFilter]);
+  }, [analyticsData, donorSegmentFilter]);
 
   return (
     <Card>
@@ -42,43 +37,52 @@ export function DonorSegmentationChart() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Status">Status</SelectItem>
+              <SelectItem value="Type">Type</SelectItem>
+              <SelectItem value="Sector">Sector</SelectItem>
+              <SelectItem value="Geography">Geography</SelectItem>
+              <SelectItem value="Interest Tags">Interest Tags</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </CardHeader>
       <CardContent className="flex items-center justify-center h-56">
-        <div className="flex items-center gap-8">
-          <ResponsiveContainer width={200} height={180}>
-            <PieChart>
-              <Pie
-                data={currentDonorData}
-                cx="50%" cy="50%" 
-                innerRadius={40}
-                outerRadius={80}
-                dataKey="value"
-                stroke="none"
-              >
-                {currentDonorData.map((entry, idx) => (
-                  <Cell key={entry.name} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
-                ))}
-              </Pie>
-              <RechartsTooltip formatter={(value) => [`${value}%`, "Percentage"]} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="flex flex-col gap-3">
-            {currentDonorData.map((entry, idx) => (
-              <div className="flex items-center gap-2 text-sm" key={entry.name}>
-                <span
-                  className="block w-3 h-3 rounded-full"
-                  style={{ background: PIE_COLORS[idx] }}
-                />
-                <span className="text-gray-700">{entry.name}</span>
-                <span className="text-gray-500">({entry.value}%)</span>
-              </div>
-            ))}
+        {isLoading ? (
+          <div className="text-gray-500">Loading donor segmentation...</div>
+        ) : currentDonorData.length === 0 ? (
+          <div className="text-gray-500">No donor segmentation data available</div>
+        ) : (
+          <div className="flex items-center gap-8">
+            <ResponsiveContainer width={200} height={180}>
+              <PieChart>
+                <Pie
+                  data={currentDonorData}
+                  cx="50%" cy="50%"
+                  innerRadius={40}
+                  outerRadius={80}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {currentDonorData.map((entry, idx) => (
+                    <Cell key={entry.name} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <RechartsTooltip formatter={(value) => [`${value}%`, "Percentage"]} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex flex-col gap-3">
+              {currentDonorData.map((entry, idx) => (
+                <div className="flex items-center gap-2 text-sm" key={entry.name}>
+                  <span
+                    className="block w-3 h-3 rounded-full"
+                    style={{ background: PIE_COLORS[idx] }}
+                  />
+                  <span className="text-gray-700">{entry.name}</span>
+                  <span className="text-gray-500">({entry.value}%)</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

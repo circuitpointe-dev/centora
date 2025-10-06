@@ -18,13 +18,13 @@ export const DocumentSelectionDialog: React.FC<DocumentSelectionDialogProps> = (
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  
+
   const { data: documents, isLoading } = useDocuments({
     search: searchQuery,
   });
 
   const handleSelectDocument = (document: any) => {
-    navigate('/dashboard/documents/editor-new', {
+    navigate('/dashboard/documents/signature-editor', {
       state: { selectedDoc: document }
     });
     onOpenChange(false);

@@ -9,6 +9,12 @@ import { AnalyticsContent } from "@/components/analytics/AnalyticsContent";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { generateAnalyticsReport, downloadAnalyticsReport, AnalyticsReportData } from "@/utils/analyticsExport";
+import { useFundraisingStats } from "@/hooks/useFundraisingStats";
+import { useDonors } from "@/hooks/useDonors";
+import { useOpportunities } from "@/hooks/useOpportunities";
+import { useProposals } from "@/hooks/useProposals";
+import { useAnalyticsData } from "@/hooks/useAnalyticsData";
 
 const periodOptions = [
   { label: "This Month", value: "this-month" },
@@ -20,7 +26,7 @@ const periodOptions = [
 const FundraisingAnalyticsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab');
-  
+
   const [activeTab, setActiveTab] = useState<"generate-report" | "analytics">(
     tabFromUrl === "generate-report" ? "generate-report" : "analytics"
   );
@@ -31,6 +37,13 @@ const FundraisingAnalyticsPage: React.FC = () => {
   const [endDate, setEndDate] = useState<Date>();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Fetch real data for export
+  const { data: fundraisingStats } = useFundraisingStats();
+  const { data: donors = [] } = useDonors();
+  const { data: opportunities = [] } = useOpportunities();
+  const { data: proposals = [] } = useProposals();
+  const { data: analyticsData } = useAnalyticsData();
+
   // Update active tab when URL changes
   useEffect(() => {
     if (tabFromUrl === "generate-report") {
@@ -40,13 +53,73 @@ const FundraisingAnalyticsPage: React.FC = () => {
     }
   }, [tabFromUrl]);
 
-  function handleExport() {
-    toast({
-      title: "Report Exported",
-      description:
-        "Your fundraising analytics report has been generated and downloaded.",
-    });
-  }
+  const handleExport = async () => {
+    try {
+      setIsLoading(true);
+
+      // Generate the report data with real data
+      const reportData: AnalyticsReportData = {
+        period: selectedPeriod === 'custom' && startDate && endDate
+          ? `${format(startDate, 'MMM d, yyyy')} - ${format(endDate, 'MMM d, yyyy')}`
+          : selectedPeriod.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        generatedAt: new Date().toISOString(),
+        fundraisingStats: {
+          totalProposals: fundraisingStats?.totalProposals || 0,
+          conversionRate: fundraisingStats?.conversionRate || 0,
+          activeOpportunities: fundraisingStats?.activeOpportunities || 0,
+          fundsRaised: fundraisingStats?.fundsRaised || 0,
+          avgGrantSize: fundraisingStats?.avgGrantSize || 0,
+          proposalsInProgress: fundraisingStats?.proposalsInProgress || 0,
+          pendingReviews: fundraisingStats?.pendingReviews || 0,
+          upcomingDeadlines: fundraisingStats?.upcomingDeadlines || 0,
+          archivedProposals: fundraisingStats?.archivedProposals || 0,
+        },
+        donorStats: {
+          totalDonors: donors.length,
+          activeDonors: donors.filter(donor => donor.status === 'active').length,
+        },
+        opportunityStats: {
+          totalOpportunities: opportunities.length,
+          byStatus: opportunities.reduce((acc, opp) => {
+            acc[opp.status] = (acc[opp.status] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>),
+        },
+        proposalStats: {
+          totalProposals: proposals.length,
+          byStatus: proposals.reduce((acc, proposal) => {
+            acc[proposal.status] = (acc[proposal.status] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>),
+        },
+        fundingData: {
+          bySector: analyticsData?.fundingRaised?.Sector || [],
+          byDonorType: analyticsData?.fundingRaised?.['Donor Type'] || [],
+        },
+        donorSegmentation: {
+          byType: analyticsData?.donorSegmentation?.Type || [],
+          bySector: analyticsData?.donorSegmentation?.Sector || [],
+        },
+      };
+
+      // Create and download the report
+      downloadAnalyticsReport(reportData, selectedPeriod);
+
+      toast({
+        title: "Report Exported",
+        description: "Your fundraising analytics report has been generated and downloaded.",
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate the report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handlePeriodChange = async (value: string) => {
     setIsLoading(true);
@@ -92,7 +165,7 @@ const FundraisingAnalyticsPage: React.FC = () => {
     <div>
       {/* Title */}
       <h1 className="text-xl font-medium text-gray-900">Analytics</h1>
-      
+
       {/* Tabs */}
       <AnalyticsTabNavigation
         activeTab={activeTab}
