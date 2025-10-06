@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -12,8 +12,23 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { useFundraisingStats } from "@/hooks/useFundraisingStats";
+import { useDonors } from "@/hooks/useDonors";
+import { useOpportunities } from "@/hooks/useOpportunities";
+import { useProposals } from "@/hooks/useProposals";
+import { useAnalyticsData } from "@/hooks/useAnalyticsData";
 
 const GenerateReport: React.FC = () => {
+  // Fetch real data
+  const { data: fundraisingStats } = useFundraisingStats();
+  const { data: donors = [] } = useDonors();
+  const { data: opportunities = [] } = useOpportunities();
+  const { data: proposals = [] } = useProposals();
+  const { data: analyticsData } = useAnalyticsData();
+
+  // Loading state
+  const [isGenerating, setIsGenerating] = useState(false);
+
   // Metrics selection state
   const [metrics, setMetrics] = useState({
     proposalsSubmitted: false,
@@ -42,7 +57,7 @@ const GenerateReport: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!startDate || !endDate) {
       toast({
         title: "Date Range Required",
@@ -61,24 +76,259 @@ const GenerateReport: React.FC = () => {
       return;
     }
 
-    toast({
-      title: "Report Generated",
-      description: `Your report for ${format(
-        startDate,
-        "MMM d, yyyy"
-      )} to ${format(endDate, "MMM d, yyyy")} is being prepared`,
-    });
+    if (!reportFormat.pdf && !reportFormat.csv) {
+      toast({
+        title: "Format Required",
+        description: "Please select at least one report format (PDF or CSV)",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    // Here you would implement the actual report generation API call
-    console.log("Generating report with:", {
-      metrics,
-      filters,
-      reportFormat,
-      dateRange: {
-        start: startDate,
-        end: endDate,
-      },
-    });
+    setIsGenerating(true);
+
+    try {
+      // Filter proposals by date range
+      const filteredProposals = proposals.filter(p => {
+        const createdDate = new Date(p.created_at);
+        return createdDate >= startDate && createdDate <= endDate;
+      });
+
+      // Calculate metrics based on selections
+      const reportData: any = {
+        period: `${format(startDate, "MMM d, yyyy")} - ${format(endDate, "MMM d, yyyy")}`,
+        generatedAt: new Date().toISOString(),
+      };
+
+      if (metrics.proposalsSubmitted) {
+        reportData.proposalsSubmitted = filteredProposals.length;
+      }
+
+      if (metrics.successRate) {
+        const approved = filteredProposals.filter(p => p.status === 'approved').length;
+        reportData.successRate = filteredProposals.length > 0 
+          ? ((approved / filteredProposals.length) * 100).toFixed(2) 
+          : 0;
+      }
+
+      if (metrics.totalFundsRaised) {
+        reportData.totalFundsRaised = fundraisingStats?.fundsRaised || 0;
+      }
+
+      if (metrics.averageGrantSize) {
+        reportData.averageGrantSize = fundraisingStats?.avgGrantSize || 0;
+      }
+
+      if (metrics.turnaroundTime) {
+        // Calculate average days from creation to approval
+        const approvedProposals = filteredProposals.filter(p => p.status === 'approved' && p.updated_at);
+        if (approvedProposals.length > 0) {
+          const totalDays = approvedProposals.reduce((sum, p) => {
+            const created = new Date(p.created_at);
+            const updated = new Date(p.updated_at!);
+            const days = Math.floor((updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
+            return sum + days;
+          }, 0);
+          reportData.averageTurnaroundTime = Math.round(totalDays / approvedProposals.length);
+        } else {
+          reportData.averageTurnaroundTime = 0;
+        }
+      }
+
+      if (metrics.donorSegmentation) {
+        reportData.donorSegmentation = analyticsData?.donorSegmentation?.Type || [];
+      }
+
+      // Generate PDF if selected
+      if (reportFormat.pdf) {
+        generatePDFReport(reportData);
+      }
+
+      // Generate CSV if selected
+      if (reportFormat.csv) {
+        generateCSVReport(reportData);
+      }
+
+      toast({
+        title: "Report Generated",
+        description: `Your report for ${format(startDate, "MMM d, yyyy")} to ${format(endDate, "MMM d, yyyy")} has been downloaded`,
+      });
+    } catch (error) {
+      console.error('Report generation error:', error);
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate the report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const generatePDFReport = (reportData: any) => {
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundraising Analytics Report - ${reportData.period}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        .stat-card h3 {
+            margin: 0 0 15px 0;
+            color: #4a5568;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0;
+        }
+        .footer {
+            text-align: center;
+            color: #718096;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Fundraising Analytics Report</h1>
+        <p>Period: ${reportData.period}</p>
+        <p>Generated: ${new Date(reportData.generatedAt).toLocaleString()}</p>
+    </div>
+
+    <div class="stats-grid">
+        ${reportData.proposalsSubmitted !== undefined ? `
+        <div class="stat-card">
+            <h3>Proposals Submitted</h3>
+            <p class="stat-value">${reportData.proposalsSubmitted}</p>
+        </div>
+        ` : ''}
+        
+        ${reportData.successRate !== undefined ? `
+        <div class="stat-card">
+            <h3>Success Rate</h3>
+            <p class="stat-value">${reportData.successRate}%</p>
+        </div>
+        ` : ''}
+        
+        ${reportData.totalFundsRaised !== undefined ? `
+        <div class="stat-card">
+            <h3>Total Funds Raised</h3>
+            <p class="stat-value">$${reportData.totalFundsRaised.toLocaleString()}</p>
+        </div>
+        ` : ''}
+        
+        ${reportData.averageGrantSize !== undefined ? `
+        <div class="stat-card">
+            <h3>Average Grant Size</h3>
+            <p class="stat-value">$${reportData.averageGrantSize.toLocaleString()}</p>
+        </div>
+        ` : ''}
+        
+        ${reportData.averageTurnaroundTime !== undefined ? `
+        <div class="stat-card">
+            <h3>Average Turnaround Time</h3>
+            <p class="stat-value">${reportData.averageTurnaroundTime} days</p>
+        </div>
+        ` : ''}
+    </div>
+
+    <div class="footer">
+        <p>This report was generated by Centora ERP System</p>
+    </div>
+</body>
+</html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `fundraising-report-${format(new Date(), 'yyyy-MM-dd')}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const generateCSVReport = (reportData: any) => {
+    const rows = [
+      ['Metric', 'Value'],
+    ];
+
+    if (reportData.proposalsSubmitted !== undefined) {
+      rows.push(['Proposals Submitted', reportData.proposalsSubmitted.toString()]);
+    }
+    if (reportData.successRate !== undefined) {
+      rows.push(['Success Rate (%)', reportData.successRate.toString()]);
+    }
+    if (reportData.totalFundsRaised !== undefined) {
+      rows.push(['Total Funds Raised ($)', reportData.totalFundsRaised.toString()]);
+    }
+    if (reportData.averageGrantSize !== undefined) {
+      rows.push(['Average Grant Size ($)', reportData.averageGrantSize.toString()]);
+    }
+    if (reportData.averageTurnaroundTime !== undefined) {
+      rows.push(['Average Turnaround Time (days)', reportData.averageTurnaroundTime.toString()]);
+    }
+
+    const csvContent = rows.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `fundraising-report-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -236,8 +486,20 @@ const GenerateReport: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Button className="w-full" size="lg" onClick={handleGenerate}>
-          Generate Report
+        <Button 
+          className="w-full" 
+          size="lg" 
+          onClick={handleGenerate}
+          disabled={isGenerating}
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            'Generate Report'
+          )}
         </Button>
       </div>
 
