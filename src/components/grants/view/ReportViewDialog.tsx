@@ -24,6 +24,9 @@ export const ReportViewDialog: React.FC<ReportViewDialogProps> = ({
 }) => {
   const downloadFile = useDownloadGrantReportFile();
 
+  console.log('ReportViewDialog rendered with report:', report);
+  console.log('Dialog open state:', open);
+
   const handleDownload = () => {
     if (report?.file_path && report?.file_name) {
       downloadFile.mutate({ 

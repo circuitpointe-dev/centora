@@ -64,6 +64,8 @@ const UpcomingReportingDeadlines = () => {
   const loading = reportsLoading || grantsLoading;
 
   const handleViewReport = (report) => {
+    console.log('View button clicked, report:', report);
+    console.log('Report grant info:', report.grant);
     setSelectedReport(report);
     setShowViewDialog(true);
   };
@@ -115,6 +117,8 @@ const UpcomingReportingDeadlines = () => {
       const urgency = getUrgencyInfo(days);
       const grant = grants.find(g => g.id === report.grant_id);
       
+      console.log('Processing report:', report.id, 'days:', days, 'grant:', grant);
+      
       return {
         ...report,
         days,
@@ -123,6 +127,8 @@ const UpcomingReportingDeadlines = () => {
       };
     })
     .sort((a, b) => a.urgency.priority - b.urgency.priority);
+  
+  console.log('Total reports:', reports.length, 'Upcoming/Overdue reports:', upcomingReports.length);
 
   return (
     <Card className="w-full">
