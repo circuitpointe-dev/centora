@@ -55,15 +55,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseClick }) => {
       onClick={() => onCourseClick(course.id)}
     >
       {/* Course Thumbnail */}
-      <div className="h-48 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-            <span className="text-purple-600 font-bold text-lg">
-              {course.title.split(' ').map(word => word[0]).join('').slice(0, 2)}
-            </span>
-          </div>
-          <p className="text-gray-500 text-xs">Course Preview</p>
-        </div>
+      <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+        <img 
+          src="/src/assets/images/dummy image.png" 
+          alt={course.title}
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* Course Content */}

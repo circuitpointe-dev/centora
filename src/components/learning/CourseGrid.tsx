@@ -36,12 +36,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseClick }) => {
       onClick={() => onCourseClick(course.id)}
     >
       {/* Course Thumbnail */}
-      <div className="h-48 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-          <span className="text-purple-600 font-semibold text-sm">
-            {course.title.split(' ').map(word => word[0]).join('').slice(0, 2)}
-          </span>
-        </div>
+      <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+        <img 
+          src="/src/assets/images/dummy image.png" 
+          alt={course.title}
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* Course Content */}

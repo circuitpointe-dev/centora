@@ -141,15 +141,12 @@ const StudentCourseDetailPage: React.FC<StudentCourseDetailPageProps> = ({ cours
             </div>
 
             {/* Course Hero Image */}
-            <div className="h-64 lg:h-80 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-24 h-24 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <span className="text-purple-600 font-bold text-2xl">
-                    {course.title.split(' ').map(word => word[0]).join('')}
-                  </span>
-                </div>
-                <p className="text-gray-500 text-sm">Course Preview</p>
-              </div>
+            <div className="h-64 lg:h-80 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+              <img 
+                src="/src/assets/images/dummy image.png" 
+                alt={course.title}
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>
