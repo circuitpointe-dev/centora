@@ -26,6 +26,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
   const [opportunityId, setOpportunityId] = useState<string>("");
   const [isTemplate, setIsTemplate] = useState(false);
   const [creationMethod, setCreationMethod] = useState<string>("");
+  const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
   const [showWizard, setShowWizard] = useState(false);
   
@@ -45,9 +46,11 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
   ];
 
   const handleCreate = () => {
-    if (!creationMethod) return;
+    if (!creationMethod || isCreating) return;
 
-    // Close the dialog first
+    setIsCreating(true);
+
+    // Close the dialog
     onOpenChange(false);
 
     // Navigate based on creation method
@@ -87,6 +90,9 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
       default:
         break;
     }
+
+    // Reset creating state after a delay
+    setTimeout(() => setIsCreating(false), 1000);
   };
 
   const selectedOption = creationOptions.find(option => option.value === creationMethod);
@@ -193,10 +199,10 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
               type="submit"
               variant="default"
               className="flex-1 flex items-center justify-center"
-              disabled={!creationMethod}
+              disabled={!creationMethod || isCreating}
             >
               {selectedOption && <selectedOption.icon className="mr-2 w-5 h-5" />}
-              Create Proposal
+              {isCreating ? "Creating..." : "Create Proposal"}
             </Button>
           </div>
         </form>

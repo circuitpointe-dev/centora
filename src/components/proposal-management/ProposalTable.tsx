@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useProposals, useUpdateProposal, useDeleteProposal } from "@/hooks/useProposals";
+import { useProposals, useUpdateProposal, useDeleteProposal, useDeleteAllProposals } from "@/hooks/useProposals";
 import { useUsers } from "@/hooks/useUsers";
 import { useAddProposalTeamMember } from "@/hooks/useProposalTeamMembers";
-import { Search, Plus } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import ProposalRowActions from "./ProposalRowActions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -29,11 +29,13 @@ const ProposalTable: React.FC<{
   const { data: proposals = [], isLoading } = useProposals();
   const updateProposalMutation = useUpdateProposal();
   const deleteProposalMutation = useDeleteProposal();
+  const deleteAllProposalsMutation = useDeleteAllProposals();
   const addTeamMemberMutation = useAddProposalTeamMember();
   const { data: users = [] } = useUsers({ pageSize: 50 });
 
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
   const [showTeamDialog, setShowTeamDialog] = useState(false);
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
   const [teamMemberName, setTeamMemberName] = useState("");
@@ -44,12 +46,19 @@ const ProposalTable: React.FC<{
   // For delete confirmation dialog
   const proposalToDelete = deleteId ? proposals.find(p => p.id === deleteId) : undefined;
 
-  // Filtering
-  const filtered = proposals.filter((p) => {
-    const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === "all" || p.status.toLowerCase() === statusFilter.toLowerCase();
-    return matchesSearch && matchesStatus;
-  });
+  // Filtering and sorting (newest first)
+  const filtered = proposals
+    .filter((p) => {
+      const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = statusFilter === "all" || p.status.toLowerCase() === statusFilter.toLowerCase();
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      // Sort by created_at descending (newest first)
+      const dateA = new Date(a.created_at || 0).getTime();
+      const dateB = new Date(b.created_at || 0).getTime();
+      return dateB - dateA;
+    });
 
   // Reviewer update
   const handleReviewerChange = async (proposalId: string, newReviewer: string) => {
@@ -130,6 +139,16 @@ const ProposalTable: React.FC<{
     }
   };
 
+  // Confirm delete all
+  const confirmDeleteAll = async () => {
+    try {
+      await deleteAllProposalsMutation.mutateAsync();
+      setShowDeleteAllDialog(false);
+    } catch (error) {
+      console.error('Failed to delete all proposals:', error);
+    }
+  };
+
   // Defensive cleanup
   React.useEffect(() => {
     // If proposal got deleted while dialog open, close dialog
@@ -139,8 +158,21 @@ const ProposalTable: React.FC<{
   return (
     <div className="bg-white mt-12 pt-8 pb-4 px-6 rounded-[5px] shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="text-lg font-medium text-[#383839] mb-3 md:mb-0">
-          Proposals Under Development
+        <div className="flex items-center gap-4">
+          <div className="text-lg font-medium text-[#383839]">
+            Proposals Under Development
+          </div>
+          {proposals.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowDeleteAllDialog(true)}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete All
+            </Button>
+          )}
         </div>
         <div className="flex gap-4">
           {/* Search */}
@@ -233,13 +265,9 @@ const ProposalTable: React.FC<{
                             </SelectItem>
                           ))
                         ) : (
-                          <>
-                            <SelectItem value="Winifred John">Winifred John</SelectItem>
-                            <SelectItem value="Somachi Okafor">Somachi Okafor</SelectItem>
-                            <SelectItem value="Chioma Ike">Chioma Ike</SelectItem>
-                            <SelectItem value="Richard Nwamadi">Richard Nwamadi</SelectItem>
-                            <SelectItem value="Amina Yusuf">Amina Yusuf</SelectItem>
-                          </>
+                          <SelectItem value="Unassigned" disabled>
+                            No users available
+                          </SelectItem>
                         )}
                       </SelectContent>
                     </Select>
@@ -374,6 +402,28 @@ const ProposalTable: React.FC<{
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete All Confirmation Dialog */}
+      <AlertDialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete All Proposals?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action <strong className="text-red-500">cannot be undone</strong>. Are you sure you want to permanently delete <strong>all {proposals.length} proposals</strong> in your organization?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteAllDialog(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-rose-600 text-white hover:bg-rose-700" 
+              onClick={confirmDeleteAll}
+              disabled={deleteAllProposalsMutation.isPending}
+            >
+              {deleteAllProposalsMutation.isPending ? "Deleting..." : "Yes, Delete All"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
