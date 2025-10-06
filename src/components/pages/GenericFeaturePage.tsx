@@ -30,6 +30,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ComplianceChecklistPage } from '@/components/grants/pages/ComplianceChecklistPage';
 import { DisbursementSchedulePage } from '@/components/grants/pages/DisbursementSchedulePage';
 import { ProfilePage } from '@/components/grants/pages/ProfilePage';
+import ComplianceMonitorPage from './ComplianceMonitorPage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -139,6 +140,10 @@ const GenericFeaturePage = () => {
 
   if (module === 'grants' && feature === 'compliance-checklist') {
     return <ComplianceChecklistPage />;
+  }
+
+  if (module === 'compliance-monitor') {
+    return <ComplianceMonitorPage />;
   }
 
   if (module === 'grants' && feature === 'disbursement-schedule') {
