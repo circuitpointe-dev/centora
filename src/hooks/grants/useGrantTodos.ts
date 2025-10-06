@@ -153,7 +153,10 @@ export const useGrantTodos = () => {
   };
 
   useEffect(() => {
-    fetchTodos();
+    if (user?.org_id) {
+      fetchTodos();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.org_id]);
 
   const markAsCompleted = async (todoId: string) => {

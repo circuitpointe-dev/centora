@@ -52,17 +52,13 @@ export const ToDoRemindersSection = () => {
   const [showViewDialog, setShowViewDialog] = useState(false);
 
   const handleView = (item: ToDoItem) => {
-    console.log('View clicked for item:', item);
-    
-    // For Deadline type items, open the report dialog
-    if (item.type === 'Deadline' && item.relatedId) {
+    // For Deadline and Reminder type items related to reports
+    if (item.relatedId && (item.type === 'Deadline' || item.type === 'Reminder')) {
       const report = reports.find(r => r.id === item.relatedId);
-      console.log('Found report:', report);
       
       if (report) {
         // Attach grant information to the report
         const grant = grants.find(g => g.id === report.grant_id);
-        console.log('Found grant:', grant);
         
         const reportWithGrant = {
           ...report,

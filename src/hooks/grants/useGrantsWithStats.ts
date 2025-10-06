@@ -139,7 +139,8 @@ export const useGrantsWithStats = (filters?: Partial<GrantFilters>) => {
 
   useEffect(() => {
     fetchGrantsWithStats();
-  }, [filters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(filters)]);
 
   return {
     grants,
