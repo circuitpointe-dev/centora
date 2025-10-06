@@ -48,6 +48,7 @@ import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
 import LessonPage from "../learning/LessonPage";
 import AssignmentPage from "../learning/AssignmentPage";
 import QuizPage from "../learning/QuizPage";
+import LiveSessionsPage from "../learning/LiveSessionsPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -206,6 +207,10 @@ const GenericFeaturePage = () => {
 
   if (module === 'learning' && feature === 'course-workspace') {
     return <CourseWorkspacePage />;
+  }
+
+  if (module === 'learning' && feature === 'live-sessions') {
+    return <LiveSessionsPage />;
   }
 
   // Student course detail page (from course workspace start/continue buttons)
