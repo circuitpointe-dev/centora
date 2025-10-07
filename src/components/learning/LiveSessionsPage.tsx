@@ -62,32 +62,32 @@ interface RecordingCardProps {
 const SessionCard: React.FC<SessionCardProps> = ({ session }) => {
   const getButtonClass = () => {
     return session.action === 'join' 
-      ? 'bg-gray-800 hover:bg-gray-900 text-white'
-      : 'bg-gray-600 hover:bg-gray-700 text-white';
+      ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+      : 'bg-muted hover:bg-muted/80 text-muted-foreground';
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
+    <div className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center space-x-6">
         {/* Left Section - Date & Time */}
         <div className="flex-shrink-0">
-          <div className="text-xl font-semibold text-gray-800">
+          <div className="text-xl font-semibold text-card-foreground">
             {session.date}
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             {session.time}
           </div>
         </div>
 
         {/* Vertical Separator */}
-        <div className="w-px h-12 bg-gray-300"></div>
+        <div className="w-px h-12 bg-border"></div>
 
         {/* Middle Section - Session Details */}
         <div className="flex-1">
           <div className="text-xl font-semibold text-gray-800 mb-1">
             {session.title}
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             Facilitator: {session.facilitator}
           </div>
         </div>
@@ -107,31 +107,31 @@ const SessionCard: React.FC<SessionCardProps> = ({ session }) => {
 
 const CalendarSessionCard: React.FC<CalendarSessionCardProps> = ({ session }) => {
   return (
-    <div className="bg-purple-100 border border-purple-200 rounded-lg hover:shadow-md transition-shadow duration-200 min-h-full flex flex-col">
+    <div className="bg-primary/10 border border-primary/20 rounded-lg hover:shadow-md transition-shadow duration-200 min-h-full flex flex-col">
       <div className="flex flex-col min-h-full p-3">
         {/* Instructor Avatar */}
         <div className="flex items-center space-x-3 mb-2">
-          <div className="w-8 h-8 bg-purple-200 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-purple-700 font-bold text-xs">
+          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-primary font-bold text-xs">
               {session.instructor.split(' ').map(name => name[0]).join('')}
             </span>
           </div>
-          <div className="text-sm font-medium text-purple-900">
+          <div className="text-sm font-medium text-primary">
             {session.instructor}
           </div>
         </div>
         
         {/* Session Title */}
-        <div className="text-sm font-medium text-purple-900 mb-2 flex-1">
+        <div className="text-sm font-medium text-primary mb-2 flex-1">
           {session.sessionTitle}
         </div>
         
         {/* Bottom Row: Time and Button */}
         <div className="flex items-center justify-between">
-          <div className="text-xs text-gray-600">
+          <div className="text-xs text-muted-foreground">
             {session.startTime} - {session.endTime}
           </div>
-          <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200">
+          <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 rounded text-xs font-medium transition-colors duration-200">
             Join session
           </button>
         </div>
@@ -148,38 +148,38 @@ const MySessionCard: React.FC<MySessionCardProps> = ({ session }) => {
       return (
         <button 
           disabled
-          className="bg-gray-400 text-gray-600 py-2 px-6 rounded-md text-sm font-medium cursor-not-allowed opacity-60"
+          className="bg-muted text-muted-foreground py-2 px-6 rounded-md text-sm font-medium cursor-not-allowed opacity-60"
         >
           Join session
         </button>
       );
     }
     return (
-      <button className="bg-gray-800 hover:bg-gray-900 text-white py-2 px-6 rounded-md text-sm font-medium transition-colors duration-200">
+      <button className="bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-6 rounded-md text-sm font-medium transition-colors duration-200">
         Join session
       </button>
     );
   };
 
   return (
-    <div className={`bg-white border rounded-lg p-6 hover:shadow-md transition-shadow duration-200 ${
-      isPastSession ? 'border-gray-300 opacity-90' : 'border-gray-200'
+    <div className={`bg-card border rounded-lg p-6 hover:shadow-md transition-shadow duration-200 ${
+      isPastSession ? 'border-border opacity-90' : 'border-border'
     }`}>
       <div className="flex items-center space-x-6">
         {/* Left Section - Date & Time */}
         <div className="flex-shrink-0">
           <div className={`text-xl font-semibold ${
-            isPastSession ? 'text-gray-600' : 'text-gray-800'
+            isPastSession ? 'text-muted-foreground' : 'text-gray-800'
           }`}>
             {session.date}
           </div>
           <div className={`text-sm ${
-            isPastSession ? 'text-gray-500' : 'text-gray-600'
+            isPastSession ? 'text-muted-foreground' : 'text-muted-foreground'
           }`}>
             {session.time}
           </div>
           {isPastSession && (
-            <div className="text-xs text-green-600 font-medium mt-1">
+            <div className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">
               ✓ Completed
             </div>
           )}
@@ -187,18 +187,18 @@ const MySessionCard: React.FC<MySessionCardProps> = ({ session }) => {
 
         {/* Vertical Separator */}
         <div className={`w-px h-12 ${
-          isPastSession ? 'bg-gray-200' : 'bg-gray-300'
+          isPastSession ? 'bg-border' : 'bg-border'
         }`}></div>
 
         {/* Middle Section - Session Details */}
         <div className="flex-1">
           <div className={`text-xl font-semibold mb-1 ${
-            isPastSession ? 'text-gray-600' : 'text-gray-800'
+            isPastSession ? 'text-muted-foreground' : 'text-card-foreground'
           }`}>
             {session.title}
           </div>
           <div className={`text-sm ${
-            isPastSession ? 'text-gray-500' : 'text-gray-600'
+            isPastSession ? 'text-muted-foreground' : 'text-muted-foreground'
           }`}>
             Facilitator: {session.facilitator}
           </div>
@@ -218,37 +218,37 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
     switch (type) {
       case 'transcript':
         return (
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-4 h-4 bg-gray-200 rounded flex items-center justify-center">
-              <FileText size={12} className="text-gray-600" />
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="w-4 h-4 bg-muted rounded flex items-center justify-center">
+              <FileText size={12} className="text-muted-foreground" />
             </div>
             <span>Transcript</span>
-            <div className="w-4 h-4 bg-gray-200 rounded flex items-center justify-center">
-              <Download size={12} className="text-gray-600" />
+            <div className="w-4 h-4 bg-muted rounded flex items-center justify-center">
+              <Download size={12} className="text-muted-foreground" />
             </div>
           </div>
         );
       case 'notes':
         return (
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-4 h-4 bg-gray-200 rounded flex items-center justify-center">
-              <FileText size={12} className="text-gray-600" />
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="w-4 h-4 bg-muted rounded flex items-center justify-center">
+              <FileText size={12} className="text-muted-foreground" />
             </div>
             <span>Notes</span>
-            <div className="w-4 h-4 bg-gray-200 rounded flex items-center justify-center">
-              <Download size={12} className="text-gray-600" />
+            <div className="w-4 h-4 bg-muted rounded flex items-center justify-center">
+              <Download size={12} className="text-muted-foreground" />
             </div>
           </div>
         );
       case 'feedback':
         return (
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-4 h-4 bg-gray-200 rounded flex items-center justify-center">
-              <FileText size={12} className="text-gray-600" />
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="w-4 h-4 bg-muted rounded flex items-center justify-center">
+              <FileText size={12} className="text-muted-foreground" />
             </div>
             <span>Feedback</span>
-            <div className="w-4 h-4 bg-gray-200 rounded flex items-center justify-center">
-              <Download size={12} className="text-gray-600" />
+            <div className="w-4 h-4 bg-muted rounded flex items-center justify-center">
+              <Download size={12} className="text-muted-foreground" />
             </div>
           </div>
         );
@@ -258,27 +258,27 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
+    <div className="bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center space-x-6">
         {/* Left Section - Date & Time */}
         <div className="flex-shrink-0">
-          <div className="text-xl font-semibold text-gray-800">
+          <div className="text-xl font-semibold text-card-foreground">
             {recording.date}
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             {recording.time}
           </div>
         </div>
 
         {/* Vertical Separator */}
-        <div className="w-px h-12 bg-gray-300"></div>
+        <div className="w-px h-12 bg-border"></div>
 
         {/* Middle Section - Session Details */}
         <div className="flex-1">
           <div className="text-xl font-semibold text-gray-800 mb-1">
             {recording.title}
           </div>
-          <div className="text-sm text-gray-600 mb-2">
+          <div className="text-sm text-muted-foreground mb-2">
             Facilitator: {recording.facilitator}
           </div>
           {/* Tags */}
@@ -286,7 +286,7 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
             {recording.tags.map((tag, index) => (
               <span
                 key={index}
-                className="inline-block px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700"
+                className="inline-block px-2 py-1 text-xs rounded-full bg-muted text-card-foreground"
               >
                 {tag}
               </span>
@@ -296,7 +296,7 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
 
         {/* Right Section - Action Buttons */}
         <div className="flex-shrink-0 flex flex-col space-y-3">
-          <button className="bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-2">
+          <button className="bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-2">
             <Play size={16} />
             <span>Play recording</span>
           </button>
@@ -617,8 +617,8 @@ const LiveSessionsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
-      <div className="bg-white rounded-lg shadow-sm border">
-        <div className="border-b border-gray-200">
+      <div className="bg-card rounded-lg shadow-sm border">
+        <div className="border-b border-border">
           <nav className="flex space-x-8 px-6" aria-label="Tabs">
             {tabs.map((tab) => (
               <button
@@ -626,8 +626,8 @@ const LiveSessionsPage: React.FC = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
-                    ? 'border-purple-500 text-purple-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-card-foreground hover:border-border'
                 }`}
               >
                 {tab.label}
@@ -642,20 +642,20 @@ const LiveSessionsPage: React.FC = () => {
             <div className="space-y-6">
               {/* Header with Filter */}
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-card-foreground">
                   Upcoming sessions ({sessions.length})
                 </h2>
                 <div className="relative">
                   <select
                     value={timeFilter}
                     onChange={(e) => setTimeFilter(e.target.value)}
-                    className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none"
+                    className="appearance-none bg-background border border-border rounded-md px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
                   >
                     <option value="Monthly">Monthly</option>
                     <option value="Weekly">Weekly</option>
                     <option value="Daily">Daily</option>
                   </select>
-                  <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none" />
                 </div>
               </div>
 
@@ -673,50 +673,50 @@ const LiveSessionsPage: React.FC = () => {
               {/* Calendar Controls */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  <button className="px-4 py-2 border border-border rounded-md text-sm font-medium text-card-foreground hover:bg-accent">
                     Today
                   </button>
                   <div className="flex items-center space-x-2">
-                    <button className="p-2 border border-gray-300 rounded-md hover:bg-gray-50">
-                      <ChevronLeft size={16} className="text-gray-600" />
+                    <button className="p-2 border border-border rounded-md hover:bg-accent">
+                      <ChevronLeft size={16} className="text-muted-foreground" />
                     </button>
-                    <button className="p-2 border border-gray-300 rounded-md hover:bg-gray-50">
-                      <ChevronRight size={16} className="text-gray-600" />
+                    <button className="p-2 border border-border rounded-md hover:bg-accent">
+                      <ChevronRight size={16} className="text-muted-foreground" />
                     </button>
                   </div>
                   <div className="relative">
                     <select
                       value={currentWeek}
                       onChange={(e) => setCurrentWeek(e.target.value)}
-                      className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none"
+                      className="appearance-none bg-background border border-border rounded-md px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
                     >
                       <option value="August 10 - 14, 2025">August 10 - 14, 2025</option>
                       <option value="August 17 - 21, 2025">August 17 - 21, 2025</option>
                       <option value="August 24 - 28, 2025">August 24 - 28, 2025</option>
                     </select>
-                    <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
                 <div className="relative">
-                  <select className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
+                  <select className="appearance-none bg-background border border-border rounded-md px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none">
                     <option value="all">All categories</option>
                     <option value="workshop">Workshops</option>
                     <option value="training">Training</option>
                     <option value="meeting">Meetings</option>
                   </select>
-                  <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none" />
                 </div>
               </div>
 
               {/* Calendar Grid */}
-              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden max-h-96 overflow-y-auto">
+              <div className="bg-card border border-border rounded-lg overflow-hidden max-h-96 overflow-y-auto">
                 {/* Calendar Header */}
-                <div className="grid grid-cols-6 border-b border-gray-200 sticky top-0 bg-white z-10">
-                  <div className="p-4 border-r border-gray-200 bg-gray-50"></div>
+                <div className="grid grid-cols-6 border-b border-border sticky top-0 bg-card z-10">
+                  <div className="p-4 border-r border-border bg-muted"></div>
                   {days.map((day) => (
-                    <div key={day.day} className="p-4 border-r border-gray-200 bg-gray-50 text-center">
-                      <div className="text-sm font-medium text-gray-900">{day.day}</div>
-                      <div className="text-xs text-gray-600">{day.label}</div>
+                    <div key={day.day} className="p-4 border-r border-border bg-muted text-center">
+                      <div className="text-sm font-medium text-card-foreground">{day.day}</div>
+                      <div className="text-xs text-muted-foreground">{day.label}</div>
                     </div>
                   ))}
                 </div>
@@ -724,21 +724,21 @@ const LiveSessionsPage: React.FC = () => {
                 {/* Calendar Body */}
                 <div className="grid grid-cols-6">
                   {/* Time Slots Column */}
-                  <div className="border-r border-gray-200">
+                  <div className="border-r border-border">
                     {timeSlots.map((timeSlot) => (
-                      <div key={timeSlot} className="min-h-24 border-b border-gray-200 flex items-center justify-center">
-                        <span className="text-sm text-gray-600">{timeSlot}</span>
+                      <div key={timeSlot} className="min-h-24 border-b border-border flex items-center justify-center">
+                        <span className="text-sm text-muted-foreground">{timeSlot}</span>
                       </div>
                     ))}
                   </div>
 
                   {/* Day Columns */}
                   {days.map((day) => (
-                    <div key={day.day} className="border-r border-gray-200">
+                    <div key={day.day} className="border-r border-border">
                       {timeSlots.map((timeSlot) => {
                         const sessions = getSessionsForTimeSlot(day.day, timeSlot);
                         return (
-                          <div key={`${day.day}-${timeSlot}`} className="min-h-24 border-b border-gray-200">
+                          <div key={`${day.day}-${timeSlot}`} className="min-h-24 border-b border-border">
                             {sessions.map((session) => (
                               <CalendarSessionCard key={session.id} session={session} />
                             ))}
@@ -755,13 +755,13 @@ const LiveSessionsPage: React.FC = () => {
           {activeTab === 'my-sessions' && (
             <div className="space-y-6">
               {/* Sub-tabs */}
-              <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+              <div className="flex space-x-1 bg-muted p-1 rounded-lg w-fit">
                 <button
                   onClick={() => setActiveSubTab('my-sessions')}
                   className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
                     activeSubTab === 'my-sessions'
-                      ? 'bg-purple-600 text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-card-foreground'
                   }`}
                 >
                   My sessions
@@ -770,8 +770,8 @@ const LiveSessionsPage: React.FC = () => {
                   onClick={() => setActiveSubTab('past-sessions')}
                   className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
                     activeSubTab === 'past-sessions'
-                      ? 'bg-purple-600 text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-card-foreground'
                   }`}
                 >
                   Past sessions
@@ -793,16 +793,16 @@ const LiveSessionsPage: React.FC = () => {
             <div className="space-y-6">
               {/* Header with Filter */}
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-card-foreground">
                   Recordings ({recordings.length})
                 </h2>
                 <div className="relative">
-                  <select className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
+                  <select className="appearance-none bg-background border border-border rounded-md px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none">
                     <option value="monthly">Monthly</option>
                     <option value="weekly">Weekly</option>
                     <option value="daily">Daily</option>
                   </select>
-                  <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none" />
                 </div>
               </div>
 
