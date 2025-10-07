@@ -86,9 +86,10 @@ const ProposalTable: React.FC<{
             source: "proposal",
             proposal: proposalToEdit,
             creationContext: {
-              title: proposalToEdit.name,
+              title: proposalToEdit.title || proposalToEdit.name,
               description: `Continue working on ${proposalToEdit.name}`,
-              type: "editing"
+              type: "editing",
+              opportunityId: proposalToEdit.opportunity_id
             }
           }
         }
