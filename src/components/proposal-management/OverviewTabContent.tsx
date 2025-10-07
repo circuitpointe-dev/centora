@@ -73,7 +73,7 @@ const OverviewTabContent: React.FC<Props> = ({
             id={field.id}
             value={field.value}
             onChange={(e) => onFieldValueChange(field.id, e.target.value)}
-            placeholder={`Enter ${field.name.toLowerCase()}...`}
+            placeholder={`Enter ${field.name?.toLowerCase() || 'value'}...`}
             className="min-h-[120px]"
           />
         </div>
