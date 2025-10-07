@@ -86,7 +86,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
       {/* Sidebar */}
       <div
         className={cn(
-          "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
+          "bg-sidebar-background border-r border-sidebar-border flex flex-col transition-all duration-300",
           // Mobile: hidden by default, full screen when open
           "fixed left-0 top-0 h-screen z-50",
           // Mobile behavior - hidden until large screens
@@ -98,7 +98,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
       >
         {/* Mobile Close Button */}
         {isMobileOpen && (
-          <div className="lg:hidden p-4 border-b border-gray-200">
+          <div className="lg:hidden p-4 border-b border-sidebar-border">
             <div className="flex justify-end">
               <Button
                 variant="ghost"

@@ -118,7 +118,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
     <>
       <header
         className={cn(
-          "bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shadow-sm transition-all duration-300 fixed top-0 z-20 h-16",
+          "bg-background border-b border-border px-6 py-3 flex items-center justify-between shadow-sm transition-all duration-300 fixed top-0 z-20 h-16",
           // Responsive positioning: full width on mobile, respect sidebar on desktop
           "left-0 right-0",
           "md:left-16",
@@ -127,12 +127,12 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
       >
         {/* Welcome Message - Hidden on mobile */}
         <div className="hidden md:flex items-center">
-          <h3 className="text-md text-gray-700">
+          <h3 className="text-md text-muted-foreground">
             Welcome,{" "}
-            <span className="text-md text-gray-700">
+            <span className="text-md text-muted-foreground">
               {currentUser.name} of {" "}
             </span>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-foreground">
               {user?.organization || "Your Organization"}
             </span>
           </h3>
