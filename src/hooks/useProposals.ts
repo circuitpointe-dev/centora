@@ -23,6 +23,9 @@ export interface Proposal {
   updated_at?: string;
   created_by?: string;
   org_id?: string;
+  summary?: string;
+  objectives?: string;
+  description?: string;
 }
 
 export interface ProposalTeamMember {
@@ -53,7 +56,18 @@ export const useProposals = () => {
           created_at,
           updated_at,
           created_by,
-          org_id
+          org_id,
+          opportunity_id,
+          overview_fields,
+          narrative_fields,
+          budget_currency,
+          budget_amount,
+          logframe_fields,
+          attachments,
+          submission_status,
+          summary,
+          objectives,
+          description
         `)
         .eq('org_id', user.org_id)
         .order('created_at', { ascending: false });
@@ -63,6 +77,7 @@ export const useProposals = () => {
       return (proposalsData || []).map((proposal: any): Proposal => ({
         id: proposal.id,
         name: proposal.name || proposal.title || 'Untitled Proposal',
+        title: proposal.title,
         dueDate: proposal.due_date ? new Date(proposal.due_date).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric'
@@ -78,7 +93,18 @@ export const useProposals = () => {
         created_at: proposal.created_at,
         updated_at: proposal.updated_at,
         created_by: proposal.created_by,
-        org_id: proposal.org_id
+        org_id: proposal.org_id,
+        opportunity_id: proposal.opportunity_id,
+        overview_fields: proposal.overview_fields,
+        narrative_fields: proposal.narrative_fields,
+        budget_currency: proposal.budget_currency,
+        budget_amount: proposal.budget_amount,
+        logframe_fields: proposal.logframe_fields,
+        attachments: proposal.attachments,
+        submission_status: proposal.submission_status,
+        summary: proposal.summary,
+        objectives: proposal.objectives,
+        description: proposal.description
       }));
     },
     enabled: !!user?.org_id,
