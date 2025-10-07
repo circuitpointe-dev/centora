@@ -191,7 +191,7 @@ const ProposalTable: React.FC<{
   }, [proposals, deleteId]);
 
   return (
-    <div className="bg-card mt-12 pt-8 pb-4 px-6 rounded-[5px] shadow-sm">
+    <div className="bg-white mt-12 pt-8 pb-4 px-6 rounded-[5px] shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="text-lg font-medium text-[#383839]">
@@ -211,8 +211,8 @@ const ProposalTable: React.FC<{
         </div>
         <div className="flex gap-4">
           {/* Search */}
-          <div className="flex items-center gap-2 bg-[#f4f6f9] border border-border rounded px-3 py-2">
-            <Search className="h-5 w-5 text-muted-foreground" />
+          <div className="flex items-center gap-2 bg-[#f4f6f9] border border-gray-200 rounded px-3 py-2">
+            <Search className="h-5 w-5 text-gray-400" />
             <input
               placeholder="Search proposal"
               value={search}
@@ -223,7 +223,7 @@ const ProposalTable: React.FC<{
           {/* Filter */}
           <button
             onClick={() => setShowFilterDialog(true)}
-            className="flex items-center gap-2 border border-border rounded px-4 py-2 bg-card hover:bg-accent text-[15px] text-[#383839a6] font-medium"
+            className="flex items-center gap-2 border border-gray-200 rounded px-4 py-2 bg-white hover:bg-gray-50 text-[15px] text-[#383839a6] font-medium"
           >
             <span className="sr-only">Filter</span>
             <svg className="w-5 h-5" fill="none" stroke="#7c3aed" strokeWidth={2} viewBox="0 0 20 20"><path d="M3 3h14M5 7h10M7 11h6M9 15h2" /></svg>
@@ -239,7 +239,7 @@ const ProposalTable: React.FC<{
       {/* Table */}
       <div className="overflow-x-auto mt-7">
         {isLoading ? (
-          <div className="py-16 text-center text-muted-foreground">Loading proposals...</div>
+          <div className="py-16 text-center text-gray-400">Loading proposals...</div>
         ) : (
           <table className="min-w-full whitespace-nowrap">
             <thead>
@@ -277,7 +277,7 @@ const ProposalTable: React.FC<{
                       )}
                       <button
                         onClick={() => handleAddTeamMember(row.id)}
-                        className="text-muted-foreground hover:text-violet-600 ml-1 font-bold text-lg leading-none transition-colors"
+                        className="text-gray-400 hover:text-violet-600 ml-1 font-bold text-lg leading-none transition-colors"
                         title="Add team member"
                       >
                         +
@@ -289,7 +289,7 @@ const ProposalTable: React.FC<{
                       value={row.reviewer}
                       onValueChange={(val) => handleReviewerChange(row.id, val)}
                     >
-                      <SelectTrigger className="w-[150px] bg-[#f5f5fa] border border-border text-[#383839b8]">
+                      <SelectTrigger className="w-[150px] bg-[#f5f5fa] border border-gray-200 text-[#383839b8]">
                         <SelectValue placeholder="Reviewer" />
                       </SelectTrigger>
                       <SelectContent>
@@ -321,7 +321,7 @@ const ProposalTable: React.FC<{
           </table>
         )}
         {filtered.length === 0 && !isLoading && (
-          <div className="py-16 text-center text-muted-foreground">No proposals found.</div>
+          <div className="py-16 text-center text-gray-400">No proposals found.</div>
         )}
       </div>
 
@@ -331,7 +331,7 @@ const ProposalTable: React.FC<{
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Proposal?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action <strong className="text-red-500">cannot be undone</strong>. Are you sure you want to permanently delete the proposal <span className="font-medium text-card-foreground">{proposalToDelete?.name}</span>?
+              This action <strong className="text-red-500">cannot be undone</strong>. Are you sure you want to permanently delete the proposal <span className="font-medium text-gray-700">{proposalToDelete?.name}</span>?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

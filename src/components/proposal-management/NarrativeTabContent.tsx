@@ -68,7 +68,7 @@ const NarrativeTabContent: React.FC<Props> = ({
       <Button 
         variant="outline" 
         size="sm" 
-        className="flex items-center gap-2 bg-accent hover:bg-accent/80"
+        className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200"
         onClick={onAddField}
       >
         <Plus className="w-4 h-4" />

@@ -107,13 +107,13 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
       />
       
       {/* Modal */}
-      <div className="relative bg-background rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-xl font-semibold text-foreground">Submit a ticket</h2>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900">Submit a ticket</h2>
           <button
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -123,7 +123,7 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Name */}
           <div>
-            <Label htmlFor="name" className="text-sm font-medium text-foreground">
+            <Label htmlFor="name" className="text-sm font-medium text-gray-700">
               Name
             </Label>
             <Input
@@ -138,7 +138,7 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
 
           {/* Email */}
           <div>
-            <Label htmlFor="email" className="text-sm font-medium text-foreground">
+            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
               Email
             </Label>
             <Input
@@ -153,21 +153,21 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
 
           {/* Category */}
           <div>
-            <Label className="text-sm font-medium text-foreground">Category</Label>
+            <Label className="text-sm font-medium text-gray-700">Category</Label>
             <div className="relative mt-1">
               <button
                 type="button"
                 onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 border border-border rounded-md bg-background text-left focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md bg-white text-left focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                <span className={formData.category ? 'text-foreground' : 'text-muted-foreground'}>
+                <span className={formData.category ? 'text-gray-900' : 'text-gray-500'}>
                   {formData.category || 'Select a category'}
                 </span>
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                <ChevronDown className="w-4 h-4 text-gray-400" />
               </button>
               
               {isCategoryOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-background border border-border rounded-md shadow-lg">
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
                   {categories.map((category) => (
                     <button
                       key={category}
@@ -176,7 +176,7 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
                         handleInputChange('category', category);
                         setIsCategoryOpen(false);
                       }}
-                      className="w-full px-3 py-2 text-left hover:bg-accent focus:bg-accent focus:outline-none"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
                     >
                       {category}
                     </button>
@@ -188,7 +188,7 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
 
           {/* Subject */}
           <div>
-            <Label htmlFor="subject" className="text-sm font-medium text-foreground">
+            <Label htmlFor="subject" className="text-sm font-medium text-gray-700">
               Subject
             </Label>
             <Input
@@ -203,7 +203,7 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
 
           {/* Description */}
           <div>
-            <Label htmlFor="description" className="text-sm font-medium text-foreground">
+            <Label htmlFor="description" className="text-sm font-medium text-gray-700">
               Description
             </Label>
             <Textarea
@@ -219,19 +219,19 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
 
           {/* File Upload */}
           <div>
-            <Label className="text-sm font-medium text-foreground">Attached</Label>
+            <Label className="text-sm font-medium text-gray-700">Attached</Label>
             <div
               className={`mt-1 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
                 isDragOver 
-                  ? 'border-primary bg-primary/10' 
-                  : 'border-border hover:border-primary/50'
+                  ? 'border-purple-400 bg-purple-50' 
+                  : 'border-gray-300 hover:border-gray-400'
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
-              <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground mb-2">
+              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 mb-2">
                 Choose a file or drag & drop it here
               </p>
               <Button
@@ -243,7 +243,7 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
               >
                 Browse file
               </Button>
-              <p className="text-xs text-muted-foreground">Maximum size: 25MB</p>
+              <p className="text-xs text-gray-500">Maximum size: 25MB</p>
               
               <input
                 ref={fileInputRef}
@@ -259,12 +259,12 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
             {formData.attachments.length > 0 && (
               <div className="mt-3 space-y-2">
                 {formData.attachments.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
+                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
+                      <p className="text-sm font-medium text-gray-900 truncate">
                         {file.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-gray-500">
                         {formatFileSize(file.size)}
                       </p>
                     </div>
@@ -293,7 +293,7 @@ const SubmitTicketModal: React.FC<SubmitTicketModalProps> = ({ isOpen, onClose }
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
             >
               Submit
             </Button>

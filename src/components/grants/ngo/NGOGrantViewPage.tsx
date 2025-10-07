@@ -88,13 +88,13 @@ const NGOGrantViewPage = () => {
       case 'active':
         return 'bg-green-100 text-green-800';
       case 'closed':
-        return 'bg-muted text-card-foreground';
+        return 'bg-gray-100 text-gray-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'cancelled':
         return 'bg-red-100 text-red-800';
       default:
-        return 'bg-muted text-card-foreground';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -107,7 +107,7 @@ const NGOGrantViewPage = () => {
       case 'overdue':
         return <AlertTriangle className="h-4 w-4 text-red-600" />;
       default:
-        return <Clock className="h-4 w-4 text-muted-foreground" />;
+        return <Clock className="h-4 w-4 text-gray-400" />;
     }
   };
 
@@ -150,7 +150,7 @@ const NGOGrantViewPage = () => {
           </Button>
           <div>
             <h1 className="text-xl font-semibold">Grant Not Found</h1>
-            <p className="text-sm text-muted-foreground mt-1">The requested grant could not be found</p>
+            <p className="text-sm text-gray-600 mt-1">The requested grant could not be found</p>
           </div>
         </div>
       </div>
@@ -166,7 +166,7 @@ const NGOGrantViewPage = () => {
           </Button>
           <div>
             <h1 className="text-xl font-semibold">{grant.grant_name}</h1>
-            <p className="text-sm text-muted-foreground mt-1">Grant Details and Monitoring</p>
+            <p className="text-sm text-gray-600 mt-1">Grant Details and Monitoring</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -214,27 +214,27 @@ const NGOGrantViewPage = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Donor</span>
+              <span className="text-gray-600">Donor</span>
               <span className="font-medium">{grant.donor_name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Amount</span>
+              <span className="text-gray-600">Amount</span>
               <span className="font-medium text-green-600">{formatCurrency(grant.amount)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Start Date</span>
+              <span className="text-gray-600">Start Date</span>
               <span className="font-medium">{new Date(grant.start_date).toLocaleDateString()}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">End Date</span>
+              <span className="text-gray-600">End Date</span>
               <span className="font-medium">{new Date(grant.end_date).toLocaleDateString()}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Program Area</span>
+              <span className="text-gray-600">Program Area</span>
               <span className="font-medium">{grant.program_area || 'Not specified'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Region</span>
+              <span className="text-gray-600">Region</span>
               <span className="font-medium">{grant.region || 'Not specified'}</span>
             </div>
           </CardContent>
@@ -265,7 +265,7 @@ const NGOGrantViewPage = () => {
                 )}
                 className="h-2"
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
+              <div className="flex justify-between text-xs text-gray-500">
                 <span>{new Date(grant.start_date).toLocaleDateString()}</span>
                 <span>{new Date(grant.end_date).toLocaleDateString()}</span>
               </div>
@@ -297,7 +297,7 @@ const NGOGrantViewPage = () => {
             </CardHeader>
             <CardContent>
               {compliance.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-gray-500">
                   No compliance requirements found for this grant.
                 </div>
               ) : (
@@ -308,7 +308,7 @@ const NGOGrantViewPage = () => {
                         {getComplianceStatusIcon(item.status)}
                         <div>
                           <p className="font-medium">{item.requirement}</p>
-                          <p className="text-sm text-muted-foreground">Due: {new Date(item.due_date).toLocaleDateString()}</p>
+                          <p className="text-sm text-gray-600">Due: {new Date(item.due_date).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <Badge className={
@@ -333,7 +333,7 @@ const NGOGrantViewPage = () => {
             </CardHeader>
             <CardContent>
               {reports.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-gray-500">
                   No reports found for this grant.
                 </div>
               ) : (
@@ -342,7 +342,7 @@ const NGOGrantViewPage = () => {
                     <div key={report.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
                         <p className="font-medium">{report.report_type}</p>
-                        <p className="text-sm text-muted-foreground">Due: {new Date(report.due_date).toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-600">Due: {new Date(report.due_date).toLocaleDateString()}</p>
                         {report.submitted_date && (
                           <p className="text-sm text-green-600">Submitted: {new Date(report.submitted_date).toLocaleDateString()}</p>
                         )}
@@ -368,7 +368,7 @@ const NGOGrantViewPage = () => {
               <CardTitle>Grant Documents</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-gray-500">
                 Document management functionality will be implemented here.
               </div>
             </CardContent>

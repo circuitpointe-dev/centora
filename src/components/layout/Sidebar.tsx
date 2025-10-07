@@ -86,7 +86,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
       {/* Sidebar */}
       <div
         className={cn(
-          "bg-sidebar-background border-r border-sidebar-border flex flex-col transition-all duration-300",
+          "bg-white border-r border-gray-200 flex flex-col transition-all duration-300",
           // Mobile: hidden by default, full screen when open
           "fixed left-0 top-0 h-screen z-50",
           // Mobile behavior - hidden until large screens
@@ -98,7 +98,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
       >
         {/* Mobile Close Button */}
         {isMobileOpen && (
-          <div className="lg:hidden p-4 border-b border-sidebar-border">
+          <div className="lg:hidden p-4 border-b border-gray-200">
             <div className="flex justify-end">
               <Button
                 variant="ghost"
@@ -115,7 +115,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         {/* Logo and Brand Header */}
         <div
           className={cn(
-            "p-4 border-b border-sidebar-border shrink-0",
+            "p-4 border-b border-gray-200 shrink-0",
             isMobileOpen ? "block" : "hidden lg:block"
           )}
         >
@@ -179,7 +179,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         {canSwitchModules && (
           <div
             className={cn(
-              "border-t border-sidebar-border p-4 shrink-0",
+              "border-t border-gray-200 p-4 shrink-0",
               isMobileOpen ? "block" : "hidden lg:block"
             )}
           >

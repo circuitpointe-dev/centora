@@ -118,7 +118,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
     <>
       <header
         className={cn(
-          "bg-background border-b border-border px-6 py-3 flex items-center justify-between shadow-sm transition-all duration-300 fixed top-0 z-20 h-16",
+          "bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shadow-sm transition-all duration-300 fixed top-0 z-20 h-16",
           // Responsive positioning: full width on mobile, respect sidebar on desktop
           "left-0 right-0",
           "md:left-16",
@@ -127,12 +127,12 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
       >
         {/* Welcome Message - Hidden on mobile */}
         <div className="hidden md:flex items-center">
-          <h3 className="text-md text-muted-foreground">
+          <h3 className="text-md text-gray-700">
             Welcome,{" "}
-            <span className="text-md text-muted-foreground">
+            <span className="text-md text-gray-700">
               {currentUser.name} of {" "}
             </span>
-            <span className="font-semibold text-foreground">
+            <span className="font-semibold text-gray-900">
               {user?.organization || "Your Organization"}
             </span>
           </h3>
@@ -163,11 +163,11 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
                     <User className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                <ChevronDown className="h-4 w-4 text-gray-500" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-64 bg-background"
+              className="w-64 bg-white dark:bg-gray-800"
               align="end"
               forceMount
             >
@@ -203,22 +203,22 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Mode</span>
                   <div className="flex items-center space-x-2">
-                    <span className={`text-xs ${theme === 'light' ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    <span className={`text-xs ${theme === 'light' ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500'}`}>
                       Light
                     </span>
                     <button
                       onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
                       className={`w-8 h-4 rounded-full transition-colors ${
-                        theme === 'dark' ? 'bg-primary' : 'bg-muted'
+                        theme === 'dark' ? 'bg-purple-600' : 'bg-gray-300'
                       }`}
                     >
                       <div
-                        className={`w-3 h-3 bg-background rounded-full shadow-sm transition-transform ${
+                        className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${
                           theme === 'dark' ? 'translate-x-4' : 'translate-x-0.5'
                         }`}
                       />
                     </button>
-                    <span className={`text-xs ${theme === 'dark' ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    <span className={`text-xs ${theme === 'dark' ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500'}`}>
                       Dark
                     </span>
                   </div>
@@ -232,21 +232,21 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
                   <div className="relative">
                     <button
                       onClick={() => setIsFontSizeOpen(!isFontSizeOpen)}
-                      className="flex items-center space-x-1 px-2 py-1 text-xs border border-border rounded bg-background text-left focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex items-center space-x-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-left focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
-                      <span className="text-xs text-foreground">
+                      <span className="text-xs">
                         {fontSizes.find(f => f.value === fontSize)?.label}
                       </span>
-                      <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                      <ChevronDown className="w-3 h-3 text-gray-400" />
                     </button>
                     
                     {isFontSizeOpen && (
-                      <div className="absolute z-10 right-0 mt-1 w-20 bg-background border border-border rounded shadow-lg">
+                      <div className="absolute z-10 right-0 mt-1 w-20 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
                         {fontSizes.map((size) => (
                           <button
                             key={size.value}
                             onClick={() => handleFontSizeChange(size.value)}
-                            className="w-full px-2 py-1 text-left hover:bg-accent focus:bg-accent focus:outline-none text-xs text-foreground"
+                            className="w-full px-2 py-1 text-left hover:bg-gray-50 dark:hover:bg-gray-600 focus:bg-gray-50 dark:focus:bg-gray-600 focus:outline-none text-xs"
                           >
                             {size.label}
                           </button>

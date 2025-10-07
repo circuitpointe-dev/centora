@@ -403,7 +403,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
   return (
     <LargeSideDialog open={open} onOpenChange={onOpenChange}>
-      <LargeSideDialogContent className="bg-card">
+      <LargeSideDialogContent className="bg-white">
         <ProposalDialogHeader
           proposalTitle={proposalTitle}
           opportunityName={opportunityName}
@@ -418,12 +418,12 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
           {/* Main Content Column */}
           <div className="flex-1 flex flex-col overflow-hidden">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-              <TabsList className="grid w-full grid-cols-6 bg-muted rounded-none border-b">
+              <TabsList className="grid w-full grid-cols-6 bg-gray-50 rounded-none border-b">
                 {tabs.map((tab) => (
                   <TabsTrigger
                     key={tab.id}
                     value={tab.id}
-                    className="data-[state=active]:bg-card data-[state=active]:border-b-2 data-[state=active]:border-violet-600 rounded-none"
+                    className="data-[state=active]:bg-white data-[state=active]:border-b-2 data-[state=active]:border-violet-600 rounded-none"
                   >
                     {tab.label}
                   </TabsTrigger>
