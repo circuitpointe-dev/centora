@@ -50,42 +50,42 @@ const BuildTrainingPlanModal: React.FC<BuildTrainingPlanModalProps> = ({ isOpen,
       />
       
       {/* Modal */}
-      <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden">
+      <div className="relative bg-card rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-border">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Build your training plan</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <h2 className="text-xl font-semibold text-card-foreground">Build your training plan</h2>
+              <p className="text-sm text-muted-foreground mt-1">
                 Choose courses you would like to participate in. Submit for HR approval.
               </p>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colorg"
+              className="p-2 hover:bg-accent rounded-full transition-colors"
             >
-              <X size={20} className="text-gray-500" />
+              <X size={20} className="text-muted-foreground" />
             </button>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-border">
           <div className="flex gap-3">
             <div className="flex-1 relative">
-              <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search....."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:Border-primary focus:outline-none"
+                className="pl-9 pr-4 py-2 w-full border border-border bg-background text-foreground rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
               />
             </div>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:Border-primary focus:outline-none"
+              className="px-3 py-2 border border-border bg-background text-foreground rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
             >
               <option value="">Category</option>
               <option value="management">Management</option>
@@ -96,7 +96,7 @@ const BuildTrainingPlanModal: React.FC<BuildTrainingPlanModalProps> = ({ isOpen,
             <select
               value={selectedSkillLevel}
               onChange={(e) => setSelectedSkillLevel(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:Border-primary focus:outline-none"
+              className="px-3 py-2 border border-border bg-background text-foreground rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
             >
               <option value="">Skill Level</option>
               <option value="beginner">Beginner</option>
@@ -113,20 +113,20 @@ const BuildTrainingPlanModal: React.FC<BuildTrainingPlanModalProps> = ({ isOpen,
               <div
                 key={course.id}
                 onClick={() => toggleCourse(course.id)}
-                className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                className="flex items-center p-4 border border-border rounded-lg hover:bg-accent cursor-pointer transition-colors"
               >
                 <div className="flex-shrink-0 w-5 h-5 mr-3 flex items-center justify-center">
                   {course.checked ? (
-                    <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center">
-                      <Check size={12} className="text-white" />
+                    <div className="w-5 h-5 bg-primary rounded-sm flex items-center justify-center">
+                      <Check size={12} className="text-primary-foreground" />
                     </div>
                   ) : (
-                    <div className="w-5 h-5 border-2 border-gray-300 rounded-sm"></div>
+                    <div className="w-5 h-5 border-2 border-border rounded-sm"></div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-gray-900">{course.name}</div>
-                  <div className="text-sm text-gray-500">{course.duration} | {course.category}</div>
+                  <div className="font-medium text-card-foreground">{course.name}</div>
+                  <div className="text-sm text-muted-foreground">{course.duration} | {course.category}</div>
                 </div>
               </div>
             ))}
@@ -134,7 +134,7 @@ const BuildTrainingPlanModal: React.FC<BuildTrainingPlanModalProps> = ({ isOpen,
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 bg-gray-50">
+        <div className="p-6 border-t border-border bg-muted">
           <div className="flex gap-3 justify-end">
             <Button
               variant="outline"
@@ -145,7 +145,7 @@ const BuildTrainingPlanModal: React.FC<BuildTrainingPlanModalProps> = ({ isOpen,
             </Button>
             <Button
               onClick={handleSubmit}
-              className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               Submit plan
             </Button>
