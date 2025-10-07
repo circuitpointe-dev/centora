@@ -59,6 +59,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const [showOverviewFieldDialog, setShowOverviewFieldDialog] = useState(false);
   const [summary, setSummary] = useState<string>('');
   const [objectives, setObjectives] = useState<string>('');
+  const [dueDate, setDueDate] = useState<string>('');
   const [hydrated, setHydrated] = useState<boolean>(false);
 
   // Template application (kept for compatibility)
@@ -79,9 +80,13 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   // Apply prefilled data when available (editing or template)
   useEffect(() => {
     if (!hydrated && prefilledData) {
+      console.log('[ManualProposalCreationDialog] Loading proposal data:', prefilledData);
+      
       // Handle editing existing proposal
       if (isEditing && prefilledData.proposal) {
         const proposal = prefilledData.proposal;
+        console.log('[ManualProposalCreationDialog] Editing proposal:', proposal);
+        
         const reusedOverview: CustomField[] = proposal.overview_fields || [];
         
         // Extract Summary and Objectives from overview_fields
@@ -103,8 +108,27 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         setLogframeFields(proposal.logframe_fields || []);
         setSummary(summaryField?.value || '');
         setObjectives(objectivesField?.value || '');
+        
+        // Parse and format the due date for input[type="date"]
+        let formattedDueDate = '';
+        if (proposal.due_date) {
+          const date = new Date(proposal.due_date);
+          formattedDueDate = date.toISOString().split('T')[0];
+        }
+        setDueDate(formattedDueDate);
+        
         setBudgetCurrency(proposal.budget_currency || 'USD');
         setBudgetAmount(proposal.budget_amount?.toString() || '');
+        
+        console.log('[ManualProposalCreationDialog] Loaded fields:', {
+          overviewFields: filteredOverviewFields.length,
+          narrativeFields: proposal.narrative_fields?.length || 0,
+          logframeFields: proposal.logframe_fields?.length || 0,
+          summary: summaryField?.value ? 'Yes' : 'No',
+          objectives: objectivesField?.value ? 'Yes' : 'No',
+          dueDate: formattedDueDate,
+        });
+        
         setHydrated(true);
       }
       // Handle template
@@ -170,6 +194,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         budget_currency: budgetCurrency,
         budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
         logframe_fields: logframeFields,
+        dueDate: dueDate || undefined,
       };
 
       // Debounce the save
@@ -179,7 +204,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
       return () => clearTimeout(timeoutId);
     }
-  }, [summary, objectives, overviewFields, narrativeFields, budgetCurrency, budgetAmount, logframeFields, proposalId, hydrated, isEditing]);
+  }, [summary, objectives, overviewFields, narrativeFields, budgetCurrency, budgetAmount, logframeFields, dueDate, proposalId, hydrated, isEditing]);
 
   // Create initial proposal if it doesn't exist (not when editing)
   useEffect(() => {
@@ -215,6 +240,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         ...initialFields,
         budget_currency: budgetCurrency || 'USD',
         budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
+        dueDate: dueDate || undefined,
         attachments: [],
         submission_status: 'draft'
       }, {
@@ -223,7 +249,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         }
       });
     }
-  }, [open, proposalId, proposalTitle, opportunityName, opportunities, prefilledData, summary, objectives, overviewFields, narrativeFields, logframeFields, budgetCurrency, budgetAmount, hydrated, isEditing]);
+  }, [open, proposalId, proposalTitle, opportunityName, opportunities, prefilledData, summary, objectives, overviewFields, narrativeFields, logframeFields, budgetCurrency, budgetAmount, dueDate, hydrated, isEditing]);
 
   // Handle save functionality
   const handleSave = () => {
@@ -241,7 +267,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         budget_currency: budgetCurrency,
         budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
         logframe_fields: logframeFields,
-        submission_status: 'draft'
+        submission_status: 'draft',
+        dueDate: dueDate || undefined,
       });
     }
   };
@@ -263,7 +290,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
         logframe_fields: logframeFields,
         submission_status: 'submitted',
-        status: 'Under Review'
+        status: 'Under Review',
+        dueDate: dueDate || undefined,
       }, {
         onSuccess: () => {
           toast({
@@ -405,6 +433,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
                     objectivesValue={objectives}
                     onSummaryChange={setSummary}
                     onObjectivesChange={setObjectives}
+                    dueDateValue={dueDate}
+                    onDueDateChange={setDueDate}
                   />
                 </TabsContent>
 
