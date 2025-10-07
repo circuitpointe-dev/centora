@@ -51,7 +51,7 @@ const ProposalTable: React.FC<{
   const filtered = proposals
     .filter((p) => {
       const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
-      const matchesStatus = statusFilter === "all" || p.status.toLowerCase() === statusFilter.toLowerCase();
+      const matchesStatus = statusFilter === "all" || (p.status && p.status.toLowerCase() === statusFilter.toLowerCase());
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
@@ -86,9 +86,10 @@ const ProposalTable: React.FC<{
             source: "proposal",
             proposal: proposalToEdit,
             creationContext: {
-              title: proposalToEdit.name,
+              title: proposalToEdit.title || proposalToEdit.name,
               description: `Continue working on ${proposalToEdit.name}`,
-              type: "editing"
+              type: "editing",
+              opportunityId: proposalToEdit.opportunity_id
             }
           }
         }

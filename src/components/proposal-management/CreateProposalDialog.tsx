@@ -85,7 +85,16 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
         });
         break;
       case "create-manually":
-        navigate("/dashboard/fundraising/manual-proposal-creation");
+        navigate("/dashboard/fundraising/manual-proposal-creation", {
+          state: {
+            creationContext: {
+              method: "manual",
+              title,
+              opportunityId,
+              isTemplate
+            }
+          }
+        });
         break;
       default:
         break;

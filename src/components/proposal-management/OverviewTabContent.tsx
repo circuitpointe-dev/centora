@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
 
 type CustomField = {
@@ -20,6 +21,8 @@ type Props = {
   objectivesValue: string;
   onSummaryChange: (value: string) => void;
   onObjectivesChange: (value: string) => void;
+  dueDateValue: string;
+  onDueDateChange: (value: string) => void;
 };
 
 const OverviewTabContent: React.FC<Props> = ({
@@ -31,6 +34,8 @@ const OverviewTabContent: React.FC<Props> = ({
   objectivesValue,
   onSummaryChange,
   onObjectivesChange,
+  dueDateValue,
+  onDueDateChange,
 }) => {
   return (
     <div className="space-y-4">
@@ -54,6 +59,16 @@ const OverviewTabContent: React.FC<Props> = ({
           onChange={(e) => onObjectivesChange(e.target.value)}
         />
       </div>
+      <div>
+        <Label htmlFor="dueDate">Due Date</Label>
+        <Input
+          id="dueDate"
+          type="date"
+          value={dueDateValue}
+          onChange={(e) => onDueDateChange(e.target.value)}
+          className="mt-2"
+        />
+      </div>
 
       {/* Custom Fields */}
       {overviewFields.map((field) => (
@@ -73,7 +88,7 @@ const OverviewTabContent: React.FC<Props> = ({
             id={field.id}
             value={field.value}
             onChange={(e) => onFieldValueChange(field.id, e.target.value)}
-            placeholder={`Enter ${field.name.toLowerCase()}...`}
+            placeholder={`Enter ${field.name?.toLowerCase() || 'value'}...`}
             className="min-h-[120px]"
           />
         </div>
