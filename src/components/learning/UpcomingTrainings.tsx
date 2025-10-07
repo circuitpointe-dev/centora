@@ -19,20 +19,20 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ event }) => {
   const LocationIcon = locationType === 'virtual' ? Monitor : MapPin;
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm border flex items-center justify-between">
+    <div className="bg-card p-4 rounded-lg shadow-sm border border-border flex items-center justify-between">
       <div className="flex-1">
-        <div className="text-sm text-gray-600 mb-2">
-          <div className="font-medium text-gray-900">{date}</div>
+        <div className="text-sm text-muted-foreground mb-2">
+          <div className="font-medium text-card-foreground">{date}</div>
           <div>{time}</div>
         </div>
-        <div className="font-semibold text-gray-900 mb-2">{title}</div>
-        <div className="flex items-center text-sm text-gray-500">
-          <LocationIcon size={16} className="mr-2 text-gray-400" />
+        <div className="font-semibold text-card-foreground mb-2">{title}</div>
+        <div className="flex items-center text-sm text-muted-foreground">
+          <LocationIcon size={16} className="mr-2 text-muted-foreground" />
           <span>{locationDetail}</span>
         </div>
       </div>
       {canJoin && (
-        <button className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">
+        <button className="ml-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors duration-200 text-sm font-medium">
           Join
         </button>
       )}
@@ -89,9 +89,9 @@ const UpcomingTrainings: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
-      <div className="p-6 border-b border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900">Upcoming trainings</h2>
+    <div className="bg-card rounded-lg shadow-sm border border-border">
+      <div className="p-6 border-b border-border">
+        <h2 className="text-lg font-semibold text-card-foreground">Upcoming trainings</h2>
       </div>
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

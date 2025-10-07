@@ -115,7 +115,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         {/* Logo and Brand Header */}
         <div
           className={cn(
-            "p-4 border-b border-gray-200 shrink-0",
+            "p-4 border-b border-sidebar-border shrink-0",
             isMobileOpen ? "block" : "hidden lg:block"
           )}
         >
@@ -186,7 +186,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
             <Button
               variant="ghost"
               className={cn(
-                "w-full justify-start text-left font-light bg-violet-100 text-violet-900 hover:bg-violet-200",
+                "w-full justify-start text-left font-light bg-accent text-accent-foreground hover:bg-accent/80",
                 isCollapsed && !isMobileOpen ? "px-2" : "px-3"
               )}
               onClick={toggleModuleSwitcher}

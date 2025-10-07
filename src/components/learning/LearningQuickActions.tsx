@@ -13,13 +13,13 @@ const QuickActionItem: React.FC<QuickActionItemProps> = ({ icon: Icon, label, ac
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center justify-between py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-left"
+      className="w-full flex items-center justify-between py-3 px-4 rounded-lg hover:bg-accent transition-colors duration-200 text-left"
     >
       <div className="flex items-center space-x-3">
-        <Icon size={20} className="text-gray-500" />
-        <span className="font-medium text-gray-900">{label}</span>
+        <Icon size={20} className="text-muted-foreground" />
+        <span className="font-medium text-card-foreground">{label}</span>
       </div>
-      {ActionIcon && <ActionIcon size={16} className="text-gray-400" />}
+      {ActionIcon && <ActionIcon size={16} className="text-muted-foreground" />}
     </button>
   );
 };
@@ -29,9 +29,9 @@ const LearningQuickActions: React.FC = () => {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm border">
-      <div className="p-6 border-b border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900">Quick action</h2>
+      <div className="bg-card rounded-lg shadow-sm border border-border">
+      <div className="p-6 border-b border-border">
+        <h2 className="text-lg font-semibold text-card-foreground">Quick action</h2>
       </div>
       <div className="p-6 space-y-1">
         <QuickActionItem

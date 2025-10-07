@@ -8,13 +8,13 @@ interface AlertItemProps {
   iconColor?: string;
 }
 
-const AlertItem: React.FC<AlertItemProps> = ({ icon: Icon, title, description, iconColor = "text-gray-500" }) => {
+const AlertItem: React.FC<AlertItemProps> = ({ icon: Icon, title, description, iconColor = "text-muted-foreground" }) => {
   return (
-    <div className="flex items-start space-x-3 py-4 border-b last:border-b-0 border-gray-100">
+    <div className="flex items-start space-x-3 py-4 border-b last:border-b-0 border-border">
       <Icon size={20} className={`${iconColor} mt-0.5`} />
       <div className="min-w-0 flex-1">
-        <div className="font-medium text-gray-900 text-sm">{title}</div>
-        <div className="text-sm text-gray-500 mt-1">{description}</div>
+        <div className="font-medium text-card-foreground text-sm">{title}</div>
+        <div className="text-sm text-muted-foreground mt-1">{description}</div>
       </div>
     </div>
   );
@@ -22,9 +22,9 @@ const AlertItem: React.FC<AlertItemProps> = ({ icon: Icon, title, description, i
 
 const LearningAlerts: React.FC = () => {
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
-      <div className="p-6 border-b border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900">Alerts</h2>
+    <div className="bg-card rounded-lg shadow-sm border border-border">
+      <div className="p-6 border-b border-border">
+        <h2 className="text-lg font-semibold text-card-foreground">Alerts</h2>
       </div>
       <div className="p-6 pt-0">
         <AlertItem

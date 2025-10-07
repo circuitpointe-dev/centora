@@ -31,7 +31,7 @@ const ModuleSwitcher = ({ currentModule, isCollapsed, onModuleSwitch }: ModuleSw
       <div className="p-4 space-y-2">
         {!isCollapsed && (
           <div className="mb-3">
-            <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
               Switch Module
             </h3>
           </div>
@@ -50,8 +50,8 @@ const ModuleSwitcher = ({ currentModule, isCollapsed, onModuleSwitch }: ModuleSw
                 "w-full justify-start text-left font-light transition-colors",
                 isCollapsed ? "px-2" : "px-3",
                 isCurrentModule 
-                  ? "bg-violet-700 text-white hover:bg-violet-800" 
-                  : "hover:bg-violet-100 hover:text-violet-900"
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                  : "hover:bg-accent hover:text-accent-foreground"
               )}
               onClick={() => onModuleSwitch(moduleId)}
             >

@@ -12,15 +12,15 @@ const StatCard: React.FC<StatCardProps> = ({ icon: Icon, iconColor, value, label
   const bgColorClass = iconColor.replace('text-', 'bg-');
   
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border">
+    <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
       <div className="flex items-center justify-between mb-4">
         <div className={`p-3 rounded-full bg-opacity-10 ${bgColorClass}`}>
           <Icon size={20} className={iconColor} />
         </div>
       </div>
       <div className="space-y-1">
-        <div className="text-2xl font-bold text-gray-900">{value}</div>
-        <div className="text-sm text-gray-500">{label}</div>
+        <div className="text-2xl font-bold text-card-foreground">{value}</div>
+        <div className="text-sm text-muted-foreground">{label}</div>
       </div>
     </div>
   );

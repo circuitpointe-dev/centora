@@ -16,12 +16,12 @@ const SidebarHeader = ({ currentModule, isCollapsed }: SidebarHeaderProps) => {
   return (
     <div className="px-4 py-2 shrink-0">
       <div className="flex items-center space-x-3">
-        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100", currentModuleConfig.color)}>
+        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center bg-muted", currentModuleConfig.color)}>
           <currentModuleConfig.icon className="h-5 w-5" />
         </div>
         {!isCollapsed && (
           <div>
-            <h2 className="font-bold text-gray-900 text-sm">{currentModuleConfig.name}</h2>
+            <h2 className="font-bold text-sidebar-foreground text-sm">{currentModuleConfig.name}</h2>
           </div>
         )}
       </div>

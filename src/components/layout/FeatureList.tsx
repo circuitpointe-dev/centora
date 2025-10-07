@@ -130,8 +130,8 @@ const FeatureList = ({
                   "w-full justify-start text-left font-light transition-colors",
                   isCollapsed ? "px-2" : "px-3",
                   isActive
-                    ? "bg-violet-700 text-white hover:bg-violet-800"
-                    : "hover:bg-violet-100 hover:text-violet-900"
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "hover:bg-accent hover:text-accent-foreground"
                 )}
                 onClick={() => onFeatureClick(feature.id)}
               >
@@ -139,7 +139,7 @@ const FeatureList = ({
                   className={cn(
                     "h-4 w-4",
                     isCollapsed ? "" : "mr-3",
-                    isActive ? "text-white" : ""
+                    isActive ? "text-primary-foreground" : ""
                   )}
                 />
                 {!isCollapsed && (
@@ -152,7 +152,7 @@ const FeatureList = ({
                           <Info
                             className={cn(
                               "h-3 w-3 ml-2 opacity-60 hover:opacity-100 transition-opacity",
-                              isActive ? "text-white" : "text-gray-500"
+                              isActive ? "text-primary-foreground" : "text-muted-foreground"
                             )}
                           />
                         </button>
@@ -166,7 +166,7 @@ const FeatureList = ({
                             <Info
                               className={cn(
                                 "h-3 w-3 ml-2 opacity-60 hover:opacity-100 transition-opacity",
-                                isActive ? "text-white" : "text-gray-500"
+                                isActive ? "text-primary-foreground" : "text-muted-foreground"
                               )}
                             />
                           </button>

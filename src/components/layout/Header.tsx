@@ -209,7 +209,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
                     <button
                       onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
                       className={`w-8 h-4 rounded-full transition-colors ${
-                        theme === 'dark' ? 'bg-purple-600' : 'bg-gray-300'
+                        theme === 'dark' ? 'bg-primary' : 'bg-muted'
                       }`}
                     >
                       <div
@@ -232,21 +232,21 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
                   <div className="relative">
                     <button
                       onClick={() => setIsFontSizeOpen(!isFontSizeOpen)}
-                      className="flex items-center space-x-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-left focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="flex items-center space-x-1 px-2 py-1 text-xs border border-border rounded bg-background text-left focus:outline-none focus:ring-2 focus:ring-primary"
                     >
-                      <span className="text-xs">
+                      <span className="text-xs text-foreground">
                         {fontSizes.find(f => f.value === fontSize)?.label}
                       </span>
-                      <ChevronDown className="w-3 h-3 text-gray-400" />
+                      <ChevronDown className="w-3 h-3 text-muted-foreground" />
                     </button>
                     
                     {isFontSizeOpen && (
-                      <div className="absolute z-10 right-0 mt-1 w-20 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
+                      <div className="absolute z-10 right-0 mt-1 w-20 bg-background border border-border rounded shadow-lg">
                         {fontSizes.map((size) => (
                           <button
                             key={size.value}
                             onClick={() => handleFontSizeChange(size.value)}
-                            className="w-full px-2 py-1 text-left hover:bg-gray-50 dark:hover:bg-gray-600 focus:bg-gray-50 dark:focus:bg-gray-600 focus:outline-none text-xs"
+                            className="w-full px-2 py-1 text-left hover:bg-accent focus:bg-accent focus:outline-none text-xs text-foreground"
                           >
                             {size.label}
                           </button>
