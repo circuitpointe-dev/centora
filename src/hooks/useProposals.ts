@@ -23,9 +23,6 @@ export interface Proposal {
   updated_at?: string;
   created_by?: string;
   org_id?: string;
-  summary?: string;
-  objectives?: string;
-  description?: string;
 }
 
 export interface ProposalTeamMember {
@@ -64,10 +61,7 @@ export const useProposals = () => {
           budget_amount,
           logframe_fields,
           attachments,
-          submission_status,
-          summary,
-          objectives,
-          description
+          submission_status
         `)
         .eq('org_id', user.org_id)
         .order('created_at', { ascending: false });
@@ -101,10 +95,7 @@ export const useProposals = () => {
         budget_amount: proposal.budget_amount,
         logframe_fields: proposal.logframe_fields,
         attachments: proposal.attachments,
-        submission_status: proposal.submission_status,
-        summary: proposal.summary,
-        objectives: proposal.objectives,
-        description: proposal.description
+        submission_status: proposal.submission_status
       }));
     },
     enabled: !!user?.org_id,
