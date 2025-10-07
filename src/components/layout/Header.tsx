@@ -26,6 +26,8 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Checkbox } from "@/components/ui/checkbox";
 import UserProfileDialog from "./UserProfileDialog";
 import SettingsDialog from "./SettingsDialog";
 import NotificationDropdown from "./NotificationDropdown";
@@ -42,6 +44,24 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
   const [showLogoutDialog, setShowLogoutDialog] = React.useState(false);
   const [showProfileDialog, setShowProfileDialog] = React.useState(false);
   const [showSettingsDialog, setShowSettingsDialog] = React.useState(false);
+  const [isFontSizeOpen, setIsFontSizeOpen] = React.useState(false);
+
+  const {
+    theme,
+    setTheme,
+    fontSize,
+    setFontSize,
+    alwaysShowCaptions,
+    setAlwaysShowCaptions,
+    useDyslexiaFriendlyFont,
+    setUseDyslexiaFriendlyFont,
+  } = useTheme();
+
+  const fontSizes = [
+    { value: 'small', label: 'Small' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'large', label: 'Large' },
+  ] as const;
 
   // User data from profile hook or auth context fallback
   const currentUser = {
@@ -62,6 +82,36 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
 
     // Navigate to login page
     navigate("/login", { replace: true });
+  };
+
+  const handleThemeChange = (newTheme: 'light' | 'dark') => {
+    setTheme(newTheme);
+    toast({
+      title: "Theme Updated",
+      description: `Switched to ${newTheme} mode.`,
+    });
+  };
+
+  const handleFontSizeChange = (newSize: 'small' | 'medium' | 'large') => {
+    setFontSize(newSize);
+    setIsFontSizeOpen(false);
+    toast({
+      title: "Font Size Updated",
+      description: `Font size changed to ${newSize}.`,
+    });
+  };
+
+  const handleAccessibilityChange = (setting: string, value: boolean) => {
+    if (setting === 'captions') {
+      setAlwaysShowCaptions(value);
+    } else if (setting === 'dyslexia') {
+      setUseDyslexiaFriendlyFont(value);
+    }
+    
+    toast({
+      title: "Accessibility Setting Updated",
+      description: `${setting === 'captions' ? 'Captions' : 'Dyslexia-friendly font'} ${value ? 'enabled' : 'disabled'}.`,
+    });
   };
 
   return (
@@ -117,7 +167,7 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-56 bg-white"
+              className="w-64 bg-white dark:bg-gray-800"
               align="end"
               forceMount
             >
@@ -147,12 +197,100 @@ const Header = ({ sidebarCollapsed }: HeaderProps) => {
                 <span>Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              
+              {/* Theme Toggle */}
+              <div className="px-2 py-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Mode</span>
+                  <div className="flex items-center space-x-2">
+                    <span className={`text-xs ${theme === 'light' ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500'}`}>
+                      Light
+                    </span>
+                    <button
+                      onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
+                      className={`w-8 h-4 rounded-full transition-colors ${
+                        theme === 'dark' ? 'bg-purple-600' : 'bg-gray-300'
+                      }`}
+                    >
+                      <div
+                        className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${
+                          theme === 'dark' ? 'translate-x-4' : 'translate-x-0.5'
+                        }`}
+                      />
+                    </button>
+                    <span className={`text-xs ${theme === 'dark' ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500'}`}>
+                      Dark
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Font Size Selector */}
+              <div className="px-2 py-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Font size</span>
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsFontSizeOpen(!isFontSizeOpen)}
+                      className="flex items-center space-x-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-left focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      <span className="text-xs">
+                        {fontSizes.find(f => f.value === fontSize)?.label}
+                      </span>
+                      <ChevronDown className="w-3 h-3 text-gray-400" />
+                    </button>
+                    
+                    {isFontSizeOpen && (
+                      <div className="absolute z-10 right-0 mt-1 w-20 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
+                        {fontSizes.map((size) => (
+                          <button
+                            key={size.value}
+                            onClick={() => handleFontSizeChange(size.value)}
+                            className="w-full px-2 py-1 text-left hover:bg-gray-50 dark:hover:bg-gray-600 focus:bg-gray-50 dark:focus:bg-gray-600 focus:outline-none text-xs"
+                          >
+                            {size.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Accessibility Options */}
+              <div className="px-2 py-1.5 space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="captions"
+                    checked={alwaysShowCaptions}
+                    onCheckedChange={(checked) => handleAccessibilityChange('captions', checked as boolean)}
+                    className="h-3 w-3"
+                  />
+                  <label htmlFor="captions" className="text-xs cursor-pointer">
+                    Always show captions
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="dyslexia"
+                    checked={useDyslexiaFriendlyFont}
+                    onCheckedChange={(checked) => handleAccessibilityChange('dyslexia', checked as boolean)}
+                    className="h-3 w-3"
+                  />
+                  <label htmlFor="dyslexia" className="text-xs cursor-pointer">
+                    Use dyslexia-friendly font
+                  </label>
+                </div>
+              </div>
+
+              <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="cursor-pointer bg-red-50 text-red-600 hover:bg-red-100 hover:text-black focus:bg-red-100 focus:text-black"
+                className="cursor-pointer bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-700 dark:hover:text-red-300 focus:bg-red-100 dark:focus:bg-red-900/30 focus:text-red-700 dark:focus:text-red-300"
                 onClick={() => setShowLogoutDialog(true)}
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+                <span>Logout</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
