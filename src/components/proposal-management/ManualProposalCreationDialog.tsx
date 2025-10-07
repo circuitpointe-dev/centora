@@ -96,16 +96,25 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
     if (prefilledData?.proposal && prefilledData?.source === 'proposal') {
       // Proposal reuse - copy all fields from existing proposal
       const reusedOverview: CustomField[] = prefilledData.proposal.overview_fields || [];
-      setOverviewFields(reusedOverview);
-      setNarrativeFields(prefilledData.proposal.narrative_fields || []);
-      setLogframeFields(prefilledData.proposal.logframe_fields || []);
-      // Try to hydrate Summary/Objectives from overview fields if present
+      
+      // Extract Summary and Objectives from overview_fields
       const summaryField = reusedOverview.find(f => f.id === 'summary' || f.name?.toLowerCase() === 'summary');
       const objectivesField = reusedOverview.find(f => f.id === 'objectives' || f.name?.toLowerCase() === 'objectives');
-      const narrativeFirst = (prefilledData.proposal.narrative_fields || []).find((f: any) => f?.name)?.value;
-      const objectivesFromNarrative = (prefilledData.proposal.narrative_fields || []).find((f: any) => (f?.name || '').toLowerCase().includes('objectives'))?.value;
-      setSummary((prefilledData.proposal.summary || summaryField?.value || prefilledData.proposal.description || narrativeFirst) || '');
-      setObjectives((prefilledData.proposal.objectives || objectivesField?.value || objectivesFromNarrative) || '');
+      
+      // Filter out summary and objectives from overview fields to avoid duplication
+      const filteredOverviewFields = reusedOverview.filter(f => 
+        f.id !== 'summary' && f.id !== 'objectives' && 
+        f.name?.toLowerCase() !== 'summary' && f.name?.toLowerCase() !== 'objectives'
+      );
+      
+      setOverviewFields(filteredOverviewFields);
+      setNarrativeFields(prefilledData.proposal.narrative_fields || []);
+      setLogframeFields(prefilledData.proposal.logframe_fields || []);
+      
+      // Set Summary and Objectives state from overview_fields
+      setSummary(summaryField?.value || '');
+      setObjectives(objectivesField?.value || '');
+      
       setBudgetCurrency(prefilledData.proposal.budget_currency || '');
       setBudgetAmount(prefilledData.proposal.budget_amount?.toString() || '');
       setHydrated(true);
