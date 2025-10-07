@@ -72,21 +72,21 @@ const LessonPage: React.FC<LessonPageProps> = ({ lessonId, courseId }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-card shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate(`/dashboard/learning/enrolled-course-${courseId}`)}
-                className="flex items-center text-gray-600 hover:text-gray-900"
+                className="flex items-center text-muted-foreground hover:text-card-foreground"
               >
                 <ArrowLeft size={20} className="mr-2" />
                 <span className="text-sm font-medium">Back to Course workspace</span>
               </button>
-              <span className="text-gray-400">/</span>
-              <span className="text-sm text-gray-900">Module 2: Advanced features of digital tools</span>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-sm text-card-foreground">Module 2: Advanced features of digital tools</span>
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@ const LessonPage: React.FC<LessonPageProps> = ({ lessonId, courseId }) => {
               {/* Video Placeholder */}
               <div className="w-full h-full bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
                 <div className="text-center text-white">
-                  <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-20 h-20 bg-card bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Play size={32} />
                   </div>
                   <p className="text-lg font-medium">Video Lesson</p>
@@ -125,7 +125,7 @@ const LessonPage: React.FC<LessonPageProps> = ({ lessonId, courseId }) => {
                     <div className="flex items-center space-x-4">
                       <button
                         onClick={handlePlayPause}
-                        className="hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition-colors"
+                        className="hover:bg-card hover:bg-opacity-20 p-2 rounded-full transition-colors"
                       >
                         {isPlaying ? <Pause size={20} /> : <Play size={20} />}
                       </button>
@@ -135,13 +135,13 @@ const LessonPage: React.FC<LessonPageProps> = ({ lessonId, courseId }) => {
                     </div>
                     
                     <div className="flex items-center space-x-2">
-                      <button className="hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition-colors">
+                      <button className="hover:bg-card hover:bg-opacity-20 p-2 rounded-full transition-colors">
                         <span className="text-sm">CC</span>
                       </button>
-                      <button className="hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition-colors">
+                      <button className="hover:bg-card hover:bg-opacity-20 p-2 rounded-full transition-colors">
                         <Volume2 size={20} />
                       </button>
-                      <button className="hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition-colors">
+                      <button className="hover:bg-card hover:bg-opacity-20 p-2 rounded-full transition-colors">
                         <Maximize size={20} />
                       </button>
                     </div>
@@ -152,21 +152,21 @@ const LessonPage: React.FC<LessonPageProps> = ({ lessonId, courseId }) => {
           </div>
 
           {/* Resources Section */}
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Resources</h3>
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h3 className="text-lg font-semibold text-card-foreground mb-4">Resources</h3>
             <div className="space-y-3">
               {resources.map((resource, index) => (
                 <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
                   <div className="flex items-center space-x-3">
                     <span className="text-2xl">{resource.icon}</span>
                     <div>
-                      <p className="font-medium text-gray-900">{resource.name}</p>
+                      <p className="font-medium text-card-foreground">{resource.name}</p>
                       {resource.size && (
-                        <p className="text-sm text-gray-500">{resource.size}</p>
+                        <p className="text-sm text-muted-foreground">{resource.size}</p>
                       )}
                     </div>
                   </div>
-                  <button className="flex items-center space-x-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                  <button className="flex items-center space-x-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                     <Download size={16} />
                     <span>Download</span>
                   </button>
@@ -175,43 +175,43 @@ const LessonPage: React.FC<LessonPageProps> = ({ lessonId, courseId }) => {
             </div>
             
             <div className="flex justify-end mt-6">
-              <button className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+              <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg font-medium transition-colors">
                 Next
               </button>
             </div>
           </div>
 
           {/* Comments/Discussion Section */}
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="bg-card rounded-lg shadow-sm border p-6">
             <div className="flex items-center space-x-2 mb-6">
-              <MessageCircle size={20} className="text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Comments / Discussion</h3>
+              <MessageCircle size={20} className="text-muted-foreground" />
+              <h3 className="text-lg font-semibold text-card-foreground">Comments / Discussion</h3>
             </div>
             
             {/* Existing Comments */}
             <div className="space-y-4 mb-6">
               {comments.map((comment) => (
-                <div key={comment.id} className="border-l-4 border-gray-200 pl-4">
+                <div key={comment.id} className="border-l-4 border-border pl-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <span className="font-medium text-gray-900">{comment.author}</span>
-                    <span className="text-sm text-gray-500">{comment.date}</span>
+                    <span className="font-medium text-card-foreground">{comment.author}</span>
+                    <span className="text-sm text-muted-foreground">{comment.date}</span>
                   </div>
-                  <p className="text-gray-700">{comment.content}</p>
+                  <p className="text-card-foreground">{comment.content}</p>
                 </div>
               ))}
             </div>
             
             {/* Add Comment */}
             <div className="space-y-3">
-              <div className="border border-gray-300 rounded-lg">
+              <div className="border border-border rounded-lg">
                 <textarea
                   placeholder="Add a comment..."
-                  className="w-full p-4 border-0 rounded-lg resize-none focus:ring-0 focus:outline-none"
+                  className="w-full p-4 border-0 rounded-lg resize-none focus:ring-0 focus:outline-none bg-background text-foreground"
                   rows={3}
                 ></textarea>
               </div>
               <div className="flex justify-end">
-                <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg font-medium transition-colors">
                   Post
                 </button>
               </div>
@@ -219,16 +219,16 @@ const LessonPage: React.FC<LessonPageProps> = ({ lessonId, courseId }) => {
           </div>
 
           {/* Lesson Navigation */}
-          <div className="flex justify-between items-center bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex justify-between items-center bg-card rounded-lg shadow-sm border p-6">
             <button
               onClick={() => handleLessonNavigation('previous')}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+              className="px-6 py-2 border border-border bg-background text-foreground rounded-lg hover:bg-accent font-medium transition-colors"
             >
               Previous lesson
             </button>
             <button
               onClick={() => handleLessonNavigation('next')}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+              className="px-6 py-2 border border-border bg-background text-foreground rounded-lg hover:bg-accent font-medium transition-colors"
             >
               Next lesson
             </button>

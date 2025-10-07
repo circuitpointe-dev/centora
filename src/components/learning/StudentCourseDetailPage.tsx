@@ -183,7 +183,7 @@ const StudentCourseDetailPage: React.FC<StudentCourseDetailPageProps> = ({ cours
                   {learningObjectives.map((objective, index) => (
                     <li key={index} className="flex items-start">
                       <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                        <div className="w-2 h-2 rounded-full bg-purple-600"></div>
+                        <div className="w-2 h-2 rounded-full bg-primary"></div>
                       </span>
                       <span className="ml-3 text-card-foreground">{objective}</span>
                     </li>
@@ -193,10 +193,10 @@ const StudentCourseDetailPage: React.FC<StudentCourseDetailPageProps> = ({ cours
 
               {/* Action Buttons */}
               <div className="flex justify-end space-x-3 pt-6 border-t border-border">
-                <button className="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-card-foreground hover:bg-gray-50">
+                <button className="px-6 py-2 border border-border bg-background text-foreground rounded-md text-sm font-medium hover:bg-accent">
                   Next lesson
                 </button>
-                <button className={`px-6 py-2 text-white rounded-md text-sm font-medium ${getStatusButtonColor()}`}>
+                <button className={`px-6 py-2 text-primary-foreground rounded-md text-sm font-medium ${getStatusButtonColor()}`}>
                   {course.status === 'not-started' ? 'Start Course' : 'Next'}
                 </button>
               </div>
@@ -225,7 +225,7 @@ const StudentCourseDetailPage: React.FC<StudentCourseDetailPageProps> = ({ cours
 
         {/* Bottom Navigation - Consistent across all tabs */}
         <div className="flex justify-between items-center bg-card rounded-lg shadow-sm border p-6 mt-6">
-          <button className="px-4 py-2 border border-gray-300 rounded-md text-card-foreground hover:bg-gray-50 font-medium transition-colors">
+          <button className="px-4 py-2 border border-border bg-background text-foreground rounded-md hover:bg-accent font-medium transition-colors">
             Previous lesson
           </button>
           <button 

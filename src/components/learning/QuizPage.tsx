@@ -176,35 +176,35 @@ const QuizPage: React.FC<QuizPageProps> = ({ quizId, courseId }) => {
     
     if (isSubmitted) {
       if (isCorrect) {
-        return 'bg-green-100 border-green-500 text-green-700';
+        return 'bg-green-100 dark:bg-green-900/20 border-green-500 text-green-700 dark:text-green-200';
       } else if (isSelected && !isCorrect) {
-        return 'bg-red-100 border-red-500 text-red-700';
+        return 'bg-red-100 dark:bg-red-900/20 border-red-500 text-red-700 dark:text-red-200';
       }
     }
     
     if (isSelected) {
-      return 'bg-purple-100 border-purple-500 text-purple-700';
+      return 'bg-primary/10 border-primary text-primary';
     }
     
-    return 'bg-white border-gray-300 text-gray-700 hover:border-gray-400';
+    return 'bg-card border-border text-card-foreground hover:border-border';
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-card shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate(`/dashboard/learning/enrolled-course-${courseId}`)}
-                className="flex items-center text-purple-600 hover:text-purple-700 font-medium"
+                className="flex items-center text-primary hover:text-primary/90 font-medium"
               >
                 <ArrowLeft size={16} className="mr-2" />
                 Back to Course workspace
               </button>
-              <span className="text-gray-400">/</span>
-              <span className="text-sm text-gray-900">Module 2: Advanced features of digital tools</span>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-sm text-card-foreground">Module 2: Advanced features of digital tools</span>
             </div>
           </div>
         </div>
@@ -214,25 +214,25 @@ const QuizPage: React.FC<QuizPageProps> = ({ quizId, courseId }) => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {/* Quiz Header */}
-          <div className="bg-white rounded-xl shadow-sm border p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <div className="bg-card rounded-xl shadow-sm border p-8">
+            <h1 className="text-2xl font-bold text-card-foreground mb-2">
               Quiz: Collaboration basics
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Test your knowledge of digital collaboration tools and practices.
             </p>
           </div>
 
           {/* Quiz Questions */}
-          <div className="bg-white rounded-xl shadow-sm border p-8">
+          <div className="bg-card rounded-xl shadow-sm border p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {quizQuestions.map((question, index) => (
                 <div key={question.id} className="space-y-3">
                   <div>
-                    <h3 className="text-base font-semibold text-gray-900 mb-1">
+                    <h3 className="text-base font-semibold text-card-foreground mb-1">
                       Q{index + 1}: {question.question}
                     </h3>
-                    <p className="text-xs text-gray-500 mb-3">(Select one answer)</p>
+                    <p className="text-xs text-muted-foreground mb-3">(Select one answer)</p>
                   </div>
                   
                   <div className="space-y-2">
@@ -254,7 +254,7 @@ const QuizPage: React.FC<QuizPageProps> = ({ quizId, courseId }) => {
                           <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
                             selectedAnswers[question.id] === optionIndex
                               ? 'border-current bg-current'
-                              : 'border-gray-300'
+                              : 'border-border'
                           }`}>
                             {selectedAnswers[question.id] === optionIndex && (
                               <CheckCircle size={10} className="text-white" />
@@ -276,8 +276,8 @@ const QuizPage: React.FC<QuizPageProps> = ({ quizId, courseId }) => {
                 disabled={isSubmitted || Object.keys(selectedAnswers).length !== quizQuestions.length}
                 className={`px-6 py-2 rounded-md font-medium transition-colors ${
                   isSubmitted || Object.keys(selectedAnswers).length !== quizQuestions.length
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                    : 'bg-primary hover:bg-primary/90 text-primary-foreground'
                 }`}
               >
                 {isSubmitted ? 'Quiz Submitted!' : 'Submit quiz'}
@@ -286,16 +286,16 @@ const QuizPage: React.FC<QuizPageProps> = ({ quizId, courseId }) => {
           </div>
 
           {/* Lesson Navigation */}
-          <div className="flex justify-between items-center bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex justify-between items-center bg-card rounded-lg shadow-sm border p-6">
             <button
               onClick={() => handleLessonNavigation('previous')}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+              className="px-4 py-2 border border-border rounded-md text-card-foreground hover:bg-accent font-medium transition-colors"
             >
               Previous lesson
             </button>
             <button
               onClick={() => handleLessonNavigation('next')}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+              className="px-4 py-2 border border-border rounded-md text-card-foreground hover:bg-accent font-medium transition-colors"
             >
               Next lesson
             </button>
