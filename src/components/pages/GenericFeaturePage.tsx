@@ -49,6 +49,7 @@ import LessonPage from "../learning/LessonPage";
 import AssignmentPage from "../learning/AssignmentPage";
 import QuizPage from "../learning/QuizPage";
 import LiveSessionsPage from "../learning/LiveSessionsPage";
+import HelpCenterPage from "../learning/HelpCenterPage";
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -211,6 +212,10 @@ const GenericFeaturePage = () => {
 
   if (module === 'learning' && feature === 'live-sessions') {
     return <LiveSessionsPage />;
+  }
+
+  if (module === 'learning' && feature === 'help-center') {
+    return <HelpCenterPage />;
   }
 
   // Student course detail page (from course workspace start/continue buttons)
