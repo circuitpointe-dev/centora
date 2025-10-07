@@ -1,11 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import ManualProposalCreationDialog from '../proposal-management/ManualProposalCreationDialog';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const ManualProposalCreationPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const creationContext = location.state?.creationContext;
 
   useEffect(() => {
     // Open the dialog when the page loads
@@ -23,7 +26,7 @@ const ManualProposalCreationPage = () => {
       <ManualProposalCreationDialog 
         open={isOpen} 
         onOpenChange={handleClose}
-        proposalTitle="New Proposal"
+        proposalTitle={creationContext?.title || "New Proposal"}
         opportunityName="Selected Opportunity"
       />
     </div>

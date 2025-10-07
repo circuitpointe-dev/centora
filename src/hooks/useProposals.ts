@@ -85,7 +85,7 @@ export const useProposals = () => {
   });
 };
 
-export const useCreateProposal = () => {
+export const useCreateProposal = (options?: { silent?: boolean }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -133,10 +133,13 @@ export const useCreateProposal = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['proposals'] });
-      toast({
-        title: "Success",
-        description: "Proposal created successfully",
-      });
+      // Only show toast if not silent (for auto-creation)
+      if (!options?.silent) {
+        toast({
+          title: "Success",
+          description: "Proposal created successfully",
+        });
+      }
     },
     onError: (error) => {
       toast({
@@ -148,7 +151,7 @@ export const useCreateProposal = () => {
   });
 };
 
-export const useUpdateProposal = () => {
+export const useUpdateProposal = (options?: { silent?: boolean }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -195,10 +198,13 @@ export const useUpdateProposal = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['proposals'] });
-      toast({
-        title: "Success",
-        description: "Proposal updated successfully",
-      });
+      // Only show toast if not silent (for auto-save)
+      if (!options?.silent) {
+        toast({
+          title: "Success",
+          description: "Proposal saved successfully",
+        });
+      }
     },
     onError: (error) => {
       toast({

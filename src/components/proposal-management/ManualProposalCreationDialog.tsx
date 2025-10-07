@@ -21,6 +21,7 @@ import { useProposalTeamMembers, useAddProposalTeamMember, useRemoveProposalTeam
 import { useProposalComments, useAddProposalComment } from "@/hooks/useProposalComments";
 import { useOpportunities } from "@/hooks/useOpportunities";
 import { useLocation } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 type CustomField = {
   id: string;
@@ -136,8 +137,9 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const [showSubmissionTrackerDialog, setShowSubmissionTrackerDialog] = useState(false);
 
   // Hooks
-  const createProposal = useCreateProposal();
-  const updateProposal = useUpdateProposal();
+  const createProposal = useCreateProposal({ silent: true }); // Silent auto-creation
+  const updateProposal = useUpdateProposal({ silent: true }); // Silent auto-save
+  const explicitUpdateProposal = useUpdateProposal(); // For explicit saves with toast
   const { data: opportunities = [] } = useOpportunities();
   const { data: teamMembers = [], refetch: refetchTeamMembers } = useProposalTeamMembers(proposalId || "");
   const addTeamMember = useAddProposalTeamMember();
@@ -219,7 +221,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   // Handle save functionality
   const handleSave = () => {
     if (proposalId) {
-      updateProposal.mutate({
+      explicitUpdateProposal.mutate({
         id: proposalId,
         overview_fields: overviewFields,
         narrative_fields: narrativeFields,
@@ -234,7 +236,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   // Handle submit functionality
   const handleSubmit = () => {
     if (proposalId) {
-      updateProposal.mutate({
+      explicitUpdateProposal.mutate({
         id: proposalId,
         overview_fields: overviewFields,
         narrative_fields: narrativeFields,
@@ -243,6 +245,13 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         logframe_fields: logframeFields,
         submission_status: 'submitted',
         status: 'Under Review'
+      }, {
+        onSuccess: () => {
+          toast({
+            title: "Success",
+            description: "Proposal submitted for review successfully",
+          });
+        }
       });
     }
   };
@@ -346,8 +355,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
           onSave={handleSave}
           onSubmit={handleSubmit}
           onSubmissionTracker={() => setShowSubmissionTrackerDialog(true)}
-          isSaving={updateProposal.isPending}
-          isSubmitting={updateProposal.isPending}
+          isSaving={explicitUpdateProposal.isPending}
+          isSubmitting={explicitUpdateProposal.isPending}
         />
 
         <div className="flex-1 flex overflow-hidden">
