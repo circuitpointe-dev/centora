@@ -82,9 +82,9 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
 
   const getModuleIcon = (status: string, completedLessons: number, totalLessons: number) => {
     if (status === 'completed') {
-      return <CheckCircle size={20} className="text-purple-600" />;
+      return <CheckCircle size={20} className="text-primary" />;
     }
-    return <Circle size={20} className="text-gray-400" />;
+    return <Circle size={20} className="text-muted-foreground" />;
   };
 
   const handleLessonClick = (lesson: Lesson, moduleId: string) => {
@@ -114,15 +114,15 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
   const getLessonIcon = (type: string) => {
     switch (type) {
       case 'lesson':
-       	return <Play size={16} className="text-gray-500" />;
+       	return <Play size={16} className="text-muted-foreground" />;
       case 'resources':
-        return <FileText size={16} className="text-gray-500" />;
+        return <FileText size={16} className="text-muted-foreground" />;
       case 'assignment':
-        return <FileText size={16} className="text-gray-500" />;
+        return <FileText size={16} className="text-muted-foreground" />;
       case 'quiz':
-        return <ClipboardList size={16} className="text-gray-500" />;
+        return <ClipboardList size={16} className="text-muted-foreground" />;
       default:
-        return <Play size={16} className="text-gray-500" />;
+        return <Play size={16} className="text-muted-foreground" />;
     }
   };
 
@@ -130,19 +130,19 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
     switch (status) {
       case 'completed':
         return (
-          <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
+          <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-200 rounded-full">
             Completed
           </span>
         );
       case 'in-progress':
         return (
-          <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 rounded-full">
+          <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-200 rounded-full">
             In-progress
           </span>
         );
       case 'not-started':
         return (
-          <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-500">
+          <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-muted-foreground">
             Not started →
           </span>
         );
@@ -154,11 +154,11 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
   const getModuleStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'border-purple-200 bg-purple-50';
+        return 'border-primary/20 bg-primary/5';
       case 'in-progress':
-        return 'border-gray-200 bg-white';
+        return 'border-border bg-card';
       default:
-        return 'border-gray-200 bg-white';
+        return 'border-border bg-card';
     }
   };
 
@@ -174,16 +174,16 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
               {getModuleIcon(module.status, module.completedLessons, module.totalLessons)}
               <div className="flex-1">
                 <div className="flex items-center space-x-3">
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-card-foreground">
                     Module {module.id}: {module.title}
                   </h3>
                   {module.status === 'completed' && (
-                    <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-md text-sm font-medium">
+                    <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 rounded-md text-sm font-medium">
                       Next
                     </button>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {module.completedLessons}/{module.totalLessons} lessons
                   {module.status === 'completed' ? ' completed' : ''}
                 </p>
@@ -193,35 +193,35 @@ const ProgressiveModules: React.FC<ProgressiveModulesProps> = ({ courseId = '1' 
             {module.lessons.length > 0 && (
               <button
                 onClick={() => toggleModule(module.id)}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="p-2 hover:bg-accent rounded-full"
               >
                 {module.isExpanded ? (
-                  <ChevronUp size={20} className="text-gray-500" />
+                  <ChevronUp size={20} className="text-muted-foreground" />
                 ) : (
-                  <ChevronDown size={20} className="text-gray-500" />
+                  <ChevronDown size={20} className="text-muted-foreground" />
                 )}
               </button>
             )}
           </div>
 
           {module.isExpanded && module.lessons.length > 0 && (
-            <div className="mt-4 border-t border-gray-200 pt-4">
+            <div className="mt-4 border-t border-border pt-4">
               <div className="space-y-3">
                 {module.lessons.map((lesson) => (
                   <div 
                     key={lesson.id} 
-                    className={`flex items-center justify-between py-2 ${['lesson', 'assignment', 'quiz'].includes(lesson.type) ? 'cursor-pointer hover:bg-gray-50 px-2 rounded-lg' : ''}`}
+                    className={`flex items-center justify-between py-2 ${['lesson', 'assignment', 'quiz'].includes(lesson.type) ? 'cursor-pointer hover:bg-accent px-2 rounded-lg' : ''}`}
                     onClick={() => ['lesson', 'assignment', 'quiz'].includes(lesson.type) && handleLessonClick(lesson, module.id)}
                   >
                     <div className="flex items-center space-x-3 flex-1">
                       {getLessonIcon(lesson.type)}
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm font-medium text-gray-900">
+                          <span className="text-sm font-medium text-card-foreground">
                             {lesson.title}
                           </span>
                           {lesson.hasDropdown && (
-                            <ChevronDown size={16} className="text-gray-400" />
+                            <ChevronDown size={16} className="text-muted-foreground" />
                           )}
                         </div>
                       </div>

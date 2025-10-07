@@ -61,11 +61,11 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'instructor':
-        return 'bg-purple-100 text-purple-700';
+        return 'bg-primary/10 text-primary';
       case 'student':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-200';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -113,24 +113,24 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
     <div className="space-y-6">
       {/* Discussion Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Discussion</h3>
+        <h3 className="text-lg font-semibold text-card-foreground">Discussion</h3>
         <div className="flex items-center space-x-4">
           {/* Search Bar */}
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search....."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 w-64"
+              className="pl-10 pr-4 py-2 border border-border bg-background text-foreground rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary w-64"
             />
           </div>
           
           {/* Create Post Button */}
           <button
             onClick={handleCreatePost}
-            className="flex items-center space-x-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-md text-sm font-medium transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-sm font-medium transition-colors"
           >
             <Plus size={16} />
             <span>Create post</span>
@@ -141,12 +141,12 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h3 className="text-lg font-semibold text-card-foreground mb-4">Filters</h3>
             
             <div className="space-y-3">
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-700">Sort by</h4>
+                <h4 className="text-sm font-medium text-muted-foreground">Sort by</h4>
                 {(['all', 'new', 'my-posts'] as const).map((filter) => (
                   <label key={filter} className="flex items-center space-x-3 cursor-pointer">
                     <input
@@ -155,9 +155,9 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
                       value={filter}
                       checked={selectedFilter === filter}
                       onChange={() => setSelectedFilter(filter)}
-                      className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                      className="w-4 h-4 text-primary focus:ring-primary border-border"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-muted-foreground">
                       {filter === 'all' ? 'All posts' : filter === 'new' ? 'New' : 'My posts'}
                     </span>
                   </label>
@@ -174,7 +174,7 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
               filteredPosts.map((post) => (
                 <div
                   key={post.id}
-                  className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
+                  className="bg-card rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
                 >
                   {/* Post Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -189,14 +189,14 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
                       {/* Author Info */}
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="font-medium text-gray-900 text-sm">
+                          <span className="font-medium text-card-foreground text-sm">
                             {post.author.name}
                           </span>
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getRoleBadgeColor(post.author.role)}`}>
                             {getRoleLabel(post.author.role)}
                           </span>
                         </div>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {post.timestamp}
                         </span>
                       </div>
@@ -205,22 +205,22 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
 
                   {/* Post Content */}
                   <div className="mb-4">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h4 className="text-lg font-semibold text-card-foreground mb-2">
                       {post.topic}
                     </h4>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-muted-foreground leading-relaxed">
                       {post.content}
                     </p>
                   </div>
 
                   {/* Post Engagement */}
-                  <div className="flex items-center space-x-6 pt-4 border-t border-gray-100">
+                  <div className="flex items-center space-x-6 pt-4 border-t border-border">
                     <button
                       onClick={() => handleLike(post.id)}
                       className={`flex items-center space-x-2 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                         post.isLiked
-                          ? 'bg-purple-100 text-purple-700'
-                          : 'text-gray-600 hover:bg-gray-100'
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-muted-foreground hover:bg-accent'
                       }`}
                     >
                       <ThumbsUp size={16} />
@@ -229,7 +229,7 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
                     
                     <button
                       onClick={() => handleComment(post.id)}
-                      className="flex items-center space-x-2 px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                      className="flex items-center space-x-2 px-3 py-1 rounded-md text-sm font-medium text-muted-foreground hover:bg-accent transition-colors"
                     >
                       <MessageCircle size={16} />
                       <span>{post.comments} Comments</span>
@@ -239,16 +239,16 @@ const DiscussionTab: React.FC<DiscussionTabProps> = ({ courseId = '1' }) => {
               ))
             ) : (
               <div className="text-center py-12">
-                <div className="text-gray-400 mb-4">
+                <div className="text-muted-foreground mb-4">
                   <MessageCircle size={48} className="mx-auto" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No posts found</h3>
-                <p className="text-gray-500 mb-4">
+                <h3 className="text-lg font-medium text-card-foreground mb-2">No posts found</h3>
+                <p className="text-muted-foreground mb-4">
                   {searchQuery ? 'No posts match your search criteria.' : 'No posts available for this filter.'}
                 </p>
                 <button
                   onClick={handleCreatePost}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-sm font-medium transition-colors"
                 >
                   Create the first post
                 </button>

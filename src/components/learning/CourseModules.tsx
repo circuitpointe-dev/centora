@@ -50,15 +50,15 @@ const mockModules: Module[] = [
 const getLessonIcon = (type: Lesson['type']) => {
   switch (type) {
     case 'play':
-      return <Play size={16} className="text-gray-500" />;
+      return <Play size={16} className="text-muted-foreground" />;
     case 'video':
-      return <Video size={16} className="text-gray-500" />;
+      return <Video size={16} className="text-muted-foreground" />;
     case 'assignment':
-      return <FileText size={16} className="text-gray-500" />;
+      return <FileText size={16} className="text-muted-foreground" />;
     case 'quiz':
-      return <HelpCircle size={16} className="text-gray-500" />;
+      return <HelpCircle size={16} className="text-muted-foreground" />;
     default:
-      return <Circle size={16} className="text-gray-500" />;
+      return <Circle size={16} className="text-muted-foreground" />;
   }
 };
 
@@ -104,24 +104,24 @@ const CourseModules: React.FC<CourseModulesProps> = ({ courseId = '1' }) => {
   return (
     <div className="space-y-4">
       {mockModules.map((module) => (
-        <div key={module.id} className="bg-white rounded-lg shadow-sm border">
+        <div key={module.id} className="bg-card rounded-lg shadow-sm border">
           <button
             className="flex items-center justify-between w-full p-4 text-left focus:outline-none"
             onClick={() => toggleModule(module.id)}
           >
             <div className="flex items-center space-x-3">
               <Circle size={16} className="text-gray-400" />
-              <span className="font-medium text-gray-900">Module {module.id} : {module.title}</span>
+              <span className="font-medium text-card-foreground">Module {module.id} : {module.title}</span>
             </div>
             {expandedModule === module.id ? (
-              <ChevronUp size={20} className="text-gray-500" />
+              <ChevronUp size={20} className="text-muted-foreground" />
             ) : (
-              <ChevronDown size={20} className="text-gray-500" />
+              <ChevronDown size={20} className="text-muted-foreground" />
             )}
           </button>
 
           {expandedModule === module.id && module.lessons.length > 0 && (
-            <div className="border-t border-gray-100 px-4 py-2">
+            <div className="border-t border-border px-4 py-2">
               <div className="space-y-2 pl-8">
                 {module.lessons.map((lesson) => {
                   const isClickable = lesson.type === 'play' || lesson.type === 'video' || lesson.type === 'assignment';
@@ -130,9 +130,9 @@ const CourseModules: React.FC<CourseModulesProps> = ({ courseId = '1' }) => {
                   return (
                     <div 
                       key={lesson.id} 
-                      className={`flex items-center space-x-3 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors ${
+                      className={`flex items-center space-x-3 py-2 text-sm text-card-foreground hover:text-card-foreground transition-colors ${
                         isClickable 
-                          ? 'cursor-pointer hover:bg-gray-50 px-2 rounded-lg' 
+                          ? 'cursor-pointer hover:bg-accent px-2 rounded-lg' 
                           : ''
                       }`}
                       onClick={() => {

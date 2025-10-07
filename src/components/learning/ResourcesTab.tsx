@@ -73,7 +73,7 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ courseId = '1' }) => {
       case 'audio':
         return <Volume2 size={20} className="text-green-500" />;
       default:
-        return <FileText size={20} className="text-gray-500" />;
+        return <FileText size={20} className="text-muted-foreground" />;
     }
   };
 
@@ -107,12 +107,12 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ courseId = '1' }) => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
+          <div className="bg-card rounded-lg shadow-sm border p-6">
+            <h3 className="text-lg font-semibold text-card-foreground mb-4">Filters</h3>
             
             <div className="space-y-3">
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-700">Sort by</h4>
+                <h4 className="text-sm font-medium text-muted-foreground">Sort by</h4>
                 {(['all', 'pdf', 'video', 'audio'] as const).map((filter) => (
                   <label key={filter} className="flex items-center space-x-3 cursor-pointer">
                     <input
@@ -121,9 +121,9 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ courseId = '1' }) => {
                       value={filter}
                       checked={selectedFilter === filter}
                       onChange={() => setSelectedFilter(filter)}
-                      className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                      className="w-4 h-4 text-primary focus:ring-primary border-border"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-muted-foreground">
                       {getResourceTypeLabel(filter)}
                     </span>
                   </label>
@@ -135,19 +135,19 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ courseId = '1' }) => {
 
         {/* Resources Content */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="bg-card rounded-lg shadow-sm border p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">All resources</h3>
+              <h3 className="text-lg font-semibold text-card-foreground">All resources</h3>
               
               {/* Search Bar */}
               <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search resources..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 w-64"
+                  className="border border-border bg-background text-foreground rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
             </div>
@@ -158,25 +158,25 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ courseId = '1' }) => {
                 filteredResources.map((resource) => (
                   <div
                     key={resource.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent transition-colors"
                   >
                     <div className="flex items-center space-x-4 flex-1">
                       {getResourceIcon(resource.type)}
                       <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                        <h4 className="text-sm font-medium text-card-foreground mb-1">
                           {resource.title}
                         </h4>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           {resource.description}
                         </p>
                         <div className="flex items-center space-x-4 mt-1">
                           {resource.duration && (
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-muted-foreground">
                               Duration: {resource.duration}
                             </span>
                           )}
                           {resource.size && (
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-muted-foreground">
                               Size: {resource.size}
                             </span>
                           )}
@@ -186,7 +186,7 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ courseId = '1' }) => {
                     
                     <button
                       onClick={() => handleDownload(resource)}
-                      className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium transition-colors"
+                      className="flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-sm font-medium transition-colors"
                     >
                       <Download size={16} />
                       <span>Download</span>
@@ -195,10 +195,10 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ courseId = '1' }) => {
                 ))
               ) : (
                 <div className="text-center py-8">
-                  <div className="text-gray-400 mb-2">
+                  <div className="text-muted-foreground mb-2">
                     <FileText size={48} className="mx-auto" />
                   </div>
-                  <p className="text-gray-500">
+                  <p className="text-muted-foreground">
                     {searchQuery ? 'No resources found matching your search.' : 'No resources available for this filter.'}
                   </p>
                 </div>

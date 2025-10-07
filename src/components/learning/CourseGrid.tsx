@@ -20,23 +20,23 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseClick }) => {
   const getTagColor = (tag: string) => {
     switch (tag.toLowerCase()) {
       case 'beginner':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200';
       case 'self-paced':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200';
       case 'wcag 2.2':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
   return (
     <div 
-      className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer"
+      className="bg-card rounded-lg shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer"
       onClick={() => onCourseClick(course.id)}
     >
       {/* Course Thumbnail */}
-      <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+      <div className="h-48 bg-muted flex items-center justify-center overflow-hidden">
         <img 
           src="/src/assets/images/dummy image.png" 
           alt={course.title}
@@ -46,8 +46,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseClick }) => {
 
       {/* Course Content */}
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{course.title}</h3>
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{course.description}</p>
+        <h3 className="font-semibold text-card-foreground mb-2 line-clamp-2">{course.title}</h3>
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{course.description}</p>
         
         {/* Tags */}
         <div className="flex flex-wrap gap-1 mb-3">
@@ -63,9 +63,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseClick }) => {
 
         {/* Price and Enroll Button */}
         <div className="flex items-center justify-between">
-          <div className="font-semibold text-gray-900">${course.price}</div>
+          <div className="font-semibold text-card-foreground">${course.price}</div>
           <button 
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
             onClick={(e) => {
               e.stopPropagation();
               onCourseClick(course.id);
@@ -144,19 +144,19 @@ const CourseGrid: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div className="bg-card rounded-lg shadow-sm border border-border">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Catalogue</h2>
+          <h2 className="text-lg font-semibold text-card-foreground">Catalogue</h2>
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search....."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none"
+              className="pl-9 pr-4 py-2 border border-border bg-background text-foreground rounded-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
           />
           </div>
         </div>
@@ -176,14 +176,14 @@ const CourseGrid: React.FC = () => {
 
         {/* Pagination */}
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             Showing {((currentPage - 1) * coursesPerPage) + 1} to {Math.min(currentPage * coursesPerPage, totalCourses)} of {totalCourses} catalogue
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-3 py-1 border border-border bg-background text-foreground rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent"
             >
               <ArrowLeft size={16} className="inline mr-1" />
               Previous
@@ -191,7 +191,7 @@ const CourseGrid: React.FC = () => {
             <button
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-3 py-1 border border-border bg-background text-foreground rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent"
             >
               Next
               <ArrowRight size={16} className="inline ml-1" />
