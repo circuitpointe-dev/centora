@@ -111,11 +111,19 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         
         // Parse and format the due date for input[type="date"]
         let formattedDueDate = '';
-        if (proposal.due_date) {
-          const date = new Date(proposal.due_date);
-          formattedDueDate = date.toISOString().split('T')[0];
+        const rawDueDate = proposal.due_date || proposal.dueDate;
+        if (rawDueDate && rawDueDate !== 'No due date') {
+          try {
+            const date = new Date(rawDueDate);
+            if (!isNaN(date.getTime())) {
+              formattedDueDate = date.toISOString().split('T')[0];
+            }
+          } catch (e) {
+            console.warn('[ManualProposalCreationDialog] Invalid due date:', rawDueDate);
+          }
         }
         setDueDate(formattedDueDate);
+        console.log('[ManualProposalCreationDialog] Due date set to:', formattedDueDate);
         
         setBudgetCurrency(proposal.budget_currency || 'USD');
         setBudgetAmount(proposal.budget_amount?.toString() || '');
