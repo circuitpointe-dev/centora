@@ -94,14 +94,14 @@ const HelpCenterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Help center</h1>
+          <h1 className="text-3xl font-bold text-foreground">Help center</h1>
           <Button 
             onClick={handleSubmitTicket}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Plus className="w-4 h-4 mr-2" />
             Submit a ticket
@@ -110,24 +110,24 @@ const HelpCenterPage: React.FC = () => {
 
         {/* Search Bar */}
         <div className="relative mb-8">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
           <Input
             type="text"
             placeholder="Search....."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 py-6 text-base bg-white border-gray-200"
+            className="pl-10 py-6 text-base bg-background border-border"
           />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="p-6 bg-white">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
+            <Card className="p-6 bg-card">
+              <h2 className="text-lg font-semibold text-card-foreground mb-4">Filters</h2>
               
               <div className="space-y-3">
-                <p className="text-sm font-medium text-gray-700 mb-3">Sort by</p>
+                <p className="text-sm font-medium text-card-foreground mb-3">Sort by</p>
                 
                 <label className="flex items-center space-x-3 cursor-pointer">
                   <input
@@ -136,9 +136,9 @@ const HelpCenterPage: React.FC = () => {
                     value="all"
                     checked={selectedFilter === 'all'}
                     onChange={() => setSelectedFilter('all')}
-                    className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                    className="w-4 h-4 text-primary focus:ring-primary"
                   />
-                  <span className={`text-sm ${selectedFilter === 'all' ? 'text-purple-600 font-medium' : 'text-gray-700'}`}>
+                  <span className={`text-sm ${selectedFilter === 'all' ? 'text-primary font-medium' : 'text-card-foreground'}`}>
                     All
                   </span>
                 </label>
@@ -150,9 +150,9 @@ const HelpCenterPage: React.FC = () => {
                     value="account"
                     checked={selectedFilter === 'account'}
                     onChange={() => setSelectedFilter('account')}
-                    className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                    className="w-4 h-4 text-primary focus:ring-primary"
                   />
-                  <span className={`text-sm ${selectedFilter === 'account' ? 'text-purple-600 font-medium' : 'text-gray-700'}`}>
+                  <span className={`text-sm ${selectedFilter === 'account' ? 'text-primary font-medium' : 'text-card-foreground'}`}>
                     Account
                   </span>
                 </label>
@@ -164,9 +164,9 @@ const HelpCenterPage: React.FC = () => {
                     value="courses"
                     checked={selectedFilter === 'courses'}
                     onChange={() => setSelectedFilter('courses')}
-                    className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                    className="w-4 h-4 text-primary focus:ring-primary"
                   />
-                  <span className={`text-sm ${selectedFilter === 'courses' ? 'text-purple-600 font-medium' : 'text-gray-700'}`}>
+                  <span className={`text-sm ${selectedFilter === 'courses' ? 'text-primary font-medium' : 'text-card-foreground'}`}>
                     Courses
                   </span>
                 </label>
@@ -178,9 +178,9 @@ const HelpCenterPage: React.FC = () => {
                     value="technical"
                     checked={selectedFilter === 'technical'}
                     onChange={() => setSelectedFilter('technical')}
-                    className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                    className="w-4 h-4 text-primary focus:ring-primary"
                   />
-                  <span className={`text-sm ${selectedFilter === 'technical' ? 'text-purple-600 font-medium' : 'text-gray-700'}`}>
+                  <span className={`text-sm ${selectedFilter === 'technical' ? 'text-primary font-medium' : 'text-card-foreground'}`}>
                     Technical
                   </span>
                 </label>
@@ -190,34 +190,34 @@ const HelpCenterPage: React.FC = () => {
 
           {/* FAQ Content */}
           <div className="lg:col-span-3">
-            <Card className="bg-white p-6">
+            <Card className="bg-card p-6">
               {filteredFAQs.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-gray-500">No results found. Try adjusting your search or filters.</p>
+                  <p className="text-muted-foreground">No results found. Try adjusting your search or filters.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {filteredFAQs.map((faq) => (
                     <div 
                       key={faq.id} 
-                      className="border-b border-gray-200 last:border-b-0"
+                      className="border-b border-border last:border-b-0"
                     >
                       <button
                         onClick={() => toggleFAQ(faq.id)}
-                        className="w-full flex items-center justify-between py-4 text-left hover:bg-gray-50 transition-colors rounded px-2"
+                        className="w-full flex items-center justify-between py-4 text-left hover:bg-accent transition-colors rounded px-2"
                       >
-                        <span className="font-medium text-gray-900 pr-4">
+                        <span className="font-medium text-card-foreground pr-4">
                           {faq.question}
                         </span>
                         {expandedFAQ === faq.id ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                          <ChevronUp className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                          <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                         )}
                       </button>
                       
                       {expandedFAQ === faq.id && (
-                        <div className="pb-4 px-2 text-sm text-gray-600">
+                        <div className="pb-4 px-2 text-sm text-muted-foreground">
                           {faq.answer}
                         </div>
                       )}
@@ -227,11 +227,11 @@ const HelpCenterPage: React.FC = () => {
               )}
 
               {/* Contact Support Button */}
-              <div className="flex justify-center mt-8 pt-6 border-t border-gray-200">
+              <div className="flex justify-center mt-8 pt-6 border-t border-border">
                 <Button
                   onClick={handleContactSupport}
                   variant="outline"
-                  className="bg-black hover:bg-gray-800 text-white border-black"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground border-primary"
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   Contact support

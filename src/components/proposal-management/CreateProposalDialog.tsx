@@ -108,7 +108,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[500px] w-full bg-white text-black rounded-lg shadow-xl">
+      <DialogContent className="max-w-[500px] w-full bg-card text-black rounded-lg shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center">Create a New Proposal</DialogTitle>
           <DialogDescription className="text-center">Set title, pick an opportunity, then choose how to create.</DialogDescription>

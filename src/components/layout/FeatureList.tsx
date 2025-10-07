@@ -152,7 +152,7 @@ const FeatureList = ({
                           <Info
                             className={cn(
                               "h-3 w-3 ml-2 opacity-60 hover:opacity-100 transition-opacity",
-                              isActive ? "text-white" : "text-gray-500"
+                              isActive ? "text-white" : "text-muted-foreground"
                             )}
                           />
                         </button>
@@ -166,7 +166,7 @@ const FeatureList = ({
                             <Info
                               className={cn(
                                 "h-3 w-3 ml-2 opacity-60 hover:opacity-100 transition-opacity",
-                                isActive ? "text-white" : "text-gray-500"
+                                isActive ? "text-white" : "text-muted-foreground"
                               )}
                             />
                           </button>
