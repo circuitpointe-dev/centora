@@ -310,13 +310,19 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
   // Handle submit functionality
   const handleSubmit = () => {
-    if (proposalId) {
-      const mergedOverview = [
-        { id: 'summary', name: 'Summary', value: summary },
-        { id: 'objectives', name: 'Objectives', value: objectives },
-        ...overviewFields,
-      ];
+    const normalizedOverview = overviewFields.filter(f => {
+      const lname = (f.name || f.id || '').toString().toLowerCase();
+      return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
+    });
 
+    const mergedOverview = [
+      { id: 'summary', name: 'Summary', value: summary },
+      { id: 'objectives', name: 'Objectives', value: objectives },
+      ...normalizedOverview,
+    ];
+
+    if (proposalId) {
+      // Proposal exists, just submit it
       explicitUpdateProposal.mutate({
         id: proposalId,
         overview_fields: mergedOverview,
@@ -329,6 +335,33 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         dueDate: dueDate || undefined,
       }, {
         onSuccess: () => {
+          toast({
+            title: "Success",
+            description: "Proposal submitted for review successfully",
+          });
+        }
+      });
+    } else {
+      // Proposal doesn't exist yet, create it and submit immediately
+      const selectedOpportunity = opportunities.find(opp => opp.title === opportunityName);
+      const contextOpportunityId = prefilledData?.creationContext?.opportunityId;
+      const finalOpportunityId = contextOpportunityId || selectedOpportunity?.id;
+
+      createProposal.mutate({
+        name: (prefilledData?.creationContext?.title || prefilledData?.proposal?.title || proposalTitle) + (prefilledData?.proposal ? ' (Copy)' : ''),
+        title: (prefilledData?.creationContext?.title || prefilledData?.proposal?.title || proposalTitle) + (prefilledData?.proposal ? ' (Copy)' : ''),
+        opportunity_id: finalOpportunityId,
+        overview_fields: mergedOverview,
+        narrative_fields: narrativeFields,
+        logframe_fields: logframeFields,
+        budget_currency: budgetCurrency || 'USD',
+        budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
+        dueDate: dueDate || undefined,
+        attachments: [],
+        submission_status: 'submitted'
+      }, {
+        onSuccess: (proposal) => {
+          setProposalId(proposal.id);
           toast({
             title: "Success",
             description: "Proposal submitted for review successfully",
