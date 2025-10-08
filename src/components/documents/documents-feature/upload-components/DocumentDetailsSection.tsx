@@ -78,10 +78,20 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
     }
 
     try {
-      // Upload to Supabase Storage (bucket: documents)
+      // Get current user
+      const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !currentUser) {
+        console.error('Auth error:', authError);
+        toast.error('Failed to authenticate user');
+        return;
+      }
+
+      // Get user's org_id
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('org_id')
+        .eq('id', currentUser.id)
         .single();
 
       if (profileError) {
