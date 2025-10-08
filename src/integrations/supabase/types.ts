@@ -2973,6 +2973,10 @@ export type Database = {
           name: string
         }[]
       }
+      get_user_org_id: {
+        Args: { _user_id: string }
+        Returns: string
+      }
       get_user_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -2992,6 +2996,14 @@ export type Database = {
       }
       is_super_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_user_org_admin: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_user_super_admin: {
+        Args: { _user_id: string }
         Returns: boolean
       }
       list_org_users: {
