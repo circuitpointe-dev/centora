@@ -54,14 +54,26 @@ import LMSAuthorDashboard from '../learning/author/LMSAuthorDashboard';
 import CourseAnalyticsPage from '../learning/author/CourseAnalyticsPage';
 import CreateCoursePage from '../learning/author/CreateCoursePage';
 import CreateCourseStep2 from '../learning/author/CreateCourseStep2';
+import CourseBuilder from '../learning/author/CourseBuilder';
+import QuizCreator from '../learning/author/QuizCreator';
+import AssignmentCreator from '../learning/author/AssignmentCreator';
+import VideoLessonCreator from '../learning/author/VideoLessonCreator';
+import TextLessonCreator from '../learning/author/TextLessonCreator';
+import CoursePreview from '../learning/author/CoursePreview';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Debug logging
+  console.log('GenericFeaturePage - module:', module, 'feature:', feature);
+  console.log('URL pathname:', window.location.pathname);
+  console.log('Feature type:', typeof feature);
+  console.log('Feature includes courses:', feature?.includes('courses'));
+  console.log('Feature includes builder:', feature?.includes('builder'));
   const userType = user?.userType;
-  
-  console.log('[GenericFeaturePage] module:', module, 'feature:', feature);
+
 
   // Redirect /dashboard/documents to /dashboard/documents/documents
   useEffect(() => {
@@ -292,12 +304,47 @@ const GenericFeaturePage = () => {
 
   // Create Course route (when clicking "Create course" button)
   if (module === 'lmsAuthor' && feature === 'create-course') {
+    console.log('Matched Create Course route:', feature);
     return <CreateCoursePage />;
   }
 
   // Create Course Step 2 route
   if (module === 'lmsAuthor' && feature === 'create-course-step2') {
+    console.log('Matched Create Course Step 2 route:', feature);
     return <CreateCourseStep2 />;
+  }
+
+  // Course Builder route - specific pattern
+  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('builder')) {
+    console.log('Matched Course Builder route:', feature);
+    return <CourseBuilder />;
+  }
+
+  // Course Preview route - more specific pattern
+  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('preview')) {
+    console.log('Matched Course Preview route:', feature);
+    return <CoursePreview />;
+  }
+
+  // Lesson Creator routes - more specific patterns
+  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('quiz')) {
+    console.log('Matched Quiz Creator route:', feature);
+    return <QuizCreator />;
+  }
+
+  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('assignment')) {
+    console.log('Matched Assignment Creator route:', feature);
+    return <AssignmentCreator />;
+  }
+
+  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('video')) {
+    console.log('Matched Video Creator route:', feature);
+    return <VideoLessonCreator />;
+  }
+
+  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('text')) {
+    console.log('Matched Text Creator route:', feature);
+    return <TextLessonCreator />;
   }
 
   // LMS Admin module routes
@@ -346,11 +393,18 @@ const GenericFeaturePage = () => {
     return <RoleRequestPage />;
   }
 
+  // Fallback for unmatched routes
+  console.log('No route matched for:', module, feature);
   return (
-    <GenericFeatureUI 
-      moduleName={getModuleName(module || '')} 
-      featureName={getFeatureName(feature || '')}
-    />
+    <div className="p-6">
+      <h1 className="text-2xl font-bold text-foreground mb-4">Route Not Found</h1>
+      <p className="text-muted-foreground mb-4">
+        Module: {module}, Feature: {feature}
+      </p>
+      <p className="text-muted-foreground">
+        This route is not yet implemented or the URL pattern doesn't match any existing routes.
+      </p>
+    </div>
   );
 };
 

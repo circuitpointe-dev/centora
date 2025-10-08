@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, Filter, Plus, Grid3X3, List, MoreHorizontal, Eye, DollarSign, Users, BookOpen, ChevronDown } from 'lucide-react';
+import { Search, Bell, Filter, Plus, Grid3X3, List, MoreHorizontal, Eye, DollarSign, Users, BookOpen, ChevronDown, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -24,6 +24,11 @@ interface Course {
 
 const LMSAuthorDashboard: React.FC = () => {
   const navigate = useNavigate();
+
+  // Navigate to Course Builder
+  const handleEditCourse = (courseId: string) => {
+    navigate(`/dashboard/lmsAuthor/courses/${courseId}/builder`);
+  };
   const [searchQuery, setSearchQuery] = useState('');
   const [courseSearchQuery, setCourseSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -284,13 +289,23 @@ const LMSAuthorDashboard: React.FC = () => {
                     )}
                   </div>
                   
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-4"
-                    onClick={() => navigate(`/dashboard/lmsAuthor/course-analytics-${course.id}`)}
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View course analytics
-                  </Button>
+                  <div className="flex space-x-2 mt-4">
+                    <Button 
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => handleEditCourse(course.id)}
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Course
+                    </Button>
+                    <Button 
+                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                      onClick={() => navigate(`/dashboard/lmsAuthor/course-analytics-${course.id}`)}
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Analytics
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}

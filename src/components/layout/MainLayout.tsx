@@ -19,7 +19,9 @@ const MainLayout = () => {
 
   useEffect(() => {
     // Redirect if user doesn't have access to current module
-    if (user && module && !subscribedModules.includes(module)) {
+    // Allow lmsAuthor and lmsAdmin for testing
+    const allowedTestModules = ['lmsAuthor', 'lmsAdmin'];
+    if (user && module && !subscribedModules.includes(module) && !allowedTestModules.includes(module)) {
       const firstModule = subscribedModules[0];
       if (firstModule) {
         navigate(`/dashboard/${firstModule}/dashboard`);
@@ -42,7 +44,9 @@ const MainLayout = () => {
   }
 
   // Check if user has access to the current module
-  if (!subscribedModules.includes(module)) {
+  // Allow lmsAuthor and lmsAdmin for testing
+  const allowedTestModules = ['lmsAuthor', 'lmsAdmin'];
+  if (!subscribedModules.includes(module) && !allowedTestModules.includes(module)) {
     return null; // Will redirect in useEffect
   }
 

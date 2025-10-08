@@ -47,8 +47,9 @@ const CreateCourseStep2: React.FC = () => {
   }, [courseData.courseName]);
 
   const handleBackToStep1 = () => {
-    // For now, just show a message without navigation
-    alert('Going back to step 1');
+    navigate('/dashboard/lmsAuthor/create-course', { 
+      state: { courseData } 
+    });
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,8 +89,12 @@ const CreateCourseStep2: React.FC = () => {
 
       console.log('Course created successfully:', finalCourseData);
       
-      // For now, just show success message without navigation
-      alert('Course created successfully!');
+      // Navigate to Course Builder instead of just showing success message
+      const targetUrl = `/dashboard/lmsAuthor/courses/${finalCourseData.id}/builder`;
+      console.log('Navigating to:', targetUrl);
+      navigate(targetUrl, {
+        state: { courseData: finalCourseData }
+      });
       
     } catch (error) {
       console.error('Error creating course:', error);
@@ -100,8 +105,7 @@ const CreateCourseStep2: React.FC = () => {
   };
 
   const handleCancel = () => {
-    // For now, just show a message without navigation
-    alert('Course creation cancelled');
+    navigate('/dashboard/lmsAuthor/dashboard');
   };
 
   return (
