@@ -66,14 +66,20 @@ const CreateCoursePage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Form submitted:', {
+    
+    // Prepare course data for step 2
+    const courseData = {
       courseName,
       courseDescription,
       courseOverview,
-      coverImage
+      coverImage,
+      coverImagePreview
+    };
+    
+    // Navigate to step 2 with course data
+    navigate('/dashboard/lmsAuthor/create-course-step2', {
+      state: { courseData }
     });
-    // Navigate to next step or show success message
   };
 
   return (
@@ -118,7 +124,6 @@ const CreateCoursePage: React.FC = () => {
                   onChange={(e) => setCourseName(e.target.value)}
                   placeholder="Enter course name"
                   className="w-full"
-                  required
                 />
               </div>
 
@@ -132,7 +137,6 @@ const CreateCoursePage: React.FC = () => {
                   onChange={(e) => setCourseDescription(e.target.value)}
                   placeholder="Enter course description"
                   className="w-full min-h-[100px]"
-                  required
                 />
               </div>
 

@@ -53,6 +53,7 @@ import HelpCenterPage from "../learning/HelpCenterPage";
 import LMSAuthorDashboard from '../learning/author/LMSAuthorDashboard';
 import CourseAnalyticsPage from '../learning/author/CourseAnalyticsPage';
 import CreateCoursePage from '../learning/author/CreateCoursePage';
+import CreateCourseStep2 from '../learning/author/CreateCourseStep2';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -292,6 +293,11 @@ const GenericFeaturePage = () => {
   // Create Course route (when clicking "Create course" button)
   if (module === 'lmsAuthor' && feature === 'create-course') {
     return <CreateCoursePage />;
+  }
+
+  // Create Course Step 2 route
+  if (module === 'lmsAuthor' && feature === 'create-course-step2') {
+    return <CreateCourseStep2 />;
   }
 
   // LMS Admin module routes
