@@ -77,24 +77,8 @@ const ProposalTable: React.FC<{
   const handleDelete = (id: string) => setDeleteId(id);
 
   const handleEdit = (id: string) => {
-    const proposalToEdit = proposals.find(p => p.id === id);
-    if (proposalToEdit) {
-      // Navigate to manual proposal creation with pre-filled data
-      navigate("/dashboard/fundraising/manual-proposal-creation", {
-        state: {
-          prefilledData: {
-            source: "proposal",
-            proposal: proposalToEdit,
-            creationContext: {
-              title: proposalToEdit.title || proposalToEdit.name,
-              description: `Continue working on ${proposalToEdit.name}`,
-              type: "editing",
-              opportunityId: proposalToEdit.opportunity_id
-            }
-          }
-        }
-      });
-    }
+    // Professional flow: navigate with proposalId and let the edit page fetch latest data from DB
+    navigate(`/dashboard/fundraising/manual-proposal-creation?proposalId=${id}`);
   };
 
   // Team member handlers
@@ -451,8 +435,8 @@ const ProposalTable: React.FC<{
             <AlertDialogCancel onClick={() => setShowDeleteAllDialog(false)} disabled={isDeletingAll}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction 
-              className="bg-rose-600 text-white hover:bg-rose-700" 
+            <AlertDialogAction
+              className="bg-rose-600 text-white hover:bg-rose-700"
               onClick={confirmDeleteAll}
               disabled={isDeletingAll}
             >

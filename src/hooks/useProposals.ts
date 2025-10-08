@@ -102,6 +102,52 @@ export const useProposals = () => {
   });
 };
 
+export const useProposalById = (id?: string) => {
+  return useQuery({
+    queryKey: ['proposal', id],
+    enabled: !!id,
+    queryFn: async (): Promise<Proposal> => {
+      const { data: proposal, error } = await supabase
+        .from('proposals')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      return {
+        id: proposal.id,
+        name: proposal.name || proposal.title || 'Untitled Proposal',
+        title: proposal.title,
+        dueDate: proposal.due_date || proposal.duedate || '',
+        team: Array.isArray(proposal.team)
+          ? proposal.team.map((member: any) => ({
+            label: typeof member === 'string'
+              ? member.substring(0, 2).toUpperCase()
+              : member.label || member.name?.substring(0, 2).toUpperCase() || 'NA',
+            img: member.img || member.avatar_url,
+            bg: member.bg || (member.img || member.avatar_url ? undefined : 'bg-purple-100')
+          }))
+          : [],
+        reviewer: proposal.reviewer || 'Unassigned',
+        status: ((proposal.status || 'draft') as Proposal['status']),
+        created_at: proposal.created_at,
+        updated_at: proposal.updated_at,
+        created_by: proposal.created_by,
+        org_id: proposal.org_id,
+        opportunity_id: proposal.opportunity_id,
+        overview_fields: Array.isArray(proposal.overview_fields) ? proposal.overview_fields : [],
+        narrative_fields: Array.isArray(proposal.narrative_fields) ? proposal.narrative_fields : [],
+        budget_currency: proposal.budget_currency,
+        budget_amount: proposal.budget_amount,
+        logframe_fields: Array.isArray(proposal.logframe_fields) ? proposal.logframe_fields : [],
+        attachments: Array.isArray(proposal.attachments) ? proposal.attachments : [],
+        submission_status: proposal.submission_status,
+      };
+    },
+  });
+};
+
 export const useCreateProposal = (options?: { silent?: boolean }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -278,9 +324,9 @@ export const useDeleteAllProposals = () => {
         .eq('org_id', user.org_id);
 
       if (proposalError) throw proposalError;
-      
+
       const proposalIds = proposals?.map(p => p.id) || [];
-      
+
       if (proposalIds.length > 0) {
         // Delete all proposal team members first
         const { error: teamError } = await supabase

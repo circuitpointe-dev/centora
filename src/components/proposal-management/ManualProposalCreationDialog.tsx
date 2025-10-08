@@ -40,16 +40,18 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   proposalTitle?: string;
   opportunityName?: string;
+  prefilledDataProp?: any;
 };
 
 const ManualProposalCreationDialog: React.FC<Props> = ({
   open,
   onOpenChange,
   proposalTitle = "New Proposal",
-  opportunityName = "Selected Opportunity"
+  opportunityName = "Selected Opportunity",
+  prefilledDataProp
 }) => {
   const location = useLocation();
-  const prefilledData = location.state?.prefilledData;
+  const prefilledData = prefilledDataProp ?? location.state?.prefilledData;
   const isEditing = prefilledData?.source === 'proposal' && prefilledData?.creationContext?.type === 'editing';
   const [proposalId, setProposalId] = useState<string | null>(isEditing ? prefilledData.proposal.id : null);
   const [activeTab, setActiveTab] = useState("overview");
@@ -81,34 +83,44 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   useEffect(() => {
     if (!hydrated && prefilledData) {
       console.log('[ManualProposalCreationDialog] Loading proposal data:', prefilledData);
-      
+
       // Handle editing existing proposal
       if (isEditing && prefilledData.proposal) {
         const proposal = prefilledData.proposal;
         console.log('[ManualProposalCreationDialog] Editing proposal:', proposal);
-        
+
         const reusedOverview: CustomField[] = proposal.overview_fields || [];
-        
-        // Extract Summary and Objectives from overview_fields
-        const summaryField = reusedOverview.find(f => 
-          f.id === 'summary' || f.name?.toLowerCase() === 'summary'
-        );
-        const objectivesField = reusedOverview.find(f => 
-          f.id === 'objectives' || f.name?.toLowerCase() === 'objectives'
-        );
-        
-        // Filter out summary and objectives from overview fields to avoid duplication
-        const filteredOverviewFields = reusedOverview.filter(f => 
-          f.id !== 'summary' && f.id !== 'objectives' && 
-          f.name?.toLowerCase() !== 'summary' && f.name?.toLowerCase() !== 'objectives'
-        );
-        
+        const reusedNarrative: CustomField[] = proposal.narrative_fields || [];
+
+        // Robust extraction: search across overview and narrative for likely matches
+        const findByName = (fields: CustomField[], keyword: string) =>
+          fields.find(f => {
+            const n = (f.name || f.id || '').toString().toLowerCase();
+            return n === keyword || n.includes(keyword);
+          });
+
+        const summaryField =
+          findByName(reusedOverview, 'summary') ||
+          findByName(reusedNarrative, 'summary') ||
+          (proposal.summary ? { id: 'summary', name: 'Summary', value: proposal.summary } as CustomField : undefined);
+
+        const objectivesField =
+          findByName(reusedOverview, 'objectives') ||
+          findByName(reusedNarrative, 'objectives') ||
+          (proposal.objectives ? { id: 'objectives', name: 'Objectives', value: proposal.objectives } as CustomField : undefined);
+
+        // Filter out any duplicates of summary/objectives from overview to avoid duplication in UI
+        const filteredOverviewFields = reusedOverview.filter(f => {
+          const lname = (f.name || f.id || '').toString().toLowerCase();
+          return !(lname === 'summary' || lname.includes('summary') || lname === 'objectives' || lname.includes('objectives'));
+        });
+
         setOverviewFields(filteredOverviewFields);
-        setNarrativeFields(proposal.narrative_fields || []);
+        setNarrativeFields(reusedNarrative);
         setLogframeFields(proposal.logframe_fields || []);
         setSummary(summaryField?.value || '');
         setObjectives(objectivesField?.value || '');
-        
+
         // Parse and format the due date for input[type="date"]
         let formattedDueDate = '';
         const rawDueDate = proposal.due_date || proposal.dueDate;
@@ -124,10 +136,10 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         }
         setDueDate(formattedDueDate);
         console.log('[ManualProposalCreationDialog] Due date set to:', formattedDueDate);
-        
+
         setBudgetCurrency(proposal.budget_currency || 'USD');
         setBudgetAmount(proposal.budget_amount?.toString() || '');
-        
+
         console.log('[ManualProposalCreationDialog] Loaded fields:', {
           overviewFields: filteredOverviewFields.length,
           narrativeFields: proposal.narrative_fields?.length || 0,
@@ -136,7 +148,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
           objectives: objectivesField?.value ? 'Yes' : 'No',
           dueDate: formattedDueDate,
         });
-        
+
         setHydrated(true);
       }
       // Handle template
@@ -189,10 +201,15 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   // Auto-save when fields change (only when editing)
   useEffect(() => {
     if (proposalId && hydrated && isEditing) {
+      const normalizedOverview = overviewFields.filter(f => {
+        const lname = (f.name || f.id || '').toString().toLowerCase();
+        return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
+      });
+
       const mergedOverview = [
         { id: 'summary', name: 'Summary', value: summary },
         { id: 'objectives', name: 'Objectives', value: objectives },
-        ...overviewFields,
+        ...normalizedOverview,
       ];
 
       const saveData = {
@@ -224,10 +241,15 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
       const finalOpportunityId = contextOpportunityId || selectedOpportunity?.id;
 
       // Pre-populate fields based on source
+      const normalizedOverview = overviewFields.filter(f => {
+        const lname = (f.name || f.id || '').toString().toLowerCase();
+        return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
+      });
+
       const mergedOverview = [
         { id: 'summary', name: 'Summary', value: summary },
         { id: 'objectives', name: 'Objectives', value: objectives },
-        ...overviewFields,
+        ...normalizedOverview,
       ];
 
       let initialFields = {
@@ -262,12 +284,17 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   // Handle save functionality
   const handleSave = () => {
     if (proposalId) {
+      const normalizedOverview = overviewFields.filter(f => {
+        const lname = (f.name || f.id || '').toString().toLowerCase();
+        return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
+      });
+
       const mergedOverview = [
         { id: 'summary', name: 'Summary', value: summary },
         { id: 'objectives', name: 'Objectives', value: objectives },
-        ...overviewFields,
+        ...normalizedOverview,
       ];
-      
+
       explicitUpdateProposal.mutate({
         id: proposalId,
         overview_fields: mergedOverview,
@@ -289,7 +316,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         { id: 'objectives', name: 'Objectives', value: objectives },
         ...overviewFields,
       ];
-      
+
       explicitUpdateProposal.mutate({
         id: proposalId,
         overview_fields: mergedOverview,

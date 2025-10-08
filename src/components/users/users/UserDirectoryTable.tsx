@@ -63,6 +63,25 @@ export const UserDirectoryTable: React.FC = () => {
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = Math.min(startIndex + usersPerPage, totalUsers);
 
+  // Client-side filtering for instant feedback (first-letter search responsiveness)
+  const displayedUsers = useMemo(() => {
+    const query = (searchQuery || "").trim().toLowerCase();
+    if (!query) return users;
+    return users.filter((u: any) => {
+      const haystack = [
+        u.full_name,
+        u.email,
+        u.department,
+        ...(u.modules || []),
+        ...(u.roles || []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [users, searchQuery]);
+
   const handleAddUser = () => {
     console.log("Add new user (UI-only)");
   };
@@ -77,7 +96,7 @@ export const UserDirectoryTable: React.FC = () => {
     const headers = [
       "Name",
       "Email",
-      "Department", 
+      "Department",
       "Status",
       "Modules",
       "Roles",
@@ -114,20 +133,7 @@ export const UserDirectoryTable: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  if (usersLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="h-10 bg-gray-100 animate-pulse rounded" />
-        <div className="border rounded-lg">
-          <div className="p-4 space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-12 bg-gray-100 animate-pulse rounded" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Keep toolbar mounted at all times to preserve input focus; show loading within the table instead
 
   if (users.length === 0 && searchQuery === "") {
     return (
@@ -189,13 +195,11 @@ export const UserDirectoryTable: React.FC = () => {
 
           <span className="text-sm text-gray-500">
             Showing{" "}
-            <span className="font-medium text-gray-900">{totalUsers}</span>{" "}
-            result{totalUsers === 1 ? "" : "s"}
-            {searchQuery ||
-            filters.status !== "all" ||
-            filters.department !== "all"
-              ? " (filtered)"
-              : ""}
+            <span className="font-medium text-gray-900">
+              {searchQuery ? displayedUsers.length : totalUsers}
+            </span>{" "}
+            result{(searchQuery ? displayedUsers.length : totalUsers) === 1 ? "" : "s"}
+            {searchQuery || filters.status !== "all" || filters.department !== "all" ? " (filtered)" : ""}
           </span>
         </div>
 
@@ -224,7 +228,18 @@ export const UserDirectoryTable: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
+            {usersLoading && (
+              <>
+                {[...Array(5)].map((_, i) => (
+                  <TableRow key={`skeleton-${i}`}>
+                    <TableCell colSpan={6}>
+                      <div className="h-10 bg-gray-100 animate-pulse rounded" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
+            {!usersLoading && (searchQuery ? displayedUsers : users).map((user) => (
               <TableRow key={user.id} className="hover:bg-gray-50">
                 <TableCell>
                   <div>
@@ -286,8 +301,8 @@ export const UserDirectoryTable: React.FC = () => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <UserActionMenu 
-                    user={user as any} 
+                  <UserActionMenu
+                    user={user as any}
                     onStatusChange={refetchUsers}
                   />
                 </TableCell>

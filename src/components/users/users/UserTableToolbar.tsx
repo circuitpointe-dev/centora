@@ -49,6 +49,7 @@ export const UserTableToolbar: React.FC<UserTableToolbarProps> = ({
             placeholder="Search users, departments..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
+            autoFocus
             className="h-10 w-80 rounded-full border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
