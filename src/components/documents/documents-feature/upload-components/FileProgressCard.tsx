@@ -26,7 +26,7 @@ const FileProgressCard = ({
   onRemove 
 }: FileProgressCardProps) => {
   const getFileIcon = (fileName: string) => {
-    const ext = fileName.split('.').pop()?.toLowerCase();
+    const ext = fileName?.split('.').pop()?.toLowerCase();
     return <FileTextIcon className="w-8 h-8 text-blue-600" />;
   };
 
