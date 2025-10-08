@@ -62,10 +62,16 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
 
     try {
       // Upload to Supabase Storage (bucket: documents)
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('org_id')
         .single();
+
+      if (profileError) {
+        console.error('Profile fetch error:', profileError);
+        toast.error('Failed to fetch organization details');
+        return;
+      }
 
       const orgId = profile?.org_id || 'public';
       const storagePath = `${orgId}/${Date.now()}-${selectedFile.name}`;
@@ -102,7 +108,8 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
       onUploadComplete();
 
     } catch (error) {
-      toast.error('Failed to create document');
+      console.error('Document creation error:', error);
+      toast.error('Failed to create document: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
 

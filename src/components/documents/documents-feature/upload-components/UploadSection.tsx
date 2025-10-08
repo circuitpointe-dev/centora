@@ -30,12 +30,15 @@ const UploadSection = ({
   const [fileToDelete, setFileToDelete] = useState<number | null>(null);
 
   const simulateUploadProgress = (file: File) => {
-    const fileWithProgress: FileWithProgress = {
-      ...file,
-      progress: 0,
-      scanComplete: false,
-      id: Math.random().toString(36).substr(2, 9),
-    };
+    const fileWithProgress: FileWithProgress = Object.assign(
+      Object.create(Object.getPrototypeOf(file)),
+      file,
+      {
+        progress: 0,
+        scanComplete: false,
+        id: Math.random().toString(36).substr(2, 9),
+      }
+    );
 
     setFilesWithProgress(prev => [...prev, fileWithProgress]);
 
@@ -43,11 +46,10 @@ const UploadSection = ({
       setFilesWithProgress(prev =>
         prev.map(f =>
           f.id === fileWithProgress.id
-            ? {
-                ...f,
+            ? Object.assign(Object.create(Object.getPrototypeOf(f)), f, {
                 progress: Math.min(f.progress + Math.random() * 30, 100),
                 scanComplete: f.progress >= 100,
-              }
+              })
             : f
         )
       );
@@ -58,7 +60,10 @@ const UploadSection = ({
       setFilesWithProgress(prev =>
         prev.map(f =>
           f.id === fileWithProgress.id
-            ? { ...f, progress: 100, scanComplete: true }
+            ? Object.assign(Object.create(Object.getPrototypeOf(f)), f, {
+                progress: 100,
+                scanComplete: true,
+              })
             : f
         )
       );
