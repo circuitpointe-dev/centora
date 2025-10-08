@@ -41,6 +41,9 @@ import {
   FolderOpen,
   Video,
   HelpCircle,
+  Edit3,
+  Plus,
+  TrendingUp,
 } from 'lucide-react';
 
 interface ModuleFeature {
@@ -172,6 +175,32 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
       { id: 'course-workspace', name: 'Course workspace', icon: FolderOpen },
       { id: 'live-sessions', name: 'Live sessions', icon: Video },
       { id: 'help-center', name: 'Help center', icon: HelpCircle },
+    ]
+  },
+  lmsAuthor: {
+    name: 'LMS Author',
+    icon: Edit3,
+    color: 'text-green-600',
+    features: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'live-sessions', name: 'Live Sessions', icon: Video },
+      { id: 'media-library', name: 'Media Library', icon: FileImage },
+      { id: 'templates', name: 'Templates', icon: FileText },
+      { id: 'quiz-bank', name: 'Quiz Bank', icon: ClipboardCheck },
+    ]
+  },
+  lmsAdmin: {
+    name: 'LMS Admin',
+    icon: Shield,
+    color: 'text-blue-600',
+    features: [
+      { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'user-management', name: 'User Management', icon: Users },
+      { id: 'course-approval', name: 'Course Approval', icon: CheckCircle },
+      { id: 'system-settings', name: 'System Settings', icon: Settings },
+      { id: 'reports', name: 'Reports', icon: FileText },
+      { id: 'audit-logs', name: 'Audit Logs', icon: ClipboardCheck },
+      { id: 'help-center', name: 'Help Center', icon: HelpCircle },
     ]
   },
   hr: {

@@ -179,7 +179,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         {canSwitchModules && (
           <div
             className={cn(
-              "border-t border-gray-200 p-4 shrink-0",
+              "border-t border-sidebar-border p-4 shrink-0",
               isMobileOpen ? "block" : "hidden lg:block"
             )}
           >

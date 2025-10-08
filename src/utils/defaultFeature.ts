@@ -20,6 +20,11 @@ export const getDefaultFeatureForModule = (
     return list?.[0]?.id ?? "dashboard";
   }
 
+  // LMS modules
+  if (moduleId === "lmsAuthor" || moduleId === "lmsAdmin") {
+    return cfg.features?.[0]?.id ?? "dashboard";
+  }
+
   // generic modules
   const list = cfg.features;
   return list?.[0]?.id ?? "dashboard";

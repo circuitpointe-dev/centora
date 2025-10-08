@@ -63,8 +63,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (isSuperAdmin) {
         orgName = 'Centora ERP';
         orgType = 'SuperAdmin';
-        // Super Admins have access to all modules
-        subscribedModules = Object.values(allModules);
+        // Super Admins have access to all modules
+        subscribedModules = allModules;
       } else if (profile.org_id) {
         // Regular user, fetch organization and subscribed modules
         const [{ data: org, error: orgError }, { data: modulesData, error: modulesError }] = await Promise.all([
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           orgType = 'NGO'; // default fallback
         }
         
-        // DEVELOPMENT MODE: Give all users access to all 10 modules
+        // DEVELOPMENT MODE: Give all users access to all modules
         subscribedModules = [
           'fundraising',
           'documents', 
@@ -95,6 +95,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           'users',
           'inventory',
           'learning',
+          'lmsAuthor',
+          'lmsAdmin',
           'programme',
           'hr',
           'procurement'

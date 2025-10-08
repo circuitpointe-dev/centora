@@ -50,6 +50,9 @@ import AssignmentPage from "../learning/AssignmentPage";
 import QuizPage from "../learning/QuizPage";
 import LiveSessionsPage from "../learning/LiveSessionsPage";
 import HelpCenterPage from "../learning/HelpCenterPage";
+import LMSAuthorDashboard from '../learning/author/LMSAuthorDashboard';
+import CourseAnalyticsPage from '../learning/author/CourseAnalyticsPage';
+import CreateCoursePage from '../learning/author/CreateCoursePage';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -257,6 +260,67 @@ const GenericFeaturePage = () => {
   if (module === 'learning' && feature?.startsWith('course-')) {
     const courseId = feature.replace('course-', '');
     return <CourseDetailPage courseId={courseId} />;
+  }
+
+  // LMS Author module routes
+  if (module === 'lmsAuthor' && feature === 'dashboard') {
+    return <LMSAuthorDashboard />;
+  }
+
+  if (module === 'lmsAuthor' && feature === 'live-sessions') {
+    return <LiveSessionsPage />;
+  }
+
+  if (module === 'lmsAuthor' && feature === 'media-library') {
+    return <GenericFeatureUI moduleName="LMS Author" featureName="Media Library" />;
+  }
+
+  if (module === 'lmsAuthor' && feature === 'templates') {
+    return <GenericFeatureUI moduleName="LMS Author" featureName="Templates" />;
+  }
+
+  if (module === 'lmsAuthor' && feature === 'quiz-bank') {
+    return <GenericFeatureUI moduleName="LMS Author" featureName="Quiz Bank" />;
+  }
+
+  // Course Analytics route (when clicking "View course analytics" button)
+  if (module === 'lmsAuthor' && feature?.startsWith('course-analytics-')) {
+    const courseId = feature.replace('course-analytics-', '');
+    return <CourseAnalyticsPage courseId={courseId} />;
+  }
+
+  // Create Course route (when clicking "Create course" button)
+  if (module === 'lmsAuthor' && feature === 'create-course') {
+    return <CreateCoursePage />;
+  }
+
+  // LMS Admin module routes
+  if (module === 'lmsAdmin' && feature === 'dashboard') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="Dashboard" />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'user-management') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="User Management" />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'course-approval') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="Course Approval" />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'system-settings') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="System Settings" />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'reports') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="Reports" />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'audit-logs') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="Audit Logs" />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'help-center') {
+    return <HelpCenterPage />;
   }
 
   if (module === 'users' && feature === 'roles-permissions') {

@@ -7,6 +7,7 @@ import GrantsNGODashboard from '@/components/grants/GrantsNGODashboard';
 import GrantsDonorDashboard from '@/components/grants/GrantsDonorDashboard';
 import ProgrammeDashboard from '@/components/programme/ProgrammeDashboard';
 import LearningDashboard from '@/components/learning/LearningDashboard';
+import LMSAuthorDashboard from '@/components/learning/author/LMSAuthorDashboard';
 import GenericDashboard from '@/components/dashboard/GenericDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -24,6 +25,8 @@ const DashboardPage = () => {
       inventory: 'Inventory Management',
       finance: 'Finance & Control',
       learning: 'Learning Management',
+      lmsAuthor: 'LMS Author',
+      lmsAdmin: 'LMS Admin',
       documents: 'Document Manager',
       hr: 'HR Management',
       users: 'User Management',
@@ -58,6 +61,11 @@ const DashboardPage = () => {
   // Learning Management specific content
   if (module === 'learning') {
     return <LearningDashboard />;
+  }
+
+  // LMS Author specific content
+  if (module === 'lmsAuthor') {
+    return <LMSAuthorDashboard />;
   }
 
   // Default content for other modules
