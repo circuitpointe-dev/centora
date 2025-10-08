@@ -2325,70 +2325,100 @@ export type Database = {
       }
       proposals: {
         Row: {
+          activities: Json | null
           attachments: Json | null
           budget_amount: number | null
           budget_currency: string | null
+          budget_narrative: string | null
           comments: Json | null
+          content: Json | null
           created_at: string
           created_by: string
           due_date: string | null
           duedate: string | null
+          executive_summary: string | null
           id: string
           logframe_fields: Json | null
+          methodology: string | null
+          monitoring_evaluation: string | null
           name: string
           narrative_fields: Json | null
+          objectives: Json | null
           opportunity_id: string | null
           org_id: string
           overview_fields: Json | null
+          problem_statement: string | null
           reviewer: string | null
+          risks_mitigation: string | null
           status: string
           submission_status: string | null
+          sustainability: string | null
           team: Json | null
           title: string | null
           updated_at: string
         }
         Insert: {
+          activities?: Json | null
           attachments?: Json | null
           budget_amount?: number | null
           budget_currency?: string | null
+          budget_narrative?: string | null
           comments?: Json | null
+          content?: Json | null
           created_at?: string
           created_by: string
           due_date?: string | null
           duedate?: string | null
+          executive_summary?: string | null
           id?: string
           logframe_fields?: Json | null
+          methodology?: string | null
+          monitoring_evaluation?: string | null
           name: string
           narrative_fields?: Json | null
+          objectives?: Json | null
           opportunity_id?: string | null
           org_id: string
           overview_fields?: Json | null
+          problem_statement?: string | null
           reviewer?: string | null
+          risks_mitigation?: string | null
           status?: string
           submission_status?: string | null
+          sustainability?: string | null
           team?: Json | null
           title?: string | null
           updated_at?: string
         }
         Update: {
+          activities?: Json | null
           attachments?: Json | null
           budget_amount?: number | null
           budget_currency?: string | null
+          budget_narrative?: string | null
           comments?: Json | null
+          content?: Json | null
           created_at?: string
           created_by?: string
           due_date?: string | null
           duedate?: string | null
+          executive_summary?: string | null
           id?: string
           logframe_fields?: Json | null
+          methodology?: string | null
+          monitoring_evaluation?: string | null
           name?: string
           narrative_fields?: Json | null
+          objectives?: Json | null
           opportunity_id?: string | null
           org_id?: string
           overview_fields?: Json | null
+          problem_statement?: string | null
           reviewer?: string | null
+          risks_mitigation?: string | null
           status?: string
           submission_status?: string | null
+          sustainability?: string | null
           team?: Json | null
           title?: string | null
           updated_at?: string
@@ -2943,6 +2973,10 @@ export type Database = {
           name: string
         }[]
       }
+      get_user_org_id: {
+        Args: { _user_id: string }
+        Returns: string
+      }
       get_user_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -2962,6 +2996,14 @@ export type Database = {
       }
       is_super_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_user_org_admin: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_user_super_admin: {
+        Args: { _user_id: string }
         Returns: boolean
       }
       list_org_users: {

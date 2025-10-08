@@ -43,10 +43,16 @@ Deno.serve(async (req) => {
 
     console.log('Creating user immediately:', { email, full_name, org_id });
 
-    // Step 1: Create user in auth with default password
+    // Generate a secure random password
+    const randomPassword = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+      .slice(0, 16) + 'Aa1!' // Ensure password meets complexity requirements
+
+    // Step 1: Create user in auth with generated password
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
-      password: 'P@$$w0rd',
+      password: randomPassword,
       email_confirm: true, // Skip email confirmation
     });
 
@@ -96,7 +102,8 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         user_id: authUser.user.id,
-        message: 'User created and activated successfully',
+        temporary_password: randomPassword,
+        message: 'User created and activated successfully. Please save the temporary password and share it securely with the user.',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

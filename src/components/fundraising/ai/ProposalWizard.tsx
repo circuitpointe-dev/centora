@@ -90,17 +90,24 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
 
             if (!profile?.org_id) throw new Error('User organization not found');
 
-            // Format the AI-generated content as narrative fields
+            // Normalize to app field shape { id, name, value }
+            const toField = (name: string, value: string) => ({ id: name.toLowerCase().replace(/\s+/g, '-'), name, value });
             const narrativeFields = [
-                { label: 'Executive Summary', value: draft.executive_summary, type: 'textarea' },
-                { label: 'Problem Statement', value: draft.problem_statement, type: 'textarea' },
-                { label: 'Objectives', value: draft.objectives.join('\n'), type: 'textarea' },
-                { label: 'Activities', value: draft.activities.join('\n'), type: 'textarea' },
-                { label: 'Methodology', value: draft.methodology, type: 'textarea' },
-                { label: 'Monitoring & Evaluation', value: draft.monitoring_evaluation, type: 'textarea' },
-                { label: 'Budget Narrative', value: draft.budget_narrative, type: 'textarea' },
-                { label: 'Sustainability', value: draft.sustainability, type: 'textarea' },
-                { label: 'Risks & Mitigation', value: draft.risks_mitigation, type: 'textarea' },
+                toField('Executive Summary', draft.executive_summary),
+                toField('Problem Statement', draft.problem_statement),
+                toField('Objectives', (draft.objectives || []).join('\n')),
+                toField('Activities', (draft.activities || []).join('\n')),
+                toField('Methodology', draft.methodology),
+                toField('Monitoring & Evaluation', draft.monitoring_evaluation),
+                toField('Budget Narrative', draft.budget_narrative),
+                toField('Sustainability', draft.sustainability),
+                toField('Risks & Mitigation', draft.risks_mitigation),
+            ];
+
+            // Provide canonical overview fields for edit hydration
+            const overview_fields = [
+                toField('Summary', draft.executive_summary),
+                toField('Objectives', (draft.objectives || []).join('\n')),
             ];
 
             const payload = {
@@ -110,10 +117,11 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
                 opportunity_id: opportunity.id,
                 status: 'draft',
                 narrative_fields: narrativeFields,
+                overview_fields,
                 created_by: userId,
             };
 
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('proposals')
                 .insert(payload)
                 .select('id')
@@ -122,6 +130,7 @@ export default function ProposalWizard({ open, onOpenChange, defaultOpportunity,
             if (error) throw error;
             onOpenChange(false);
             toast({ title: 'Proposal saved', description: 'AI draft created successfully.' });
+            // Redirect to proposals list as requested
             navigate('/dashboard/fundraising/proposal-management');
         } catch (e: any) {
             console.error('Save error:', e);

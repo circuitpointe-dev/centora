@@ -1,10 +1,10 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LargeSideDialog,
   LargeSideDialogContent,
   LargeSideDialogHeader,
   LargeSideDialogTitle,
+  LargeSideDialogDescription,
 } from '@/components/ui/large-side-dialog';
 import UploadSection from './upload-components/UploadSection';
 import DocumentDetailsSection from './upload-components/DocumentDetailsSection';
@@ -17,6 +17,14 @@ interface UploadDocumentDialogProps {
 const UploadDocumentDialog = ({ open, onOpenChange }: UploadDocumentDialogProps) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedFileIndex, setSelectedFileIndex] = useState<number | null>(null);
+
+  // Reset state when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setSelectedFiles([]);
+      setSelectedFileIndex(null);
+    }
+  }, [open]);
 
   const handleFilesSelected = (files: File[]) => {
     setSelectedFiles(files);
@@ -52,6 +60,9 @@ const UploadDocumentDialog = ({ open, onOpenChange }: UploadDocumentDialogProps)
           <LargeSideDialogTitle className="font-bold text-[#383839] text-lg">
             Upload a New Document
           </LargeSideDialogTitle>
+          <LargeSideDialogDescription className="sr-only">
+            Upload and manage your documents with detailed information
+          </LargeSideDialogDescription>
         </LargeSideDialogHeader>
 
         <div className="flex flex-row w-full gap-4 p-4 bg-[#f4f6f9] flex-1 overflow-hidden">

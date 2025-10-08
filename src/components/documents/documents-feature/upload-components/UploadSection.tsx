@@ -4,7 +4,8 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import FileUploadArea from './FileUploadArea';
 import FileProgressCard from './FileProgressCard';
 
-interface FileWithProgress extends File {
+interface FileWithProgress {
+  file: File;
   progress: number;
   scanComplete: boolean;
   id: string;
@@ -31,7 +32,7 @@ const UploadSection = ({
 
   const simulateUploadProgress = (file: File) => {
     const fileWithProgress: FileWithProgress = {
-      ...file,
+      file,
       progress: 0,
       scanComplete: false,
       id: Math.random().toString(36).substr(2, 9),
@@ -86,7 +87,7 @@ const UploadSection = ({
       );
       
       // Find the corresponding file in the main files array by name and remove it
-      const mainFileIndex = files.findIndex(f => f.name === fileToRemove.name);
+      const mainFileIndex = files.findIndex(f => f.name === fileToRemove.file.name);
       if (mainFileIndex !== -1) {
         onFileRemove(mainFileIndex);
       }

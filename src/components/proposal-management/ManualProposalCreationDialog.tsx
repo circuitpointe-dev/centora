@@ -40,16 +40,18 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   proposalTitle?: string;
   opportunityName?: string;
+  prefilledDataProp?: any;
 };
 
 const ManualProposalCreationDialog: React.FC<Props> = ({
   open,
   onOpenChange,
   proposalTitle = "New Proposal",
-  opportunityName = "Selected Opportunity"
+  opportunityName = "Selected Opportunity",
+  prefilledDataProp
 }) => {
   const location = useLocation();
-  const prefilledData = location.state?.prefilledData;
+  const prefilledData = prefilledDataProp ?? location.state?.prefilledData;
   const isEditing = prefilledData?.source === 'proposal' && prefilledData?.creationContext?.type === 'editing';
   const [proposalId, setProposalId] = useState<string | null>(isEditing ? prefilledData.proposal.id : null);
   const [activeTab, setActiveTab] = useState("overview");
@@ -81,34 +83,44 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   useEffect(() => {
     if (!hydrated && prefilledData) {
       console.log('[ManualProposalCreationDialog] Loading proposal data:', prefilledData);
-      
+
       // Handle editing existing proposal
       if (isEditing && prefilledData.proposal) {
         const proposal = prefilledData.proposal;
         console.log('[ManualProposalCreationDialog] Editing proposal:', proposal);
-        
+
         const reusedOverview: CustomField[] = proposal.overview_fields || [];
-        
-        // Extract Summary and Objectives from overview_fields
-        const summaryField = reusedOverview.find(f => 
-          f.id === 'summary' || f.name?.toLowerCase() === 'summary'
-        );
-        const objectivesField = reusedOverview.find(f => 
-          f.id === 'objectives' || f.name?.toLowerCase() === 'objectives'
-        );
-        
-        // Filter out summary and objectives from overview fields to avoid duplication
-        const filteredOverviewFields = reusedOverview.filter(f => 
-          f.id !== 'summary' && f.id !== 'objectives' && 
-          f.name?.toLowerCase() !== 'summary' && f.name?.toLowerCase() !== 'objectives'
-        );
-        
+        const reusedNarrative: CustomField[] = proposal.narrative_fields || [];
+
+        // Robust extraction: search across overview and narrative for likely matches
+        const findByName = (fields: CustomField[], keyword: string) =>
+          fields.find(f => {
+            const n = (f.name || f.id || '').toString().toLowerCase();
+            return n === keyword || n.includes(keyword);
+          });
+
+        const summaryField =
+          findByName(reusedOverview, 'summary') ||
+          findByName(reusedNarrative, 'summary') ||
+          (proposal.summary ? { id: 'summary', name: 'Summary', value: proposal.summary } as CustomField : undefined);
+
+        const objectivesField =
+          findByName(reusedOverview, 'objectives') ||
+          findByName(reusedNarrative, 'objectives') ||
+          (proposal.objectives ? { id: 'objectives', name: 'Objectives', value: proposal.objectives } as CustomField : undefined);
+
+        // Filter out any duplicates of summary/objectives from overview to avoid duplication in UI
+        const filteredOverviewFields = reusedOverview.filter(f => {
+          const lname = (f.name || f.id || '').toString().toLowerCase();
+          return !(lname === 'summary' || lname.includes('summary') || lname === 'objectives' || lname.includes('objectives'));
+        });
+
         setOverviewFields(filteredOverviewFields);
-        setNarrativeFields(proposal.narrative_fields || []);
+        setNarrativeFields(reusedNarrative);
         setLogframeFields(proposal.logframe_fields || []);
         setSummary(summaryField?.value || '');
         setObjectives(objectivesField?.value || '');
-        
+
         // Parse and format the due date for input[type="date"]
         let formattedDueDate = '';
         const rawDueDate = proposal.due_date || proposal.dueDate;
@@ -124,10 +136,10 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         }
         setDueDate(formattedDueDate);
         console.log('[ManualProposalCreationDialog] Due date set to:', formattedDueDate);
-        
+
         setBudgetCurrency(proposal.budget_currency || 'USD');
         setBudgetAmount(proposal.budget_amount?.toString() || '');
-        
+
         console.log('[ManualProposalCreationDialog] Loaded fields:', {
           overviewFields: filteredOverviewFields.length,
           narrativeFields: proposal.narrative_fields?.length || 0,
@@ -136,7 +148,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
           objectives: objectivesField?.value ? 'Yes' : 'No',
           dueDate: formattedDueDate,
         });
-        
+
         setHydrated(true);
       }
       // Handle template
@@ -189,14 +201,24 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   // Auto-save when fields change (only when editing)
   useEffect(() => {
     if (proposalId && hydrated && isEditing) {
+      const normalizedOverview = overviewFields.filter(f => {
+        const lname = (f.name || f.id || '').toString().toLowerCase();
+        return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
+      });
+
       const mergedOverview = [
         { id: 'summary', name: 'Summary', value: summary },
         { id: 'objectives', name: 'Objectives', value: objectives },
-        ...overviewFields,
+        ...normalizedOverview,
       ];
+
+      // Extract title from summary (first line or sentence)
+      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || proposalTitle;
 
       const saveData = {
         id: proposalId,
+        name: derivedTitle,
+        title: derivedTitle,
         overview_fields: mergedOverview,
         narrative_fields: narrativeFields,
         budget_currency: budgetCurrency,
@@ -224,10 +246,15 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
       const finalOpportunityId = contextOpportunityId || selectedOpportunity?.id;
 
       // Pre-populate fields based on source
+      const normalizedOverview = overviewFields.filter(f => {
+        const lname = (f.name || f.id || '').toString().toLowerCase();
+        return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
+      });
+
       const mergedOverview = [
         { id: 'summary', name: 'Summary', value: summary },
         { id: 'objectives', name: 'Objectives', value: objectives },
-        ...overviewFields,
+        ...normalizedOverview,
       ];
 
       let initialFields = {
@@ -241,9 +268,15 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         return;
       }
 
+      // Extract title from summary (first line or sentence)
+      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || 
+                          prefilledData?.creationContext?.title || 
+                          prefilledData?.proposal?.title || 
+                          proposalTitle;
+
       createProposal.mutate({
-        name: (prefilledData?.creationContext?.title || prefilledData?.proposal?.title || proposalTitle) + (prefilledData?.proposal ? ' (Copy)' : ''),
-        title: (prefilledData?.creationContext?.title || prefilledData?.proposal?.title || proposalTitle) + (prefilledData?.proposal ? ' (Copy)' : ''),
+        name: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
+        title: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
         opportunity_id: finalOpportunityId,
         ...initialFields,
         budget_currency: budgetCurrency || 'USD',
@@ -262,14 +295,24 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   // Handle save functionality
   const handleSave = () => {
     if (proposalId) {
+      const normalizedOverview = overviewFields.filter(f => {
+        const lname = (f.name || f.id || '').toString().toLowerCase();
+        return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
+      });
+
       const mergedOverview = [
         { id: 'summary', name: 'Summary', value: summary },
         { id: 'objectives', name: 'Objectives', value: objectives },
-        ...overviewFields,
+        ...normalizedOverview,
       ];
-      
+
+      // Extract title from summary (first line or sentence)
+      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || proposalTitle;
+
       explicitUpdateProposal.mutate({
         id: proposalId,
+        name: derivedTitle,
+        title: derivedTitle,
         overview_fields: mergedOverview,
         narrative_fields: narrativeFields,
         budget_currency: budgetCurrency,
@@ -283,15 +326,26 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
   // Handle submit functionality
   const handleSubmit = () => {
+    const normalizedOverview = overviewFields.filter(f => {
+      const lname = (f.name || f.id || '').toString().toLowerCase();
+      return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
+    });
+
+    const mergedOverview = [
+      { id: 'summary', name: 'Summary', value: summary },
+      { id: 'objectives', name: 'Objectives', value: objectives },
+      ...normalizedOverview,
+    ];
+
     if (proposalId) {
-      const mergedOverview = [
-        { id: 'summary', name: 'Summary', value: summary },
-        { id: 'objectives', name: 'Objectives', value: objectives },
-        ...overviewFields,
-      ];
+      // Proposal exists, just submit it
+      // Extract title from summary (first line or sentence)
+      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || proposalTitle;
       
       explicitUpdateProposal.mutate({
         id: proposalId,
+        name: derivedTitle,
+        title: derivedTitle,
         overview_fields: mergedOverview,
         narrative_fields: narrativeFields,
         budget_currency: budgetCurrency,
@@ -302,6 +356,39 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         dueDate: dueDate || undefined,
       }, {
         onSuccess: () => {
+          toast({
+            title: "Success",
+            description: "Proposal submitted for review successfully",
+          });
+        }
+      });
+    } else {
+      // Proposal doesn't exist yet, create it and submit immediately
+      const selectedOpportunity = opportunities.find(opp => opp.title === opportunityName);
+      const contextOpportunityId = prefilledData?.creationContext?.opportunityId;
+      const finalOpportunityId = contextOpportunityId || selectedOpportunity?.id;
+
+      // Extract title from summary (first line or sentence)
+      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || 
+                          prefilledData?.creationContext?.title || 
+                          prefilledData?.proposal?.title || 
+                          proposalTitle;
+
+      createProposal.mutate({
+        name: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
+        title: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
+        opportunity_id: finalOpportunityId,
+        overview_fields: mergedOverview,
+        narrative_fields: narrativeFields,
+        logframe_fields: logframeFields,
+        budget_currency: budgetCurrency || 'USD',
+        budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
+        dueDate: dueDate || undefined,
+        attachments: [],
+        submission_status: 'submitted'
+      }, {
+        onSuccess: (proposal) => {
+          setProposalId(proposal.id);
           toast({
             title: "Success",
             description: "Proposal submitted for review successfully",

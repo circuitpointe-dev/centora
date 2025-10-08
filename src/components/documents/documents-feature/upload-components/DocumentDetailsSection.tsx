@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,6 +27,23 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
   const { data: availableTags } = useDocumentTags();
   const createDocument = useCreateDocument();
   const createTag = useCreateDocumentTag();
+
+  // Reset form when no file is selected, auto-populate title when file is selected
+  useEffect(() => {
+    if (!selectedFile) {
+      setTitle('');
+      setDescription('');
+      setCategory('');
+      setSelectedTags([]);
+      setIsTemplate(false);
+      setTemplateCategory('');
+      setNewTagName('');
+    } else if (selectedFile && !title) {
+      // Auto-populate title from filename (without extension)
+      const fileNameWithoutExt = selectedFile.name.replace(/\.[^/.]+$/, '');
+      setTitle(fileNameWithoutExt);
+    }
+  }, [selectedFile]);
 
   const handleCreateTag = async () => {
     if (!newTagName.trim()) return;
@@ -61,11 +78,27 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
     }
 
     try {
-      // Upload to Supabase Storage (bucket: documents)
-      const { data: profile } = await supabase
+      // Get current user
+      const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !currentUser) {
+        console.error('Auth error:', authError);
+        toast.error('Failed to authenticate user');
+        return;
+      }
+
+      // Get user's org_id
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('org_id')
+        .eq('id', currentUser.id)
         .single();
+
+      if (profileError) {
+        console.error('Profile fetch error:', profileError);
+        toast.error('Failed to fetch organization details');
+        return;
+      }
 
       const orgId = profile?.org_id || 'public';
       const storagePath = `${orgId}/${Date.now()}-${selectedFile.name}`;
@@ -89,7 +122,7 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
         category: isTemplate ? 'templates' : (category as any || 'uncategorized'),
         is_template: isTemplate,
         template_category: isTemplate ? templateCategory : undefined,
-        tag_ids: selectedTags,
+        tag_ids: selectedTags.length > 0 ? selectedTags : undefined,
       });
 
       // Reset form
@@ -102,7 +135,8 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
       onUploadComplete();
 
     } catch (error) {
-      toast.error('Failed to create document');
+      console.error('Document creation error:', error);
+      toast.error('Failed to create document: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
 

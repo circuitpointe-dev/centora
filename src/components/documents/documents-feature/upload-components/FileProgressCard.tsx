@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { FileTextIcon, XIcon, CheckIcon } from 'lucide-react';
 import { formatBytes } from '@/lib/utils';
 
-interface FileWithProgress extends File {
+interface FileWithProgress {
+  file: File;
   progress: number;
   scanComplete: boolean;
   id: string;
@@ -26,7 +27,7 @@ const FileProgressCard = ({
   onRemove 
 }: FileProgressCardProps) => {
   const getFileIcon = (fileName: string) => {
-    const ext = fileName.split('.').pop()?.toLowerCase();
+    const ext = fileName?.split('.').pop()?.toLowerCase();
     return <FileTextIcon className="w-8 h-8 text-blue-600" />;
   };
 
@@ -51,17 +52,17 @@ const FileProgressCard = ({
     >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
-          {getFileIcon(file.name)}
+          {getFileIcon(file.file.name)}
         </div>
         
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-medium text-gray-900 truncate">
-                {file.name}
+                {file.file.name}
               </h4>
               <p className="text-xs text-gray-500">
-                {formatBytes(file.size)}
+                {formatBytes(file.file.size)}
               </p>
             </div>
             
