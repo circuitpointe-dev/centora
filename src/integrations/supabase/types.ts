@@ -2325,70 +2325,100 @@ export type Database = {
       }
       proposals: {
         Row: {
+          activities: Json | null
           attachments: Json | null
           budget_amount: number | null
           budget_currency: string | null
+          budget_narrative: string | null
           comments: Json | null
+          content: Json | null
           created_at: string
           created_by: string
           due_date: string | null
           duedate: string | null
+          executive_summary: string | null
           id: string
           logframe_fields: Json | null
+          methodology: string | null
+          monitoring_evaluation: string | null
           name: string
           narrative_fields: Json | null
+          objectives: Json | null
           opportunity_id: string | null
           org_id: string
           overview_fields: Json | null
+          problem_statement: string | null
           reviewer: string | null
+          risks_mitigation: string | null
           status: string
           submission_status: string | null
+          sustainability: string | null
           team: Json | null
           title: string | null
           updated_at: string
         }
         Insert: {
+          activities?: Json | null
           attachments?: Json | null
           budget_amount?: number | null
           budget_currency?: string | null
+          budget_narrative?: string | null
           comments?: Json | null
+          content?: Json | null
           created_at?: string
           created_by: string
           due_date?: string | null
           duedate?: string | null
+          executive_summary?: string | null
           id?: string
           logframe_fields?: Json | null
+          methodology?: string | null
+          monitoring_evaluation?: string | null
           name: string
           narrative_fields?: Json | null
+          objectives?: Json | null
           opportunity_id?: string | null
           org_id: string
           overview_fields?: Json | null
+          problem_statement?: string | null
           reviewer?: string | null
+          risks_mitigation?: string | null
           status?: string
           submission_status?: string | null
+          sustainability?: string | null
           team?: Json | null
           title?: string | null
           updated_at?: string
         }
         Update: {
+          activities?: Json | null
           attachments?: Json | null
           budget_amount?: number | null
           budget_currency?: string | null
+          budget_narrative?: string | null
           comments?: Json | null
+          content?: Json | null
           created_at?: string
           created_by?: string
           due_date?: string | null
           duedate?: string | null
+          executive_summary?: string | null
           id?: string
           logframe_fields?: Json | null
+          methodology?: string | null
+          monitoring_evaluation?: string | null
           name?: string
           narrative_fields?: Json | null
+          objectives?: Json | null
           opportunity_id?: string | null
           org_id?: string
           overview_fields?: Json | null
+          problem_statement?: string | null
           reviewer?: string | null
+          risks_mitigation?: string | null
           status?: string
           submission_status?: string | null
+          sustainability?: string | null
           team?: Json | null
           title?: string | null
           updated_at?: string

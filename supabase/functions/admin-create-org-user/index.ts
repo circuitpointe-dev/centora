@@ -68,10 +68,16 @@ serve(async (req) => {
 
     console.log('Creating user for org:', targetOrgId, 'email:', email)
 
-    // 1. Create auth user with the standard password
+    // Generate a secure random password
+    const randomPassword = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+      .slice(0, 16) + 'Aa1!' // Ensure password meets complexity requirements
+
+    // 1. Create auth user with generated password
     const { data: authUser, error: createUserError } = await supabase.auth.admin.createUser({
       email,
-      password: 'P@$$w0rd', // Standard password for new users
+      password: randomPassword,
       email_confirm: true,
       user_metadata: {
         full_name,
@@ -173,7 +179,7 @@ serve(async (req) => {
       }
     }
 
-    // Return success response
+    // Return success response with generated password
     return new Response(
       JSON.stringify({
         ok: true,
@@ -181,7 +187,8 @@ serve(async (req) => {
         org_id: targetOrgId,
         email,
         role_ids,
-        message: 'User created successfully'
+        temporary_password: randomPassword,
+        message: 'User created successfully. Please save the temporary password and share it securely with the user.'
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

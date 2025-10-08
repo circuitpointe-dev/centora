@@ -41,10 +41,12 @@ export const useCreateOrgUser = () => {
 
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const password = data.temporary_password || 'Unknown';
       toast({
         title: "Success",
-        description: "User created successfully. Default password: P@$$w0rd",
+        description: `User created successfully. Temporary password: ${password}`,
+        duration: 10000, // Show for 10 seconds so user can copy it
       });
       queryClient.invalidateQueries({ queryKey: ['org-users'] });
       queryClient.invalidateQueries({ queryKey: ['org-users-count'] });
