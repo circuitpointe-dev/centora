@@ -131,7 +131,7 @@ const FeatureList = ({
                   isCollapsed ? "px-2" : "px-3",
                   isActive
                     ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "hover:bg-accent hover:text-accent-foreground"
+                    : "bg-white dark:bg-sidebar-accent hover:bg-accent hover:text-accent-foreground"
                 )}
                 onClick={() => onFeatureClick(feature.id)}
               >
