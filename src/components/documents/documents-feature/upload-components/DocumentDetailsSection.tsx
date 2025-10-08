@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,6 +27,23 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
   const { data: availableTags } = useDocumentTags();
   const createDocument = useCreateDocument();
   const createTag = useCreateDocumentTag();
+
+  // Reset form when no file is selected, auto-populate title when file is selected
+  useEffect(() => {
+    if (!selectedFile) {
+      setTitle('');
+      setDescription('');
+      setCategory('');
+      setSelectedTags([]);
+      setIsTemplate(false);
+      setTemplateCategory('');
+      setNewTagName('');
+    } else if (selectedFile && !title) {
+      // Auto-populate title from filename (without extension)
+      const fileNameWithoutExt = selectedFile.name.replace(/\.[^/.]+$/, '');
+      setTitle(fileNameWithoutExt);
+    }
+  }, [selectedFile]);
 
   const handleCreateTag = async () => {
     if (!newTagName.trim()) return;
@@ -95,7 +112,7 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
         category: isTemplate ? 'templates' : (category as any || 'uncategorized'),
         is_template: isTemplate,
         template_category: isTemplate ? templateCategory : undefined,
-        tag_ids: selectedTags,
+        tag_ids: selectedTags.length > 0 ? selectedTags : undefined,
       });
 
       // Reset form
