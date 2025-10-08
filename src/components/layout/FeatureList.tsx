@@ -117,8 +117,9 @@ const FeatureList = ({
 
   return (
     <TooltipProvider>
-      <div className="p-4 space-y-2 h-full overflow-y-auto">
-        {features?.map((feature) => {
+      <div className="p-4 h-full overflow-y-auto">
+        <div className="bg-white dark:bg-sidebar-accent rounded-lg overflow-hidden">
+          {features?.map((feature) => {
           const isActive = activeFeature === feature.id;
           const description = getFeatureDescription(feature.id);
 
@@ -127,11 +128,11 @@ const FeatureList = ({
               <Button
                 variant={isActive ? "secondary" : "ghost"}
                 className={cn(
-                  "w-full justify-start text-left font-light transition-colors",
+                  "w-full justify-start text-left font-light transition-colors rounded-none border-b border-border/50 last:border-b-0",
                   isCollapsed ? "px-2" : "px-3",
                   isActive
                     ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "bg-white dark:bg-sidebar-accent hover:bg-accent hover:text-accent-foreground"
+                    : "hover:bg-accent hover:text-accent-foreground"
                 )}
                 onClick={() => onFeatureClick(feature.id)}
               >
@@ -182,6 +183,7 @@ const FeatureList = ({
             </div>
           );
         })}
+        </div>
       </div>
     </TooltipProvider>
   );
