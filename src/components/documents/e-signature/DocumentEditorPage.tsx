@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useDocumentPreview } from "@/hooks/useDocumentOperations";
+import { useUpdateDocument } from "@/hooks/useDocuments";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { DocumentEditorHeader } from "./review-step/DocumentEditorHeader";
 
@@ -22,10 +23,11 @@ export const DocumentEditorPage: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const previewMutation = useDocumentPreview();
+  const updateDocument = useUpdateDocument();
 
   // Get document from navigation state
   const { document } = location.state || {};
-  
+
   if (!document) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -45,6 +47,18 @@ export const DocumentEditorPage: React.FC = () => {
   const handleClose = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/documents");
   const handleBack = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/documents");
   const confirmAndLeave = () => navigate("/dashboard/documents/documents");
+
+  const handleSaveDraft = async () => {
+    try {
+      await updateDocument.mutateAsync({ id: document.id, updates: { status: 'draft' } });
+    } catch (e) { }
+  };
+
+  const handleSaveActive = async () => {
+    try {
+      await updateDocument.mutateAsync({ id: document.id, updates: { status: 'active' } });
+    } catch (e) { }
+  };
 
   useEffect(() => {
     const loadPreview = async () => {
@@ -83,7 +97,7 @@ export const DocumentEditorPage: React.FC = () => {
                 <span>Category: {document.category}</span>
               </div>
             </div>
-            
+
             {/* Document Preview */}
             <div className="border rounded-lg p-4 bg-gray-50">
               {previewMutation.isPending && (
@@ -111,7 +125,7 @@ export const DocumentEditorPage: React.FC = () => {
                 <p><strong>Type:</strong> {document.mime_type || 'Unknown'}</p>
               </div>
             </div>
-            
+
             <div className="mt-6 flex justify-between">
               <div className="flex gap-3">
                 <Button variant="outline" onClick={handleBack}>
@@ -119,10 +133,10 @@ export const DocumentEditorPage: React.FC = () => {
                 </Button>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleSaveDraft} disabled={updateDocument.isPending}>
                   Save Draft
                 </Button>
-                <Button className="bg-violet-600 hover:bg-violet-700">
+                <Button className="bg-violet-600 hover:bg-violet-700" onClick={handleSaveActive} disabled={updateDocument.isPending}>
                   Save Changes
                 </Button>
               </div>

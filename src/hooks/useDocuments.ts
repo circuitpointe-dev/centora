@@ -190,6 +190,38 @@ export const useDeleteDocument = () => {
   });
 };
 
+export const useUpdateDocument = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<Document, 'title' | 'description' | 'category' | 'status'>> }) => {
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('documents')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Document;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      toast.success('Document saved');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to save document: ${error.message}`);
+    },
+  });
+};
+
 export const useDocumentTags = () => {
   const { user } = useAuth();
 
