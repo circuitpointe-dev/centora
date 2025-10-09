@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,32 +8,61 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import {
-    Settings,
-    FileText,
-    Shield,
-    Users,
-    Database,
-    Upload,
-    Download,
-    Trash2,
-    Plus,
-    Save
+import { 
+  Settings, 
+  FileText, 
+  Shield, 
+  Users, 
+  Database, 
+  Upload, 
+  Download,
+  Trash2,
+  Plus,
+  Save,
+  ArrowLeft
 } from 'lucide-react';
 import { useDocumentTags, useCreateDocumentTag, useDeleteDocumentTag } from '@/hooks/useDocuments';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const DocumentSettingsPage = () => {
-    const [autoSave, setAutoSave] = useState(true);
-    const [maxFileSize, setMaxFileSize] = useState('50');
-    const [allowedFormats, setAllowedFormats] = useState('pdf,doc,docx,xls,xlsx,ppt,pptx,txt,jpg,png');
-    const [retentionPeriod, setRetentionPeriod] = useState('7');
-    const [newTagName, setNewTagName] = useState('');
-    const [newTagColor, setNewTagColor] = useState('#3B82F6');
+  const navigate = useNavigate();
+  const [autoSave, setAutoSave] = useState(true);
+  const [maxFileSize, setMaxFileSize] = useState('50');
+  const [allowedFormats, setAllowedFormats] = useState('pdf,doc,docx,xls,xlsx,ppt,pptx,txt,jpg,png');
+  const [retentionPeriod, setRetentionPeriod] = useState('7');
+  const [virusScanning, setVirusScanning] = useState(true);
+  const [fileEncryption, setFileEncryption] = useState(true);
+  const [auditLogging, setAuditLogging] = useState(true);
+  const [defaultAccessLevel, setDefaultAccessLevel] = useState('organization');
+  const [allowSharing, setAllowSharing] = useState(true);
+  const [newTagName, setNewTagName] = useState('');
+  const [newTagColor, setNewTagColor] = useState('#3B82F6');
 
-    const { data: tags, isLoading: tagsLoading } = useDocumentTags();
-    const createTag = useCreateDocumentTag();
-    const deleteTag = useDeleteDocumentTag();
+  const { data: tags, isLoading: tagsLoading } = useDocumentTags();
+  const createTag = useCreateDocumentTag();
+  const deleteTag = useDeleteDocumentTag();
+
+  // Load settings from localStorage on component mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('documentSettings');
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        setAutoSave(settings.autoSave ?? true);
+        setMaxFileSize(settings.maxFileSize ?? '50');
+        setAllowedFormats(settings.allowedFormats ?? 'pdf,doc,docx,xls,xlsx,ppt,pptx,txt,jpg,png');
+        setRetentionPeriod(settings.retentionPeriod ?? '7');
+        setVirusScanning(settings.virusScanning ?? true);
+        setFileEncryption(settings.fileEncryption ?? true);
+        setAuditLogging(settings.auditLogging ?? true);
+        setDefaultAccessLevel(settings.defaultAccessLevel ?? 'organization');
+        setAllowSharing(settings.allowSharing ?? true);
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      }
+    }
+  }, []);
 
     const handleCreateTag = async () => {
         if (!newTagName.trim()) {
@@ -64,10 +93,30 @@ const DocumentSettingsPage = () => {
         }
     };
 
-    const handleSaveSettings = () => {
-        // In a real implementation, this would save to backend
-        toast.success('Settings saved successfully');
-    };
+  const handleSaveSettings = async () => {
+    try {
+      // In a real implementation, this would save to backend
+      // For now, we'll save to localStorage as a demo
+      const settings = {
+        autoSave,
+        maxFileSize,
+        allowedFormats,
+        retentionPeriod,
+        virusScanning,
+        fileEncryption,
+        auditLogging,
+        defaultAccessLevel,
+        allowSharing,
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem('documentSettings', JSON.stringify(settings));
+      toast.success('Settings saved successfully');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error('Failed to save settings');
+    }
+  };
 
     const colorOptions = [
         { value: '#3B82F6', label: 'Blue', bg: 'bg-blue-100', text: 'text-blue-800' },
@@ -81,10 +130,18 @@ const DocumentSettingsPage = () => {
     return (
         <div className="space-y-6 p-6">
             {/* Header */}
-            <div className="flex items-center gap-3">
-                <Settings className="h-6 w-6 text-gray-600" />
-                <h1 className="text-2xl font-semibold text-gray-900">Document Settings</h1>
-            </div>
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(-1)}
+          className="hover:bg-gray-100"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <Settings className="h-6 w-6 text-gray-600" />
+        <h1 className="text-2xl font-semibold text-gray-900">Document Settings</h1>
+      </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* General Settings */}
@@ -157,7 +214,11 @@ const DocumentSettingsPage = () => {
                                 <Label htmlFor="virus-scan">Enable virus scanning</Label>
                                 <p className="text-sm text-gray-500">Scan uploaded files for malware</p>
                             </div>
-                            <Switch id="virus-scan" defaultChecked />
+                            <Switch 
+                                id="virus-scan" 
+                                checked={virusScanning}
+                                onCheckedChange={setVirusScanning}
+                            />
                         </div>
 
                         <div className="flex items-center justify-between">
@@ -165,7 +226,11 @@ const DocumentSettingsPage = () => {
                                 <Label htmlFor="encryption">Enable file encryption</Label>
                                 <p className="text-sm text-gray-500">Encrypt files at rest</p>
                             </div>
-                            <Switch id="encryption" defaultChecked />
+                            <Switch 
+                                id="encryption" 
+                                checked={fileEncryption}
+                                onCheckedChange={setFileEncryption}
+                            />
                         </div>
 
                         <div className="flex items-center justify-between">
@@ -173,12 +238,19 @@ const DocumentSettingsPage = () => {
                                 <Label htmlFor="audit-log">Enable audit logging</Label>
                                 <p className="text-sm text-gray-500">Log all document access and modifications</p>
                             </div>
-                            <Switch id="audit-log" defaultChecked />
+                            <Switch 
+                                id="audit-log" 
+                                checked={auditLogging}
+                                onCheckedChange={setAuditLogging}
+                            />
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="access-level">Default access level</Label>
-                            <Select defaultValue="organization">
+                            <Select 
+                                value={defaultAccessLevel}
+                                onValueChange={setDefaultAccessLevel}
+                            >
                                 <SelectTrigger>
                                     <SelectValue />
                                 </SelectTrigger>
@@ -205,7 +277,10 @@ const DocumentSettingsPage = () => {
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium">Allow document sharing</span>
-                                <Switch defaultChecked />
+                                <Switch 
+                                    checked={allowSharing}
+                                    onCheckedChange={setAllowSharing}
+                                />
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium">Allow bulk operations</span>
