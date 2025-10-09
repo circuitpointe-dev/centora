@@ -1,9 +1,9 @@
+/* Import OpenDyslexic font for accessibility */
+@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import OpenDyslexic font for accessibility */
-@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap');
 
 @layer base {
   :root {
