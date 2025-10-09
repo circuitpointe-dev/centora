@@ -6,6 +6,9 @@ import { Loader2 } from "lucide-react";
 import { useDocumentPreview } from "@/hooks/useDocumentOperations";
 import { useUpdateDocument } from "@/hooks/useDocuments";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DocumentEditorHeader } from "./review-step/DocumentEditorHeader";
 
 interface FieldData {
@@ -24,6 +27,9 @@ export const DocumentEditorPage: React.FC = () => {
   const [previewError, setPreviewError] = useState<string | null>(null);
   const previewMutation = useDocumentPreview();
   const updateDocument = useUpdateDocument();
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [category, setCategory] = useState<"policies" | "finance" | "contracts" | "m-e" | "uncategorized" | "templates" | "compliance">("uncategorized");
 
   // Get document from navigation state
   const { document } = location.state || {};
@@ -42,7 +48,19 @@ export const DocumentEditorPage: React.FC = () => {
     );
   }
 
-  const hasChanges = false; // TODO: Track actual changes
+  useEffect(() => {
+    if (document) {
+      setTitle(document.title || "");
+      setDescription(document.description || "");
+      setCategory((document.category as any) || "uncategorized");
+    }
+  }, [document]);
+
+  const hasChanges = (
+    title !== (document.title || "") ||
+    (description || "") !== (document.description || "") ||
+    category !== ((document.category as any) || "uncategorized")
+  );
 
   const handleClose = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/documents");
   const handleBack = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/documents");
@@ -50,13 +68,13 @@ export const DocumentEditorPage: React.FC = () => {
 
   const handleSaveDraft = async () => {
     try {
-      await updateDocument.mutateAsync({ id: document.id, updates: { status: 'draft' } });
+      await updateDocument.mutateAsync({ id: document.id, updates: { status: 'draft', title, description, category } });
     } catch (e) { }
   };
 
   const handleSaveActive = async () => {
     try {
-      await updateDocument.mutateAsync({ id: document.id, updates: { status: 'active' } });
+      await updateDocument.mutateAsync({ id: document.id, updates: { status: 'active', title, description, category } });
     } catch (e) { }
   };
 
@@ -88,13 +106,25 @@ export const DocumentEditorPage: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg border shadow-sm p-6">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{document.title}</h2>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} className="text-2xl font-bold text-gray-900 mb-2 h-11" />
               <div className="flex items-center gap-4 text-sm text-gray-600">
                 <span>Created: {new Date(document.created_at).toLocaleDateString()}</span>
                 <span>•</span>
                 <span>Creator: {document.creator?.full_name || 'Unknown'}</span>
                 <span>•</span>
-                <span>Category: {document.category}</span>
+                <div className="flex items-center gap-2">
+                  <span>Category:</span>
+                  <Select value={category} onValueChange={(v) => setCategory(v as typeof category)}>
+                    <SelectTrigger className="h-8 w-40"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="policies">Policies</SelectItem>
+                      <SelectItem value="finance">Finance</SelectItem>
+                      <SelectItem value="contracts">Contracts</SelectItem>
+                      <SelectItem value="m-e">M & E</SelectItem>
+                      <SelectItem value="uncategorized">Uncategorized</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
@@ -124,6 +154,9 @@ export const DocumentEditorPage: React.FC = () => {
                 <p><strong>Size:</strong> {document.file_size ? `${(document.file_size / 1024 / 1024).toFixed(2)} MB` : 'Unknown'}</p>
                 <p><strong>Type:</strong> {document.mime_type || 'Unknown'}</p>
               </div>
+              <div className="mt-4">
+                <Textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+              </div>
             </div>
 
             <div className="mt-6 flex justify-between">
@@ -133,10 +166,10 @@ export const DocumentEditorPage: React.FC = () => {
                 </Button>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" onClick={handleSaveDraft} disabled={updateDocument.isPending}>
+                <Button variant="outline" onClick={handleSaveDraft} disabled={updateDocument.isPending || !hasChanges}>
                   Save Draft
                 </Button>
-                <Button className="bg-violet-600 hover:bg-violet-700" onClick={handleSaveActive} disabled={updateDocument.isPending}>
+                <Button className="bg-violet-600 hover:bg-violet-700" onClick={handleSaveActive} disabled={updateDocument.isPending || !hasChanges}>
                   Save Changes
                 </Button>
               </div>
