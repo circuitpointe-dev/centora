@@ -269,10 +269,10 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
       }
 
       // Extract title from summary (first line or sentence)
-      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || 
-                          prefilledData?.creationContext?.title || 
-                          prefilledData?.proposal?.title || 
-                          proposalTitle;
+      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) ||
+        prefilledData?.creationContext?.title ||
+        prefilledData?.proposal?.title ||
+        proposalTitle;
 
       createProposal.mutate({
         name: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
@@ -341,7 +341,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
       // Proposal exists, just submit it
       // Extract title from summary (first line or sentence)
       const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || proposalTitle;
-      
+
       explicitUpdateProposal.mutate({
         id: proposalId,
         name: derivedTitle,
@@ -369,10 +369,10 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
       const finalOpportunityId = contextOpportunityId || selectedOpportunity?.id;
 
       // Extract title from summary (first line or sentence)
-      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || 
-                          prefilledData?.creationContext?.title || 
-                          prefilledData?.proposal?.title || 
-                          proposalTitle;
+      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) ||
+        prefilledData?.creationContext?.title ||
+        prefilledData?.proposal?.title ||
+        proposalTitle;
 
       createProposal.mutate({
         name: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),

@@ -18,7 +18,7 @@ export const useDocumentDownload = () => {
       try {
         // Download from storage
         const blob = await downloadFile(document.file_path);
-        
+
         // Create download link
         const url = window.URL.createObjectURL(blob);
         const link = window.document.createElement('a');
@@ -34,9 +34,9 @@ export const useDocumentDownload = () => {
         const { data, error } = await supabase.functions.invoke('document-operations', {
           body: { operation: 'download', documentId }
         });
-        
+
         if (error) throw error;
-        
+
         const blob = new Blob([data.content], { type: data.mimeType });
         const url = window.URL.createObjectURL(blob);
         const link = window.document.createElement('a');
@@ -60,7 +60,7 @@ export const useDocumentDownload = () => {
 
 export const useDocumentDelete = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (documentId: string) => {
       const { data, error } = await supabase.functions.invoke('document-operations', {
@@ -98,11 +98,12 @@ export const useDocumentPreview = () => {
       if (docError) throw docError;
 
       try {
-        // Try to get public URL first
-        const publicUrl = getFileUrl(document.file_path);
-        
+        // Download the file as blob and create object URL
+        const blob = await downloadFile(document.file_path);
+        const url = window.URL.createObjectURL(blob);
+
         return {
-          url: publicUrl,
+          url,
           fileName: document.file_name,
           mimeType: document.mime_type,
           size: document.file_size
@@ -112,12 +113,12 @@ export const useDocumentPreview = () => {
         const { data, error: funcError } = await supabase.functions.invoke('document-operations', {
           body: { operation: 'download', documentId }
         });
-        
+
         if (funcError) throw funcError;
-        
+
         const blob = new Blob([data.content], { type: data.mimeType });
         const url = window.URL.createObjectURL(blob);
-        
+
         return {
           url,
           fileName: data.fileName,

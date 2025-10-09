@@ -97,12 +97,12 @@ export const useDocuments = (filters?: {
       return data.map((doc: any) => ({
         ...doc,
         tags: doc.document_tag_associations?.map((assoc: any) => assoc.document_tags) || [],
-        creator: doc.creator?.[0] || null,
+        creator: doc.creator || null, // Fix: creator is already an object, not an array
         // Transform for backward compatibility with existing UI
         fileName: doc.file_name,
         addedTime: `Added ${formatTimeAgo(doc.created_at)}`,
         owner: {
-          name: doc.creator?.[0]?.full_name || 'Unknown',
+          name: doc.creator?.full_name || 'Unknown',
           avatar: 'https://github.com/shadcn.png', // Default avatar
         }
       }));
@@ -135,6 +135,7 @@ export const useCreateDocument = () => {
           org_id: profile.org_id,
           created_by: user.id,
           status: 'active',
+          version: '1.0', // Add required version field
         })
         .select()
         .single();
@@ -185,6 +186,38 @@ export const useDeleteDocument = () => {
     },
     onError: (error) => {
       toast.error(`Failed to delete document: ${error.message}`);
+    },
+  });
+};
+
+export const useUpdateDocument = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<Document, 'title' | 'description' | 'category' | 'status'>> }) => {
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('documents')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Document;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      toast.success('Document saved');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to save document: ${error.message}`);
     },
   });
 };
@@ -245,6 +278,28 @@ export const useCreateDocumentTag = () => {
     },
     onError: (error) => {
       toast.error(`Failed to create tag: ${error.message}`);
+    },
+  });
+};
+
+export const useDeleteDocumentTag = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (tagId: string) => {
+      const { error } = await supabase
+        .from('document_tags')
+        .delete()
+        .eq('id', tagId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['document-tags'] });
+      toast.success('Tag deleted successfully');
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete tag: ${error.message}`);
     },
   });
 };
