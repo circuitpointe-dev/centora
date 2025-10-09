@@ -27,6 +27,7 @@ import EditorNewPage from "./components/documents/e-signature-new/EditorNewPage"
 import { GrantsOverviewPage } from "./components/grants/pages/GrantsOverviewPage";
 import PDFSigningPlatform from "./components/documents/pdf-signing-platform/PDFSigningPlatform";
 import ProfessionalPDFEditor from "./components/documents/pdf-signing-platform/ProfessionalPDFEditor";
+import DocumentSettingsPage from "./components/documents/settings/DocumentSettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -123,6 +124,16 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <ProfessionalPDFEditor />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected: Document Settings */}
+        <Route
+          path="/dashboard/settings"
+          element={
+            <ProtectedRoute>
+              <DocumentSettingsPage />
             </ProtectedRoute>
           }
         />

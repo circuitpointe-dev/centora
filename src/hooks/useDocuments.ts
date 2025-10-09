@@ -135,6 +135,7 @@ export const useCreateDocument = () => {
           org_id: profile.org_id,
           created_by: user.id,
           status: 'active',
+          version: '1.0', // Add required version field
         })
         .select()
         .single();
@@ -245,6 +246,28 @@ export const useCreateDocumentTag = () => {
     },
     onError: (error) => {
       toast.error(`Failed to create tag: ${error.message}`);
+    },
+  });
+};
+
+export const useDeleteDocumentTag = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (tagId: string) => {
+      const { error } = await supabase
+        .from('document_tags')
+        .delete()
+        .eq('id', tagId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['document-tags'] });
+      toast.success('Tag deleted successfully');
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete tag: ${error.message}`);
     },
   });
 };

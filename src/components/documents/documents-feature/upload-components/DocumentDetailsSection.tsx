@@ -80,7 +80,7 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
     try {
       // Get current user
       const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
-      
+
       if (authError || !currentUser) {
         console.error('Auth error:', authError);
         toast.error('Failed to authenticate user');
@@ -101,7 +101,15 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
       }
 
       const orgId = profile?.org_id || 'public';
-      const storagePath = `${orgId}/${Date.now()}-${selectedFile.name}`;
+      const storagePath = `${orgId}/${currentUser.id}/${Date.now()}-${selectedFile.name}`;
+
+      console.log('Uploading file:', {
+        fileName: selectedFile.name,
+        fileSize: selectedFile.size,
+        fileType: selectedFile.type,
+        storagePath,
+        orgId
+      });
 
       const { error: uploadError } = await supabase.storage
         .from('documents')
@@ -110,9 +118,14 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
           contentType: selectedFile.type,
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('File upload error:', uploadError);
+        throw new Error(`File upload failed: ${uploadError.message}`);
+      }
 
-      await createDocument.mutateAsync({
+      console.log('File uploaded successfully to:', storagePath);
+
+      const documentData = {
         title: title.trim(),
         description: description.trim() || undefined,
         file_name: selectedFile.name,
@@ -123,7 +136,11 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
         is_template: isTemplate,
         template_category: isTemplate ? templateCategory : undefined,
         tag_ids: selectedTags.length > 0 ? selectedTags : undefined,
-      });
+      };
+
+      console.log('Creating document with data:', documentData);
+
+      await createDocument.mutateAsync(documentData);
 
       // Reset form
       setTitle('');
@@ -136,7 +153,25 @@ const DocumentDetailsSection = ({ selectedFile, onUploadComplete }: DocumentDeta
 
     } catch (error) {
       console.error('Document creation error:', error);
-      toast.error('Failed to create document: ' + (error instanceof Error ? error.message : 'Unknown error'));
+
+      // Provide more specific error messages
+      let errorMessage = 'Unknown error';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+
+        // Handle specific Supabase errors
+        if (error.message.includes('duplicate key')) {
+          errorMessage = 'A document with this name already exists';
+        } else if (error.message.includes('permission denied')) {
+          errorMessage = 'You do not have permission to create documents';
+        } else if (error.message.includes('foreign key')) {
+          errorMessage = 'Invalid organization or user reference';
+        } else if (error.message.includes('not null')) {
+          errorMessage = 'Required fields are missing';
+        }
+      }
+
+      toast.error('Failed to create document: ' + errorMessage);
     }
   };
 
