@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -125,8 +126,8 @@ export const useSaveESignatureFields = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ documentId, fields }: { 
-      documentId: string; 
+    mutationFn: async ({ documentId, fields }: {
+      documentId: string;
       fields: Array<{
         id?: string;
         field_type: 'signature' | 'name' | 'date' | 'email' | 'text';
@@ -138,7 +139,7 @@ export const useSaveESignatureFields = () => {
         page_number?: number;
         is_required?: boolean;
         field_value?: string;
-      }> 
+      }>
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
@@ -177,4 +178,43 @@ export const useSaveESignatureFields = () => {
       toast.error('Failed to save fields');
     },
   });
+};
+
+// Realtime subscription for esignature_fields scoped to a document
+export const useRealtimeESignatureFields = (documentId?: string) => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!documentId) return;
+
+    const channel = supabase
+      .channel(`realtime-esignature-fields-${documentId}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'esignature_fields',
+        filter: `document_id=eq.${documentId}`,
+      }, (payload) => {
+        queryClient.setQueryData<ESignatureField[]>(['esignature-fields', documentId], (prev) => {
+          const previous = prev || [];
+          if (payload.eventType === 'INSERT') {
+            const next = previous.filter(f => f.id !== (payload.new as any).id);
+            next.push(payload.new as any);
+            return next;
+          }
+          if (payload.eventType === 'UPDATE') {
+            return previous.map(f => f.id === (payload.new as any).id ? (payload.new as any) : f);
+          }
+          if (payload.eventType === 'DELETE') {
+            return previous.filter(f => f.id !== (payload.old as any).id);
+          }
+          return previous;
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [documentId, queryClient]);
 };

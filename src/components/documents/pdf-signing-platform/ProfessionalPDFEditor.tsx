@@ -37,7 +37,8 @@ import { toast } from 'sonner';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateSignatureRequest } from '@/hooks/useSignatureRequests';
-import { useCreateESignatureField, useESignatureFields, useUpdateESignatureField, useDeleteESignatureField, useSaveESignatureFields } from '@/hooks/useESignatureFields';
+import { useCreateESignatureField, useESignatureFields, useUpdateESignatureField, useDeleteESignatureField, useSaveESignatureFields, useRealtimeESignatureFields } from '@/hooks/useESignatureFields';
+import { debounce } from '@/lib/debounce';
 import { supabase } from '@/integrations/supabase/client';
 
 // Set up PDF.js worker
@@ -102,6 +103,7 @@ const ProfessionalPDFEditor: React.FC = () => {
     const [persistedDocId, setPersistedDocId] = useState<string>('');
     const effectiveDocId = persistedDocId || (stateDocId ? stateDocId : (documentId && uuidRegex.test(documentId) ? documentId : ''));
     const { data: existingFields } = useESignatureFields(effectiveDocId);
+    useRealtimeESignatureFields(effectiveDocId);
 
     // Load existing fields from database when component mounts
     useEffect(() => {
@@ -166,7 +168,17 @@ const ProfessionalPDFEditor: React.FC = () => {
                     try {
                         setIsPersisting(true);
                         const fileName = file.name.replace(/\s+/g, '_');
-                        const path = `${(user as any)?.id || 'anonymous'}/${Date.now()}_${fileName}`;
+                        // Derive org id for RLS-compliant storage path
+                        let orgId: string | null = null;
+                        try {
+                            const { data: profile } = await supabase
+                                .from('profiles')
+                                .select('org_id')
+                                .eq('id', (user as any)?.id)
+                                .single();
+                            orgId = profile?.org_id || null;
+                        } catch { }
+                        const path = `${orgId || 'public'}/${(user as any)?.id || 'anonymous'}/${Date.now()}_${fileName}`;
                         const { error: upErr } = await supabase.storage.from('documents').upload(path, file, { contentType: file.type });
                         if (upErr) throw upErr;
 
@@ -178,7 +190,9 @@ const ProfessionalPDFEditor: React.FC = () => {
                                 file_path: path,
                                 created_by: (user as any)?.id || null,
                                 title: fileName,
-                                org_id: null,
+                                org_id: orgId,
+                                status: 'active',
+                                version: '1.0'
                             } as any)
                             .select('id')
                             .single();
@@ -187,7 +201,29 @@ const ProfessionalPDFEditor: React.FC = () => {
                         // Update to public URL after persistence
                         const { data: pub } = supabase.storage.from('documents').getPublicUrl(path);
                         setPdfUrl(pub.publicUrl);
-                        if (insertRes?.id) setPersistedDocId(insertRes.id);
+                        if (insertRes?.id) {
+                            setPersistedDocId(insertRes.id);
+                            // If user already placed fields before persistence completed, upsert them now
+                            if (fields.length > 0) {
+                                try {
+                                    const mapped = fields.map(f => ({
+                                        id: f.id.startsWith('field_') ? undefined : f.id,
+                                        field_type: (f.type === 'signature' ? 'signature' : f.type === 'name' ? 'name' : f.type === 'date' ? 'date' : 'text') as 'signature' | 'name' | 'date' | 'email' | 'text',
+                                        field_label: f.label,
+                                        position_x: f.x,
+                                        position_y: f.y,
+                                        width: f.width,
+                                        height: f.height,
+                                        page_number: f.page,
+                                        is_required: f.required,
+                                        field_value: f.value
+                                    }));
+                                    await saveESignatureFields.mutateAsync({ documentId: insertRes.id, fields: mapped });
+                                } catch (flushErr) {
+                                    console.error('Post-persist field flush failed:', flushErr);
+                                }
+                            }
+                        }
                     } catch (err: any) {
                         console.error('Upload persistence failed:', err);
                         // Keep the immediate URL if persistence fails
@@ -214,7 +250,7 @@ const ProfessionalPDFEditor: React.FC = () => {
             setIsLoadingPdf(false);
         }
         console.log('PDF Editor - Setting PDF URL:', url);
-    }, [location.state]);
+    }, [location.state, fields.length, saveESignatureFields]);
 
     // Initialize sidebar fields
     const [sidebarFields, setSidebarFields] = useState<SignatureField[]>([
@@ -353,6 +389,22 @@ const ProfessionalPDFEditor: React.FC = () => {
         ));
     }, [zoom]);
 
+    // Debounced autosave for position updates
+    const debouncedSavePosition = useRef(debounce(async (id: string, x: number, y: number, w: number, h: number) => {
+        try {
+            await updateESignatureField.mutateAsync({ id, updates: { position_x: x, position_y: y, width: w, height: h } });
+        } catch (e) {
+            console.error('Autosave position failed', e);
+        }
+    }, 250)).current;
+
+    // Call on drag end to save
+    const handleFieldDragEnd = useCallback((fieldId: string) => {
+        const f = fields.find(ff => ff.id === fieldId);
+        if (!f || !effectiveDocId || fieldId.startsWith('field_')) return;
+        debouncedSavePosition(fieldId, f.x, f.y, f.width, f.height);
+    }, [fields, effectiveDocId, debouncedSavePosition]);
+
     // Handle field selection
     const handleFieldSelect = (field: SignatureField) => {
         setSelectedField(field);
@@ -432,25 +484,38 @@ const ProfessionalPDFEditor: React.FC = () => {
             ));
 
             // Save field value to database
-            if (effectiveDocId && effectiveDocId !== 'sample-doc' && activeInputField.id && !activeInputField.id.startsWith('field_')) {
+            if (effectiveDocId && effectiveDocId !== 'sample-doc') {
                 try {
-                    console.log('Updating field value in database:', {
-                        fieldId: activeInputField.id,
-                        fieldValue: value
-                    });
-
-                    await updateESignatureField.mutateAsync({
-                        id: activeInputField.id,
-                        updates: { field_value: value }
-                    });
+                    let targetId = activeInputField.id;
+                    // If not yet saved, create then update
+                    if (!targetId || targetId.startsWith('field_')) {
+                        const createRes = await createESignatureField.mutateAsync({
+                            document_id: effectiveDocId,
+                            field_type: (activeInputField.type === 'signature' ? 'signature' : activeInputField.type === 'name' ? 'name' : activeInputField.type === 'date' ? 'date' : 'text'),
+                            field_label: activeInputField.label,
+                            position_x: activeInputField.x,
+                            position_y: activeInputField.y,
+                            width: activeInputField.width,
+                            height: activeInputField.height,
+                            page_number: activeInputField.page,
+                            is_required: activeInputField.required,
+                            field_value: value
+                        });
+                        targetId = createRes.id;
+                        setFields(prev => prev.map(f => f.id === activeInputField.id ? { ...f, id: targetId } : f));
+                    } else {
+                        // Debounced value autosave
+                        const debouncedSaveValue = debounce(async () => {
+                            await updateESignatureField.mutateAsync({ id: targetId!, updates: { field_value: value } });
+                        }, 300);
+                        debouncedSaveValue();
+                    }
 
                     console.log('Field value saved to database successfully');
                 } catch (error) {
                     console.error('Failed to save field value to database:', error);
                     toast.error('Field value saved locally but failed to save to database');
                 }
-            } else {
-                console.log('Skipping database update - field not yet saved to database or no valid ID');
             }
 
             setActiveInputField(null);
@@ -507,27 +572,34 @@ const ProfessionalPDFEditor: React.FC = () => {
             ));
 
             // Save field value to database
-            if (effectiveDocId && effectiveDocId !== 'sample-doc' && activeSignatureField.id && !activeSignatureField.id.startsWith('field_')) {
+            if (effectiveDocId && effectiveDocId !== 'sample-doc') {
                 try {
                     const fieldValue = typeof signatureValue === 'string' ? signatureValue : JSON.stringify(signatureValue);
-
-                    console.log('Updating field value in database:', {
-                        fieldId: activeSignatureField.id,
-                        fieldValue: fieldValue
-                    });
-
-                    await updateESignatureField.mutateAsync({
-                        id: activeSignatureField.id,
-                        updates: { field_value: fieldValue }
-                    });
+                    let targetId = activeSignatureField.id;
+                    if (!targetId || targetId.startsWith('field_')) {
+                        const createRes = await createESignatureField.mutateAsync({
+                            document_id: effectiveDocId,
+                            field_type: 'signature',
+                            field_label: activeSignatureField.label,
+                            position_x: activeSignatureField.x,
+                            position_y: activeSignatureField.y,
+                            width: activeSignatureField.width,
+                            height: activeSignatureField.height,
+                            page_number: activeSignatureField.page,
+                            is_required: activeSignatureField.required,
+                            field_value: fieldValue
+                        });
+                        targetId = createRes.id;
+                        setFields(prev => prev.map(f => f.id === activeSignatureField.id ? { ...f, id: targetId } : f));
+                    } else {
+                        await updateESignatureField.mutateAsync({ id: targetId, updates: { field_value: fieldValue } });
+                    }
 
                     console.log('Field value saved to database successfully');
                 } catch (error) {
                     console.error('Failed to save field value to database:', error);
                     toast.error('Signature applied locally but failed to save to database');
                 }
-            } else {
-                console.log('Skipping database update - field not yet saved to database or no valid ID');
             }
 
             setShowSignatureDetailsModal(false);
