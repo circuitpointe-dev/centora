@@ -2,18 +2,24 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Download, 
-  Share2, 
-  Edit, 
-  Trash2, 
+import {
+  Download,
+  Share2,
+  Edit,
+  Trash2,
   X,
   Eye,
   FileText,
   Calendar,
   User,
   Tag,
-  Loader2
+  Loader2,
+  File,
+  FileImage,
+  FileVideo,
+  FileAudio,
+  FileSpreadsheet,
+  Presentation
 } from 'lucide-react';
 import { Document } from '@/hooks/useDocuments';
 import { useDocumentDownload, useDocumentDelete, useDocumentPreview } from '@/hooks/useDocumentOperations';
@@ -65,6 +71,20 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
 
   const canPreview = document.mime_type?.includes('pdf') || document.mime_type?.includes('image');
 
+  const getFileIcon = (mimeType?: string) => {
+    if (!mimeType) return <File className="w-10 h-10 text-gray-400" />;
+
+    if (mimeType.includes('pdf')) return <FileText className="w-10 h-10 text-red-500" />;
+    if (mimeType.includes('image')) return <FileImage className="w-10 h-10 text-blue-500" />;
+    if (mimeType.includes('video')) return <FileVideo className="w-10 h-10 text-purple-500" />;
+    if (mimeType.includes('audio')) return <FileAudio className="w-10 h-10 text-green-500" />;
+    if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return <FileSpreadsheet className="w-10 h-10 text-green-600" />;
+    if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return <Presentation className="w-10 h-10 text-orange-500" />;
+    if (mimeType.includes('text') || mimeType.includes('document')) return <FileText className="w-10 h-10 text-blue-600" />;
+
+    return <File className="w-10 h-10 text-gray-400" />;
+  };
+
   return (
     <Card className="h-full flex flex-col border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-white shadow-lg">
       {/* Header */}
@@ -106,7 +126,7 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
             <h3 className="font-semibold text-gray-900 text-lg truncate" title={document.title}>
               {document.title}
             </h3>
-            
+
             {/* File Details */}
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2">
@@ -114,7 +134,7 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
                 <span className="text-gray-600">Type:</span>
                 <span className="font-medium">{document.category}</span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-gray-400" />
                 <span className="text-gray-600">Created:</span>
@@ -151,11 +171,11 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {document.tags.map((tag, index) => (
-                    <Badge 
-                      key={index} 
+                    <Badge
+                      key={index}
                       variant="secondary"
                       className="text-xs"
-                      style={{ 
+                      style={{
                         backgroundColor: tag.bg_color || '#f3f4f6',
                         color: tag.text_color || '#374151'
                       }}
@@ -172,9 +192,9 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
           <div className="space-y-3 mt-auto">
             <div className="flex gap-2">
               {canPreview && (
-                <Button 
-                  size="sm" 
-                  variant="outline" 
+                <Button
+                  size="sm"
+                  variant="outline"
                   className="flex-1"
                   onClick={handlePreview}
                   disabled={previewMutation.isPending}
@@ -187,9 +207,9 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
                   Preview
                 </Button>
               )}
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="flex-1"
                 onClick={handleDownload}
                 disabled={downloadMutation.isPending}
@@ -202,7 +222,7 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
                 Download
               </Button>
             </div>
-            
+
             <div className="flex gap-2">
               <Button size="sm" variant="outline" className="flex-1">
                 <Share2 className="h-4 w-4 mr-2" />
@@ -212,9 +232,9 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="flex-1 text-red-600 hover:text-red-700"
                 onClick={handleDelete}
                 disabled={deleteMutation.isPending}
@@ -233,9 +253,9 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
               <div className="mt-4 border rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <h4 className="font-medium">Document Preview</h4>
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
+                  <Button
+                    size="sm"
+                    variant="ghost"
                     onClick={() => {
                       if (previewUrl) {
                         URL.revokeObjectURL(previewUrl);
@@ -248,19 +268,35 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
                 </div>
                 <div className="bg-gray-50 rounded p-2 max-h-64 overflow-auto">
                   {document.mime_type?.includes('pdf') ? (
-                    <iframe 
-                      src={previewUrl} 
-                      className="w-full h-48 border-0"
+                    <iframe
+                      src={previewUrl}
+                      className="w-full h-48 border-0 rounded"
                       title="Document Preview"
+                      onError={() => {
+                        console.error('Failed to load PDF preview');
+                        setPreviewUrl(null);
+                      }}
                     />
                   ) : document.mime_type?.includes('image') ? (
-                    <img 
-                      src={previewUrl} 
-                      alt="Document Preview" 
-                      className="max-w-full h-auto"
+                    <img
+                      src={previewUrl}
+                      alt="Document Preview"
+                      className="max-w-full h-auto rounded"
+                      onError={() => {
+                        console.error('Failed to load image preview');
+                        setPreviewUrl(null);
+                      }}
                     />
+                  ) : document.mime_type?.includes('text') ? (
+                    <div className="bg-white p-3 rounded border">
+                      <p className="text-sm text-gray-600">Text document preview not available</p>
+                      <p className="text-xs text-gray-500 mt-1">Click Download to view the full document</p>
+                    </div>
                   ) : (
-                    <p className="text-gray-500">Preview not available for this file type</p>
+                    <div className="bg-white p-3 rounded border">
+                      <p className="text-sm text-gray-600">Preview not available for this file type</p>
+                      <p className="text-xs text-gray-500 mt-1">File type: {document.mime_type || 'Unknown'}</p>
+                    </div>
                   )}
                 </div>
               </div>

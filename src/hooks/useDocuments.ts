@@ -97,12 +97,12 @@ export const useDocuments = (filters?: {
       return data.map((doc: any) => ({
         ...doc,
         tags: doc.document_tag_associations?.map((assoc: any) => assoc.document_tags) || [],
-        creator: doc.creator?.[0] || null,
+        creator: doc.creator || null, // Fix: creator is already an object, not an array
         // Transform for backward compatibility with existing UI
         fileName: doc.file_name,
         addedTime: `Added ${formatTimeAgo(doc.created_at)}`,
         owner: {
-          name: doc.creator?.[0]?.full_name || 'Unknown',
+          name: doc.creator?.full_name || 'Unknown',
           avatar: 'https://github.com/shadcn.png', // Default avatar
         }
       }));
