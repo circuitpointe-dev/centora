@@ -71,7 +71,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       setIsItalic(document.queryCommandState('italic'));
       setIsUnderline(document.queryCommandState('underline'));
       setIsStrikethrough(document.queryCommandState('strikeThrough'));
-      setIsCode(document.queryCommandState('fontName') === 'monospace');
+      const fontName = document.queryCommandValue('fontName');
+      setIsCode(fontName === 'monospace');
     }
   };
 

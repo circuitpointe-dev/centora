@@ -301,8 +301,7 @@ const GenericFeaturePage = () => {
 
   // Course Analytics route (when clicking "View course analytics" button)
   if (module === 'lmsAuthor' && feature?.startsWith('course-analytics-')) {
-    const courseId = feature.replace('course-analytics-', '');
-    return <CourseAnalyticsPage courseId={courseId} />;
+    return <CourseAnalyticsPage />;
   }
 
   // Create Course route (when clicking "Create course" button)
