@@ -49,17 +49,20 @@ import LessonPage from "../learning/LessonPage";
 import AssignmentPage from "../learning/AssignmentPage";
 import QuizPage from "../learning/QuizPage";
 import LiveSessionsPage from "../learning/LiveSessionsPage";
+import LiveSessionsAuthor from "../learning/author/LiveSessions";
 import HelpCenterPage from "../learning/HelpCenterPage";
 import LMSAuthorDashboard from '../learning/author/LMSAuthorDashboard';
 import CourseAnalyticsPage from '../learning/author/CourseAnalyticsPage';
 import CreateCoursePage from '../learning/author/CreateCoursePage';
 import CreateCourseStep2 from '../learning/author/CreateCourseStep2';
 import CourseBuilder from '../learning/author/CourseBuilder';
-import QuizCreator from '../learning/author/QuizCreator';
-import AssignmentCreator from '../learning/author/AssignmentCreator';
-import VideoLessonCreator from '../learning/author/VideoLessonCreator';
-import TextLessonCreator from '../learning/author/TextLessonCreator';
+import QuizEditor from '../learning/author/QuizEditor';
+import AssignmentEditor from '../learning/author/AssignmentEditor';
+import VideoLessonEditor from '../learning/author/VideoLessonEditor';
+import TextLessonEditor from '../learning/author/TextLessonEditor';
 import CoursePreview from '../learning/author/CoursePreview';
+import QuizPreview from '../learning/author/QuizPreview';
+import LiveSessions from '../learning/author/LiveSessions';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -281,7 +284,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'lmsAuthor' && feature === 'live-sessions') {
-    return <LiveSessionsPage />;
+    return <LiveSessionsAuthor />;
   }
 
   if (module === 'lmsAuthor' && feature === 'media-library') {
@@ -320,31 +323,48 @@ const GenericFeaturePage = () => {
     return <CourseBuilder />;
   }
 
+  // Live Sessions route
+  if (module === 'lmsAuthor' && feature === 'live-sessions') {
+    console.log('Matched Live Sessions route:', feature);
+    console.log('Live Sessions - module:', module, 'feature:', feature);
+    return <LiveSessions />;
+  }
+
   // Course Preview route - more specific pattern
   if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('preview')) {
     console.log('Matched Course Preview route:', feature);
     return <CoursePreview />;
   }
 
-  // Lesson Creator routes - more specific patterns
+  // Lesson Creator routes - more specific patterns (must come before general quiz routes)
   if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('quiz')) {
     console.log('Matched Quiz Creator route:', feature);
-    return <QuizCreator />;
+    return <QuizEditor />;
+  }
+
+  // Quiz Preview route - when clicking "Open →" on quiz in preview mode
+  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('quiz') && feature.includes('preview')) {
+    console.log('Matched Quiz Preview route:', feature);
+    console.log('Quiz Preview - module:', module, 'feature:', feature);
+    console.log('Quiz Preview - includes courses:', feature.includes('courses'));
+    console.log('Quiz Preview - includes quiz:', feature.includes('quiz'));
+    console.log('Quiz Preview - includes preview:', feature.includes('preview'));
+    return <QuizPreview />;
   }
 
   if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('assignment')) {
     console.log('Matched Assignment Creator route:', feature);
-    return <AssignmentCreator />;
+    return <AssignmentEditor />;
   }
 
   if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('video')) {
     console.log('Matched Video Creator route:', feature);
-    return <VideoLessonCreator />;
+    return <VideoLessonEditor />;
   }
 
   if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('text')) {
     console.log('Matched Text Creator route:', feature);
-    return <TextLessonCreator />;
+    return <TextLessonEditor />;
   }
 
   // LMS Admin module routes

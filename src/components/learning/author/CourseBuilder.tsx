@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { 
   ArrowLeft, 
   Plus, 
@@ -15,8 +16,7 @@ import {
   ChevronDown,
   ChevronRight,
   GripVertical,
-  Eye,
-  Upload
+  Eye
 } from 'lucide-react';
 
 interface CourseModule {
@@ -36,24 +36,29 @@ interface CourseLesson {
 const CourseBuilder: React.FC = () => {
   const navigate = useNavigate();
   const { feature } = useParams();
+  const location = useLocation();
   
   // Extract courseId from feature parameter (format: courses-{courseId}-builder)
   const courseId = feature?.replace('courses-', '').replace('-builder', '') || '';
+  
+  // Get course data from navigation state
+  const courseData = location.state?.courseData;
+  const courseTitle = courseData?.title || 'Introduction to Digital Marketing Strategies';
+  
+  // Start with one module to show the lesson selection state
   const [modules, setModules] = useState<CourseModule[]>([
     {
       id: '1',
       title: 'Module 1: Introduction to digital tools',
       isExpanded: true,
-      lessons: [
-        { id: '1', title: 'Introduction video', type: 'video', isActive: false },
-        { id: '2', title: 'Assignment: Case study on digital tools', type: 'assignment', isActive: false },
-        { id: '3', title: 'T Heading 1', type: 'text', isActive: true },
-      ]
+      lessons: []
     }
   ]);
 
   const [showAddLesson, setShowAddLesson] = useState(false);
+  const [showAddSectionForm, setShowAddSectionForm] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState<string>('1');
+  const [newSectionTitle, setNewSectionTitle] = useState('Module 1: Introduction to digital tools');
 
   const lessonTypeIcons = {
     video: Play,
@@ -78,13 +83,26 @@ const CourseBuilder: React.FC = () => {
   };
 
   const handleAddSection = () => {
-    const newModule: CourseModule = {
-      id: Date.now().toString(),
-      title: `Module ${modules.length + 1}: New section`,
-      isExpanded: false,
-      lessons: []
-    };
-    setModules([...modules, newModule]);
+    setShowAddSectionForm(true);
+  };
+
+  const handleSaveSection = () => {
+    if (newSectionTitle.trim()) {
+      const newModule: CourseModule = {
+        id: Date.now().toString(),
+        title: newSectionTitle.trim(),
+        isExpanded: false,
+        lessons: []
+      };
+      setModules([...modules, newModule]);
+      setShowAddSectionForm(false);
+      setNewSectionTitle('Module 1: Introduction to digital tools'); // Reset to default
+    }
+  };
+
+  const handleCancelSection = () => {
+    setShowAddSectionForm(false);
+    setNewSectionTitle('Module 1: Introduction to digital tools'); // Reset to default
   };
 
   const handleAddLesson = (type: CourseLesson['type']) => {
@@ -104,6 +122,17 @@ const CourseBuilder: React.FC = () => {
       );
       setModules(updatedModules);
       setShowAddLesson(false);
+      
+      // Navigate to the appropriate lesson editor
+      const editorRoutes = {
+        video: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${newLesson.id}-video`,
+        text: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${newLesson.id}-text`,
+        pdf: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${newLesson.id}-pdf`,
+        audio: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${newLesson.id}-audio`,
+        quiz: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${newLesson.id}-quiz`,
+        assignment: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${newLesson.id}-assignment`
+      };
+      navigate(editorRoutes[type]);
     }
   };
 
@@ -125,17 +154,10 @@ const CourseBuilder: React.FC = () => {
     setSelectedModuleId(moduleId);
   };
 
-  const handleEditLesson = (lesson: CourseLesson) => {
-    // Navigate to appropriate editor based on lesson type
-    const editorRoutes = {
-      video: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-video`,
-      text: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-text`,
-      pdf: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-pdf`,
-      audio: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-audio`,
-      quiz: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-quiz`,
-      assignment: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-assignment`
-    };
-    navigate(editorRoutes[lesson.type]);
+  const handlePreviewCourse = () => {
+    navigate(`/dashboard/lmsAuthor/courses-${courseId}-preview`, {
+      state: { courseData: courseData }
+    });
   };
 
   return (
@@ -155,7 +177,7 @@ const CourseBuilder: React.FC = () => {
           
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-semibold text-foreground">
-              Introduction to Digital Marketing Strategies
+              {courseTitle}
             </h1>
           </div>
           
@@ -171,7 +193,7 @@ const CourseBuilder: React.FC = () => {
                 <span className="text-primary text-sm font-medium">MJ</span>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handlePreviewCourse}>
               <Eye size={16} className="mr-2" />
               Preview
             </Button>
@@ -240,9 +262,9 @@ const CourseBuilder: React.FC = () => {
                         setSelectedModuleId(module.id);
                         setShowAddLesson(true);
                       }}
-                      className="flex items-center space-x-2 p-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors w-full"
+                      className="flex items-center space-x-2 p-3 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors w-full"
                     >
-                      <Plus size={14} />
+                      <Plus size={16} />
                       <span>Add lesson</span>
                     </button>
                   </div>
@@ -263,9 +285,64 @@ const CourseBuilder: React.FC = () => {
 
         {/* Main Content Area */}
         <div className="flex-1 p-6">
-          {showAddLesson ? (
+          {showAddSectionForm ? (
+            // Add Section Form - matches the design exactly
+            <div className="flex items-center justify-center h-full">
+              <Card className="w-full max-w-md p-8">
+                <h2 className="text-2xl font-semibold text-foreground mb-6">New section</h2>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="sectionTitle" className="text-sm font-medium text-foreground">
+                      Section title
+                    </label>
+                    <Input
+                      id="sectionTitle"
+                      value={newSectionTitle}
+                      onChange={(e) => setNewSectionTitle(e.target.value)}
+                      placeholder="Enter section title"
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div className="flex justify-end space-x-3 pt-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleCancelSection}
+                      className="px-6"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleSaveSection}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground px-6"
+                    >
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          ) : modules.length === 0 ? (
+            // Initial empty state - matches the design exactly
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-foreground mb-8">
+                  Start your course by adding the first section
+                </h2>
+                <Button
+                  onClick={handleAddSection}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg"
+                >
+                  <Plus size={20} className="mr-2" />
+                  Add section
+                </Button>
+              </div>
+            </div>
+          ) : showAddLesson ? (
+            // Lesson Type Selection - matches the design exactly
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-bold text-foreground mb-8">Add Lesson</h2>
+              <h2 className="text-2xl font-semibold text-foreground mb-8">Lessons</h2>
               
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Object.entries(lessonTypeLabels).map(([type, label]) => {
@@ -273,14 +350,12 @@ const CourseBuilder: React.FC = () => {
                   return (
                     <Card
                       key={type}
-                      className="p-6 cursor-pointer hover:shadow-md transition-shadow border-border"
+                      className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-border hover:border-gray-400"
                       onClick={() => handleAddLesson(type as CourseLesson['type'])}
                     >
-                      <div className="flex flex-col items-center space-y-3">
-                        <div className="p-4 bg-primary/10 rounded-full">
-                          <IconComponent size={24} className="text-primary" />
-                        </div>
-                        <span className="font-medium text-card-foreground">{label}</span>
+                      <div className="flex items-center space-x-3">
+                        <IconComponent size={24} className="text-gray-600" />
+                        <span className="text-gray-700 font-medium">{label}</span>
                       </div>
                     </Card>
                   );
@@ -288,30 +363,32 @@ const CourseBuilder: React.FC = () => {
               </div>
             </div>
           ) : (
+            // Default state when modules exist but no specific action is selected
             <div className="max-w-4xl mx-auto">
-              <div className="text-center py-20">
-                <div className="mb-8">
-                  <Upload size={64} className="text-muted-foreground mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold text-foreground mb-2">
-                    Start your course by adding the first section
-                  </h2>
-                  <p className="text-muted-foreground mb-8">
-                    Create modules and lessons to build your course content
-                  </p>
-                </div>
-                
-                <Button
-                  onClick={handleAddSection}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3"
-                >
-                  <Plus size={20} className="mr-2" />
-                  Add section
-                </Button>
+              <h2 className="text-2xl font-semibold text-foreground mb-8">Lessons</h2>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {Object.entries(lessonTypeLabels).map(([type, label]) => {
+                  const IconComponent = lessonTypeIcons[type as CourseLesson['type']];
+                  return (
+                    <Card
+                      key={type}
+                      className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-border hover:border-gray-400"
+                      onClick={() => handleAddLesson(type as CourseLesson['type'])}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <IconComponent size={24} className="text-gray-600" />
+                        <span className="text-gray-700 font-medium">{label}</span>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           )}
         </div>
       </div>
+
     </div>
   );
 };
