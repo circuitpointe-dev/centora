@@ -146,6 +146,9 @@ const ProfessionalPDFEditor: React.FC = () => {
     const [isLoadingPdf, setIsLoadingPdf] = useState(true);
     const [isSavingFields, setIsSavingFields] = useState(false);
 
+    // Track if we've already uploaded this file to prevent duplicates
+    const uploadedFilesRef = useRef<Set<string>>(new Set());
+    
     useEffect(() => {
         const state = location.state as any;
         console.log('PDF Editor - Location state:', state);
@@ -158,15 +161,22 @@ const ProfessionalPDFEditor: React.FC = () => {
         if (state?.selectedFiles && state.selectedFiles.length > 0) {
             const file = state.selectedFiles[0] as File;
             if (file.type === 'application/pdf') {
+                // Create a unique key for this file to prevent duplicate uploads
+                const fileKey = `${file.name}_${file.size}_${file.lastModified}`;
+                
                 // Set immediate URL for preview while persisting
                 const immediateUrl = URL.createObjectURL(file);
                 setPdfUrl(immediateUrl);
                 setIsLoadingPdf(false);
 
-                // Persist upload to Supabase Storage + DB in background
-                (async () => {
-                    try {
-                        setIsPersisting(true);
+                // Only upload if we haven't uploaded this exact file already
+                if (!uploadedFilesRef.current.has(fileKey) && !isPersisting) {
+                    uploadedFilesRef.current.add(fileKey);
+                    
+                    // Persist upload to Supabase Storage + DB in background
+                    (async () => {
+                        try {
+                            setIsPersisting(true);
                         const fileName = file.name.replace(/\s+/g, '_');
                         
                         // Get user's org_id for RLS-compliant storage path
@@ -187,11 +197,69 @@ const ProfessionalPDFEditor: React.FC = () => {
                         }
 
                         const path = `${orgId}/${currentUser.id}/${Date.now()}_${fileName}`;
+                        
+                        // Check if file already exists
+                        const { data: existingFile } = await supabase.storage
+                            .from('documents')
+                            .list(`${orgId}/${currentUser.id}`, {
+                                search: fileName
+                            });
+                        
+                        // If file already exists with exact same name, use it instead of uploading again
+                        if (existingFile && existingFile.length > 0) {
+                            console.log('File already exists, using existing:', existingFile[0].name);
+                            const existingPath = `${orgId}/${currentUser.id}/${existingFile[0].name}`;
+                            const { data: pub } = supabase.storage.from('documents').getPublicUrl(existingPath);
+                            setPdfUrl(pub.publicUrl);
+                            
+                            // Check if DB record exists
+                            const { data: existingDoc } = await supabase
+                                .from('documents')
+                                .select('id')
+                                .eq('file_path', existingPath)
+                                .maybeSingle();
+                            
+                            if (existingDoc?.id) {
+                                setPersistedDocId(existingDoc.id);
+                                toast.success('Document loaded from cloud!');
+                                setIsPersisting(false);
+                                return;
+                            }
+                        }
+                        
+                        // Upload new file with upsert option to handle conflicts
                         const { error: upErr } = await supabase.storage
                             .from('documents')
-                            .upload(path, file, { contentType: file.type });
+                            .upload(path, file, { 
+                                contentType: file.type,
+                                upsert: true // Allow overwriting if exists
+                            });
                         
-                        if (upErr) throw upErr;
+                        if (upErr) {
+                            // If still getting 409 error, try to use existing file
+                            if (upErr.message.includes('already exists') || (upErr as any).status === 409) {
+                                console.log('File exists error, attempting to use existing file');
+                                const { data: pub } = supabase.storage.from('documents').getPublicUrl(path);
+                                setPdfUrl(pub.publicUrl);
+                                
+                                // Try to find existing document record
+                                const { data: existingDoc } = await supabase
+                                    .from('documents')
+                                    .select('id')
+                                    .eq('file_path', path)
+                                    .maybeSingle();
+                                
+                                if (existingDoc?.id) {
+                                    setPersistedDocId(existingDoc.id);
+                                    toast.success('Document loaded successfully!');
+                                    setIsPersisting(false);
+                                    return;
+                                }
+                                // Otherwise continue to create DB record below
+                            } else {
+                                throw upErr;
+                            }
+                        }
 
                         // Insert DB row with proper org_id for RLS
                         const { data: insertRes, error: insErr } = await supabase
@@ -256,14 +324,16 @@ const ProfessionalPDFEditor: React.FC = () => {
                                 }
                             }
                         }
-                    } catch (err: any) {
-                        console.error('Upload persistence failed:', err);
-                        toast.error(`Failed to save document to cloud: ${err.message || 'Unknown error'}. You can still work with it locally.`);
-                        // Keep the immediate URL if persistence fails
-                    } finally {
-                        setIsPersisting(false);
-                    }
-                })();
+                        } catch (err: any) {
+                            console.error('Upload persistence failed:', err);
+                            uploadedFilesRef.current.delete(fileKey); // Allow retry on error
+                            toast.error(`Failed to save document to cloud: ${err.message || 'Unknown error'}. You can still work with it locally.`);
+                            // Keep the immediate URL if persistence fails
+                        } finally {
+                            setIsPersisting(false);
+                        }
+                    })();
+                }
             } else {
                 setPdfLoadError('Please upload a valid PDF file');
                 setIsLoadingPdf(false);

@@ -271,6 +271,38 @@ export const PDFStage = forwardRef<PDFStageHandle, PDFStageProps>(({
       const next: FieldData = { ...current, ...patch };
       obj.fieldData = next;
       
+      // Save field value update to database if we have a valid document ID
+      if (next.value && documentId && !id.startsWith('temp_') && documentId !== "sample-doc") {
+        // Convert value to string for storage
+        let fieldValue = '';
+        if (typeof next.value === 'object') {
+          // Handle signature objects
+          if (next.value.type === 'type') {
+            fieldValue = next.value.data;
+          } else if (next.value.type === 'draw' || next.value.type === 'upload') {
+            fieldValue = JSON.stringify(next.value);
+          }
+        } else if (next.value instanceof Date) {
+          fieldValue = next.value.toISOString();
+        } else {
+          fieldValue = String(next.value);
+        }
+        
+        updateFieldMutation.mutate({
+          id,
+          updates: {
+            field_value: fieldValue
+          }
+        }, {
+          onSuccess: () => {
+            console.log('Field value saved to database:', { id, value: fieldValue });
+          },
+          onError: (error) => {
+            console.error('Failed to save field value to database:', error);
+          }
+        });
+      }
+      
       // Update field display based on content
       try {
         const text = (obj as any)._objects?.[1] as any;
