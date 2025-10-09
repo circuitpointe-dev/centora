@@ -53,6 +53,9 @@ import LiveSessionsAuthor from "../learning/author/LiveSessions";
 import MediaLibrary from "../learning/author/MediaLibrary";
 import Templates from "../learning/author/Templates";
 import TemplatePreview from "../learning/author/TemplatePreview";
+import QuizBank from "../learning/author/QuizBank";
+import QuizBankView from "../learning/author/QuizBankView";
+import QuizBankEdit from "../learning/author/QuizBankEdit";
 import HelpCenterPage from "../learning/HelpCenterPage";
 import LMSAuthorDashboard from '../learning/author/LMSAuthorDashboard';
 import CourseAnalyticsPage from '../learning/author/CourseAnalyticsPage';
@@ -302,8 +305,16 @@ const GenericFeaturePage = () => {
     return <Templates />;
   }
 
+  if (module === 'lmsAuthor' && feature === 'quiz-bank-edit') {
+    return <QuizBankEdit />;
+  }
+
+  if (module === 'lmsAuthor' && feature === 'quiz-bank-view') {
+    return <QuizBankView />;
+  }
+
   if (module === 'lmsAuthor' && feature === 'quiz-bank') {
-    return <GenericFeatureUI moduleName="LMS Author" featureName="Quiz Bank" />;
+    return <QuizBank />;
   }
 
   // Course Analytics route (when clicking "View course analytics" button)
