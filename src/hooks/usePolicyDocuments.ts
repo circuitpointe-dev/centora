@@ -52,54 +52,39 @@ export const useComplianceDocuments = (filters?: {
     queryFn: async () => {
       console.log('Fetching compliance documents from database...');
       
-      // Query documents with category 'compliance' and join with policy_documents
+      // Query documents with category 'compliance' - no join needed for general compliance docs
       let query = supabase
         .from('documents')
-        .select(`
-          *,
-          policy_documents!inner(
-            id,
-            effective_date,
-            expires_date,
-            department,
-            acknowledgment_required,
-            created_at,
-            updated_at
-          )
-        `)
+        .select('*')
         .eq('category', 'compliance');
       
       // Apply filters
       if (filters?.status && filters.status !== 'all') {
-        query = query.eq('policy_documents.status', filters.status);
-      }
-      
-      if (filters?.department && filters.department !== 'all') {
-        query = query.eq('policy_documents.department', filters.department);
+        query = query.eq('status', filters.status.toLowerCase() as any);
       }
 
       if (filters?.search) {
         query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
       }
       
-      const { data, error } = await query;
+      const { data, error } = await query.order('created_at', { ascending: false });
       
       if (error) {
-        console.error('Error fetching policy documents:', error);
+        console.error('Error fetching compliance documents:', error);
         throw error;
       }
       
       // Transform the data to match the expected interface
       return (data || []).map((doc: any): PolicyDocument => ({
-        id: doc.policy_documents[0]?.id || doc.id,
+        id: doc.id,
         title: doc.title || 'Untitled Document',
         description: doc.description || '',
-        effective_date: doc.policy_documents[0]?.effective_date || doc.created_at.split('T')[0],
-        expires_date: doc.policy_documents[0]?.expires_date || undefined,
+        effective_date: doc.created_at.split('T')[0],
+        expires_date: undefined,
         status: doc.status as 'active' | 'draft' | 'expired',
-        department: doc.policy_documents[0]?.department || undefined,
+        department: 'General',
         document_id: doc.id,
-        acknowledgment_required: doc.policy_documents[0]?.acknowledgment_required ?? true,
+        acknowledgment_required: false,
         created_at: doc.created_at,
         updated_at: doc.updated_at,
         document: {
