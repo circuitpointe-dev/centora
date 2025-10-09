@@ -35,7 +35,10 @@ interface CourseLesson {
 
 const CourseBuilder: React.FC = () => {
   const navigate = useNavigate();
-  const { courseId } = useParams();
+  const { feature } = useParams();
+  
+  // Extract courseId from feature parameter (format: courses-{courseId}-builder)
+  const courseId = feature?.replace('courses-', '').replace('-builder', '') || '';
   const [modules, setModules] = useState<CourseModule[]>([
     {
       id: '1',
@@ -125,12 +128,12 @@ const CourseBuilder: React.FC = () => {
   const handleEditLesson = (lesson: CourseLesson) => {
     // Navigate to appropriate editor based on lesson type
     const editorRoutes = {
-      video: `/dashboard/lmsAuthor/courses/${courseId}/lessons/${lesson.id}/video`,
-      text: `/dashboard/lmsAuthor/courses/${courseId}/lessons/${lesson.id}/text`,
-      pdf: `/dashboard/lmsAuthor/courses/${courseId}/lessons/${lesson.id}/pdf`,
-      audio: `/dashboard/lmsAuthor/courses/${courseId}/lessons/${lesson.id}/audio`,
-      quiz: `/dashboard/lmsAuthor/courses/${courseId}/lessons/${lesson.id}/quiz`,
-      assignment: `/dashboard/lmsAuthor/courses/${courseId}/lessons/${lesson.id}/assignment`
+      video: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-video`,
+      text: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-text`,
+      pdf: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-pdf`,
+      audio: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-audio`,
+      quiz: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-quiz`,
+      assignment: `/dashboard/lmsAuthor/courses-${courseId}-lessons-${lesson.id}-assignment`
     };
     navigate(editorRoutes[lesson.type]);
   };

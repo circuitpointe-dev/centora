@@ -17,7 +17,6 @@ const CreateCourseStep2: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [courseUrl, setCourseUrl] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Get course data from location state
   const courseData: CourseData = location.state?.courseData || {
@@ -72,36 +71,23 @@ const CreateCourseStep2: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
+    // Prepare course data for submission
+    const finalCourseData = {
+      ...courseData,
+      courseUrl: courseUrl.trim(),
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+      id: Date.now().toString() // Generate a temporary ID
+    };
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Prepare course data for submission
-      const finalCourseData = {
-        ...courseData,
-        courseUrl: courseUrl.trim(),
-        status: 'draft',
-        createdAt: new Date().toISOString(),
-        id: Date.now().toString() // Generate a temporary ID
-      };
-
-      console.log('Course created successfully:', finalCourseData);
-      
-      // Navigate to Course Builder instead of just showing success message
-      const targetUrl = `/dashboard/lmsAuthor/courses/${finalCourseData.id}/builder`;
-      console.log('Navigating to:', targetUrl);
-      navigate(targetUrl, {
-        state: { courseData: finalCourseData }
-      });
-      
-    } catch (error) {
-      console.error('Error creating course:', error);
-      alert('Failed to create course. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    console.log('Course data prepared:', finalCourseData);
+    
+    // Navigate directly to Course Builder without creating course
+    const targetUrl = `/dashboard/lmsAuthor/courses-${finalCourseData.id}-builder`;
+    console.log('Navigating to:', targetUrl);
+    navigate(targetUrl, {
+      state: { courseData: finalCourseData }
+    });
   };
 
   const handleCancel = () => {
@@ -165,9 +151,9 @@ const CreateCourseStep2: React.FC = () => {
                 type="submit" 
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 onClick={handleSubmit}
-                disabled={isSubmitting || !courseUrl.trim()}
+                disabled={!courseUrl.trim()}
               >
-                {isSubmitting ? 'Creating...' : 'Continue'}
+                Continue
               </Button>
             </div>
           </div>
