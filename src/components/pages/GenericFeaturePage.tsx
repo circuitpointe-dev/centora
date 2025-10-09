@@ -50,6 +50,9 @@ import AssignmentPage from "../learning/AssignmentPage";
 import QuizPage from "../learning/QuizPage";
 import LiveSessionsPage from "../learning/LiveSessionsPage";
 import LiveSessionsAuthor from "../learning/author/LiveSessions";
+import MediaLibrary from "../learning/author/MediaLibrary";
+import Templates from "../learning/author/Templates";
+import TemplatePreview from "../learning/author/TemplatePreview";
 import HelpCenterPage from "../learning/HelpCenterPage";
 import LMSAuthorDashboard from '../learning/author/LMSAuthorDashboard';
 import CourseAnalyticsPage from '../learning/author/CourseAnalyticsPage';
@@ -288,11 +291,15 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'lmsAuthor' && feature === 'media-library') {
-    return <GenericFeatureUI moduleName="LMS Author" featureName="Media Library" />;
+    return <MediaLibrary />;
+  }
+
+  if (module === 'lmsAuthor' && feature === 'template-preview') {
+    return <TemplatePreview />;
   }
 
   if (module === 'lmsAuthor' && feature === 'templates') {
-    return <GenericFeatureUI moduleName="LMS Author" featureName="Templates" />;
+    return <Templates />;
   }
 
   if (module === 'lmsAuthor' && feature === 'quiz-bank') {
