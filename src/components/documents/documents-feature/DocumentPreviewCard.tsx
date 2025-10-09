@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Document } from '@/hooks/useDocuments';
 import { useDocumentDownload, useDocumentDelete, useDocumentPreview } from '@/hooks/useDocumentOperations';
+import { useNavigate } from 'react-router-dom';
 
 interface DocumentPreviewCardProps {
   document: Document;
@@ -34,6 +35,7 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
   const downloadMutation = useDocumentDownload();
   const deleteMutation = useDocumentDelete();
   const previewMutation = useDocumentPreview();
+  const navigate = useNavigate();
 
   const formatFileSize = (bytes?: number) => {
     if (!bytes) return 'Unknown size';
@@ -58,6 +60,12 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
     if (confirm('Are you sure you want to delete this document?')) {
       deleteMutation.mutate(document.id);
     }
+  };
+
+  const handleEdit = () => {
+    navigate('/dashboard/documents/document-editor', {
+      state: { document }
+    });
   };
 
   const handlePreview = async () => {
@@ -228,7 +236,7 @@ const DocumentPreviewCard: React.FC<DocumentPreviewCardProps> = ({ document, onC
                 <Share2 className="h-4 w-4 mr-2" />
                 Share
               </Button>
-              <Button size="sm" variant="outline" className="flex-1">
+              <Button size="sm" variant="outline" className="flex-1" onClick={handleEdit}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>

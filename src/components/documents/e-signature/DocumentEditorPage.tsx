@@ -1,7 +1,9 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useDocumentPreview } from "@/hooks/useDocumentOperations";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { DocumentEditorHeader } from "./review-step/DocumentEditorHeader";
 
@@ -17,6 +19,9 @@ export const DocumentEditorPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [confirmExit, setConfirmExit] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const previewMutation = useDocumentPreview();
 
   // Get document from navigation state
   const { document } = location.state || {};
@@ -41,6 +46,22 @@ export const DocumentEditorPage: React.FC = () => {
   const handleBack = () => hasChanges ? setConfirmExit(true) : navigate("/dashboard/documents/documents");
   const confirmAndLeave = () => navigate("/dashboard/documents/documents");
 
+  useEffect(() => {
+    const loadPreview = async () => {
+      try {
+        const res = await previewMutation.mutateAsync(document.id);
+        setPreviewUrl(res.url);
+      } catch (e: any) {
+        setPreviewError(e?.message || "Failed to load preview");
+      }
+    };
+    loadPreview();
+    // revoke URL on unmount
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [document?.id]);
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <DocumentEditorHeader
@@ -63,21 +84,31 @@ export const DocumentEditorPage: React.FC = () => {
               </div>
             </div>
             
-            {/* Document Content - This would be replaced with actual document viewer/editor */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <div className="max-w-sm mx-auto">
-                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">Document Editor</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Document editing functionality will be implemented here based on the document type.
-                </p>
-                <div className="mt-4 space-y-2 text-xs text-gray-500">
-                  <p><strong>File:</strong> {document.file_name}</p>
-                  <p><strong>Size:</strong> {document.file_size ? `${(document.file_size / 1024 / 1024).toFixed(2)} MB` : 'Unknown'}</p>
-                  <p><strong>Type:</strong> {document.mime_type || 'Unknown'}</p>
+            {/* Document Preview */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              {previewMutation.isPending && (
+                <div className="flex items-center justify-center h-48 text-gray-600">
+                  <Loader2 className="h-6 w-6 mr-2 animate-spin" /> Loading preview...
                 </div>
+              )}
+              {!previewMutation.isPending && previewError && (
+                <div className="text-sm text-red-600">{previewError}</div>
+              )}
+              {!previewMutation.isPending && previewUrl && (
+                <div className="bg-white rounded p-2">
+                  {document.mime_type?.includes('pdf') ? (
+                    <iframe src={previewUrl} className="w-full h-[70vh] border-0 rounded" title="Document Preview" />
+                  ) : document.mime_type?.includes('image') ? (
+                    <img src={previewUrl} alt="Document Preview" className="max-w-full h-auto rounded" />
+                  ) : (
+                    <div className="text-sm text-gray-600">Preview not available for this file type. Use Download.</div>
+                  )}
+                </div>
+              )}
+              <div className="mt-4 space-y-1 text-xs text-gray-500">
+                <p><strong>File:</strong> {document.file_name}</p>
+                <p><strong>Size:</strong> {document.file_size ? `${(document.file_size / 1024 / 1024).toFixed(2)} MB` : 'Unknown'}</p>
+                <p><strong>Type:</strong> {document.mime_type || 'Unknown'}</p>
               </div>
             </div>
             
