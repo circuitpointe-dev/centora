@@ -75,6 +75,7 @@ import CourseDetailView from '../lms-admin/CourseDetailView';
 import LearnerManagement from '../lms-admin/LearnerManagement';
 import LearnerDetailView from '../lms-admin/LearnerDetailView';
 import BulkEnrollment from '../lms-admin/BulkEnrollment';
+import ReportsAnalytics from '../lms-admin/ReportsAnalytics';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -422,7 +423,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'lmsAdmin' && feature === 'reports-analytics') {
-    return <GenericFeatureUI moduleName="LMS Admin" featureName="Reports and Analytics" />;
+    return <ReportsAnalytics />;
   }
 
   if (module === 'lmsAdmin' && feature === 'media-library') {
