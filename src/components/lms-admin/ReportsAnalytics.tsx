@@ -6,7 +6,10 @@ import {
   Users, 
   CheckCircle, 
   ClipboardList,
-  Filter
+  Filter,
+  Package,
+  FileText,
+  Clock
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -17,7 +20,10 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  Tooltip
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
 
 // Mock data for the charts - matching the design exactly
@@ -54,8 +60,50 @@ const heatMapData = [
   { category: 'Finance', col1: 'high', col2: 'low', col3: 'high', col4: 'low', col5: 'high', col6: 'low', col7: 'low' },
 ];
 
+// Platform Reports data
+const completionOverTimeData = [
+  { month: 'Jan', completions: 100 },
+  { month: 'Feb', completions: 450 },
+  { month: 'Mar', completions: 150 },
+  { month: 'Apr', completions: 300 },
+  { month: 'May', completions: 400 },
+];
+
+const activeLearnersByDeptData = [
+  { name: 'Field Operation', value: 21 },
+  { name: 'Programs', value: 30 },
+  { name: 'HR', value: 50 },
+  { name: 'Marketing Strategy', value: 18 },
+];
+
+const courseProgressData = [
+  { name: 'Field Operation', progress: 21 },
+  { name: 'Programs', progress: 30 },
+  { name: 'HR', progress: 50 },
+  { name: 'Marketing Strategy', progress: 18 },
+];
+
+const topCoursesData = [
+  { name: 'Digital Tools Intro', engagement: 86 },
+  { name: 'Intro To Finance Management', engagement: 70 },
+  { name: 'How To Market Your Idea', engagement: 51 },
+];
+
+const disbursementData = [
+  { name: 'OK', value: 5, color: '#10B981' },
+  { name: 'Auto-captions', value: 2, color: '#F59E0B' },
+  { name: 'Missing captions/Alt', value: 1, color: '#EF4444' },
+];
+
+const departmentSnapshotData = [
+  { department: 'Field Ops', activeUsers: 210, enrolled: 380, completion: 50 },
+  { department: 'Programs', activeUsers: 180, enrolled: 320, completion: 45 },
+  { department: 'HR', activeUsers: 150, enrolled: 280, completion: 60 },
+  { department: 'Marketing', activeUsers: 120, enrolled: 200, completion: 40 },
+];
+
 const ReportsAnalytics = () => {
-  const [activeTab, setActiveTab] = useState<'platform' | 'course'>('course');
+  const [activeTab, setActiveTab] = useState<'platform' | 'course'>('platform');
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -296,11 +344,230 @@ const ReportsAnalytics = () => {
         </div>
       )}
 
-      {/* Platform Reports Tab - Placeholder */}
+      {/* Platform Reports Tab */}
       {activeTab === 'platform' && (
         <div className="space-y-6">
-          <div className="text-center py-12">
-            <p className="text-gray-500">Platform reports content would go here</p>
+          {/* Key Metrics Cards - 5 cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* Total Enrollments */}
+            <Card className="bg-purple-50 border-purple-200 rounded-xl">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center">
+                  <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                    <Package className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <p className="text-3xl font-bold text-gray-900 mb-1">2590</p>
+                  <p className="text-sm font-medium text-gray-600">Total enrollements</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Active Learners */}
+            <Card className="bg-green-50 border-green-200 rounded-xl">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center">
+                  <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                    <Users className="h-8 w-8 text-green-600" />
+                  </div>
+                  <p className="text-3xl font-bold text-gray-900 mb-1">95</p>
+                  <p className="text-sm font-medium text-gray-600">Active learners</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Completions (%) */}
+            <Card className="bg-orange-50 border-orange-200 rounded-xl">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center">
+                  <div className="h-16 w-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                    <FileText className="h-8 w-8 text-orange-600" />
+                  </div>
+                  <p className="text-3xl font-bold text-gray-900 mb-1">60%</p>
+                  <p className="text-sm font-medium text-gray-600">Completions (%)</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Average completion rate */}
+            <Card className="bg-blue-50 border-blue-200 rounded-xl">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center">
+                  <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <CheckCircle className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <p className="text-3xl font-bold text-gray-900 mb-1">62%</p>
+                  <p className="text-sm font-medium text-gray-600">Average completion rate</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Time spent (median) */}
+            <Card className="bg-pink-50 border-pink-200 rounded-xl">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center">
+                  <div className="h-16 w-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
+                    <Clock className="h-8 w-8 text-pink-600" />
+                  </div>
+                  <p className="text-3xl font-bold text-gray-900 mb-1">38min</p>
+                  <p className="text-sm font-medium text-gray-600">Time spent (median)</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Charts Section - Row 1 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Completion Over Time Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-medium">Completion Over Time</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={completionOverTimeData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis domain={[0, 800]} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="completions" 
+                      stroke="#8B5CF6" 
+                      strokeWidth={2}
+                      dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Active Learners By Department Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-medium">Active Learners By Department</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={activeLearnersByDeptData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis domain={[0, 60]} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Charts Section - Row 2 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Course Progress Distribution Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-medium">Course Progress Distribution</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={courseProgressData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis domain={[0, 60]} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="progress" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Top Courses By Engagement List */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-medium">Top Courses By Engagement</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {topCoursesData.map((course, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                      <span className="font-medium text-gray-900">{course.name}</span>
+                      <span className="text-purple-600 font-semibold">{course.engagement}%</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Charts Section - Row 3 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Disbursement status Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-medium">Disbursement status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={disbursementData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {disbursementData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex justify-center space-x-4 mt-4">
+                  {disbursementData.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className="text-sm text-gray-600">{item.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Department Snapshot Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-medium">Department Snapshot</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-2 text-sm font-medium text-gray-600">Department</th>
+                        <th className="text-left py-2 text-sm font-medium text-gray-600">Active users</th>
+                        <th className="text-left py-2 text-sm font-medium text-gray-600">Enrolled</th>
+                        <th className="text-left py-2 text-sm font-medium text-gray-600">Completion %</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {departmentSnapshotData.map((dept, index) => (
+                        <tr key={index} className="border-b border-gray-100">
+                          <td className="py-3 text-sm text-gray-900">{dept.department}</td>
+                          <td className="py-3 text-sm text-gray-600">{dept.activeUsers}</td>
+                          <td className="py-3 text-sm text-gray-600">{dept.enrolled}</td>
+                          <td className="py-3 text-sm text-gray-600">{dept.completion}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       )}
