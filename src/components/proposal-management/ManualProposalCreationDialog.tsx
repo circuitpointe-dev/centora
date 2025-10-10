@@ -16,7 +16,7 @@ import TeamTabContent from "./TeamTabContent";
 import AddFieldDialog from "./AddFieldDialog";
 import AddTeamMemberDialog from "./AddTeamMemberDialog";
 import SubmissionTrackerDialog from "./SubmissionTrackerDialog";
-import { useCreateProposal, useUpdateProposal, useProposalById } from "@/hooks/useProposals";
+import { useCreateProposal, useUpdateProposal } from "@/hooks/useProposals";
 import { useProposalTeamMembers, useAddProposalTeamMember, useRemoveProposalTeamMember } from "@/hooks/useProposalTeamMembers";
 import { useProposalComments, useAddProposalComment } from "@/hooks/useProposalComments";
 import { useOpportunities } from "@/hooks/useOpportunities";
@@ -53,15 +53,12 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const location = useLocation();
   const prefilledData = prefilledDataProp ?? location.state?.prefilledData;
   const isEditing = prefilledData?.source === 'proposal' && prefilledData?.creationContext?.type === 'editing';
-  // Check for existing proposal ID from CreateProposalDialog or from editing
-  const existingProposalId = location.state?.proposalId || (isEditing ? prefilledData.proposal.id : null);
-  const [proposalId, setProposalId] = useState<string | null>(existingProposalId);
+  const [proposalId, setProposalId] = useState<string | null>(isEditing ? prefilledData.proposal.id : null);
   const [activeTab, setActiveTab] = useState("overview");
 
   // Overview tab states
   const [overviewFields, setOverviewFields] = useState<CustomField[]>([]);
   const [showOverviewFieldDialog, setShowOverviewFieldDialog] = useState(false);
-  const [title, setTitle] = useState<string>('');
   const [summary, setSummary] = useState<string>('');
   const [objectives, setObjectives] = useState<string>('');
   const [dueDate, setDueDate] = useState<string>('');
@@ -82,65 +79,6 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const [logframeFields, setLogframeFields] = useState<CustomField[]>([]);
   const [showLogframeFieldDialog, setShowLogframeFieldDialog] = useState(false);
 
-  // Fetch existing proposal if proposalId exists
-  const { data: existingProposal } = useProposalById(existingProposalId || undefined);
-
-  // Load existing proposal data when it's fetched
-  useEffect(() => {
-    if (existingProposal && !hydrated && !prefilledData) {
-      console.log('[ManualProposalCreationDialog] Loading existing proposal:', existingProposal);
-      
-      setTitle(existingProposal.title || existingProposal.name || '');
-      
-      const reusedOverview: CustomField[] = existingProposal.overview_fields || [];
-      const reusedNarrative: CustomField[] = existingProposal.narrative_fields || [];
-      
-      const findByName = (fields: CustomField[], keyword: string) =>
-        fields.find(f => {
-          const n = (f.name || f.id || '').toString().toLowerCase();
-          return n === keyword || n.includes(keyword);
-        });
-      
-      const summaryField =
-        findByName(reusedOverview, 'summary') ||
-        findByName(reusedNarrative, 'summary');
-      
-      const objectivesField =
-        findByName(reusedOverview, 'objectives') ||
-        findByName(reusedNarrative, 'objectives');
-      
-      const filteredOverviewFields = reusedOverview.filter(f => {
-        const lname = (f.name || f.id || '').toString().toLowerCase();
-        return !(lname === 'summary' || lname.includes('summary') || lname === 'objectives' || lname.includes('objectives'));
-      });
-      
-      setOverviewFields(filteredOverviewFields);
-      setNarrativeFields(reusedNarrative);
-      setLogframeFields(existingProposal.logframe_fields || []);
-      setSummary(summaryField?.value || '');
-      setObjectives(objectivesField?.value || '');
-      
-      let formattedDueDate = '';
-      const rawDueDate = existingProposal.dueDate;
-      if (rawDueDate && rawDueDate !== 'No due date') {
-        try {
-          const date = new Date(rawDueDate);
-          if (!isNaN(date.getTime())) {
-            formattedDueDate = date.toISOString().split('T')[0];
-          }
-        } catch (e) {
-          console.warn('[ManualProposalCreationDialog] Invalid due date:', rawDueDate);
-        }
-      }
-      setDueDate(formattedDueDate);
-      
-      setBudgetCurrency(existingProposal.budget_currency || 'USD');
-      setBudgetAmount(existingProposal.budget_amount?.toString() || '');
-      
-      setHydrated(true);
-    }
-  }, [existingProposal, hydrated, prefilledData]);
-
   // Apply prefilled data when available (editing or template)
   useEffect(() => {
     if (!hydrated && prefilledData) {
@@ -150,9 +88,6 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
       if (isEditing && prefilledData.proposal) {
         const proposal = prefilledData.proposal;
         console.log('[ManualProposalCreationDialog] Editing proposal:', proposal);
-
-        // Set the title from the proposal
-        setTitle(proposal.title || proposal.name || '');
 
         const reusedOverview: CustomField[] = proposal.overview_fields || [];
         const reusedNarrative: CustomField[] = proposal.narrative_fields || [];
@@ -263,9 +198,9 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const { data: comments = [] } = useProposalComments(proposalId || "");
   const addComment = useAddProposalComment();
 
-  // Auto-save when fields change (when proposal exists)
+  // Auto-save when fields change (only when editing)
   useEffect(() => {
-    if (proposalId && hydrated) {
+    if (proposalId && hydrated && isEditing) {
       const normalizedOverview = overviewFields.filter(f => {
         const lname = (f.name || f.id || '').toString().toLowerCase();
         return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
@@ -277,8 +212,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         ...normalizedOverview,
       ];
 
-      // Use user-provided title field
-      const finalTitle = title?.trim() || 'Untitled Proposal';
+      // Use provided title or fall back to summary
+      const finalTitle = prefilledData?.creationContext?.title || proposalTitle || summary?.trim().split('\n')[0].substring(0, 100) || 'Untitled Proposal';
 
       const saveData = {
         id: proposalId,
@@ -299,7 +234,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
       return () => clearTimeout(timeoutId);
     }
-  }, [title, summary, objectives, overviewFields, narrativeFields, budgetCurrency, budgetAmount, logframeFields, dueDate, proposalId, hydrated]);
+  }, [summary, objectives, overviewFields, narrativeFields, budgetCurrency, budgetAmount, logframeFields, dueDate, proposalId, hydrated, isEditing]);
 
   // Create initial proposal if it doesn't exist (not when editing)
   useEffect(() => {
@@ -333,10 +268,11 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         return;
       }
 
-      // Use user-provided title field, or fallback to creation context title
-      const finalTitle = title?.trim() ||
-        prefilledData?.creationContext?.title ||
+      // Use provided title (prioritize context, then props, finally summary)
+      const finalTitle = prefilledData?.creationContext?.title ||
+        prefilledData?.proposal?.title ||
         proposalTitle ||
+        summary?.trim().split('\n')[0].substring(0, 100) ||
         'Untitled Proposal';
 
       createProposal.mutate({
@@ -351,11 +287,11 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         submission_status: 'draft'
       }, {
         onSuccess: (proposal) => {
-      setProposalId(proposal.id);
+          setProposalId(proposal.id);
         }
       });
     }
-  }, [open, proposalId, proposalTitle, opportunityName, opportunities, prefilledData, title, summary, objectives, overviewFields, narrativeFields, logframeFields, budgetCurrency, budgetAmount, dueDate, hydrated, isEditing]);
+  }, [open, proposalId, proposalTitle, opportunityName, opportunities, prefilledData, summary, objectives, overviewFields, narrativeFields, logframeFields, budgetCurrency, budgetAmount, dueDate, hydrated, isEditing]);
 
   // Handle save functionality
   const handleSave = () => {
@@ -371,8 +307,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         ...normalizedOverview,
       ];
 
-      // Use user-provided title field
-      const finalTitle = title?.trim() || 'Untitled Proposal';
+      // Use provided title or fall back to summary
+      const finalTitle = prefilledData?.creationContext?.title || proposalTitle || summary?.trim().split('\n')[0].substring(0, 100) || 'Untitled Proposal';
 
       explicitUpdateProposal.mutate({
         id: proposalId,
@@ -404,8 +340,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
     if (proposalId) {
       // Proposal exists, just submit it
-      // Use user-provided title field
-      const finalTitle = title?.trim() || 'Untitled Proposal';
+      // Use provided title or fall back to summary
+      const finalTitle = prefilledData?.creationContext?.title || proposalTitle || summary?.trim().split('\n')[0].substring(0, 100) || 'Untitled Proposal';
 
       explicitUpdateProposal.mutate({
         id: proposalId,
@@ -433,10 +369,11 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
       const contextOpportunityId = prefilledData?.creationContext?.opportunityId;
       const finalOpportunityId = contextOpportunityId || selectedOpportunity?.id;
 
-      // Use user-provided title field, or fallback to creation context title
-      const finalTitle = title?.trim() ||
-        prefilledData?.creationContext?.title ||
+      // Use provided title (prioritize context, then props, finally summary)
+      const finalTitle = prefilledData?.creationContext?.title ||
+        prefilledData?.proposal?.title ||
         proposalTitle ||
+        summary?.trim().split('\n')[0].substring(0, 100) ||
         'Untitled Proposal';
 
       createProposal.mutate({
@@ -589,8 +526,6 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
                     onAddField={() => setShowOverviewFieldDialog(true)}
                     onRemoveField={(fieldId) => handleRemoveField(fieldId, 'overview')}
                     onFieldValueChange={(fieldId, value) => handleFieldValueChange(fieldId, value, 'overview')}
-                    titleValue={title}
-                    onTitleChange={setTitle}
                     summaryValue={summary}
                     objectivesValue={objectives}
                     onSummaryChange={setSummary}
