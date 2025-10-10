@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ProposalWizard from "@/components/fundraising/ai/ProposalWizard";
 import { useOpportunities } from "@/hooks/useOpportunities";
+import { useCreateProposal } from "@/hooks/useProposals";
 
 type Props = {
   open: boolean;
@@ -32,6 +33,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
   
   // Fetch real opportunities from backend
   const { data: opportunities = [] } = useOpportunities();
+  const createProposal = useCreateProposal({ silent: true });
 
   // Get sorted opportunity options for select
   const opportunityOptions = opportunities
@@ -45,7 +47,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
     { value: "create-manually", label: "Create Manually", icon: FilePlus },
   ];
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!creationMethod || isCreating) return;
 
     setIsCreating(true);
@@ -57,6 +59,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
     switch (creationMethod) {
       case "ai-wizard":
         setShowWizard(true);
+        setIsCreating(false);
         break;
       case "upload-template":
         // Navigate to proposal management with browse templates tab active
@@ -70,6 +73,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
             }
           }
         });
+        setIsCreating(false);
         break;
       case "reuse-library":
         // Navigate to proposal management with past proposal library tab active
@@ -83,25 +87,39 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
             }
           }
         });
+        setIsCreating(false);
         break;
       case "create-manually":
-        navigate("/dashboard/fundraising/manual-proposal-creation", {
-          state: {
-            creationContext: {
-              method: "manual",
-              title,
-              opportunityId,
-              isTemplate
+        try {
+          // Create proposal immediately with title and opportunity
+          const newProposal = await createProposal.mutateAsync({
+            name: title || 'Untitled Proposal',
+            title: title || 'Untitled Proposal',
+            opportunity_id: opportunityId || undefined,
+          });
+
+          // Navigate to manual creation page with the created proposal ID
+          navigate("/dashboard/fundraising/manual-proposal-creation", {
+            state: {
+              proposalId: newProposal.id,
+              creationContext: {
+                method: "manual",
+                title,
+                opportunityId,
+                isTemplate
+              }
             }
-          }
-        });
+          });
+        } catch (error) {
+          console.error('Failed to create proposal:', error);
+        } finally {
+          setIsCreating(false);
+        }
         break;
       default:
+        setIsCreating(false);
         break;
     }
-
-    // Reset creating state after a delay
-    setTimeout(() => setIsCreating(false), 1000);
   };
 
   const selectedOption = creationOptions.find(option => option.value === creationMethod);

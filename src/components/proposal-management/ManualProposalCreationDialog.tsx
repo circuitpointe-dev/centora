@@ -16,7 +16,7 @@ import TeamTabContent from "./TeamTabContent";
 import AddFieldDialog from "./AddFieldDialog";
 import AddTeamMemberDialog from "./AddTeamMemberDialog";
 import SubmissionTrackerDialog from "./SubmissionTrackerDialog";
-import { useCreateProposal, useUpdateProposal } from "@/hooks/useProposals";
+import { useCreateProposal, useUpdateProposal, useProposalById } from "@/hooks/useProposals";
 import { useProposalTeamMembers, useAddProposalTeamMember, useRemoveProposalTeamMember } from "@/hooks/useProposalTeamMembers";
 import { useProposalComments, useAddProposalComment } from "@/hooks/useProposalComments";
 import { useOpportunities } from "@/hooks/useOpportunities";
@@ -53,7 +53,9 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const location = useLocation();
   const prefilledData = prefilledDataProp ?? location.state?.prefilledData;
   const isEditing = prefilledData?.source === 'proposal' && prefilledData?.creationContext?.type === 'editing';
-  const [proposalId, setProposalId] = useState<string | null>(isEditing ? prefilledData.proposal.id : null);
+  // Check for existing proposal ID from CreateProposalDialog or from editing
+  const existingProposalId = location.state?.proposalId || (isEditing ? prefilledData.proposal.id : null);
+  const [proposalId, setProposalId] = useState<string | null>(existingProposalId);
   const [activeTab, setActiveTab] = useState("overview");
 
   // Overview tab states
@@ -79,6 +81,65 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   // Logframe tab states
   const [logframeFields, setLogframeFields] = useState<CustomField[]>([]);
   const [showLogframeFieldDialog, setShowLogframeFieldDialog] = useState(false);
+
+  // Fetch existing proposal if proposalId exists
+  const { data: existingProposal } = useProposalById(existingProposalId || undefined);
+
+  // Load existing proposal data when it's fetched
+  useEffect(() => {
+    if (existingProposal && !hydrated && !prefilledData) {
+      console.log('[ManualProposalCreationDialog] Loading existing proposal:', existingProposal);
+      
+      setTitle(existingProposal.title || existingProposal.name || '');
+      
+      const reusedOverview: CustomField[] = existingProposal.overview_fields || [];
+      const reusedNarrative: CustomField[] = existingProposal.narrative_fields || [];
+      
+      const findByName = (fields: CustomField[], keyword: string) =>
+        fields.find(f => {
+          const n = (f.name || f.id || '').toString().toLowerCase();
+          return n === keyword || n.includes(keyword);
+        });
+      
+      const summaryField =
+        findByName(reusedOverview, 'summary') ||
+        findByName(reusedNarrative, 'summary');
+      
+      const objectivesField =
+        findByName(reusedOverview, 'objectives') ||
+        findByName(reusedNarrative, 'objectives');
+      
+      const filteredOverviewFields = reusedOverview.filter(f => {
+        const lname = (f.name || f.id || '').toString().toLowerCase();
+        return !(lname === 'summary' || lname.includes('summary') || lname === 'objectives' || lname.includes('objectives'));
+      });
+      
+      setOverviewFields(filteredOverviewFields);
+      setNarrativeFields(reusedNarrative);
+      setLogframeFields(existingProposal.logframe_fields || []);
+      setSummary(summaryField?.value || '');
+      setObjectives(objectivesField?.value || '');
+      
+      let formattedDueDate = '';
+      const rawDueDate = existingProposal.dueDate;
+      if (rawDueDate && rawDueDate !== 'No due date') {
+        try {
+          const date = new Date(rawDueDate);
+          if (!isNaN(date.getTime())) {
+            formattedDueDate = date.toISOString().split('T')[0];
+          }
+        } catch (e) {
+          console.warn('[ManualProposalCreationDialog] Invalid due date:', rawDueDate);
+        }
+      }
+      setDueDate(formattedDueDate);
+      
+      setBudgetCurrency(existingProposal.budget_currency || 'USD');
+      setBudgetAmount(existingProposal.budget_amount?.toString() || '');
+      
+      setHydrated(true);
+    }
+  }, [existingProposal, hydrated, prefilledData]);
 
   // Apply prefilled data when available (editing or template)
   useEffect(() => {
@@ -202,9 +263,9 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const { data: comments = [] } = useProposalComments(proposalId || "");
   const addComment = useAddProposalComment();
 
-  // Auto-save when fields change (only when editing)
+  // Auto-save when fields change (when proposal exists)
   useEffect(() => {
-    if (proposalId && hydrated && isEditing) {
+    if (proposalId && hydrated) {
       const normalizedOverview = overviewFields.filter(f => {
         const lname = (f.name || f.id || '').toString().toLowerCase();
         return lname !== 'summary' && !lname.includes('summary') && lname !== 'objectives' && !lname.includes('objectives');
@@ -238,7 +299,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
       return () => clearTimeout(timeoutId);
     }
-  }, [title, summary, objectives, overviewFields, narrativeFields, budgetCurrency, budgetAmount, logframeFields, dueDate, proposalId, hydrated, isEditing]);
+  }, [title, summary, objectives, overviewFields, narrativeFields, budgetCurrency, budgetAmount, logframeFields, dueDate, proposalId, hydrated]);
 
   // Create initial proposal if it doesn't exist (not when editing)
   useEffect(() => {
