@@ -26,33 +26,12 @@ const LogframeTabContent: React.FC<Props> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <div>
-        <Label htmlFor="outcome">Outcome</Label>
-        <Textarea
-          id="outcome"
-          placeholder="Enter project outcome..."
-          className="mt-2 min-h-[120px]"
-        />
-      </div>
-      <div>
-        <Label htmlFor="indicator">Indicator</Label>
-        <Textarea
-          id="indicator"
-          placeholder="Enter project indicator..."
-          className="mt-2 min-h-[120px]"
-        />
-      </div>
-      <div>
-        <Label htmlFor="assumption">Assumption</Label>
-        <Textarea
-          id="assumption"
-          placeholder="Enter project assumption..."
-          className="mt-2 min-h-[120px]"
-        />
-      </div>
-      
-      {/* Custom Fields */}
-      {logframeFields.map((field) => (
+      {logframeFields.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          <p>No logframe fields yet. Click "Add New Field" to get started.</p>
+        </div>
+      ) : (
+        logframeFields.map((field) => (
         <div key={field.id} className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor={field.id}>{field.name}</Label>
@@ -73,9 +52,10 @@ const LogframeTabContent: React.FC<Props> = ({
             className="min-h-[120px]"
           />
         </div>
-      ))}
+        ))
+      )}
       
-      <Button 
+      <Button
         variant="outline" 
         size="sm" 
         className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200"
