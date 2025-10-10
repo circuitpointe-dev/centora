@@ -212,13 +212,13 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         ...normalizedOverview,
       ];
 
-      // Extract title from summary (first line or sentence)
-      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || proposalTitle;
+      // Use provided title or fall back to summary
+      const finalTitle = prefilledData?.creationContext?.title || proposalTitle || summary?.trim().split('\n')[0].substring(0, 100) || 'Untitled Proposal';
 
       const saveData = {
         id: proposalId,
-        name: derivedTitle,
-        title: derivedTitle,
+        name: finalTitle,
+        title: finalTitle,
         overview_fields: mergedOverview,
         narrative_fields: narrativeFields,
         budget_currency: budgetCurrency,
@@ -268,15 +268,16 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         return;
       }
 
-      // Extract title from summary (first line or sentence)
-      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) ||
-        prefilledData?.creationContext?.title ||
+      // Use provided title (prioritize context, then props, finally summary)
+      const finalTitle = prefilledData?.creationContext?.title ||
         prefilledData?.proposal?.title ||
-        proposalTitle;
+        proposalTitle ||
+        summary?.trim().split('\n')[0].substring(0, 100) ||
+        'Untitled Proposal';
 
       createProposal.mutate({
-        name: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
-        title: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
+        name: finalTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
+        title: finalTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
         opportunity_id: finalOpportunityId,
         ...initialFields,
         budget_currency: budgetCurrency || 'USD',
@@ -306,13 +307,13 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         ...normalizedOverview,
       ];
 
-      // Extract title from summary (first line or sentence)
-      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || proposalTitle;
+      // Use provided title or fall back to summary
+      const finalTitle = prefilledData?.creationContext?.title || proposalTitle || summary?.trim().split('\n')[0].substring(0, 100) || 'Untitled Proposal';
 
       explicitUpdateProposal.mutate({
         id: proposalId,
-        name: derivedTitle,
-        title: derivedTitle,
+        name: finalTitle,
+        title: finalTitle,
         overview_fields: mergedOverview,
         narrative_fields: narrativeFields,
         budget_currency: budgetCurrency,
@@ -339,13 +340,13 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 
     if (proposalId) {
       // Proposal exists, just submit it
-      // Extract title from summary (first line or sentence)
-      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) || proposalTitle;
+      // Use provided title or fall back to summary
+      const finalTitle = prefilledData?.creationContext?.title || proposalTitle || summary?.trim().split('\n')[0].substring(0, 100) || 'Untitled Proposal';
 
       explicitUpdateProposal.mutate({
         id: proposalId,
-        name: derivedTitle,
-        title: derivedTitle,
+        name: finalTitle,
+        title: finalTitle,
         overview_fields: mergedOverview,
         narrative_fields: narrativeFields,
         budget_currency: budgetCurrency,
@@ -368,15 +369,16 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
       const contextOpportunityId = prefilledData?.creationContext?.opportunityId;
       const finalOpportunityId = contextOpportunityId || selectedOpportunity?.id;
 
-      // Extract title from summary (first line or sentence)
-      const derivedTitle = summary?.trim().split('\n')[0].substring(0, 100) ||
-        prefilledData?.creationContext?.title ||
+      // Use provided title (prioritize context, then props, finally summary)
+      const finalTitle = prefilledData?.creationContext?.title ||
         prefilledData?.proposal?.title ||
-        proposalTitle;
+        proposalTitle ||
+        summary?.trim().split('\n')[0].substring(0, 100) ||
+        'Untitled Proposal';
 
       createProposal.mutate({
-        name: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
-        title: derivedTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
+        name: finalTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
+        title: finalTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
         opportunity_id: finalOpportunityId,
         overview_fields: mergedOverview,
         narrative_fields: narrativeFields,

@@ -241,7 +241,6 @@ const CourseBuilder: React.FC = () => {
                           key={lesson.id}
                           onClick={() => {
                             handleSelectLesson(module.id, lesson.id);
-                            handleEditLesson(lesson);
                           }}
                           className={`flex items-center space-x-2 p-2 rounded-lg cursor-pointer transition-colors ${
                             lesson.isActive 
