@@ -26,23 +26,12 @@ const NarrativeTabContent: React.FC<Props> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <div>
-        <Label>Project Narrative</Label>
-        <Textarea
-          placeholder="Enter detailed project narrative..."
-          className="mt-2 min-h-[200px]"
-        />
-      </div>
-      <div>
-        <Label>Work Plan</Label>
-        <Textarea
-          placeholder="Enter detailed work plan..."
-          className="mt-2 min-h-[200px]"
-        />
-      </div>
-      
-      {/* Custom Fields */}
-      {narrativeFields.map((field) => (
+      {narrativeFields.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          <p>No narrative fields yet. Click "Add New Field" to get started.</p>
+        </div>
+      ) : (
+        narrativeFields.map((field) => (
         <div key={field.id} className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor={field.id}>{field.name}</Label>
@@ -63,9 +52,10 @@ const NarrativeTabContent: React.FC<Props> = ({
             className="min-h-[120px]"
           />
         </div>
-      ))}
+        ))
+      )}
       
-      <Button 
+      <Button
         variant="outline" 
         size="sm" 
         className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200"
