@@ -28,7 +28,8 @@ import { getFeatureName, getModuleName } from '@/utils/nameUtils';
 import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
 import { ComplianceChecklistPage } from '@/components/grants/pages/ComplianceChecklistPage';
-import MediaLibrary from '@/components/lms-admin/MediaLibrary';
+import LMSAdminMediaLibrary from '@/components/lms-admin/MediaLibrary';
+import AccessibilityFlags from '@/components/lms-admin/AccessibilityFlags';
 import { DisbursementSchedulePage } from '@/components/grants/pages/DisbursementSchedulePage';
 import { ProfilePage } from '@/components/grants/pages/ProfilePage';
 import ComplianceMonitorPage from './ComplianceMonitorPage';
@@ -428,11 +429,11 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'lmsAdmin' && feature === 'media-library') {
-    return <MediaLibrary />;
+    return <LMSAdminMediaLibrary />;
   }
 
   if (module === 'lmsAdmin' && feature === 'accessibility-flags') {
-    return <GenericFeatureUI moduleName="LMS Admin" featureName="Accessibility Flags" />;
+    return <AccessibilityFlags />;
   }
 
   if (module === 'lmsAdmin' && feature === 'help-center') {
