@@ -72,6 +72,9 @@ import LiveSessions from '../learning/author/LiveSessions';
 import LMSAdminDashboard from '../lms-admin/LMSAdminDashboard';
 import CourseManagement from '../lms-admin/CourseManagement';
 import CourseDetailView from '../lms-admin/CourseDetailView';
+import LearnerManagement from '../lms-admin/LearnerManagement';
+import LearnerDetailView from '../lms-admin/LearnerDetailView';
+import BulkEnrollment from '../lms-admin/BulkEnrollment';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -406,8 +409,16 @@ const GenericFeaturePage = () => {
     return <CourseDetailView />;
   }
 
+  if (module === 'lmsAdmin' && feature === 'learner-detail') {
+    return <LearnerDetailView />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'bulk-enrollment') {
+    return <BulkEnrollment />;
+  }
+
   if (module === 'lmsAdmin' && feature === 'learner-management') {
-    return <GenericFeatureUI moduleName="LMS Admin" featureName="Learner Management" />;
+    return <LearnerManagement />;
   }
 
   if (module === 'lmsAdmin' && feature === 'reports-analytics') {
