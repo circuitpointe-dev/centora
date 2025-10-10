@@ -17,6 +17,8 @@ type Props = {
   onAddField: () => void;
   onRemoveField: (fieldId: string) => void;
   onFieldValueChange: (fieldId: string, value: string) => void;
+  titleValue: string;
+  onTitleChange: (value: string) => void;
   summaryValue: string;
   objectivesValue: string;
   onSummaryChange: (value: string) => void;
@@ -30,6 +32,8 @@ const OverviewTabContent: React.FC<Props> = ({
   onAddField,
   onRemoveField,
   onFieldValueChange,
+  titleValue,
+  onTitleChange,
   summaryValue,
   objectivesValue,
   onSummaryChange,
@@ -39,6 +43,16 @@ const OverviewTabContent: React.FC<Props> = ({
 }) => {
   return (
     <div className="space-y-4">
+      <div>
+        <Label htmlFor="title">Proposal Title *</Label>
+        <Input
+          id="title"
+          placeholder="Enter proposal title..."
+          className="mt-2"
+          value={titleValue}
+          onChange={(e) => onTitleChange(e.target.value)}
+        />
+      </div>
       <div>
         <Label htmlFor="summary">Summary</Label>
         <Textarea
