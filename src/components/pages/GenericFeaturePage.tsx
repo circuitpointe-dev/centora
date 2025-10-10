@@ -69,6 +69,9 @@ import TextLessonEditor from '../learning/author/TextLessonEditor';
 import CoursePreview from '../learning/author/CoursePreview';
 import QuizPreview from '../learning/author/QuizPreview';
 import LiveSessions from '../learning/author/LiveSessions';
+import LMSAdminDashboard from '../lms-admin/LMSAdminDashboard';
+import CourseManagement from '../lms-admin/CourseManagement';
+import CourseDetailView from '../lms-admin/CourseDetailView';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -393,20 +396,30 @@ const GenericFeaturePage = () => {
     return <GenericFeatureUI moduleName="LMS Admin" featureName="User Management" />;
   }
 
-  if (module === 'lmsAdmin' && feature === 'course-approval') {
-    return <GenericFeatureUI moduleName="LMS Admin" featureName="Course Approval" />;
+  if (module === 'lmsAdmin' && feature === 'course-management') {
+    return <CourseManagement />;
   }
 
-  if (module === 'lmsAdmin' && feature === 'system-settings') {
-    return <GenericFeatureUI moduleName="LMS Admin" featureName="System Settings" />;
+  // Handle course detail view routes
+  if (module === 'lmsAdmin' && feature === 'course-detail') {
+    console.log('Matched course detail route:', feature);
+    return <CourseDetailView />;
   }
 
-  if (module === 'lmsAdmin' && feature === 'reports') {
-    return <GenericFeatureUI moduleName="LMS Admin" featureName="Reports" />;
+  if (module === 'lmsAdmin' && feature === 'learner-management') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="Learner Management" />;
   }
 
-  if (module === 'lmsAdmin' && feature === 'audit-logs') {
-    return <GenericFeatureUI moduleName="LMS Admin" featureName="Audit Logs" />;
+  if (module === 'lmsAdmin' && feature === 'reports-analytics') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="Reports and Analytics" />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'media-library') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="Media Library" />;
+  }
+
+  if (module === 'lmsAdmin' && feature === 'accessibility-flags') {
+    return <GenericFeatureUI moduleName="LMS Admin" featureName="Accessibility Flags" />;
   }
 
   if (module === 'lmsAdmin' && feature === 'help-center') {

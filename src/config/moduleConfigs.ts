@@ -44,6 +44,9 @@ import {
   Edit3,
   Plus,
   TrendingUp,
+  GraduationCap,
+  UserCog,
+  Accessibility,
 } from 'lucide-react';
 
 interface ModuleFeature {
@@ -195,11 +198,11 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     color: 'text-blue-600',
     features: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'user-management', name: 'User Management', icon: Users },
-      { id: 'course-approval', name: 'Course Approval', icon: CheckCircle },
-      { id: 'system-settings', name: 'System Settings', icon: Settings },
-      { id: 'reports', name: 'Reports', icon: FileText },
-      { id: 'audit-logs', name: 'Audit Logs', icon: ClipboardCheck },
+      { id: 'course-management', name: 'Course Management', icon: GraduationCap },
+      { id: 'learner-management', name: 'Learner Management', icon: UserCog },
+      { id: 'reports-analytics', name: 'Reports and Analytics', icon: TrendingUp },
+      { id: 'media-library', name: 'Media Library', icon: FileImage },
+      { id: 'accessibility-flags', name: 'Accessibility Flags', icon: Accessibility },
       { id: 'help-center', name: 'Help Center', icon: HelpCircle },
     ]
   },

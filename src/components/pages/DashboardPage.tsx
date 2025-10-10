@@ -8,6 +8,7 @@ import GrantsDonorDashboard from '@/components/grants/GrantsDonorDashboard';
 import ProgrammeDashboard from '@/components/programme/ProgrammeDashboard';
 import LearningDashboard from '@/components/learning/LearningDashboard';
 import LMSAuthorDashboard from '@/components/learning/author/LMSAuthorDashboard';
+import LMSAdminDashboard from '@/components/lms-admin/LMSAdminDashboard';
 import GenericDashboard from '@/components/dashboard/GenericDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -66,6 +67,11 @@ const DashboardPage = () => {
   // LMS Author specific content
   if (module === 'lmsAuthor') {
     return <LMSAuthorDashboard />;
+  }
+
+  // LMS Admin specific content
+  if (module === 'lmsAdmin') {
+    return <LMSAdminDashboard />;
   }
 
   // Default content for other modules
