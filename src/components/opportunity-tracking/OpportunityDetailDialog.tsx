@@ -161,6 +161,7 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
                 <QuickActionsCard 
                   contactEmail={opportunity.contact_email}
                   contactName={opportunity.donor?.name}
+                  opportunityTitle={opportunity.title}
                   sectionHeight={SECTION_HEIGHT}
                 />
               </div>
