@@ -15,9 +15,8 @@ const FundingCycles: React.FC = () => {
   const { user } = useAuth();
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
-  // Fetch funding cycles data for the current year and organization
-  const currentYear = new Date().getFullYear();
-  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles(undefined, selectedYear || currentYear);
+  // Fetch funding cycles data - don't filter by year initially
+  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles(undefined, selectedYear || undefined);
 
   // Process data and compute derived values
   const { fundingData, availableYears, filteredData } = useMemo(() => {
