@@ -11,6 +11,7 @@ import {
 import { useCreateOpportunity, CreateOpportunityData } from "@/hooks/useOpportunities";
 import { useNavigate } from "react-router-dom";
 import OpportunityForm from "./OpportunityForm";
+import { useOrgMembers } from "@/hooks/useOrgMembers";
 
 interface AddOpportunityDialogProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
 }) => {
   const navigate = useNavigate();
   const createOpportunityMutation = useCreateOpportunity();
+  const { data: orgMembers = [] } = useOrgMembers();
   
   const form = useForm<CreateOpportunityData>({
     defaultValues: {
@@ -93,6 +95,7 @@ const AddOpportunityDialog: React.FC<AddOpportunityDialogProps> = ({
             donors={donors}
             typeOptions={TYPE_OPTIONS}
             currencyOptions={CURRENCY_OPTIONS}
+            orgMembers={orgMembers}
             onCreateDonor={handleCreateDonor}
           />
           
