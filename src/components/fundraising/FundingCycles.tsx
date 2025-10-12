@@ -18,6 +18,29 @@ const FundingCycles: React.FC = () => {
   // Fetch funding cycles data - don't filter by year initially
   const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles(undefined, selectedYear || undefined);
 
+  // Helper function: Status color mapping (must be defined before useMemo)
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'ongoing': return 'bg-green-500';
+      case 'upcoming': return 'bg-yellow-500';
+      case 'closed': return 'bg-gray-400';
+      default: return 'bg-blue-500';
+    }
+  };
+
+  // Helper function: Calculate position style (must be defined before useMemo)
+  const getPositionStyle = (cycle: FundingCycle) => {
+    // Calculate position based on actual start month (0-indexed)
+    const startMonthIndex = cycle.startMonth - 1;
+    const endMonthIndex = cycle.endMonth - 1;
+    const width = (endMonthIndex - startMonthIndex + 1) * (100/12);
+    
+    return {
+      left: `${(startMonthIndex / 12) * 100}%`,
+      width: `${width}%`
+    };
+  };
+
   // Process data and compute derived values
   const { fundingData, availableYears, filteredData } = useMemo(() => {
     if (!rawFundingCycles.length) {
@@ -55,34 +78,12 @@ const FundingCycles: React.FC = () => {
     };
   }, [rawFundingCycles, selectedYear]);
 
-  // Status color mapping
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ongoing': return 'bg-green-500';
-      case 'upcoming': return 'bg-yellow-500';
-      case 'closed': return 'bg-gray-400';
-      default: return 'bg-blue-500';
-    }
-  };
-
   // Status legend
   const statusLegend = [
     { status: 'Ongoing', color: 'bg-green-500' },
     { status: 'Upcoming', color: 'bg-yellow-500' },
     { status: 'Closed', color: 'bg-gray-400' }
   ];
-
-  const getPositionStyle = (cycle: FundingCycle) => {
-    // Calculate position based on actual start month (0-indexed)
-    const startMonthIndex = cycle.startMonth - 1;
-    const endMonthIndex = cycle.endMonth - 1;
-    const width = (endMonthIndex - startMonthIndex + 1) * (100/12);
-    
-    return {
-      left: `${(startMonthIndex / 12) * 100}%`,
-      width: `${width}%`
-    };
-  };
 
   return (
     <section className="bg-white rounded-lg p-6 shadow-sm h-[450px] flex flex-col">
