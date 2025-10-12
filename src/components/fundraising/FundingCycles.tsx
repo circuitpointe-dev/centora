@@ -13,10 +13,11 @@ import { AddFundingCycleDialog } from "./AddFundingCycleDialog";
 
 const FundingCycles: React.FC = () => {
   const { user } = useAuth();
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
-  // Fetch funding cycles data - don't filter by year initially
-  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles(undefined, selectedYear || undefined);
+  // Fetch funding cycles data - filter by selected year
+  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles(undefined, selectedYear);
 
   // Helper function: Status color mapping (must be defined before useMemo)
   const getStatusColor = (status: string) => {
@@ -41,10 +42,19 @@ const FundingCycles: React.FC = () => {
     };
   };
 
+  // Generate a professional range of years (current year ± 5 years)
+  const availableYears = useMemo(() => {
+    const years = [];
+    for (let i = -5; i <= 5; i++) {
+      years.push(currentYear + i);
+    }
+    return years.sort((a, b) => b - a);
+  }, [currentYear]);
+
   // Process data and compute derived values
-  const { fundingData, availableYears, filteredData } = useMemo(() => {
+  const { fundingData, filteredData } = useMemo(() => {
     if (!rawFundingCycles.length) {
-      return { fundingData: [], availableYears: [], filteredData: [] };
+      return { fundingData: [], filteredData: [] };
     }
 
     // Transform database data to component format
@@ -63,20 +73,11 @@ const FundingCycles: React.FC = () => {
       orgId: cycle.org_id
     }));
 
-    // Get unique years for filter
-    const years = [...new Set(transformed.map(cycle => cycle.year))].sort((a, b) => b - a);
-    
-    // Filter by selected year if one is selected
-    const filtered = selectedYear 
-      ? transformed.filter(cycle => cycle.year === selectedYear)
-      : transformed;
-
     return {
       fundingData: transformed,
-      availableYears: years,
-      filteredData: filtered
+      filteredData: transformed
     };
-  }, [rawFundingCycles, selectedYear]);
+  }, [rawFundingCycles]);
 
   // Status legend
   const statusLegend = [
@@ -91,26 +92,22 @@ const FundingCycles: React.FC = () => {
         <h2 className="text-base font-medium text-gray-900">Funding Cycles</h2>
         
         <div className="flex items-center gap-3">
-          {/* Year selector dropdown - only show if years available */}
-          {availableYears.length > 0 && (
-            <Select
-              value={selectedYear?.toString() || ""}
-              onValueChange={(value) => setSelectedYear(parseInt(value))}
-            >
-              <SelectTrigger className="w-28 h-9">
-                <SelectValue placeholder="Select Year">
-                  {selectedYear || "Select Year"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {availableYears.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+          {/* Year selector dropdown */}
+          <Select
+            value={selectedYear.toString()}
+            onValueChange={(value) => setSelectedYear(parseInt(value))}
+          >
+            <SelectTrigger className="w-28 h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableYears.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           
           {/* Add Funding Cycle Button */}
           <AddFundingCycleDialog />
