@@ -9,6 +9,7 @@ import { getMonthName, MONTH_NAMES } from "@/utils/monthConversion";
 import { EmptyFundingCycles } from "./EmptyFundingCycles";
 import { useDonorFundingCycles } from "@/hooks/useDonorFundingCycles";
 import { useAuth } from "@/contexts/AuthContext";
+import { AddFundingCycleDialog } from "./AddFundingCycleDialog";
 
 const FundingCycles: React.FC = () => {
   const { user } = useAuth();
@@ -89,26 +90,31 @@ const FundingCycles: React.FC = () => {
       <div className="flex justify-between items-center mb-6 flex-shrink-0">
         <h2 className="text-base font-medium text-gray-900">Funding Cycles</h2>
         
-        {/* Year selector dropdown - only show if years available */}
-        {availableYears.length > 0 && (
-          <Select
-            value={selectedYear?.toString() || ""}
-            onValueChange={(value) => setSelectedYear(parseInt(value))}
-          >
-            <SelectTrigger className="w-28 h-9">
-              <SelectValue placeholder="Select Year">
-                {selectedYear || "Select Year"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {availableYears.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+        <div className="flex items-center gap-3">
+          {/* Year selector dropdown - only show if years available */}
+          {availableYears.length > 0 && (
+            <Select
+              value={selectedYear?.toString() || ""}
+              onValueChange={(value) => setSelectedYear(parseInt(value))}
+            >
+              <SelectTrigger className="w-28 h-9">
+                <SelectValue placeholder="Select Year">
+                  {selectedYear || "Select Year"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {availableYears.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          
+          {/* Add Funding Cycle Button */}
+          <AddFundingCycleDialog />
+        </div>
       </div>
       
       {/* Main content with fixed months header */}
