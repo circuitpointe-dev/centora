@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { type Donor, useDonors, useDeleteDonor } from "@/hooks/useDonors";
@@ -9,7 +10,12 @@ import DonorTablePagination from "./DonorTablePagination";
 import NewDonorDialog from "./NewDonorDialog";
 import { EmptyDonorList } from "./EmptyDonorList";
 
-const DonorList: React.FC = () => {
+interface DonorListProps {
+  initialDonorId?: string;
+}
+
+const DonorList: React.FC<DonorListProps> = ({ initialDonorId }) => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const { data: donors = [], isLoading } = useDonors();
   const deleteDonorMutation = useDeleteDonor();
@@ -49,6 +55,19 @@ const DonorList: React.FC = () => {
     setShowProfile(false);
     // Edit logic will be implemented
   };
+
+  // Handle initial donor ID from URL parameter
+  useEffect(() => {
+    if (initialDonorId && donors.length > 0) {
+      const donor = donors.find(d => d.id === initialDonorId);
+      if (donor) {
+        setSelectedDonor(donor);
+        setShowProfile(true);
+        // Clear the query parameter after opening the profile
+        navigate('/dashboard/fundraising/donor-management', { replace: true });
+      }
+    }
+  }, [initialDonorId, donors, navigate]);
 
   return (
     <>

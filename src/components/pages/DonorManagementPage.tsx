@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
 import { SideDialog, SideDialogContent, SideDialogHeader, SideDialogTitle, SideDialogTrigger } from '@/components/ui/side-dialog';
@@ -9,6 +10,8 @@ import FundingCycles from '@/components/fundraising/FundingCycles';
 import DonorList from '@/components/fundraising/DonorList';
 
 const DonorManagementPage = () => {
+  const [searchParams] = useSearchParams();
+  const donorId = searchParams.get('donor');
   const [newDonorOpen, setNewDonorOpen] = useState(false);
   const { toast } = useToast();
 
@@ -29,7 +32,7 @@ const DonorManagementPage = () => {
       </div>
 
       {/* Donor List Section */}
-      <DonorList />
+      <DonorList initialDonorId={donorId || undefined} />
     </div>
   );
 };
