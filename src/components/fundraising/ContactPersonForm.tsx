@@ -9,7 +9,6 @@ export interface ContactPerson {
   id: string;
   fullName: string;
   email: string;
-  phone: string;
 }
 
 interface ContactPersonFormProps {
@@ -45,7 +44,7 @@ export const ContactPersonForm: React.FC<ContactPersonFormProps> = ({
         )}
       </div>
       
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label className="text-sm text-gray-600">Full Name *</Label>
           <Input
@@ -56,28 +55,15 @@ export const ContactPersonForm: React.FC<ContactPersonFormProps> = ({
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label className="text-sm text-gray-600">Email *</Label>
-            <Input
-              type="email"
-              value={contact.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="Enter email address"
-              className="mt-1"
-            />
-          </div>
-          
-          <div>
-            <Label className="text-sm text-gray-600">Phone Number *</Label>
-            <Input
-              type="tel"
-              value={contact.phone}
-              onChange={(e) => handleChange('phone', e.target.value)}
-              placeholder="Enter phone number"
-              className="mt-1"
-            />
-          </div>
+        <div>
+          <Label className="text-sm text-gray-600">Email *</Label>
+          <Input
+            type="email"
+            value={contact.email}
+            onChange={(e) => handleChange('email', e.target.value)}
+            placeholder="Enter email address"
+            className="mt-1"
+          />
         </div>
       </div>
     </div>

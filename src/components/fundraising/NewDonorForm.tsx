@@ -45,9 +45,8 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     initialData?.contacts ? initialData.contacts.map((contact, index) => ({
       id: contact.id || index.toString(),
       fullName: contact.full_name,
-      email: contact.email,
-      phone: contact.phone
-    })) : [{ id: "1", fullName: "", email: "", phone: "" }]
+      email: contact.email
+    })) : [{ id: "1", fullName: "", email: "" }]
   );
 
   const [selectedFocusAreas, setSelectedFocusAreas] = useState<string[]>(
@@ -70,8 +69,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     const newContact: ContactPerson = {
       id: Date.now().toString(),
       fullName: "",
-      email: "",
-      phone: ""
+      email: ""
     };
     setContacts(prev => [...prev, newContact]);
   };
@@ -158,7 +156,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
     }
 
     const validContacts = contacts.filter(contact => 
-      contact.fullName.trim() && contact.email.trim() && contact.phone.trim()
+      contact.fullName.trim() && contact.email.trim()
     );
 
     if (validContacts.length === 0) {
@@ -193,7 +191,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
       contacts: validContacts.map(contact => ({
         full_name: contact.fullName,
         email: contact.email,
-        phone: contact.phone,
+        phone: '',
         is_primary: false,
       })),
       focus_area_ids: selectedFocusAreas,
@@ -227,7 +225,7 @@ export const NewDonorForm: React.FC<NewDonorFormProps> = ({
         fundingEndDate: "",
         note: ""
       });
-      setContacts([{ id: "1", fullName: "", email: "", phone: "" }]);
+      setContacts([{ id: "1", fullName: "", email: "" }]);
       setSelectedFocusAreas([]);
       setUploadedFiles([]);
       setFileValidationErrors([]);
