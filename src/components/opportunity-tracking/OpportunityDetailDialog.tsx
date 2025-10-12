@@ -158,7 +158,11 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
                   onAddFile={() => setShowAddFileDialog(true)}
                   sectionHeight={SECTION_HEIGHT}
                 />
-                <QuickActionsCard />
+                <QuickActionsCard 
+                  contactEmail={opportunity.contact_email}
+                  contactName={opportunity.donor?.name}
+                  sectionHeight={SECTION_HEIGHT}
+                />
               </div>
             </div>
           </div>

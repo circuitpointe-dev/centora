@@ -1,25 +1,25 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, Calendar } from "lucide-react";
+import { Mail } from "lucide-react";
 
 interface QuickActionsCardProps {
   sectionHeight?: string;
+  contactEmail?: string;
+  contactName?: string;
 }
 
 const QuickActionsCard: React.FC<QuickActionsCardProps> = ({
-  sectionHeight = "h-auto"
+  sectionHeight = "h-auto",
+  contactEmail,
+  contactName
 }) => {
   const handleEmailContact = () => {
-    console.log("Opening email client...");
-  };
-
-  const handlePhoneContact = () => {
-    console.log("Initiating phone call...");
-  };
-
-  const handleScheduleMeeting = () => {
-    console.log("Opening calendar...");
+    if (contactEmail) {
+      const subject = encodeURIComponent(`Regarding Opportunity`);
+      const body = encodeURIComponent(`Dear ${contactName || 'Contact'},\n\n`);
+      window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+    }
   };
 
   return (
@@ -30,25 +30,10 @@ const QuickActionsCard: React.FC<QuickActionsCardProps> = ({
           variant="outline"
           className="w-full justify-start"
           onClick={handleEmailContact}
+          disabled={!contactEmail}
         >
           <Mail className="h-4 w-4 mr-2" />
           Email Contact
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full justify-start"
-          onClick={handlePhoneContact}
-        >
-          <Phone className="h-4 w-4 mr-2" />
-          Call Contact
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full justify-start"
-          onClick={handleScheduleMeeting}
-        >
-          <Calendar className="h-4 w-4 mr-2" />
-          Schedule Meeting
         </Button>
       </div>
     </div>
