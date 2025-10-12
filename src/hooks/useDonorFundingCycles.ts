@@ -11,6 +11,8 @@ export const useDonorFundingCycles = (donorId?: string, year?: number) => {
   return useQuery({
     queryKey: ['donor-funding-cycles', donorId, year],
     queryFn: async () => {
+      console.log('Fetching funding cycles with:', { donorId, year });
+      
       let query = supabase
         .from('donor_funding_cycles')
         .select(`
@@ -27,6 +29,8 @@ export const useDonorFundingCycles = (donorId?: string, year?: number) => {
       }
 
       const { data, error } = await query.order('year', { ascending: false });
+
+      console.log('Funding cycles response:', { data, error });
 
       if (error) {
         console.error('Error fetching funding cycles:', error);
