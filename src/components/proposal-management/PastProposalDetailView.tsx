@@ -38,8 +38,8 @@ const PastProposalDetailView: React.FC<PastProposalDetailViewProps> = ({
     // Professional flow: create a copy draft and navigate by id
     try {
       const created = await createProposal.mutateAsync({
-        name: `${proposal.title || proposal.name} (Copy)`,
-        title: `${proposal.title || proposal.name} (Copy)`,
+        name: creationContext?.title || `${proposal.title || proposal.name} (Copy)`,
+        title: creationContext?.title || `${proposal.title || proposal.name} (Copy)`,
         opportunity_id: (creationContext as any)?.opportunityId || proposal.opportunity_id,
         overview_fields: proposal.overview_fields || [],
         narrative_fields: proposal.narrative_fields || [],
