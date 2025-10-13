@@ -390,8 +390,8 @@ const GenericFeaturePage = () => {
     return <LiveSessions />;
   }
 
-  // Course Preview route - more specific pattern
-  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('preview')) {
+  // Course Preview route - simple static route
+  if (module === 'lmsAuthor' && feature === 'course-preview') {
     console.log('Matched Course Preview route:', feature);
     return <CoursePreview />;
   }

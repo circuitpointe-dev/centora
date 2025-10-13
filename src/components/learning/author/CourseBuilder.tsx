@@ -155,7 +155,7 @@ const CourseBuilder: React.FC = () => {
   };
 
   const handlePreviewCourse = () => {
-    navigate(`/dashboard/lmsAuthor/courses-${courseId}-preview`, {
+    navigate('/dashboard/lmsAuthor/course-preview', {
       state: { courseData: courseData }
     });
   };
