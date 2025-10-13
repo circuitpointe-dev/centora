@@ -432,6 +432,77 @@ export type Database = {
           },
         ]
       }
+      document_settings: {
+        Row: {
+          allow_bulk_operations: boolean
+          allow_sharing: boolean
+          allow_template_creation: boolean
+          allowed_formats: string
+          audit_logging: boolean
+          auto_save: boolean
+          cloud_sync: boolean
+          created_at: string
+          daily_backup: boolean
+          default_access_level: string
+          file_encryption: boolean
+          id: string
+          max_file_size: number
+          org_id: string
+          require_upload_approval: boolean
+          retention_period: number
+          updated_at: string
+          virus_scanning: boolean
+        }
+        Insert: {
+          allow_bulk_operations?: boolean
+          allow_sharing?: boolean
+          allow_template_creation?: boolean
+          allowed_formats?: string
+          audit_logging?: boolean
+          auto_save?: boolean
+          cloud_sync?: boolean
+          created_at?: string
+          daily_backup?: boolean
+          default_access_level?: string
+          file_encryption?: boolean
+          id?: string
+          max_file_size?: number
+          org_id: string
+          require_upload_approval?: boolean
+          retention_period?: number
+          updated_at?: string
+          virus_scanning?: boolean
+        }
+        Update: {
+          allow_bulk_operations?: boolean
+          allow_sharing?: boolean
+          allow_template_creation?: boolean
+          allowed_formats?: string
+          audit_logging?: boolean
+          auto_save?: boolean
+          cloud_sync?: boolean
+          created_at?: string
+          daily_backup?: boolean
+          default_access_level?: string
+          file_encryption?: boolean
+          id?: string
+          max_file_size?: number
+          org_id?: string
+          require_upload_approval?: boolean
+          retention_period?: number
+          updated_at?: string
+          virus_scanning?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_settings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_shares: {
         Row: {
           access_token: string | null

@@ -47,17 +47,17 @@ export const useProcurementStats = () => {
             // Fetch real data from database
             const [requisitionsResult, purchaseOrdersResult, invoicesResult] = await Promise.all([
                 supabase
-                    .from<any>('requisitions')
+                    .from('requisitions')
                     .select('id, status, total_amount')
                     .eq('org_id', user.org_id),
 
                 supabase
-                    .from<any>('purchase_orders')
+                    .from('purchase_orders')
                     .select('id, status, total_amount')
                     .eq('org_id', user.org_id),
 
                 supabase
-                    .from<any>('invoices')
+                    .from('invoices')
                     .select('id, status, total_amount, paid_amount')
                     .eq('org_id', user.org_id)
             ]);
@@ -73,7 +73,7 @@ export const useProcurementStats = () => {
 
             // Count pending requisitions
             const pendingRequisitions = requisitionsResult.data
-                ?.filter(req => req.status === 'pending_approval' || req.status === 'submitted')
+                ?.filter(req => req.status === 'submitted' || req.status === 'draft')
                 .length || 0;
 
             // Count open purchase orders
@@ -108,7 +108,7 @@ export const usePendingApprovals = () => {
 
             // Fetch pending approvals from database
             const { data: approvals, error } = await supabase
-                .from<any>('procurement_approvals')
+                .from('procurement_approvals')
                 .select('id, entity_type, entity_id, status, comments, created_at, approver_id')
                 .eq('org_id', user.org_id)
                 .eq('status', 'pending')
@@ -123,21 +123,21 @@ export const usePendingApprovals = () => {
 
                     if (approval.entity_type === 'requisition') {
                         const { data } = await supabase
-                            .from<any>('requisitions')
+                            .from('requisitions')
                             .select('title, total_amount, currency, priority')
                             .eq('id', approval.entity_id)
                             .single();
                         entityDetails = data;
                     } else if (approval.entity_type === 'purchase_order') {
                         const { data } = await supabase
-                            .from<any>('purchase_orders')
+                            .from('purchase_orders')
                             .select('title, total_amount, currency, priority')
                             .eq('id', approval.entity_id)
                             .single();
                         entityDetails = data;
                     } else if (approval.entity_type === 'invoice') {
                         const { data } = await supabase
-                            .from<any>('invoices')
+                            .from('invoices')
                             .select('total_amount, currency')
                             .eq('id', approval.entity_id)
                             .single();
@@ -174,7 +174,7 @@ export const useUpcomingDeliveries = () => {
 
             // Fetch deliveries from database
             const { data: deliveries, error } = await supabase
-                .from<any>('deliveries')
+                .from('deliveries')
                 .select('id, status, scheduled_date, po_id')
                 .eq('org_id', user.org_id)
                 .in('status', ['scheduled', 'overdue', 'in_transit'])
@@ -187,7 +187,7 @@ export const useUpcomingDeliveries = () => {
             let poMap: Record<string, any> = {};
             if (poIds.length > 0) {
                 const { data: pos } = await supabase
-                    .from<any>('purchase_orders')
+                    .from('purchase_orders')
                     .select('id, title, total_amount, currency')
                     .in('id', poIds);
                 (pos || []).forEach((po: any) => { poMap[po.id] = po; });
@@ -225,7 +225,7 @@ export const useSpendOverTime = (period: 'monthly' | 'quarterly' | 'yearly' = 'm
 
             // Fetch invoices within the window
             const { data: invoices, error } = await supabase
-                .from<any>('invoices')
+                .from('invoices')
                 .select('invoice_date, total_amount')
                 .eq('org_id', user.org_id)
                 .gte('invoice_date', start.toISOString())
