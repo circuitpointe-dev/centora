@@ -396,35 +396,35 @@ const GenericFeaturePage = () => {
     return <CoursePreview />;
   }
 
-  // Lesson Creator routes - more specific patterns (must come before general quiz routes)
-  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('quiz')) {
-    console.log('Matched Quiz Creator route:', feature);
-    return <QuizEditor />;
-  }
-
-  // Quiz Preview route - when clicking "Open →" on quiz in preview mode
-  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('quiz') && feature.includes('preview')) {
-    console.log('Matched Quiz Preview route:', feature);
-    console.log('Quiz Preview - module:', module, 'feature:', feature);
-    console.log('Quiz Preview - includes courses:', feature.includes('courses'));
-    console.log('Quiz Preview - includes quiz:', feature.includes('quiz'));
-    console.log('Quiz Preview - includes preview:', feature.includes('preview'));
-    return <QuizPreview />;
-  }
-
-  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('assignment')) {
-    console.log('Matched Assignment Creator route:', feature);
-    return <AssignmentEditor />;
-  }
-
-  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('video')) {
-    console.log('Matched Video Creator route:', feature);
+  // Lesson Editor routes - simple static routes
+  if (module === 'lmsAuthor' && feature === 'lesson-video') {
+    console.log('Matched Video Lesson Editor route:', feature);
     return <VideoLessonEditor />;
   }
 
-  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('lessons') && feature.includes('text')) {
-    console.log('Matched Text Creator route:', feature);
+  if (module === 'lmsAuthor' && feature === 'lesson-text') {
+    console.log('Matched Text Lesson Editor route:', feature);
     return <TextLessonEditor />;
+  }
+
+  if (module === 'lmsAuthor' && feature === 'lesson-pdf') {
+    console.log('Matched PDF Lesson Editor route:', feature);
+    return <TextLessonEditor />; // Using TextLessonEditor as placeholder for PDF
+  }
+
+  if (module === 'lmsAuthor' && feature === 'lesson-audio') {
+    console.log('Matched Audio Lesson Editor route:', feature);
+    return <VideoLessonEditor />; // Using VideoLessonEditor as placeholder for Audio
+  }
+
+  if (module === 'lmsAuthor' && feature === 'lesson-quiz') {
+    console.log('Matched Quiz Lesson Editor route:', feature);
+    return <QuizEditor />;
+  }
+
+  if (module === 'lmsAuthor' && feature === 'lesson-assignment') {
+    console.log('Matched Assignment Lesson Editor route:', feature);
+    return <AssignmentEditor />;
   }
 
   // LMS Admin module routes
