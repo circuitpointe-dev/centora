@@ -56,10 +56,6 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const isEditing = prefilledData?.source === 'proposal' && prefilledData?.creationContext?.type === 'editing';
   const [proposalId, setProposalId] = useState<string | null>(isEditing ? prefilledData.proposal.id : null);
   const [activeTab, setActiveTab] = useState("overview");
-  
-  // Use the title and opportunity from creation context if available
-  const displayTitle = creationContext?.title || proposalTitle;
-  const displayOpportunity = opportunityName;
 
   // Overview tab states
   const [overviewFields, setOverviewFields] = useState<CustomField[]>([]);
@@ -202,6 +198,11 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const removeTeamMember = useRemoveProposalTeamMember();
   const { data: comments = [] } = useProposalComments(proposalId || "");
   const addComment = useAddProposalComment();
+  
+  // Use the title and opportunity from creation context if available
+  const displayTitle = creationContext?.title || proposalTitle;
+  const selectedOpportunity = opportunities.find(opp => opp.id === creationContext?.opportunityId);
+  const displayOpportunity = selectedOpportunity?.title || creationContext?.opportunityName || opportunityName;
 
   // Auto-save when fields change (only when editing)
   useEffect(() => {
