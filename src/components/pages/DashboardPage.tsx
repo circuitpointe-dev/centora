@@ -9,6 +9,7 @@ import ProgrammeDashboard from '@/components/programme/ProgrammeDashboard';
 import LearningDashboard from '@/components/learning/LearningDashboard';
 import LMSAuthorDashboard from '@/components/learning/author/LMSAuthorDashboard';
 import LMSAdminDashboard from '@/components/lms-admin/LMSAdminDashboard';
+import ProcurementDashboard from '@/components/procurement/ProcurementDashboard';
 import GenericDashboard from '@/components/dashboard/GenericDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -17,7 +18,7 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const userType = user?.userType;
-  
+
   const getModuleName = (moduleId: string) => {
     const moduleNames: { [key: string]: string } = {
       fundraising: 'Fundraising',
@@ -39,7 +40,7 @@ const DashboardPage = () => {
   // Grants-specific content based on user type (both for main dashboard and dashboard feature)
   if (module === 'grants') {
     if (!user) return null;
-    
+
     const isDonor = userType === 'Donor';
     return isDonor ? <GrantsDonorDashboard /> : <GrantsNGODashboard />;
   }
@@ -72,6 +73,11 @@ const DashboardPage = () => {
   // LMS Admin specific content
   if (module === 'lmsAdmin') {
     return <LMSAdminDashboard />;
+  }
+
+  // Procurement Management specific content
+  if (module === 'procurement') {
+    return <ProcurementDashboard />;
   }
 
   // Default content for other modules

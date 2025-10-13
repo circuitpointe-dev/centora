@@ -157,8 +157,8 @@ export const ComplianceDocuments = () => {
                   department: document.department || 'General',
                   effective_date: document.effective_date,
                   expires_date: document.expires_date || '',
-                  status: document.status === 'active' ? 'Active' : 
-                         document.status === 'expired' ? 'Retired' : 'Pending'
+                  status: document.status === 'active' ? 'Active' :
+                    document.status === 'expired' ? 'Retired' : 'Pending'
                 }}
                 onViewDocument={handleViewDocument}
               />
@@ -208,7 +208,7 @@ export const ComplianceDocuments = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <button 
+                      <button
                         className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 hover:underline font-medium"
                         onClick={() => handleViewDocument(document)}
                       >
