@@ -282,6 +282,118 @@ export type Database = {
           },
         ]
       }
+      deliveries: {
+        Row: {
+          actual_date: string | null
+          carrier: string | null
+          created_at: string
+          delivery_notes: string | null
+          delivery_number: string
+          id: string
+          org_id: string
+          po_id: string
+          received_by: string | null
+          scheduled_date: string
+          status: Database["public"]["Enums"]["delivery_status"]
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_date?: string | null
+          carrier?: string | null
+          created_at?: string
+          delivery_notes?: string | null
+          delivery_number: string
+          id?: string
+          org_id: string
+          po_id: string
+          received_by?: string | null
+          scheduled_date: string
+          status?: Database["public"]["Enums"]["delivery_status"]
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_date?: string | null
+          carrier?: string | null
+          created_at?: string
+          delivery_notes?: string | null
+          delivery_number?: string
+          id?: string
+          org_id?: string
+          po_id?: string
+          received_by?: string | null
+          scheduled_date?: string
+          status?: Database["public"]["Enums"]["delivery_status"]
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliveries_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_received_by_fkey"
+            columns: ["received_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_items: {
+        Row: {
+          condition_notes: string | null
+          created_at: string
+          delivery_id: string
+          id: string
+          po_item_id: string
+          quantity_received: number
+        }
+        Insert: {
+          condition_notes?: string | null
+          created_at?: string
+          delivery_id: string
+          id?: string
+          po_item_id: string
+          quantity_received?: number
+        }
+        Update: {
+          condition_notes?: string | null
+          created_at?: string
+          delivery_id?: string
+          id?: string
+          po_item_id?: string
+          quantity_received?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_items_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "deliveries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_items_po_item_id_fkey"
+            columns: ["po_item_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       departments: {
         Row: {
           created_at: string
@@ -790,7 +902,15 @@ export type Database = {
           updated_at?: string
           year?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "donor_funding_cycles_donor_id_fkey"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "donors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       donor_funding_periods: {
         Row: {
@@ -1667,6 +1787,95 @@ export type Database = {
           },
         ]
       }
+      invoices: {
+        Row: {
+          created_at: string
+          created_by: string
+          currency: string
+          due_date: string
+          id: string
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          org_id: string
+          paid_amount: number | null
+          payment_terms: number | null
+          po_id: string | null
+          remaining_amount: number | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          total_amount: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          currency?: string
+          due_date: string
+          id?: string
+          invoice_date: string
+          invoice_number: string
+          notes?: string | null
+          org_id: string
+          paid_amount?: number | null
+          payment_terms?: number | null
+          po_id?: string | null
+          remaining_amount?: number | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          total_amount: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          currency?: string
+          due_date?: string
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          org_id?: string
+          paid_amount?: number | null
+          payment_terms?: number | null
+          po_id?: string | null
+          remaining_amount?: number | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          total_amount?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -2083,6 +2292,57 @@ export type Database = {
           },
         ]
       }
+      procurement_approvals: {
+        Row: {
+          approved_at: string | null
+          approver_id: string
+          comments: string | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          org_id: string
+          status: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approver_id: string
+          comments?: string | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          org_id: string
+          status?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approver_id?: string
+          comments?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          org_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procurement_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procurement_approvals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           access_json: Json
@@ -2429,6 +2689,290 @@ export type Database = {
             columns: ["opportunity_id"]
             isOneToOne: false
             referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_order_items: {
+        Row: {
+          created_at: string
+          id: string
+          item_description: string
+          po_id: string
+          quantity: number
+          received_quantity: number | null
+          specifications: string | null
+          total_price: number | null
+          unit_of_measure: string | null
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_description: string
+          po_id: string
+          quantity?: number
+          received_quantity?: number | null
+          specifications?: string | null
+          total_price?: number | null
+          unit_of_measure?: string | null
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_description?: string
+          po_id?: string
+          quantity?: number
+          received_quantity?: number | null
+          specifications?: string | null
+          total_price?: number | null
+          unit_of_measure?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_order_items_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_orders: {
+        Row: {
+          actual_delivery_date: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string
+          currency: string
+          description: string | null
+          expected_delivery_date: string | null
+          id: string
+          notes: string | null
+          org_id: string
+          po_date: string
+          po_number: string
+          priority: Database["public"]["Enums"]["priority_level"]
+          requisition_id: string | null
+          status: Database["public"]["Enums"]["po_status"]
+          terms_and_conditions: string | null
+          title: string
+          total_amount: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          actual_delivery_date?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by: string
+          currency?: string
+          description?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          notes?: string | null
+          org_id: string
+          po_date?: string
+          po_number: string
+          priority?: Database["public"]["Enums"]["priority_level"]
+          requisition_id?: string | null
+          status?: Database["public"]["Enums"]["po_status"]
+          terms_and_conditions?: string | null
+          title: string
+          total_amount?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          actual_delivery_date?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string
+          currency?: string
+          description?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          notes?: string | null
+          org_id?: string
+          po_date?: string
+          po_number?: string
+          priority?: Database["public"]["Enums"]["priority_level"]
+          requisition_id?: string | null
+          status?: Database["public"]["Enums"]["po_status"]
+          terms_and_conditions?: string | null
+          title?: string
+          total_amount?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_requisition_id_fkey"
+            columns: ["requisition_id"]
+            isOneToOne: false
+            referencedRelation: "requisitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      requisition_items: {
+        Row: {
+          created_at: string
+          id: string
+          item_description: string
+          quantity: number
+          requisition_id: string
+          specifications: string | null
+          total_price: number | null
+          unit_of_measure: string | null
+          unit_price: number
+          vendor_suggestions: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_description: string
+          quantity?: number
+          requisition_id: string
+          specifications?: string | null
+          total_price?: number | null
+          unit_of_measure?: string | null
+          unit_price: number
+          vendor_suggestions?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_description?: string
+          quantity?: number
+          requisition_id?: string
+          specifications?: string | null
+          total_price?: number | null
+          unit_of_measure?: string | null
+          unit_price?: number
+          vendor_suggestions?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requisition_items_requisition_id_fkey"
+            columns: ["requisition_id"]
+            isOneToOne: false
+            referencedRelation: "requisitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      requisitions: {
+        Row: {
+          approved_by: string | null
+          approved_date: string | null
+          created_at: string
+          currency: string
+          department: string | null
+          description: string | null
+          id: string
+          notes: string | null
+          org_id: string
+          priority: Database["public"]["Enums"]["priority_level"]
+          requested_by: string
+          requested_date: string
+          required_date: string | null
+          requisition_number: string
+          status: Database["public"]["Enums"]["requisition_status"]
+          title: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          approved_by?: string | null
+          approved_date?: string | null
+          created_at?: string
+          currency?: string
+          department?: string | null
+          description?: string | null
+          id?: string
+          notes?: string | null
+          org_id: string
+          priority?: Database["public"]["Enums"]["priority_level"]
+          requested_by: string
+          requested_date?: string
+          required_date?: string | null
+          requisition_number: string
+          status?: Database["public"]["Enums"]["requisition_status"]
+          title: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          approved_by?: string | null
+          approved_date?: string | null
+          created_at?: string
+          currency?: string
+          department?: string | null
+          description?: string | null
+          id?: string
+          notes?: string | null
+          org_id?: string
+          priority?: Database["public"]["Enums"]["priority_level"]
+          requested_by?: string
+          requested_date?: string
+          required_date?: string | null
+          requisition_number?: string
+          status?: Database["public"]["Enums"]["requisition_status"]
+          title?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requisitions_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisitions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisitions_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2816,6 +3360,90 @@ export type Database = {
           },
         ]
       }
+      vendors: {
+        Row: {
+          address: string | null
+          city: string | null
+          contact_person: string | null
+          country: string | null
+          created_at: string
+          created_by: string
+          currency: string
+          email: string | null
+          id: string
+          is_active: boolean
+          notes: string | null
+          org_id: string
+          payment_terms: number | null
+          phone: string | null
+          postal_code: string | null
+          rating: number | null
+          state: string | null
+          tax_id: string | null
+          updated_at: string
+          vendor_name: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          created_by: string
+          currency?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          org_id: string
+          payment_terms?: number | null
+          phone?: string | null
+          postal_code?: string | null
+          rating?: number | null
+          state?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          vendor_name: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string
+          currency?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          org_id?: string
+          payment_terms?: number | null
+          phone?: string | null
+          postal_code?: string | null
+          rating?: number | null
+          state?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          vendor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendors_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendors_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -3047,6 +3675,12 @@ export type Database = {
     Enums: {
       app_role: "org_admin" | "org_member"
       compliance_status: "completed" | "in_progress" | "overdue"
+      delivery_status:
+        | "scheduled"
+        | "in_transit"
+        | "delivered"
+        | "overdue"
+        | "cancelled"
       disbursement_status: "pending" | "released" | "cancelled"
       document_category:
         | "policies"
@@ -3067,6 +3701,13 @@ export type Database = {
       funding_cycle_status: "ongoing" | "upcoming" | "closed"
       grant_status: "active" | "closed" | "pending" | "cancelled"
       invitation_status: "pending" | "accepted" | "rejected" | "expired"
+      invoice_status:
+        | "draft"
+        | "pending"
+        | "approved"
+        | "paid"
+        | "rejected"
+        | "overdue"
       module_key:
         | "fundraising"
         | "grants"
@@ -3086,7 +3727,31 @@ export type Database = {
         | "Declined"
       opportunity_type: "RFP" | "LOI" | "CFP"
       organization_type: "NGO" | "DONOR"
+      po_status:
+        | "draft"
+        | "sent"
+        | "acknowledged"
+        | "partially_received"
+        | "received"
+        | "cancelled"
+      priority_level: "low" | "medium" | "high" | "urgent"
+      procurement_status:
+        | "draft"
+        | "pending_approval"
+        | "approved"
+        | "rejected"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
       report_status: "submitted" | "overdue" | "upcoming" | "in_progress"
+      requisition_status:
+        | "draft"
+        | "submitted"
+        | "approved"
+        | "rejected"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
       signature_status: "pending" | "signed" | "declined" | "expired"
       task_priority: "low" | "medium" | "high"
       template_status: "active" | "draft" | "archived"
@@ -3220,6 +3885,13 @@ export const Constants = {
     Enums: {
       app_role: ["org_admin", "org_member"],
       compliance_status: ["completed", "in_progress", "overdue"],
+      delivery_status: [
+        "scheduled",
+        "in_transit",
+        "delivered",
+        "overdue",
+        "cancelled",
+      ],
       disbursement_status: ["pending", "released", "cancelled"],
       document_category: [
         "policies",
@@ -3242,6 +3914,14 @@ export const Constants = {
       funding_cycle_status: ["ongoing", "upcoming", "closed"],
       grant_status: ["active", "closed", "pending", "cancelled"],
       invitation_status: ["pending", "accepted", "rejected", "expired"],
+      invoice_status: [
+        "draft",
+        "pending",
+        "approved",
+        "paid",
+        "rejected",
+        "overdue",
+      ],
       module_key: [
         "fundraising",
         "grants",
@@ -3263,7 +3943,34 @@ export const Constants = {
       ],
       opportunity_type: ["RFP", "LOI", "CFP"],
       organization_type: ["NGO", "DONOR"],
+      po_status: [
+        "draft",
+        "sent",
+        "acknowledged",
+        "partially_received",
+        "received",
+        "cancelled",
+      ],
+      priority_level: ["low", "medium", "high", "urgent"],
+      procurement_status: [
+        "draft",
+        "pending_approval",
+        "approved",
+        "rejected",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
       report_status: ["submitted", "overdue", "upcoming", "in_progress"],
+      requisition_status: [
+        "draft",
+        "submitted",
+        "approved",
+        "rejected",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
       signature_status: ["pending", "signed", "declined", "expired"],
       task_priority: ["low", "medium", "high"],
       template_status: ["active", "draft", "archived"],

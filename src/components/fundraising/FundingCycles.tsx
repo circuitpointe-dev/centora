@@ -9,19 +9,52 @@ import { getMonthName, MONTH_NAMES } from "@/utils/monthConversion";
 import { EmptyFundingCycles } from "./EmptyFundingCycles";
 import { useDonorFundingCycles } from "@/hooks/useDonorFundingCycles";
 import { useAuth } from "@/contexts/AuthContext";
+import { AddFundingCycleDialog } from "./AddFundingCycleDialog";
 
 const FundingCycles: React.FC = () => {
   const { user } = useAuth();
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
-
-  // Fetch funding cycles data for the current year and organization
   const currentYear = new Date().getFullYear();
-  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles(undefined, selectedYear || currentYear);
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+
+  // Fetch funding cycles data - filter by selected year
+  const { data: rawFundingCycles = [], isLoading } = useDonorFundingCycles(undefined, selectedYear);
+
+  // Helper function: Status color mapping (must be defined before useMemo)
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'ongoing': return 'bg-green-500';
+      case 'upcoming': return 'bg-yellow-500';
+      case 'closed': return 'bg-gray-400';
+      default: return 'bg-blue-500';
+    }
+  };
+
+  // Helper function: Calculate position style (must be defined before useMemo)
+  const getPositionStyle = (cycle: FundingCycle) => {
+    // Calculate position based on actual start month (0-indexed)
+    const startMonthIndex = cycle.startMonth - 1;
+    const endMonthIndex = cycle.endMonth - 1;
+    const width = (endMonthIndex - startMonthIndex + 1) * (100/12);
+    
+    return {
+      left: `${(startMonthIndex / 12) * 100}%`,
+      width: `${width}%`
+    };
+  };
+
+  // Generate a professional range of years (current year ± 5 years)
+  const availableYears = useMemo(() => {
+    const years = [];
+    for (let i = -5; i <= 5; i++) {
+      years.push(currentYear + i);
+    }
+    return years.sort((a, b) => b - a);
+  }, [currentYear]);
 
   // Process data and compute derived values
-  const { fundingData, availableYears, filteredData } = useMemo(() => {
+  const { fundingData, filteredData } = useMemo(() => {
     if (!rawFundingCycles.length) {
-      return { fundingData: [], availableYears: [], filteredData: [] };
+      return { fundingData: [], filteredData: [] };
     }
 
     // Transform database data to component format
@@ -40,30 +73,11 @@ const FundingCycles: React.FC = () => {
       orgId: cycle.org_id
     }));
 
-    // Get unique years for filter
-    const years = [...new Set(transformed.map(cycle => cycle.year))].sort((a, b) => b - a);
-    
-    // Filter by selected year if one is selected
-    const filtered = selectedYear 
-      ? transformed.filter(cycle => cycle.year === selectedYear)
-      : transformed;
-
     return {
       fundingData: transformed,
-      availableYears: years,
-      filteredData: filtered
+      filteredData: transformed
     };
-  }, [rawFundingCycles, selectedYear]);
-
-  // Status color mapping
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ongoing': return 'bg-green-500';
-      case 'upcoming': return 'bg-yellow-500';
-      case 'closed': return 'bg-gray-400';
-      default: return 'bg-blue-500';
-    }
-  };
+  }, [rawFundingCycles]);
 
   // Status legend
   const statusLegend = [
@@ -72,33 +86,19 @@ const FundingCycles: React.FC = () => {
     { status: 'Closed', color: 'bg-gray-400' }
   ];
 
-  const getPositionStyle = (cycle: FundingCycle) => {
-    // Calculate position based on actual start month (0-indexed)
-    const startMonthIndex = cycle.startMonth - 1;
-    const endMonthIndex = cycle.endMonth - 1;
-    const width = (endMonthIndex - startMonthIndex + 1) * (100/12);
-    
-    return {
-      left: `${(startMonthIndex / 12) * 100}%`,
-      width: `${width}%`
-    };
-  };
-
   return (
     <section className="bg-white rounded-lg p-6 shadow-sm h-[450px] flex flex-col">
       <div className="flex justify-between items-center mb-6 flex-shrink-0">
         <h2 className="text-base font-medium text-gray-900">Funding Cycles</h2>
         
-        {/* Year selector dropdown - only show if years available */}
-        {availableYears.length > 0 && (
+        <div className="flex items-center gap-3">
+          {/* Year selector dropdown */}
           <Select
-            value={selectedYear?.toString() || ""}
+            value={selectedYear.toString()}
             onValueChange={(value) => setSelectedYear(parseInt(value))}
           >
             <SelectTrigger className="w-28 h-9">
-              <SelectValue placeholder="Select Year">
-                {selectedYear || "Select Year"}
-              </SelectValue>
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {availableYears.map((year) => (
@@ -108,7 +108,10 @@ const FundingCycles: React.FC = () => {
               ))}
             </SelectContent>
           </Select>
-        )}
+          
+          {/* Add Funding Cycle Button */}
+          <AddFundingCycleDialog />
+        </div>
       </div>
       
       {/* Main content with fixed months header */}

@@ -32,6 +32,7 @@ import LMSAdminMediaLibrary from '@/components/lms-admin/MediaLibrary';
 import { DisbursementSchedulePage } from '@/components/grants/pages/DisbursementSchedulePage';
 import { ProfilePage } from '@/components/grants/pages/ProfilePage';
 import ComplianceMonitorPage from './ComplianceMonitorPage';
+import ProcurementFeaturePage from '@/components/procurement/ProcurementFeaturePage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -99,7 +100,7 @@ const GenericFeaturePage = () => {
       navigate('/dashboard/documents/documents', { replace: true });
     }
   }, [module, feature, navigate]);
-  
+
   // Render specific page components for fundraising routes
   if (module === 'fundraising' && feature === 'donor-management') {
     return <DonorManagementPage />;
@@ -108,11 +109,11 @@ const GenericFeaturePage = () => {
   if (module === 'fundraising' && feature === 'opportunity-tracking') {
     return <OpportunityTrackingPage />;
   }
-  
+
   if (module === 'fundraising' && feature === 'proposal-management') {
     return <ProposalManagementPage />;
   }
-  
+
   if (module === 'fundraising' && feature === 'fundraising-analytics') {
     return <FundraisingAnalyticsPage />;
   }
@@ -131,6 +132,11 @@ const GenericFeaturePage = () => {
 
   if (module === 'documents' && feature === 'templates') {
     return <TemplatesPage />;
+  }
+
+  // Procurement module routes
+  if (module === 'procurement') {
+    return <ProcurementFeaturePage />;
   }
 
   // Render specific page components for grants routes
@@ -443,7 +449,7 @@ const GenericFeaturePage = () => {
   if (module === 'users' && feature === 'roles-permissions') {
     // Differentiate between tenant admin and super admin roles & permissions
     const isSuperAdmin = !!user?.is_super_admin;
-    
+
     if (isSuperAdmin) {
       // Super admin sees system-wide role management
       return <SuperAdminRolesPermissionPage />;

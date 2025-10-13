@@ -25,7 +25,7 @@ export const DocumentDetailDialog = ({ open, onOpenChange, document }: DocumentD
         },
       });
     }
-    
+
     return () => {
       if (previewUrl) {
         window.URL.revokeObjectURL(previewUrl);
@@ -67,7 +67,7 @@ export const DocumentDetailDialog = ({ open, onOpenChange, document }: DocumentD
             </Badge>
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* Document Info */}
           <div className="grid grid-cols-2 gap-4">
@@ -148,7 +148,7 @@ export const DocumentDetailDialog = ({ open, onOpenChange, document }: DocumentD
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Close
             </Button>
-            <Button 
+            <Button
               onClick={handleDownload}
               disabled={downloadMutation.isPending}
             >

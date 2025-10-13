@@ -109,6 +109,23 @@ export const useCreateOpportunity = () => {
         throw error;
       }
 
+      // Send email notification if someone is assigned
+      if (data.assigned_to && opportunityData.assigned_to) {
+        try {
+          await supabase.functions.invoke('send-opportunity-assignment', {
+            body: {
+              assigneeId: opportunityData.assigned_to,
+              opportunityTitle: data.title,
+              opportunityId: data.id,
+              deadline: data.deadline,
+            },
+          });
+        } catch (emailError) {
+          console.error('Failed to send assignment notification:', emailError);
+          // Don't throw - opportunity was created successfully
+        }
+      }
+
       return data;
     },
     onSuccess: (newOpportunity) => {

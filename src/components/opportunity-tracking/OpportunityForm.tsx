@@ -34,6 +34,7 @@ interface OpportunityFormProps {
   donors: Array<{ id: string; name: string }>;
   typeOptions: Array<{ value: string; label: string }>;
   currencyOptions: Array<{ value: string; label: string }>;
+  orgMembers: Array<{ id: string; full_name: string | null; email: string; department?: { name: string } | null }>;
   onCreateDonor?: () => void;
 }
 
@@ -42,6 +43,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({
   donors,
   typeOptions,
   currencyOptions,
+  orgMembers,
   onCreateDonor,
 }) => {
   return (
@@ -235,13 +237,20 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({
                 <FormLabel className="text-sm font-medium text-gray-700">
                   Assigned To
                 </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter assignee name"
-                    className="border-gray-300"
-                    {...field}
-                  />
-                </FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="border-gray-300">
+                      <SelectValue placeholder="Select assignee" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {orgMembers.map((member) => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {member.full_name || member.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

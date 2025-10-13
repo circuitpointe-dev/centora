@@ -1,13 +1,13 @@
-import { 
-  Heart, 
-  Target, 
-  ShoppingCart, 
-  Package, 
-  Calculator, 
-  BookOpen, 
-  FileText, 
-  Users, 
-  User, 
+import {
+  Heart,
+  Target,
+  ShoppingCart,
+  Package,
+  Calculator,
+  BookOpen,
+  FileText,
+  Users,
+  User,
   Award,
   BarChart3,
   Settings,
@@ -136,14 +136,15 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     ]
   },
   procurement: {
-    name: 'Procurement',
+    name: 'Procurement Management',
     icon: ShoppingCart,
-    color: 'text-green-600',
+    color: 'text-purple-600',
     features: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'purchase-orders', name: 'Purchase Orders', icon: ShoppingCart },
+      { id: 'procurement-planning', name: 'Procurement Planning', icon: Target },
       { id: 'vendor-management', name: 'Vendor Management', icon: Users },
-      { id: 'procurement-analytics', name: 'Analytics', icon: BarChart3 },
+      { id: 'procurement-execution', name: 'Procurement Execution', icon: ShoppingCart },
+      { id: 'procurement-reports', name: 'Procurement Reports', icon: FileText },
     ]
   },
   inventory: {
