@@ -29,7 +29,6 @@ import GenericFeatureUI from '@/components/generic/GenericFeatureUI';
 import { useAuth } from '@/contexts/AuthContext';
 import { ComplianceChecklistPage } from '@/components/grants/pages/ComplianceChecklistPage';
 import LMSAdminMediaLibrary from '@/components/lms-admin/MediaLibrary';
-import AccessibilityFlags from '@/components/lms-admin/AccessibilityFlags';
 import { DisbursementSchedulePage } from '@/components/grants/pages/DisbursementSchedulePage';
 import { ProfilePage } from '@/components/grants/pages/ProfilePage';
 import ComplianceMonitorPage from './ComplianceMonitorPage';
@@ -78,6 +77,7 @@ import LearnerManagement from '../lms-admin/LearnerManagement';
 import LearnerDetailView from '../lms-admin/LearnerDetailView';
 import BulkEnrollment from '../lms-admin/BulkEnrollment';
 import ReportsAnalytics from '../lms-admin/ReportsAnalytics';
+import AccessibilityFlags from '../lms-admin/AccessibilityFlags';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
