@@ -79,6 +79,7 @@ import LearnerDetailView from '../lms-admin/LearnerDetailView';
 import BulkEnrollment from '../lms-admin/BulkEnrollment';
 import ReportsAnalytics from '../lms-admin/ReportsAnalytics';
 import AccessibilityFlags from '../lms-admin/AccessibilityFlags';
+import HelpCenter from '../lms-admin/HelpCenter';
 
 const GenericFeaturePage = () => {
   const { module, feature } = useParams();
@@ -443,7 +444,7 @@ const GenericFeaturePage = () => {
   }
 
   if (module === 'lmsAdmin' && feature === 'help-center') {
-    return <HelpCenterPage />;
+    return <HelpCenter />;
   }
 
   if (module === 'users' && feature === 'roles-permissions') {
