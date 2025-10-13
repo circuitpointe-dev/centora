@@ -187,6 +187,7 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     color: 'text-green-600',
     features: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
+      { id: 'courses', name: 'Courses', icon: GraduationCap },
       { id: 'live-sessions', name: 'Live Sessions', icon: Video },
       { id: 'media-library', name: 'Media Library', icon: FileImage },
       { id: 'templates', name: 'Templates', icon: FileText },

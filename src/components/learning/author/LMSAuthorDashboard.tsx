@@ -27,7 +27,7 @@ const LMSAuthorDashboard: React.FC = () => {
 
   // Navigate to Course Builder
   const handleEditCourse = (courseId: string) => {
-    navigate(`/dashboard/lmsAuthor/courses-${courseId}-builder`);
+    navigate(`/dashboard/lmsAuthor/courses`);
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [courseSearchQuery, setCourseSearchQuery] = useState('');

@@ -63,7 +63,9 @@ import LMSAuthorDashboard from '../learning/author/LMSAuthorDashboard';
 import CourseAnalyticsPage from '../learning/author/CourseAnalyticsPage';
 import CreateCoursePage from '../learning/author/CreateCoursePage';
 import CreateCourseStep2 from '../learning/author/CreateCourseStep2';
-import CourseBuilder from '../learning/author/CourseBuilder';
+import CourseBuilder from '../lms-admin/CourseBuilder';
+import LearningCourseBuilder from '../learning/author/CourseBuilder';
+import AddSectionPage from '../lms-admin/AddSectionPage';
 import QuizEditor from '../learning/author/QuizEditor';
 import AssignmentEditor from '../learning/author/AssignmentEditor';
 import VideoLessonEditor from '../learning/author/VideoLessonEditor';
@@ -350,10 +352,35 @@ const GenericFeaturePage = () => {
     return <CreateCourseStep2 />;
   }
 
-  // Course Builder route - specific pattern
-  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('builder')) {
+  // Course Builder route - simple static route
+  if (module === 'lmsAuthor' && feature === 'courses') {
     console.log('Matched Course Builder route:', feature);
     return <CourseBuilder />;
+  }
+
+  // Learning Course Builder route - specific route for Add Section redirect
+  if (module === 'lmsAuthor' && feature === 'courses-builder') {
+    console.log('Matched Learning Course Builder route:', feature);
+    return <LearningCourseBuilder />;
+  }
+
+  // Course Builder route - fallback for dynamic IDs (courses-*-builder)
+  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('builder')) {
+    console.log('Matched Course Builder route (dynamic):', feature);
+    return <CourseBuilder />;
+  }
+
+  // Add Section route - simple static route
+  if (module === 'lmsAuthor' && feature === 'courses-add-section') {
+    console.log('Matched Add Section route:', feature);
+    return <AddSectionPage 
+      onBack={() => navigate('/dashboard/lmsAuthor/courses')} 
+      onSave={(data) => {
+        console.log('Section saved:', data);
+        // Navigate to the learning CourseBuilder (with Module 1 and lesson types)
+        navigate('/dashboard/lmsAuthor/courses-builder');
+      }} 
+    />;
   }
 
   // Live Sessions route
