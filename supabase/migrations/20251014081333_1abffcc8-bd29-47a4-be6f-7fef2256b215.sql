@@ -1,0 +1,8 @@
+-- Insert sample procurement approvals for test@circuitpointe.com user
+INSERT INTO procurement_approvals (org_id, type, requestor_id, requestor_name, amount, currency, risk_level, status, description, priority, department, vendor_name, due_date, attachments)
+VALUES 
+('c21e6282-30c3-4aa9-b646-339007d22a4f', 'requisition', '1d0a3763-f207-4234-a0d2-a392b7e4504d', 'Test User', 450.00, 'USD', 'low', 'pending', 'Monthly office supplies including paper, pens, and folders', 'medium', 'Administration', 'Office Depot', '2025-10-20', ARRAY[]::text[]),
+('c21e6282-30c3-4aa9-b646-339007d22a4f', 'purchase_order', '1d0a3763-f207-4234-a0d2-a392b7e4504d', 'Test User', 12000.00, 'USD', 'high', 'pending', 'Annual IT support and maintenance contract', 'high', 'IT', 'TechSupport Inc', '2025-11-01', ARRAY[]::text[]),
+('c21e6282-30c3-4aa9-b646-339007d22a4f', 'purchase_order', '1d0a3763-f207-4234-a0d2-a392b7e4504d', 'Test User', 8500.00, 'USD', 'high', 'pending', 'Purchase of 5 new laptops for development team', 'high', 'IT', 'Dell Technologies', '2025-10-25', ARRAY[]::text[]),
+('c21e6282-30c3-4aa9-b646-339007d22a4f', 'payment', '1d0a3763-f207-4234-a0d2-a392b7e4504d', 'Test User', 2400.00, 'USD', 'medium', 'approved', 'Annual subscription for project management tools', 'medium', 'Operations', 'Atlassian', '2025-10-15', ARRAY[]::text[]),
+('c21e6282-30c3-4aa9-b646-339007d22a4f', 'requisition', '1d0a3763-f207-4234-a0d2-a392b7e4504d', 'Test User', 1200.00, 'USD', 'low', 'rejected', 'Brochures and promotional materials for upcoming event', 'low', 'Marketing', 'PrintPro', '2025-10-18', ARRAY[]::text[]);
