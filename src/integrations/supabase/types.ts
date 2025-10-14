@@ -707,6 +707,7 @@ export type Database = {
       documents: {
         Row: {
           category: Database["public"]["Enums"]["document_category"]
+          cover_image: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -726,6 +727,7 @@ export type Database = {
         }
         Insert: {
           category?: Database["public"]["Enums"]["document_category"]
+          cover_image?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -745,6 +747,7 @@ export type Database = {
         }
         Update: {
           category?: Database["public"]["Enums"]["document_category"]
+          cover_image?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null

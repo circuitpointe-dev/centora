@@ -14,6 +14,7 @@ export interface Template {
   file_path: string;
   preview_url?: string;
   office_preview_url?: string;
+  cover_image?: string;
   mime_type?: string;
   file_size?: number;
   created_at: string;
@@ -98,6 +99,7 @@ export const useTemplates = (filters?: {
           file_path: template.file_path,
           preview_url: signed,
           office_preview_url: officeUrl,
+          cover_image: template.cover_image,
           mime_type: template.mime_type,
           file_size: template.file_size,
           created_at: template.created_at,
