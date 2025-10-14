@@ -58,12 +58,11 @@ const MainLayout = () => {
         onToggleCollapse={handleToggleCollapse}
       />
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${
-          isCollapsed ? "lg:ml-16" : "lg:ml-16 xl:ml-64"
-        }`}
+        className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${isCollapsed ? "lg:ml-16" : "lg:ml-16 xl:ml-64"
+          }`}
       >
         <Header sidebarCollapsed={isCollapsed} />
-        <main className="flex-1 overflow-y-auto pt-20 p-6 space-y-6 bg-background">
+        <main className="flex-1 min-w-0 overflow-y-auto pt-20 p-6 space-y-6 bg-background">
           <Outlet />
         </main>
       </div>
