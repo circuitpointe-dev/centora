@@ -2378,6 +2378,7 @@ export type Database = {
           date_submitted: string
           department: string | null
           description: string
+          display_id: string
           due_date: string | null
           id: string
           org_id: string
@@ -2402,6 +2403,7 @@ export type Database = {
           date_submitted?: string
           department?: string | null
           description: string
+          display_id: string
           due_date?: string | null
           id?: string
           org_id: string
@@ -2426,6 +2428,7 @@ export type Database = {
           date_submitted?: string
           department?: string | null
           description?: string
+          display_id?: string
           due_date?: string | null
           id?: string
           org_id?: string
@@ -3670,6 +3673,10 @@ export type Database = {
         }[]
       }
       current_org_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_procurement_display_id: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

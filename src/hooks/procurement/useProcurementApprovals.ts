@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface ProcurementApproval {
     id: string;
+    display_id: string;
     org_id: string;
     type: 'requisition' | 'purchase_order' | 'payment';
     requestor_id: string;

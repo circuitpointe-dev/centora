@@ -111,7 +111,7 @@ const ProcurementApprovalsPage = () => {
         if (!searchTerm) return approvals;
 
         return approvals.filter(approval =>
-            approval.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            approval.display_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
             approval.requestor_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             approval.description.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -394,7 +394,7 @@ const ProcurementApprovalsPage = () => {
                                                             className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800"
                                                             onClick={() => handleView(approval.id)}
                                                         >
-                                                            {approval.id}
+                                                            {approval.display_id}
                                                         </Button>
                                                     </TableCell>
                                                     <TableCell>
@@ -491,7 +491,7 @@ const ProcurementApprovalsPage = () => {
                                                                     className="p-0 h-auto text-sm font-medium text-blue-600"
                                                                     onClick={() => handleView(approval.id)}
                                                                 >
-                                                                    {approval.id}
+                                                                    {approval.display_id}
                                                                 </Button>
                                                             </div>
                                                         </div>
