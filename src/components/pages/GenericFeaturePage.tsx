@@ -33,6 +33,7 @@ import { DisbursementSchedulePage } from '@/components/grants/pages/Disbursement
 import { ProfilePage } from '@/components/grants/pages/ProfilePage';
 import ComplianceMonitorPage from './ComplianceMonitorPage';
 import ProcurementFeaturePage from '@/components/procurement/ProcurementFeaturePage';
+import ProcurementApprovalsPage from '@/components/procurement/ProcurementApprovalsPage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -138,6 +139,10 @@ const GenericFeaturePage = () => {
   }
 
   // Procurement module routes
+  if (module === 'procurement' && feature === 'approvals') {
+    return <ProcurementApprovalsPage />;
+  }
+
   if (module === 'procurement') {
     return <ProcurementFeaturePage />;
   }
@@ -373,13 +378,13 @@ const GenericFeaturePage = () => {
   // Add Section route - simple static route
   if (module === 'lmsAuthor' && feature === 'courses-add-section') {
     console.log('Matched Add Section route:', feature);
-    return <AddSectionPage 
-      onBack={() => navigate('/dashboard/lmsAuthor/courses')} 
+    return <AddSectionPage
+      onBack={() => navigate('/dashboard/lmsAuthor/courses')}
       onSave={(data) => {
         console.log('Section saved:', data);
         // Navigate to the learning CourseBuilder (with Module 1 and lesson types)
         navigate('/dashboard/lmsAuthor/courses-builder');
-      }} 
+      }}
     />;
   }
 

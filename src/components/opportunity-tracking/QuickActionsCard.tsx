@@ -31,16 +31,16 @@ const QuickActionsCard: React.FC<QuickActionsCardProps> = ({
 
     try {
       const subject = encodeURIComponent(
-        opportunityTitle 
-          ? `Regarding: ${opportunityTitle}` 
+        opportunityTitle
+          ? `Regarding: ${opportunityTitle}`
           : "Opportunity Inquiry"
       );
       const body = encodeURIComponent(
         `Dear ${contactName || 'Contact'},\n\nI hope this message finds you well.\n\nI would like to discuss the opportunity in more detail.\n\nBest regards`
       );
-      
+
       window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-      
+
       toast({
         title: "Email Client Opened",
         description: `Opening email to ${contactName || contactEmail}`,
@@ -68,10 +68,12 @@ const QuickActionsCard: React.FC<QuickActionsCardProps> = ({
           <Mail className="h-4 w-4 mr-2" />
           Email Contact
         </Button>
-        {!contactEmail && (
-          <p className="text-xs text-muted-foreground">
-            No contact email available
+        {contactEmail ? (
+          <p className="text-xs text-muted-foreground break-all">
+            Contact: <a href={`mailto:${contactEmail}`} className="underline">{contactEmail}</a>
           </p>
+        ) : (
+          <p className="text-xs text-muted-foreground">No contact email available</p>
         )}
       </div>
     </div>
