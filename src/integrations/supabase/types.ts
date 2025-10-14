@@ -2663,6 +2663,7 @@ export type Database = {
           budget_narrative: string | null
           comments: Json | null
           content: Json | null
+          cover_image: string | null
           created_at: string
           created_by: string
           due_date: string | null
@@ -2696,6 +2697,7 @@ export type Database = {
           budget_narrative?: string | null
           comments?: Json | null
           content?: Json | null
+          cover_image?: string | null
           created_at?: string
           created_by: string
           due_date?: string | null
@@ -2729,6 +2731,7 @@ export type Database = {
           budget_narrative?: string | null
           comments?: Json | null
           content?: Json | null
+          cover_image?: string | null
           created_at?: string
           created_by?: string
           due_date?: string | null

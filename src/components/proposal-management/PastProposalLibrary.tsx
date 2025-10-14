@@ -20,6 +20,7 @@ interface CreationContext {
   title: string;
   opportunityId: string;
   isTemplate: boolean;
+  coverImage?: string;
 }
 
 interface PastProposalLibraryProps {
@@ -48,13 +49,18 @@ const PastProposalLibrary: React.FC<PastProposalLibraryProps> = ({ creationConte
     const firstNarrativeField = p.narrative_fields?.[0]?.value;
     const description = summaryField?.value || firstNarrativeField || p.summary || 'No description available';
     
+    // Get image URL from Supabase storage if cover_image exists
+    const imageSrc = p.cover_image 
+      ? `https://kspzfifdwfpirgqstzhz.supabase.co/storage/v1/object/public/proposal-attachments/${p.cover_image}`
+      : "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop";
+    
     return {
       ...p, // Keep all original proposal data
       title: p.name || p.title || 'Untitled Proposal',
       description: description,
       fileType: 'Word',
       uses: 0,
-      imageSrc: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+      imageSrc: imageSrc,
       rating: 5,
     };
   });

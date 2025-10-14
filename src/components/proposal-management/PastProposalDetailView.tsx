@@ -15,6 +15,7 @@ interface CreationContext {
   title: string;
   opportunityId: string;
   isTemplate: boolean;
+  coverImage?: string;
 }
 
 interface PastProposalDetailViewProps {
@@ -47,6 +48,7 @@ const PastProposalDetailView: React.FC<PastProposalDetailViewProps> = ({
         budget_currency: proposal.budget_currency || 'USD',
         budget_amount: proposal.budget_amount,
         submission_status: 'draft',
+        cover_image: creationContext?.coverImage || proposal.cover_image
       } as any);
       navigate(`/dashboard/fundraising/manual-proposal-creation?proposalId=${created.id}`);
     } catch (e) {

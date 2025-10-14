@@ -294,7 +294,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
         dueDate: dueDate || undefined,
         attachments: [],
-        submission_status: 'draft'
+        submission_status: 'draft',
+        cover_image: creationContext?.coverImage || prefilledData?.proposal?.cover_image
       }, {
         onSuccess: (proposal) => {
           setProposalId(proposal.id);
@@ -397,7 +398,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
         dueDate: dueDate || undefined,
         attachments: [],
-        submission_status: 'submitted'
+        submission_status: 'submitted',
+        cover_image: creationContext?.coverImage || prefilledData?.proposal?.cover_image
       }, {
         onSuccess: (proposal) => {
           setProposalId(proposal.id);
