@@ -2569,6 +2569,95 @@ export type Database = {
           },
         ]
       }
+      procurement_requisitions: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          attachments: string[] | null
+          budget_source: string | null
+          category: string | null
+          created_at: string
+          currency: string
+          date_submitted: string
+          department: string | null
+          description: string | null
+          due_date: string | null
+          estimated_cost: number
+          id: string
+          item_name: string
+          justification: string | null
+          notes: string | null
+          org_id: string
+          priority: string
+          quantity: number
+          req_id: string
+          requested_by: string
+          status: string
+          unit_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          attachments?: string[] | null
+          budget_source?: string | null
+          category?: string | null
+          created_at?: string
+          currency?: string
+          date_submitted?: string
+          department?: string | null
+          description?: string | null
+          due_date?: string | null
+          estimated_cost: number
+          id?: string
+          item_name: string
+          justification?: string | null
+          notes?: string | null
+          org_id: string
+          priority?: string
+          quantity: number
+          req_id: string
+          requested_by: string
+          status?: string
+          unit_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          attachments?: string[] | null
+          budget_source?: string | null
+          category?: string | null
+          created_at?: string
+          currency?: string
+          date_submitted?: string
+          department?: string | null
+          description?: string | null
+          due_date?: string | null
+          estimated_cost?: number
+          id?: string
+          item_name?: string
+          justification?: string | null
+          notes?: string | null
+          org_id?: string
+          priority?: string
+          quantity?: number
+          req_id?: string
+          requested_by?: string
+          status?: string
+          unit_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procurement_requisitions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           access_json: Json
