@@ -4,7 +4,6 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface ProcurementApproval {
     id: string;
-    display_id: string;
     org_id: string;
     type: 'requisition' | 'purchase_order' | 'payment';
     requestor_id: string;
@@ -155,22 +154,7 @@ export const useApprovals = (page = 1, limit = 10, filters: ApprovalFilters = {}
             }
 
             // Get total count for pagination
-            const countQuery = supabase
-                .from('procurement_approvals')
-                .select('*', { count: 'exact', head: true })
-                .eq('org_id', profile.org_id)
-                .eq('status', 'pending');
-            
-            // Apply same filters to count query
-            if (filters.type) countQuery.eq('type', filters.type);
-            if (filters.risk_level) countQuery.eq('risk_level', filters.risk_level);
-            if (filters.department) countQuery.eq('department', filters.department);
-            if (filters.date_from) countQuery.gte('date_submitted', filters.date_from);
-            if (filters.date_to) countQuery.lte('date_submitted', filters.date_to);
-            if (filters.amount_min) countQuery.gte('amount', filters.amount_min);
-            if (filters.amount_max) countQuery.lte('amount', filters.amount_max);
-            
-            const { count } = await countQuery;
+            const { count } = await query.select('*', { count: 'exact', head: true });
 
             // Apply pagination
             const from = (page - 1) * limit;

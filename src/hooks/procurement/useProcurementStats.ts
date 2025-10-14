@@ -106,29 +106,26 @@ export const usePendingApprovals = () => {
         queryFn: async (): Promise<PendingApproval[]> => {
             if (!user?.org_id) throw new Error('No organization');
 
-            // Fetch pending approvals from database - using actual schema columns
+            // Fetch pending approvals from database (aligned with current schema)
             const { data: approvals, error } = await supabase
                 .from('procurement_approvals')
-                .select('id, type, requestor_name, amount, currency, description, priority, created_at, date_submitted')
+                .select('id, type, status, created_at, amount, currency, priority, requestor_name')
                 .eq('org_id', user.org_id)
                 .eq('status', 'pending')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
 
-            // Map to PendingApproval format
-            const approvalsWithDetails: PendingApproval[] = (approvals || []).map((approval) => ({
-                id: approval.id,
-                type: approval.type as 'requisition' | 'purchase_order' | 'payment',
-                title: approval.description || `${approval.type} #${approval.id.slice(0, 8)}`,
-                amount: Number(approval.amount || 0),
-                currency: approval.currency || 'USD',
-                submittedBy: approval.requestor_name || 'Unknown',
-                submittedAt: approval.date_submitted || approval.created_at,
-                priority: (approval.priority || 'medium') as 'low' | 'medium' | 'high'
+            return (approvals || []).map((a: any) => ({
+                id: a.id,
+                type: (a.type as 'requisition' | 'purchase_order' | 'payment') || 'requisition',
+                title: a.requestor_name || 'Approval',
+                amount: Number(a.amount || 0),
+                currency: a.currency || 'USD',
+                submittedBy: a.requestor_name || 'Unknown',
+                submittedAt: a.created_at,
+                priority: (a.priority || 'medium') as 'low' | 'medium' | 'high',
             }));
-
-            return approvalsWithDetails;
         },
         staleTime: 2 * 60 * 1000, // 2 minutes
         gcTime: 5 * 60 * 1000, // 5 minutes
@@ -182,11 +179,17 @@ export const useUpcomingDeliveries = () => {
     });
 };
 
-export const useSpendOverTime = (period: 'monthly' | 'quarterly' | 'yearly' = 'monthly') => {
+export interface SpendFilters {
+    vendor?: string;
+    category?: string;
+    status?: string; // optional; applied only if column exists in schema
+}
+
+export const useSpendOverTime = (period: 'monthly' | 'quarterly' | 'yearly' = 'monthly', filters?: SpendFilters) => {
     const { user } = useAuth();
 
     return useQuery({
-        queryKey: ['spend-over-time', user?.org_id, period],
+        queryKey: ['spend-over-time', user?.org_id, period, filters?.vendor, filters?.category, filters?.status],
         queryFn: async (): Promise<SpendData[]> => {
             if (!user?.org_id) throw new Error('No organization');
             // Determine date window based on period
@@ -195,6 +198,7 @@ export const useSpendOverTime = (period: 'monthly' | 'quarterly' | 'yearly' = 'm
             const end = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
 
             // Fetch invoices within the window
+            // Minimal, schema-safe select to avoid 400 errors on unknown columns
             const { data: invoices, error } = await supabase
                 .from('invoices')
                 .select('invoice_date, total_amount')
