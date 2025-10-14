@@ -153,13 +153,10 @@ export const useApprovals = (page = 1, limit = 10, filters: ApprovalFilters = {}
                 query = query.lte('amount', filters.amount_max);
             }
 
-            // Get total count for pagination
-            const { count } = await query.select('*', { count: 'exact', head: true });
-
             // Apply pagination
             const from = (page - 1) * limit;
             const to = from + limit - 1;
-            const { data, error } = await query.range(from, to);
+            const { data, error, count } = await query.range(from, to);
 
             if (error) throw error;
 

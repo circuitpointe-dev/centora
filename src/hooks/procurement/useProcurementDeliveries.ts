@@ -181,7 +181,7 @@ export const useDeliveries = (params: DeliverySearchParams = {}) => {
       if (error) throw error;
 
       return {
-        deliveries: data || [],
+        deliveries: (data || []) as Delivery[],
         total: count || 0,
       };
     },

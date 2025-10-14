@@ -2466,6 +2466,109 @@ export type Database = {
           },
         ]
       }
+      procurement_deliveries: {
+        Row: {
+          amount: number | null
+          attachments: string[] | null
+          confirmed_at: string | null
+          confirmed_by: string | null
+          contact_email: string | null
+          contact_person: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string
+          currency: string
+          delivery_address: string | null
+          delivery_date: string
+          description: string | null
+          expected_date: string | null
+          id: string
+          notes: string | null
+          org_id: string
+          po_number: string | null
+          priority: string
+          reference: string
+          status: string
+          tracking_number: string | null
+          updated_at: string
+          vendor_name: string
+        }
+        Insert: {
+          amount?: number | null
+          attachments?: string[] | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by: string
+          currency?: string
+          delivery_address?: string | null
+          delivery_date: string
+          description?: string | null
+          expected_date?: string | null
+          id?: string
+          notes?: string | null
+          org_id: string
+          po_number?: string | null
+          priority?: string
+          reference: string
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+          vendor_name: string
+        }
+        Update: {
+          amount?: number | null
+          attachments?: string[] | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string
+          currency?: string
+          delivery_address?: string | null
+          delivery_date?: string
+          description?: string | null
+          expected_date?: string | null
+          id?: string
+          notes?: string | null
+          org_id?: string
+          po_number?: string | null
+          priority?: string
+          reference?: string
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+          vendor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procurement_deliveries_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procurement_deliveries_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procurement_deliveries_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           access_json: Json
