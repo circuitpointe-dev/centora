@@ -101,11 +101,11 @@ const LMSAuthorDashboard: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'draft':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-600">Draft</Badge>;
+        return <Badge variant="secondary" className="bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">Draft</Badge>;
       case 'in-review':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">In-review</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200">In-review</Badge>;
       case 'published':
-        return <Badge variant="secondary" className="bg-green-100 text-green-800">Published</Badge>;
+        return <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200">Published</Badge>;
       default:
         return null;
     }

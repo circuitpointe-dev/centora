@@ -362,12 +362,12 @@ const CourseBuilder: React.FC = () => {
                   return (
                     <Card
                       key={type}
-                      className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-border hover:border-gray-400"
+                      className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-border hover:border-muted-foreground"
                       onClick={() => handleAddLesson(type as CourseLesson['type'])}
                     >
                       <div className="flex items-center space-x-3">
-                        <IconComponent size={24} className="text-gray-600" />
-                        <span className="text-gray-700 font-medium">{label}</span>
+                        <IconComponent size={24} className="text-muted-foreground" />
+                        <span className="text-foreground font-medium">{label}</span>
                       </div>
                     </Card>
                   );
@@ -385,12 +385,12 @@ const CourseBuilder: React.FC = () => {
                   return (
                     <Card
                       key={type}
-                      className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-border hover:border-gray-400"
+                      className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-border hover:border-muted-foreground"
                       onClick={() => handleAddLesson(type as CourseLesson['type'])}
                     >
                       <div className="flex items-center space-x-3">
-                        <IconComponent size={24} className="text-gray-600" />
-                        <span className="text-gray-700 font-medium">{label}</span>
+                        <IconComponent size={24} className="text-muted-foreground" />
+                        <span className="text-foreground font-medium">{label}</span>
                       </div>
                     </Card>
                   );

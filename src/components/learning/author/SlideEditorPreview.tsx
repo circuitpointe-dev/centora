@@ -27,20 +27,20 @@ const SlideEditorPreview: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-background border-b border-border px-6 py-4">
         <div className="flex items-center justify-between">
           <button
             onClick={handleBackToSlideEditor}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft size={20} />
             <span>Back</span>
           </button>
           
           <div className="text-center">
-            <h1 className="text-lg font-medium text-gray-900">
+            <h1 className="text-lg font-medium text-foreground">
               You are currently in preview mode
             </h1>
           </div>
@@ -57,10 +57,10 @@ const SlideEditorPreview: React.FC = () => {
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Course Summary Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-8 mb-8">
           <div className="flex items-center space-x-8">
             {/* Course Image */}
-            <div className="w-80 h-48 bg-gray-200 rounded-lg overflow-hidden">
+            <div className="w-80 h-48 bg-muted rounded-lg overflow-hidden">
               <img
                 src="/src/assets/images/dummy image.png"
                 alt="Course preview"
@@ -70,23 +70,23 @@ const SlideEditorPreview: React.FC = () => {
             
             {/* Course Info */}
             <div className="flex-1">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-bold text-foreground mb-4">
                 {courseTitle}
               </h2>
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-lg text-muted-foreground mb-6">
                 Understand the key concepts to create designs that adapt to various screen sizes.
               </p>
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-muted text-muted-foreground px-3 py-1 rounded-full text-sm font-medium">
                     Beginner
                   </span>
                 </div>
                 
                 {/* Instructor Profile */}
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
+                  <div className="w-10 h-10 bg-muted rounded-full overflow-hidden">
                     <img
                       src="/src/assets/images/dummy image.png"
                       alt="Instructor"
@@ -94,8 +94,8 @@ const SlideEditorPreview: React.FC = () => {
                     />
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-gray-900">Leslie Alex</p>
-                    <p className="text-sm text-gray-500">Instructor</p>
+                    <p className="font-medium text-foreground">Leslie Alex</p>
+                    <p className="text-sm text-muted-foreground">Instructor</p>
                   </div>
                 </div>
               </div>
@@ -113,7 +113,7 @@ const SlideEditorPreview: React.FC = () => {
                 className={`pb-2 px-1 text-lg font-medium transition-colors ${
                   activeTab === tab.id
                     ? 'text-purple-600 border-b-2 border-purple-600'
-                    : 'text-gray-500 hover:text-gray-700'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {tab.label}
@@ -123,10 +123,10 @@ const SlideEditorPreview: React.FC = () => {
         </div>
 
         {/* Video/Slide Preview Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-8">
           <div className="flex items-center space-x-8">
             {/* Video/Slide Preview */}
-            <div className="w-80 h-48 bg-gray-200 rounded-lg overflow-hidden relative">
+            <div className="w-80 h-48 bg-muted rounded-lg overflow-hidden relative">
               <img
                 src="/src/assets/images/dummy image.png"
                 alt="Video preview"
@@ -134,25 +134,25 @@ const SlideEditorPreview: React.FC = () => {
               />
               {/* Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <button className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all">
-                  <Play size={24} className="text-gray-800 ml-1" />
+                <button className="w-16 h-16 bg-background bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all">
+                  <Play size={24} className="text-foreground ml-1" />
                 </button>
               </div>
             </div>
             
             {/* Video Info */}
             <div className="flex-1">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-foreground mb-4">
                 {courseTitle}
               </h3>
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-lg text-muted-foreground mb-6">
                 Understand the key concepts to create designs that adapt to various screen sizes.
               </p>
               
               {/* Instructor Profile */}
               <div className="flex items-center justify-end">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
+                  <div className="w-10 h-10 bg-muted rounded-full overflow-hidden">
                     <img
                       src="/src/assets/images/dummy image.png"
                       alt="Instructor"
@@ -160,8 +160,8 @@ const SlideEditorPreview: React.FC = () => {
                     />
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-gray-900">Leslie Alex</p>
-                    <p className="text-sm text-gray-500">Instructor</p>
+                    <p className="font-medium text-foreground">Leslie Alex</p>
+                    <p className="text-sm text-muted-foreground">Instructor</p>
                   </div>
                 </div>
               </div>

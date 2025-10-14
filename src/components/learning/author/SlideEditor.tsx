@@ -419,14 +419,14 @@ const SlideEditor: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-background border-b border-border px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
               onClick={handleBackToCourseList}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft size={16} className="mr-2" />
               Back to Course list
@@ -434,21 +434,21 @@ const SlideEditor: React.FC = () => {
           </div>
           
           <div className="flex-1 text-center">
-            <h1 className="text-lg font-semibold text-gray-900">{courseTitle}</h1>
+            <h1 className="text-lg font-semibold text-foreground">{courseTitle}</h1>
           </div>
           
           <div className="flex items-center space-x-4">
             {/* Collaborators */}
             <div className="flex -space-x-2">
-              <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-white"></div>
-              <div className="w-8 h-8 bg-gray-400 rounded-full border-2 border-white"></div>
-              <div className="w-8 h-8 bg-gray-500 rounded-full border-2 border-white"></div>
+              <div className="w-8 h-8 bg-muted rounded-full border-2 border-background"></div>
+              <div className="w-8 h-8 bg-muted-foreground rounded-full border-2 border-background"></div>
+              <div className="w-8 h-8 bg-foreground rounded-full border-2 border-background"></div>
             </div>
             
             <Button
               variant="outline"
               onClick={handlePreview}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300"
+              className="bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border"
             >
               <Eye size={16} className="mr-2" />
               Preview
@@ -457,7 +457,7 @@ const SlideEditor: React.FC = () => {
             <Button
               onClick={handleSaveSlides}
               variant="outline"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="border-border text-foreground hover:bg-accent"
             >
               Save
             </Button>
@@ -465,7 +465,7 @@ const SlideEditor: React.FC = () => {
             <Button
               onClick={handleLoadSlides}
               variant="outline"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="border-border text-foreground hover:bg-accent"
             >
               Load
             </Button>
@@ -473,7 +473,7 @@ const SlideEditor: React.FC = () => {
             <Button
               onClick={handleClearSlides}
               variant="outline"
-              className="border-red-300 text-red-700 hover:bg-red-50"
+              className="border-destructive text-destructive hover:bg-destructive/10"
             >
               Clear
             </Button>
@@ -490,7 +490,7 @@ const SlideEditor: React.FC = () => {
 
       <div className="flex h-[calc(100vh-80px)]">
         {/* Left Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 p-6">
+        <div className="w-64 bg-card border-r border-border p-6">
           <div className="space-y-2">
             {sidebarItems.map((item, index) => (
               <button
@@ -504,7 +504,7 @@ const SlideEditor: React.FC = () => {
                 disabled={slides.length === 0 || (isQuizMode && item.label !== 'Quiz')}
               >
                 {item.icon}
-                <span className="text-gray-700 font-medium">{item.label}</span>
+                <span className="text-card-foreground font-medium">{item.label}</span>
               </button>
             ))}
           </div>
@@ -523,10 +523,10 @@ const SlideEditor: React.FC = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 bg-gray-50 flex items-center justify-center relative">
+        <div className="flex-1 bg-muted flex items-center justify-center relative">
           {slides.length === 0 ? (
             <div className="text-center">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              <h2 className="text-xl font-semibold text-foreground mb-4">
                 Start your course by adding the first slide.
               </h2>
               <Button
@@ -813,23 +813,23 @@ const SlideEditor: React.FC = () => {
 
               {/* Slide Canvas */}
               <div 
-                className="w-[800px] h-[600px] bg-white border-2 border-purple-600 rounded-lg shadow-lg relative"
-                style={{ backgroundColor: slides[currentSlideIndex]?.backgroundColor || '#ffffff' }}
+                className="w-[800px] h-[600px] bg-card border-2 border-purple-600 rounded-lg shadow-lg relative"
+                style={{ backgroundColor: slides[currentSlideIndex]?.backgroundColor || 'hsl(var(--card))' }}
               >
                 {/* Color Picker Popup */}
                 {showColorPicker && (
-                  <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg p-3">
+                  <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-popover border border-border rounded-lg shadow-lg p-3">
                     <div className="flex items-center space-x-2 mb-2">
-                      <div className="w-6 h-6 bg-white border border-gray-300 rounded flex items-center justify-center">
-                        <div className="w-3 h-3 bg-black rounded-full"></div>
+                      <div className="w-6 h-6 bg-background border border-border rounded flex items-center justify-center">
+                        <div className="w-3 h-3 bg-foreground rounded-full"></div>
                       </div>
-                      <Trash2 size={16} className="text-gray-600" />
+                      <Trash2 size={16} className="text-muted-foreground" />
                     </div>
                     <div className="grid grid-cols-9 gap-1">
                       {colorPickerColors.map((color, index) => (
                         <button
                           key={index}
-                          className="w-6 h-6 rounded border border-gray-200 hover:border-gray-400"
+                          className="w-6 h-6 rounded border border-border hover:border-muted-foreground"
                           style={{ backgroundColor: color }}
                           onClick={() => {
                             const updatedSlides = [...slides];
@@ -838,7 +838,7 @@ const SlideEditor: React.FC = () => {
                             setShowColorPicker(false);
                           }}
                         >
-                          {index === 0 && <div className="w-2 h-2 bg-black rounded-full mx-auto mt-1"></div>}
+                          {index === 0 && <div className="w-2 h-2 bg-foreground rounded-full mx-auto mt-1"></div>}
                         </button>
                       ))}
                     </div>
@@ -1174,7 +1174,7 @@ const SlideEditor: React.FC = () => {
 
       {/* Bottom Slide Management Bar */}
       {slides.length > 0 && !isQuizMode && (
-        <div className="bg-white border-t border-gray-200 px-6 py-4">
+        <div className="bg-card border-t border-border px-6 py-4">
           <div className="flex items-center space-x-4">
             {/* Slide Thumbnails */}
             <div className="flex items-center space-x-2">
@@ -1187,8 +1187,8 @@ const SlideEditor: React.FC = () => {
                   onClick={() => setCurrentSlideIndex(index)}
                 >
                   <div 
-                    className="w-20 h-14 bg-white border-2 border-purple-600 rounded flex items-center justify-center relative overflow-hidden"
-                    style={{ backgroundColor: slide.backgroundColor || '#ffffff' }}
+                    className="w-20 h-14 bg-card border-2 border-purple-600 rounded flex items-center justify-center relative overflow-hidden"
+                    style={{ backgroundColor: slide.backgroundColor || 'hsl(var(--card))' }}
                   >
                     {/* Show elements in thumbnail */}
                     {slide.elements?.map((element) => (
@@ -1248,12 +1248,12 @@ const SlideEditor: React.FC = () => {
                       </div>
                     ))}
                     {(!slide.elements || slide.elements.length === 0) && (
-                      <Grid3X3 size={16} className="text-gray-400" />
+                      <Grid3X3 size={16} className="text-muted-foreground" />
                     )}
                   </div>
                   <MoreHorizontal 
                     size={16} 
-                    className="absolute bottom-1 right-1 text-gray-400" 
+                    className="absolute bottom-1 right-1 text-muted-foreground" 
                   />
                 </div>
               ))}

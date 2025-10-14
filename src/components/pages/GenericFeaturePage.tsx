@@ -354,7 +354,7 @@ const GenericFeaturePage = () => {
   }
 
   // Course Analytics route (when clicking "View course analytics" button)
-  if (module === 'lmsAuthor' && feature?.startsWith('course-analytics-')) {
+  if (module === 'lmsAuthor' && feature === 'course-analytics') {
     return <CourseAnalyticsPage />;
   }
 
