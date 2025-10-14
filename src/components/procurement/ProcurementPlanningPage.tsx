@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Search, Upload, Download, Plus, Eye } from "lucide-react";
-import { 
-  useRequisitionStats, 
-  useRequisitions, 
-  useCreateRequisition, 
+import {
+  useRequisitionStats,
+  useRequisitions,
+  useCreateRequisition,
   useUpdateRequisitionStatus,
   useRequisitionBudgetSources,
   useRequisitionCategories,
@@ -129,11 +129,10 @@ const ProcurementPlanningPage: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
-              activeTab === tab.id
+            className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${activeTab === tab.id
                 ? 'bg-white text-[#7c3aed] shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
-            }`}
+              }`}
           >
             {tab.label}
           </button>
@@ -234,7 +233,7 @@ const ProcurementPlanningPage: React.FC = () => {
                 <Upload className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Bulk upload</span>
               </Button>
-              <Button 
+              <Button
                 onClick={handleNewRequisition}
                 className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white"
               >

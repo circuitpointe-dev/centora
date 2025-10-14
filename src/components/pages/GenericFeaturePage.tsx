@@ -161,6 +161,10 @@ const GenericFeaturePage = () => {
     return <ProcurementPlanningPage />;
   }
 
+  if (module === 'procurement' && feature === 'procurement-planning') {
+    return <ProcurementPlanningPage />;
+  }
+
   if (module === 'procurement') {
     return <ProcurementFeaturePage />;
   }
