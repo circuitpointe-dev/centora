@@ -105,27 +105,27 @@ const LearnerDetailView = () => {
     switch (activeTab) {
       case 'enrollments':
         return (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-muted">
                   <tr>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Course</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Modules</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Score</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Last activity</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Course</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Modules</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Score</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Last activity</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {enrollments.map((enrollment) => (
-                    <tr key={enrollment.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <tr key={enrollment.id} className="border-b border-border hover:bg-accent">
                       <td className="py-3 px-4">
-                        <p className="text-sm font-medium text-gray-900">{enrollment.course}</p>
+                        <p className="text-sm font-medium text-foreground">{enrollment.course}</p>
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{enrollment.modules}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{enrollment.score}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{enrollment.lastActivity}</td>
+                      <td className="py-3 px-4 text-sm text-muted-foreground">{enrollment.modules}</td>
+                      <td className="py-3 px-4 text-sm text-muted-foreground">{enrollment.score}</td>
+                      <td className="py-3 px-4 text-sm text-muted-foreground">{enrollment.lastActivity}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 text-xs rounded-full ${enrollment.statusColor}`}>
                           {enrollment.status}
@@ -140,12 +140,12 @@ const LearnerDetailView = () => {
         );
       case 'certificates':
         return (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-muted">
                   <tr>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Course</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Course</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Issue date</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
                   </tr>

@@ -33,7 +33,7 @@ const CourseBuilder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header Bar */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -106,17 +106,17 @@ const CourseBuilder = () => {
 
           {/* Empty Contents Area */}
           <div className="flex-1 p-6">
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center text-muted-foreground py-8">
               <p className="text-sm">No sections added yet</p>
             </div>
           </div>
 
           {/* Add Section Button - Bottom */}
-          <div className="p-6 border-t border-gray-200">
+          <div className="p-6 border-t border-border">
             <Button
               variant="outline"
               onClick={handleAddSection}
-              className="w-full flex items-center justify-center space-x-2 bg-white hover:bg-gray-50 text-gray-700 border-gray-300"
+              className="w-full flex items-center justify-center space-x-2 bg-background hover:bg-accent text-foreground border-border"
             >
               <Plus className="h-4 w-4" />
               <span>Add section</span>
@@ -125,11 +125,11 @@ const CourseBuilder = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 bg-white flex items-center justify-center">
+        <div className="flex-1 bg-background flex items-center justify-center">
           <div className="text-center space-y-6">
             {/* Main Message */}
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-gray-900">
+              <h2 className="text-2xl font-semibold text-foreground">
                 Start your course by adding the first section.
               </h2>
             </div>

@@ -108,8 +108,8 @@ const ReportsAnalytics = () => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900">{label}</p>
+        <div className="bg-card p-3 border border-border rounded-lg shadow-lg">
+          <p className="font-medium text-foreground">{label}</p>
           <p className="text-sm text-purple-600">{payload[0].value}</p>
         </div>
       );
@@ -118,14 +118,14 @@ const ReportsAnalytics = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-white min-h-screen">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Page Title */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Report & analytic</h1>
+        <h1 className="text-3xl font-bold text-foreground">Report & analytic</h1>
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-border">
         <div className="flex items-center justify-between">
           <nav className="-mb-px flex space-x-8">
             <button
@@ -133,7 +133,7 @@ const ReportsAnalytics = () => {
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'platform'
                   ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
             >
               Platform reports
@@ -143,7 +143,7 @@ const ReportsAnalytics = () => {
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'course'
                   ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
             >
               Course analytics
@@ -168,8 +168,8 @@ const ReportsAnalytics = () => {
                   <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
                     <BookOpen className="h-8 w-8 text-purple-600" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">2590</p>
-                  <p className="text-sm font-medium text-gray-600">Total enrollements</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">2590</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total enrollements</p>
                 </div>
               </CardContent>
             </Card>
@@ -356,8 +356,8 @@ const ReportsAnalytics = () => {
                   <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
                     <Package className="h-8 w-8 text-purple-600" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">2590</p>
-                  <p className="text-sm font-medium text-gray-600">Total enrollements</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">2590</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total enrollements</p>
                 </div>
               </CardContent>
             </Card>

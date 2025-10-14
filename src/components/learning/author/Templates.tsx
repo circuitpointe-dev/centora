@@ -119,7 +119,7 @@ const Templates: React.FC = () => {
       case 'slide':
         return 'bg-blue-100 text-blue-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -147,19 +147,19 @@ const Templates: React.FC = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Template</h1>
+        <h1 className="text-2xl font-bold text-foreground">Template</h1>
       </div>
 
       {/* Template Gallery Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h2 className="text-lg font-medium text-gray-900">Template gallery</h2>
+          <h2 className="text-lg font-medium text-foreground">Template gallery</h2>
         </div>
         
         <div className="flex items-center space-x-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               type="text"
               placeholder="Search session..."
@@ -218,20 +218,20 @@ const Templates: React.FC = () => {
               </div>
 
               {/* Title */}
-              <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{template.title}</h3>
+              <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{template.title}</h3>
               
               {/* Description */}
-              <p className="text-sm text-gray-600 mb-4 line-clamp-3">{template.description}</p>
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{template.description}</p>
 
               {/* Instructor Info and Date */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-gray-600" />
+                    <User className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{template.instructor.name}</p>
-                    <p className="text-xs text-gray-500">Instructor</p>
+                    <p className="text-sm font-medium text-foreground">{template.instructor.name}</p>
+                    <p className="text-xs text-muted-foreground">Instructor</p>
                   </div>
                 </div>
                 <div className="text-right">

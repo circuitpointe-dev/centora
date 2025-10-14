@@ -129,14 +129,14 @@ const QuizBankEdit: React.FC<QuizBankEditProps> = ({ quizId }) => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Quiz bank edit</h1>
+        <h1 className="text-2xl font-bold text-foreground">Quiz bank edit</h1>
       </div>
 
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
         <button
           onClick={handleBack}
-          className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
+          className="flex items-center space-x-1 hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Quiz bank list</span>
@@ -147,7 +147,7 @@ const QuizBankEdit: React.FC<QuizBankEditProps> = ({ quizId }) => {
       <Card className="p-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Quiz title
             </label>
             <Input
@@ -157,7 +157,7 @@ const QuizBankEdit: React.FC<QuizBankEditProps> = ({ quizId }) => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Quiz description
             </label>
             <Input
@@ -177,9 +177,9 @@ const QuizBankEdit: React.FC<QuizBankEditProps> = ({ quizId }) => {
             id="optional"
             checked={isOptional}
             onChange={(e) => setIsOptional(e.target.checked)}
-            className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
+            className="w-4 h-4 text-primary focus:ring-primary border-border rounded"
           />
-          <label htmlFor="optional" className="text-sm font-medium text-gray-700">
+          <label htmlFor="optional" className="text-sm font-medium text-foreground">
             Mark as optional
           </label>
         </div>
@@ -191,14 +191,14 @@ const QuizBankEdit: React.FC<QuizBankEditProps> = ({ quizId }) => {
           <div className="space-y-4">
             {/* Question Header */}
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-foreground">
                 Question #{questionIndex + 1}
               </h3>
               <div className="flex items-center space-x-2">
                 <select
                   value={question.type}
                   onChange={(e) => updateQuestion(question.id, 'type', e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="px-3 py-1 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   <option value="single">One correct answer</option>
                   <option value="multiple">Multiple correct answers</option>
@@ -209,7 +209,7 @@ const QuizBankEdit: React.FC<QuizBankEditProps> = ({ quizId }) => {
 
             {/* Question Text */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Question
               </label>
               <div className="border border-gray-300 rounded-md">
@@ -296,7 +296,7 @@ const QuizBankEdit: React.FC<QuizBankEditProps> = ({ quizId }) => {
                           type="checkbox"
                           checked={option.isCorrect}
                           onChange={() => handleCorrectAnswerChange(question.id, option.id)}
-                          className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
+                          className="w-4 h-4 text-primary focus:ring-primary border-border rounded"
                         />
                         <label className="text-sm text-gray-700">This is the correct answer</label>
                       </div>

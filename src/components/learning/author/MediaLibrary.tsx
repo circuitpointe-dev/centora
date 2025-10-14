@@ -146,12 +146,12 @@ const MediaLibrary: React.FC = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Media library</h1>
+        <h1 className="text-2xl font-bold text-foreground">Media library</h1>
         
         <div className="flex items-center space-x-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               type="text"
               placeholder="Search....."
@@ -186,11 +186,11 @@ const MediaLibrary: React.FC = () => {
         {/* Filters Section */}
         <div className="lg:col-span-1">
           <Card className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">Filters</h2>
             
             {/* Type Filter */}
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Type</h3>
+              <h3 className="text-sm font-medium text-foreground mb-3">Type</h3>
               <div className="space-y-2">
                 {[
                   { value: 'all', label: 'All' },
@@ -208,7 +208,7 @@ const MediaLibrary: React.FC = () => {
                       onChange={(e) => setTypeFilter(e.target.value)}
                       className="w-4 h-4 text-primary focus:ring-primary"
                     />
-                    <span className="text-sm text-gray-700">{option.label}</span>
+                    <span className="text-sm text-foreground">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -216,7 +216,7 @@ const MediaLibrary: React.FC = () => {
 
             {/* Date Uploaded Filter */}
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Date uploaded</h3>
+              <h3 className="text-sm font-medium text-foreground mb-3">Date uploaded</h3>
               <div className="relative">
                 <Input
                   type="date"
@@ -224,13 +224,13 @@ const MediaLibrary: React.FC = () => {
                   onChange={(e) => setDateFilter(e.target.value)}
                   className="pr-10"
                 />
-                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               </div>
             </div>
 
             {/* Sort By Filter */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Sort by</h3>
+              <h3 className="text-sm font-medium text-foreground mb-3">Sort by</h3>
               <div className="space-y-2">
                 {[
                   { value: 'newest', label: 'Newest' },
@@ -247,7 +247,7 @@ const MediaLibrary: React.FC = () => {
                       onChange={(e) => setSortBy(e.target.value)}
                       className="w-4 h-4 text-primary focus:ring-primary"
                     />
-                    <span className="text-sm text-gray-700">{option.label}</span>
+                    <span className="text-sm text-foreground">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -272,7 +272,7 @@ const MediaLibrary: React.FC = () => {
                   </div>
 
                   {/* Thumbnail */}
-                  <div className="aspect-video bg-gray-100 relative overflow-hidden">
+                  <div className="aspect-video bg-muted relative overflow-hidden">
                     {item.type === 'video' ? (
                       <div className="w-full h-full relative">
                         <img 
@@ -303,8 +303,8 @@ const MediaLibrary: React.FC = () => {
 
                   {/* Content */}
                   <div className="p-4">
-                    <h3 className="font-medium text-gray-900 truncate mb-1">{item.name}</h3>
-                    <p className="text-sm text-gray-500 mb-3">
+                    <h3 className="font-medium text-foreground truncate mb-1">{item.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
                       {getTypeLabel(item.type)} {item.size}
                     </p>
 
@@ -342,8 +342,8 @@ const MediaLibrary: React.FC = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
+            <p className="text-sm text-muted-foreground">
               Showing {startIndex + 1} to {Math.min(endIndex, filteredItems.length)} of {filteredItems.length} media library
             </p>
             <div className="flex items-center space-x-2">

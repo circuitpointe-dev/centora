@@ -106,17 +106,17 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({ template }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation Bar */}
-      <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
+      <div className="flex items-center justify-between p-4 bg-background border-b border-border">
         <Button 
           variant="ghost" 
           onClick={handleBack} 
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+          className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
         </Button>
         
-        <span className="text-sm text-gray-500">You are currently in preview mode</span>
+        <span className="text-sm text-muted-foreground">You are currently in preview mode</span>
         
         <Button 
           onClick={handleUseTemplate} 
@@ -129,11 +129,11 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({ template }) => {
 
       {/* Main Content Area */}
       <div className="container mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden">
           {/* Course Header */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
             {/* Left Section (Image) */}
-            <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+            <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
               <img
                 src={currentTemplate.thumbnail}
                 alt={currentTemplate.title}
@@ -143,21 +143,21 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({ template }) => {
 
             {/* Right Section (Course Details) */}
             <div className="flex flex-col justify-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{currentTemplate.title}</h1>
-              <p className="text-gray-600 mb-4 text-lg leading-relaxed">{currentTemplate.description}</p>
+              <h1 className="text-3xl font-bold text-foreground mb-4">{currentTemplate.title}</h1>
+              <p className="text-muted-foreground mb-4 text-lg leading-relaxed">{currentTemplate.description}</p>
               
               <div className="mb-4">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground">
                   Beginner
                 </span>
               </div>
               
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-gray-600" />
+                  <User className="w-6 h-6 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{currentTemplate.instructor.name}</p>
+                  <p className="text-sm font-medium text-foreground">{currentTemplate.instructor.name}</p>
                   <p className="text-xs text-gray-500">Instructor</p>
                 </div>
               </div>
@@ -194,7 +194,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({ template }) => {
                       className={`p-4 cursor-pointer transition-colors ${
                         expandedModules.has(module.id) 
                           ? 'bg-primary/5 border-primary/20' 
-                          : 'bg-gray-50 hover:bg-gray-100'
+                          : 'bg-muted hover:bg-accent'
                       }`}
                       onClick={() => toggleModule(module.id)}
                     >
@@ -256,16 +256,16 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({ template }) => {
               </div>
 
               {/* Bottom Navigation */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
+              <div className="flex justify-between mt-8 pt-6 border-t border-border">
                 <Button 
                   variant="outline" 
-                  className="text-gray-700 border-gray-300 hover:bg-gray-100"
+                  className="text-foreground border-border hover:bg-accent"
                 >
                   Previous lesson
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="text-gray-700 border-gray-300 hover:bg-gray-100"
+                  className="text-foreground border-border hover:bg-accent"
                 >
                   Next lesson
                 </Button>

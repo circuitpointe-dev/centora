@@ -136,10 +136,10 @@ const LearnerManagement = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-white min-h-screen">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Learner management</h1>
+        <h1 className="text-2xl font-bold text-foreground">Learner management</h1>
       </div>
 
       {/* Tabs and Controls */}
@@ -155,25 +155,25 @@ const LearnerManagement = () => {
         <div className="flex items-center space-x-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <input
               type="text"
               placeholder="Search learners..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
           
           {/* View Toggle */}
-          <div className="flex items-center border border-gray-300 rounded-lg">
+          <div className="flex items-center border border-border rounded-lg">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 ${viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`p-2 ${viewMode === 'grid' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent'}`}
             >
               <Grid3X3 className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 ${viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`p-2 ${viewMode === 'list' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent'}`}
             >
               <List className="h-4 w-4" />
             </button>
@@ -181,10 +181,10 @@ const LearnerManagement = () => {
           
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
-              <span className="text-sm text-gray-700">Bulk action</span>
+            <button className="flex items-center space-x-2 px-3 py-2 border border-border rounded-lg bg-background hover:bg-accent transition-colors">
+              <span className="text-sm text-foreground">Bulk action</span>
             </button>
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
+            <button className="flex items-center space-x-2 px-3 py-2 border border-border rounded-lg bg-background hover:bg-accent transition-colors">
               <Filter className="h-4 w-4 text-gray-600" />
               <span className="text-sm text-gray-700">Filter</span>
             </button>

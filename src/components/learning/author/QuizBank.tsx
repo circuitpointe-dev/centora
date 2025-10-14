@@ -137,19 +137,19 @@ const QuizBank: React.FC = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Quiz bank</h1>
+        <h1 className="text-2xl font-bold text-foreground">Quiz bank</h1>
       </div>
 
       {/* Quiz Bank List Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h2 className="text-lg font-medium text-gray-900">Quiz bank list</h2>
+          <h2 className="text-lg font-medium text-foreground">Quiz bank list</h2>
         </div>
         
         <div className="flex items-center space-x-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               type="text"
               placeholder="Search..."
@@ -198,12 +198,12 @@ const QuizBank: React.FC = () => {
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Quiz</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Questions</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Tags</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Actions</th>
+                <th className="text-left py-4 px-6 text-sm font-semibold text-foreground">Quiz</th>
+                <th className="text-left py-4 px-6 text-sm font-semibold text-foreground">Questions</th>
+                <th className="text-left py-4 px-6 text-sm font-semibold text-foreground">Tags</th>
+                <th className="text-left py-4 px-6 text-sm font-semibold text-foreground">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -212,7 +212,7 @@ const QuizBank: React.FC = () => {
                   {/* Quiz Column */}
                   <td className="py-4 px-6">
                     <div>
-                      <div className="font-medium text-gray-900">{quiz.title}</div>
+                      <div className="font-medium text-foreground">{quiz.title}</div>
                       <div className="text-sm text-gray-500 mt-1">{quiz.description}</div>
                     </div>
                   </td>

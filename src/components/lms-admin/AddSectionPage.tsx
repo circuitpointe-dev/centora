@@ -106,13 +106,13 @@ const AddSectionPage: React.FC<AddSectionPageProps> = ({
       {/* Main Layout */}
       <div className="flex h-[calc(100vh-80px)]">
         {/* Left Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 p-6">
+        <div className="w-64 bg-card border-r border-border p-6">
           <div className="space-y-6">
             {/* Contents Section */}
             <div>
-              <h2 className="text-sm font-medium text-gray-900 mb-4">Contents</h2>
+              <h2 className="text-sm font-medium text-foreground mb-4">Contents</h2>
               {/* Empty state - no sections yet */}
-              <div className="text-sm text-gray-500 italic">
+              <div className="text-sm text-muted-foreground italic">
                 No sections added yet
               </div>
             </div>
@@ -121,7 +121,7 @@ const AddSectionPage: React.FC<AddSectionPageProps> = ({
             <div className="mt-auto">
               <Button
                 variant="outline"
-                className="w-full flex items-center justify-center space-x-2 text-gray-600 hover:text-gray-900"
+                className="w-full flex items-center justify-center space-x-2 text-muted-foreground hover:text-foreground"
               >
                 <span className="text-lg">+</span>
                 <span>Add section</span>
@@ -132,15 +132,15 @@ const AddSectionPage: React.FC<AddSectionPageProps> = ({
 
         {/* Main Content Area */}
         <div className="flex-1 flex items-center justify-center p-6">
-          <div className="bg-white rounded-lg shadow-sm max-w-md w-full p-8">
+          <div className="bg-card rounded-lg shadow-sm max-w-md w-full p-8">
             {/* Page Title */}
-            <h1 className="text-2xl font-bold text-gray-900 mb-8">New section</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-8">New section</h1>
             
             {/* Form */}
             <form onSubmit={handleSave} className="space-y-6">
               {/* Section Title Field */}
               <div className="space-y-2">
-                <Label htmlFor="sectionName" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="sectionName" className="text-sm font-medium text-foreground">
                   Section title
                 </Label>
                 <Input

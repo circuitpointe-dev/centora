@@ -47,15 +47,15 @@ const AccessibilityFlags = () => {
       case 'In Progress':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   return (
-    <div className="p-6 space-y-6 bg-white min-h-screen">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Accessibility flags</h1>
+        <h1 className="text-3xl font-bold text-foreground">Accessibility flags</h1>
         <Button className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700">
           <Download className="h-4 w-4" />
           <span>Export flag report</span>
@@ -71,18 +71,18 @@ const AccessibilityFlags = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Name</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Type</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Status</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
+                <tr className="border-b border-border">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Name</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Type</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {accessibilityFlags.map((flag) => (
-                  <tr key={flag.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4 text-sm text-gray-900">{flag.name}</td>
-                    <td className="py-4 px-4 text-sm text-gray-600">{flag.type}</td>
+                  <tr key={flag.id} className="border-b border-border hover:bg-accent">
+                    <td className="py-4 px-4 text-sm text-foreground">{flag.name}</td>
+                    <td className="py-4 px-4 text-sm text-muted-foreground">{flag.type}</td>
                     <td className="py-4 px-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(flag.status)}`}>
                         {flag.status}

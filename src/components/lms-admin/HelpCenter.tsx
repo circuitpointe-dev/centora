@@ -91,9 +91,9 @@ const HelpCenter = () => {
       case 'Medium':
         return 'bg-gray-600 text-white';
       case 'Low':
-        return 'bg-gray-100 text-gray-700 border border-gray-300';
+        return 'bg-muted text-muted-foreground border border-border';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -106,7 +106,7 @@ const HelpCenter = () => {
       case 'Resolved':
         return 'bg-green-100 text-green-600';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -211,21 +211,21 @@ const HelpCenter = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-white min-h-screen">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Help center</h1>
+        <h1 className="text-3xl font-bold text-foreground">Help center</h1>
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-border">
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('help')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'help'
                 ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
             }`}
           >
             Help center
@@ -235,7 +235,7 @@ const HelpCenter = () => {
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'tickets'
                 ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
             }`}
           >
             Tickets
@@ -249,7 +249,7 @@ const HelpCenter = () => {
           {/* Search and Action Controls */}
           <div className="flex items-center space-x-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search..."
                 value={searchQuery}
@@ -276,7 +276,7 @@ const HelpCenter = () => {
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   activeCategory === category
                     ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-muted text-muted-foreground hover:bg-accent'
                 }`}
               >
                 {category}
@@ -288,10 +288,10 @@ const HelpCenter = () => {
           <Card>
             <CardContent className="p-6">
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-foreground">
                   {helpContent[activeCategory as keyof typeof helpContent]?.title}
                 </h2>
-                <div className="space-y-3 text-gray-700">
+                <div className="space-y-3 text-foreground">
                   {helpContent[activeCategory as keyof typeof helpContent]?.content.map((paragraph, index) => (
                     <p key={index} className="leading-relaxed">
                       {paragraph}
@@ -310,7 +310,7 @@ const HelpCenter = () => {
           {/* Search and Action Controls */}
           <div className="flex items-center space-x-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search NGO by name..."
                 value={ticketSearchQuery}

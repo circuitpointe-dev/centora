@@ -96,30 +96,30 @@ const LinkToCourseModal: React.FC<LinkToCourseModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+      <div className="relative w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
         {/* Header */}
         <div className="mb-6 flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{quiz.title}</h2>
-            <p className="text-sm text-gray-600 mt-1">{quiz.description}</p>
+            <h2 className="text-xl font-bold text-foreground">{quiz.title}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{quiz.description}</p>
           </div>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
           >
-            <X className="w-4 h-4 text-gray-600" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
 
         {/* Content */}
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Link to course
             </label>
             <div className="relative">
               <select
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                className="w-full px-3 py-2 border border-border rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
               >
@@ -131,7 +131,7 @@ const LinkToCourseModal: React.FC<LinkToCourseModalProps> = ({
                 ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@ const LinkToCourseModal: React.FC<LinkToCourseModalProps> = ({
           <div>
             <div className="relative">
               <select
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-border rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none disabled:bg-muted disabled:text-muted-foreground"
                 value={selectedModule}
                 onChange={(e) => setSelectedModule(e.target.value)}
                 disabled={!selectedCourse}
@@ -152,7 +152,7 @@ const LinkToCourseModal: React.FC<LinkToCourseModalProps> = ({
                 ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
               </div>
             </div>
           </div>

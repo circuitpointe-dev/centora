@@ -165,14 +165,14 @@ const QuizBankView: React.FC<QuizBankViewProps> = ({ quizId }) => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Quiz bank view</h1>
+        <h1 className="text-2xl font-bold text-foreground">Quiz bank view</h1>
       </div>
 
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
         <button
           onClick={handleBack}
-          className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
+          className="flex items-center space-x-1 hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Quiz bank list</span>
@@ -183,8 +183,8 @@ const QuizBankView: React.FC<QuizBankViewProps> = ({ quizId }) => {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">{quiz.title}</h2>
-            <p className="text-gray-600">{quiz.description}</p>
+            <h2 className="text-xl font-semibold text-foreground mb-2">{quiz.title}</h2>
+            <p className="text-muted-foreground">{quiz.description}</p>
           </div>
           <div className="flex items-center space-x-3">
             <Button
@@ -215,10 +215,10 @@ const QuizBankView: React.FC<QuizBankViewProps> = ({ quizId }) => {
             <Card key={question.id} className="p-6">
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-2">
+                  <h3 className="font-medium text-foreground mb-2">
                     Q{startIndex + (index * 2) + 1} {question.question}
                   </h3>
-                  <p className="text-sm text-gray-500">(Select one answer)</p>
+                  <p className="text-sm text-muted-foreground">(Select one answer)</p>
                 </div>
                 <div className="space-y-2">
                   {question.options.map((option, optionIndex) => (
@@ -227,10 +227,10 @@ const QuizBankView: React.FC<QuizBankViewProps> = ({ quizId }) => {
                         type="radio"
                         name={`question-${question.id}`}
                         value={optionIndex}
-                        className="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                        className="w-4 h-4 text-primary focus:ring-primary border-border"
                         readOnly
                       />
-                      <span className="text-sm text-gray-700">{option}</span>
+                      <span className="text-sm text-foreground">{option}</span>
                     </label>
                   ))}
                 </div>
@@ -245,10 +245,10 @@ const QuizBankView: React.FC<QuizBankViewProps> = ({ quizId }) => {
             <Card key={question.id} className="p-6">
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-2">
+                  <h3 className="font-medium text-foreground mb-2">
                     Q{startIndex + (index * 2) + 2} {question.question}
                   </h3>
-                  <p className="text-sm text-gray-500">(Select one answer)</p>
+                  <p className="text-sm text-muted-foreground">(Select one answer)</p>
                 </div>
                 <div className="space-y-2">
                   {question.options.map((option, optionIndex) => (
@@ -257,10 +257,10 @@ const QuizBankView: React.FC<QuizBankViewProps> = ({ quizId }) => {
                         type="radio"
                         name={`question-${question.id}`}
                         value={optionIndex}
-                        className="w-4 h-4 text-primary focus:ring-primary border-gray-300"
+                        className="w-4 h-4 text-primary focus:ring-primary border-border"
                         readOnly
                       />
-                      <span className="text-sm text-gray-700">{option}</span>
+                      <span className="text-sm text-foreground">{option}</span>
                     </label>
                   ))}
                 </div>

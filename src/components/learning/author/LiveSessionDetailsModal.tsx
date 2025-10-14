@@ -78,10 +78,10 @@ const LiveSessionDetailsModal: React.FC<LiveSessionDetailsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Live session details</h2>
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <h2 className="text-xl font-semibold text-foreground">Live session details</h2>
           <div className="flex items-center space-x-3">
             <Button
               variant="outline"
@@ -94,9 +94,9 @@ const LiveSessionDetailsModal: React.FC<LiveSessionDetailsModalProps> = ({
             </Button>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
             >
-              <X className="w-4 h-4 text-gray-600" />
+              <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -108,45 +108,45 @@ const LiveSessionDetailsModal: React.FC<LiveSessionDetailsModalProps> = ({
             <div className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <p className="text-sm text-gray-900">{session.title}</p>
+                <label className="block text-sm font-medium text-foreground mb-1">Title</label>
+                <p className="text-sm text-foreground">{session.title}</p>
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <p className="text-sm text-gray-900">{session.description}</p>
+                <label className="block text-sm font-medium text-foreground mb-1">Description</label>
+                <p className="text-sm text-foreground">{session.description}</p>
               </div>
 
               {/* Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                <p className="text-sm text-gray-900">{session.date}</p>
+                <label className="block text-sm font-medium text-foreground mb-1">Date</label>
+                <p className="text-sm text-foreground">{session.date}</p>
               </div>
 
               {/* Time */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                <p className="text-sm text-gray-900">{session.timeRange}</p>
+                <label className="block text-sm font-medium text-foreground mb-1">Time</label>
+                <p className="text-sm text-foreground">{session.timeRange}</p>
               </div>
 
               {/* Provider */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Provider</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Provider</label>
                 <div className="flex items-center space-x-2">
                   {getProviderIcon(session.provider.icon)}
-                  <span className="text-sm text-gray-900">{session.provider.name}</span>
+                  <span className="text-sm text-foreground">{session.provider.name}</span>
                 </div>
               </div>
 
               {/* Live session link */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Live session link</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Live session link</label>
                 <a
                   href={generateSessionLink(session.provider.name)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:text-blue-800 underline flex items-center space-x-1"
+                  className="text-sm text-primary hover:text-primary/80 underline flex items-center space-x-1"
                 >
                   <span>{generateSessionLink(session.provider.name)}</span>
                   <ExternalLink className="w-3 h-3" />
@@ -158,57 +158,57 @@ const LiveSessionDetailsModal: React.FC<LiveSessionDetailsModalProps> = ({
             <div className="space-y-4">
               {/* Host */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Host</label>
-                <p className="text-sm text-gray-900">{session.host}</p>
+                <label className="block text-sm font-medium text-foreground mb-1">Host</label>
+                <p className="text-sm text-foreground">{session.host}</p>
               </div>
 
               {/* Capacity */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
-                <p className="text-sm text-gray-900">{session.capacity}</p>
+                <label className="block text-sm font-medium text-foreground mb-1">Capacity</label>
+                <p className="text-sm text-foreground">{session.capacity}</p>
               </div>
 
               {/* Allow joining 15 mins early */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Allow joining 15 mins early</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Allow joining 15 mins early</label>
                 <div className="flex items-center space-x-2">
                   <input
                     type="checkbox"
                     checked={true}
                     readOnly
-                    className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
+                    className="w-4 h-4 text-purple-600 bg-background border-border rounded focus:ring-purple-500 focus:ring-2"
                   />
-                  <span className="text-sm text-gray-900">Enabled</span>
+                  <span className="text-sm text-foreground">Enabled</span>
                 </div>
               </div>
 
               {/* Recording enabled */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Recording enabled</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Recording enabled</label>
                 <div className="flex items-center space-x-2">
                   <input
                     type="checkbox"
                     checked={true}
                     readOnly
-                    className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
+                    className="w-4 h-4 text-purple-600 bg-background border-border rounded focus:ring-purple-500 focus:ring-2"
                   />
-                  <span className="text-sm text-gray-900">Enabled</span>
+                  <span className="text-sm text-foreground">Enabled</span>
                 </div>
               </div>
 
               {/* Link to course */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Link to course</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Link to course</label>
                 <div className="space-y-1">
                   <a
                     href="#"
-                    className="text-sm text-blue-600 hover:text-blue-800 underline block"
+                    className="text-sm text-primary hover:text-primary/80 underline block"
                   >
                     Introduction to Digital Marketing Strategies
                   </a>
                   <a
                     href="#"
-                    className="text-sm text-blue-600 hover:text-blue-800 underline block"
+                    className="text-sm text-primary hover:text-primary/80 underline block"
                   >
                     Module 1 : Introduction to digital tools
                   </a>

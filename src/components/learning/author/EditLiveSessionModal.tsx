@@ -148,15 +148,15 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Edit live session</h2>
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <h2 className="text-xl font-semibold text-foreground">Edit live session</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
           >
-            <X className="w-4 h-4 text-gray-600" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
 
@@ -167,7 +167,7 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
             <div className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Title</label>
                 <Input
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
@@ -177,7 +177,7 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Description</label>
                 <Input
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
@@ -187,35 +187,35 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
 
               {/* Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Date</label>
                 <div className="relative">
                   <Input
                     value={formData.date}
                     onChange={(e) => handleInputChange('date', e.target.value)}
                     placeholder="Select date"
                   />
-                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 </div>
               </div>
 
               {/* Provider */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Provider</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Provider</label>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setShowProviderDropdown(!showProviderDropdown)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-left flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md bg-background text-left flex items-center justify-between hover:border-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <div className="flex items-center space-x-2">
                       {getProviderIcon(formData.provider)}
                       <span>{providers.find(p => p.value === formData.provider)?.label}</span>
                     </div>
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   </button>
                   
                   {showProviderDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+                    <div className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
                       {providers.map((provider) => (
                         <button
                           key={provider.value}
@@ -224,7 +224,7 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
                             handleInputChange('provider', provider.value);
                             setShowProviderDropdown(false);
                           }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-100 flex items-center space-x-2"
+                          className="w-full px-3 py-2 text-left hover:bg-accent flex items-center space-x-2"
                         >
                           <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center text-white text-xs font-bold">
                             {provider.icon}
@@ -239,20 +239,20 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
 
               {/* Zoom link */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Zoom link</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Zoom link</label>
                 <div className="relative">
                   <Input
                     value={formData.zoomLink}
                     onChange={(e) => handleInputChange('zoomLink', e.target.value)}
                     placeholder="Paste link here"
                   />
-                  <Link className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Link className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 </div>
               </div>
 
               {/* Capacity */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Capacity</label>
                 <Input
                   type="number"
                   value={formData.capacity}
@@ -263,19 +263,19 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
 
               {/* Link to course */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Link to course</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Link to course</label>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setShowCourseDropdown(!showCourseDropdown)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-left flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md bg-background text-left flex items-center justify-between hover:border-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <span>{formData.course || 'Course'}</span>
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   </button>
                   
                   {showCourseDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+                    <div className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
                       {courses.map((course) => (
                         <button
                           key={course}
@@ -284,7 +284,7 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
                             handleInputChange('course', course);
                             setShowCourseDropdown(false);
                           }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-100"
+                          className="w-full px-3 py-2 text-left hover:bg-accent"
                         >
                           {course}
                         </button>
@@ -299,33 +299,33 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
             <div className="space-y-4">
               {/* Time (from) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Time (from)</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Time (from)</label>
                 <div className="relative">
                   <Input
                     value={formData.timeFrom}
                     onChange={(e) => handleInputChange('timeFrom', e.target.value)}
                     placeholder="Select start time"
                   />
-                  <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 </div>
               </div>
 
               {/* Time (to) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Time (to)</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Time (to)</label>
                 <div className="relative">
                   <Input
                     value={formData.timeTo}
                     onChange={(e) => handleInputChange('timeTo', e.target.value)}
                     placeholder="Select end time"
                   />
-                  <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 </div>
               </div>
 
               {/* Host */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Host</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Host</label>
                 <Input
                   value={formData.host}
                   onChange={(e) => handleInputChange('host', e.target.value)}
@@ -339,9 +339,9 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
                   type="checkbox"
                   checked={formData.allowEarlyJoin}
                   onChange={(e) => handleInputChange('allowEarlyJoin', e.target.checked)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  className="w-4 h-4 text-blue-600 bg-background border-border rounded focus:ring-blue-500 focus:ring-2"
                 />
-                <label className="text-sm font-medium text-gray-700">Allow joining 15 mins early</label>
+                <label className="text-sm font-medium text-foreground">Allow joining 15 mins early</label>
               </div>
 
               {/* Recording enabled */}
@@ -350,7 +350,7 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
                   type="checkbox"
                   checked={formData.recordingEnabled}
                   onChange={(e) => handleInputChange('recordingEnabled', e.target.checked)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  className="w-4 h-4 text-blue-600 bg-background border-border rounded focus:ring-blue-500 focus:ring-2"
                 />
                 <label className="text-sm font-medium text-gray-700">Recording enabled</label>
               </div>
@@ -362,14 +362,14 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowModuleDropdown(!showModuleDropdown)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-left flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md bg-background text-left flex items-center justify-between hover:border-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <span>{formData.module || 'Module'}</span>
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   </button>
                   
                   {showModuleDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+                    <div className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
                       {modules.map((module) => (
                         <button
                           key={module}
@@ -378,7 +378,7 @@ const EditLiveSessionModal: React.FC<EditLiveSessionModalProps> = ({
                             handleInputChange('module', module);
                             setShowModuleDropdown(false);
                           }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-100"
+                          className="w-full px-3 py-2 text-left hover:bg-accent"
                         >
                           {module}
                         </button>

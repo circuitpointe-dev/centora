@@ -94,9 +94,9 @@ const MediaLibrary = () => {
     switch (item.type) {
       case 'Video':
         return (
-          <div className="relative w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+          <div className="relative w-full h-32 bg-muted rounded-lg flex items-center justify-center">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg"></div>
-            <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 bg-background/90 rounded-full flex items-center justify-center shadow-lg">
               <Play className="w-8 h-8 text-purple-600 ml-1" />
             </div>
           </div>
@@ -105,7 +105,7 @@ const MediaLibrary = () => {
         if (item.name === 'Infographic.png') {
           return (
             <div className="w-full h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center p-2">
-              <div className="text-xs text-center text-gray-600">
+              <div className="text-xs text-center text-muted-foreground">
                 <div className="flex justify-center space-x-1 mb-1">
                   <div className="w-3 h-3 bg-blue-500 rounded"></div>
                   <div className="w-3 h-3 bg-green-500 rounded"></div>
@@ -119,26 +119,26 @@ const MediaLibrary = () => {
         } else {
           return (
             <div className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
-              <ImageIcon className="w-12 h-12 text-gray-400" />
+              <ImageIcon className="w-12 h-12 text-muted-foreground" />
             </div>
           );
         }
       case 'Document':
         return (
-          <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-            <FileText className="w-16 h-16 text-gray-400" />
+          <div className="w-full h-32 bg-muted rounded-lg flex items-center justify-center">
+            <FileText className="w-16 h-16 text-muted-foreground" />
           </div>
         );
       case 'Audio':
         return (
-          <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-            <Music className="w-16 h-16 text-gray-400" />
+          <div className="w-full h-32 bg-muted rounded-lg flex items-center justify-center">
+            <Music className="w-16 h-16 text-muted-foreground" />
           </div>
         );
       default:
         return (
-          <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-            <FileText className="w-16 h-16 text-gray-400" />
+          <div className="w-full h-32 bg-muted rounded-lg flex items-center justify-center">
+            <FileText className="w-16 h-16 text-muted-foreground" />
           </div>
         );
     }
@@ -175,10 +175,10 @@ const MediaLibrary = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-white min-h-screen">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Page Title */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Media library</h1>
+        <h1 className="text-3xl font-bold text-foreground">Media library</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -186,11 +186,11 @@ const MediaLibrary = () => {
         <div className="lg:col-span-1">
           <Card>
             <CardContent className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-6">Filters</h2>
+              <h2 className="text-lg font-semibold text-foreground mb-6">Filters</h2>
               
               {/* Type Filter */}
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Type</h3>
+                <h3 className="text-sm font-medium text-foreground mb-3">Type</h3>
                 <div className="space-y-2">
                   {['Video', 'Image', 'Document', 'Audio'].map((type) => (
                     <label key={type} className="flex items-center space-x-2 cursor-pointer">

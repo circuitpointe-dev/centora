@@ -54,28 +54,28 @@ const CourseDetailView = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6 bg-white min-h-screen">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Course management</h1>
+        <h1 className="text-2xl font-bold text-foreground">Course management</h1>
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors"
+            className="flex items-center space-x-2 px-3 py-2 border border-border rounded-lg bg-background hover:bg-accent transition-colors"
           >
-            <span className="text-sm text-gray-700">{selectedPeriod}</span>
-            <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            <span className="text-sm text-foreground">{selectedPeriod}</span>
+            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
           
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-32 bg-popover border border-border rounded-lg shadow-lg z-10">
               <div className="py-1">
                 {timePeriods.map((period) => (
                   <button
                     key={period}
                     onClick={() => handlePeriodSelect(period)}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                      selectedPeriod === period ? 'bg-purple-50 text-purple-700 font-medium' : 'text-gray-700'
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors ${
+                      selectedPeriod === period ? 'bg-accent text-accent-foreground font-medium' : 'text-foreground'
                     }`}
                   >
                     {period}
@@ -88,20 +88,20 @@ const CourseDetailView = () => {
       </div>
 
       {/* Course Overview Card */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Project management basics</h2>
-            <p className="text-gray-600 mb-4 leading-relaxed">
+            <h2 className="text-2xl font-bold text-foreground mb-3">Project management basics</h2>
+            <p className="text-muted-foreground mb-4 leading-relaxed">
               Understanding the Fundamentals of Project Management is essential for anyone looking to excel in the field. 
               This course covers key concepts such as project planning, execution, monitoring, and closure.
             </p>
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 bg-gray-300 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">LA</span>
+              <div className="h-10 w-10 bg-muted rounded-full flex items-center justify-center">
+                <span className="text-sm font-medium text-muted-foreground">LA</span>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">Leslie Alex</p>
+                <p className="text-sm font-medium text-foreground">Leslie Alex</p>
                 <p className="text-xs text-gray-500">Author</p>
               </div>
             </div>
@@ -150,7 +150,7 @@ const CourseDetailView = () => {
       </div>
 
       {/* Enrollments & Access Section */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Enrollments & access</h3>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -199,7 +199,7 @@ const CourseDetailView = () => {
       </div>
 
       {/* Compliance & Accessibility Section */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Compliance & Accessibility</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -219,7 +219,7 @@ const CourseDetailView = () => {
       </div>
 
       {/* Linked Resources Section */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Linked Resourced</h3>
         <div className="space-y-3">
           {linkedResources.map((resource, index) => (

@@ -98,15 +98,15 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div className="bg-card rounded-lg shadow-xl max-w-md w-full">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Create new ticket</h2>
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <h2 className="text-xl font-semibold text-foreground">Create new ticket</h2>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleCancel}
-            className="h-8 w-8 p-0 rounded-full hover:bg-gray-100"
+            className="h-8 w-8 p-0 rounded-full hover:bg-accent"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -116,7 +116,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Subject Field */}
           <div className="space-y-2">
-            <Label htmlFor="subject" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="subject" className="text-sm font-medium text-foreground">
               Subject
             </Label>
             <Input
@@ -131,7 +131,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
           {/* NGO Name Field */}
           <div className="space-y-2">
-            <Label htmlFor="ngoName" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="ngoName" className="text-sm font-medium text-foreground">
               NGO name
             </Label>
             <div className="relative">
@@ -145,17 +145,17 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
                 required
               />
               <ChevronDown 
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 cursor-pointer"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground cursor-pointer"
                 onClick={() => setShowNgoDropdown(!showNgoDropdown)}
               />
               
               {/* NGO Dropdown */}
               {showNgoDropdown && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
                   {ngoOptions.map((ngo) => (
                     <div
                       key={ngo}
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                      className="px-3 py-2 hover:bg-accent cursor-pointer text-sm"
                       onClick={() => handleNgoSelect(ngo)}
                     >
                       {ngo}
@@ -168,7 +168,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
           {/* Priority Field */}
           <div className="space-y-2">
-            <Label htmlFor="priority" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="priority" className="text-sm font-medium text-foreground">
               Priority
             </Label>
             <div className="relative">
@@ -182,7 +182,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
                 required
               />
               <ChevronDown 
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 cursor-pointer"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground cursor-pointer"
                 onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
               />
               
@@ -192,7 +192,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
                   {priorityOptions.map((priority) => (
                     <div
                       key={priority}
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                      className="px-3 py-2 hover:bg-accent cursor-pointer text-sm"
                       onClick={() => handlePrioritySelect(priority)}
                     >
                       {priority}
@@ -205,7 +205,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
         </form>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <div className="flex items-center justify-end space-x-3 p-6 border-t border-border">
           <Button
             type="button"
             variant="outline"

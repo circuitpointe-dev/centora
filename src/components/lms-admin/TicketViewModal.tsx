@@ -100,7 +100,7 @@ const TicketViewModal: React.FC<TicketViewModalProps> = ({
       case 'Instructor':
         return 'bg-green-100 text-green-700';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -108,17 +108,17 @@ const TicketViewModal: React.FC<TicketViewModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <h2 className="text-xl font-semibold text-foreground">
             Ticket #{ticket.ticketId} - {ticket.title}
           </h2>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleCancel}
-            className="h-8 w-8 p-0 rounded-full hover:bg-gray-100"
+            className="h-8 w-8 p-0 rounded-full hover:bg-accent"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -128,7 +128,7 @@ const TicketViewModal: React.FC<TicketViewModalProps> = ({
         <div className="p-6 space-y-6">
           {/* Ticket Description */}
           <div>
-            <p className="text-gray-700 leading-relaxed">
+            <p className="text-foreground leading-relaxed">
               {ticket.description}
             </p>
           </div>
@@ -137,7 +137,7 @@ const TicketViewModal: React.FC<TicketViewModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Status */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">Status</Label>
+              <Label className="text-sm font-medium text-foreground">Status</Label>
               <div className="relative">
                 <Input
                   value={status}
@@ -146,17 +146,17 @@ const TicketViewModal: React.FC<TicketViewModalProps> = ({
                   onClick={() => setShowStatusDropdown(!showStatusDropdown)}
                 />
                 <ChevronDown 
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 cursor-pointer"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground cursor-pointer"
                   onClick={() => setShowStatusDropdown(!showStatusDropdown)}
                 />
                 
                 {/* Status Dropdown */}
                 {showStatusDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <div className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
                     {statusOptions.map((option) => (
                       <div
                         key={option}
-                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                        className="px-3 py-2 hover:bg-accent cursor-pointer text-sm"
                         onClick={() => handleStatusSelect(option)}
                       >
                         {option}
@@ -169,7 +169,7 @@ const TicketViewModal: React.FC<TicketViewModalProps> = ({
 
             {/* Priority */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">Priority</Label>
+              <Label className="text-sm font-medium text-foreground">Priority</Label>
               <div className="relative">
                 <Input
                   value={priority}
@@ -178,17 +178,17 @@ const TicketViewModal: React.FC<TicketViewModalProps> = ({
                   onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
                 />
                 <ChevronDown 
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 cursor-pointer"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground cursor-pointer"
                   onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
                 />
                 
                 {/* Priority Dropdown */}
                 {showPriorityDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <div className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
                     {priorityOptions.map((option) => (
                       <div
                         key={option}
-                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                        className="px-3 py-2 hover:bg-accent cursor-pointer text-sm"
                         onClick={() => handlePrioritySelect(option)}
                       >
                         {option}

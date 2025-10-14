@@ -102,12 +102,12 @@ const BulkEnrollment = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-white min-h-screen">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Navigation */}
       <div className="flex items-center space-x-2">
         <button 
           onClick={handleBack}
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+          className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="text-sm">Learners list</span>
@@ -116,11 +116,11 @@ const BulkEnrollment = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Bulk enrollment</h1>
+        <h1 className="text-2xl font-bold text-foreground">Bulk enrollment</h1>
       </div>
 
       {/* Process Steps */}
-      <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
+      <div className="flex items-center space-x-1 bg-muted p-1 rounded-lg">
         {steps.map((step) => (
           <button
             key={step.id}
@@ -128,7 +128,7 @@ const BulkEnrollment = () => {
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               activeStep === step.id
                 ? 'bg-purple-600 text-white shadow-sm'
-                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent'
             }`}
           >
             {step.label}
@@ -142,28 +142,28 @@ const BulkEnrollment = () => {
           <>
             {/* Course Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-900">Course</label>
+              <label className="text-sm font-medium text-foreground">Course</label>
               <div className="relative">
-                <div className="flex flex-wrap items-center gap-2 p-3 border border-gray-300 rounded-lg bg-white min-h-[42px]">
+                <div className="flex flex-wrap items-center gap-2 p-3 border border-border rounded-lg bg-background min-h-[42px]">
                   {selectedCourses.map((course, index) => (
-                    <div key={index} className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded-md">
-                      <span className="text-sm text-gray-700">{course}</span>
+                    <div key={index} className="flex items-center space-x-1 bg-muted px-2 py-1 rounded-md">
+                      <span className="text-sm text-foreground">{course}</span>
                       <button
                         onClick={() => handleRemoveCourse(course)}
-                        className="text-gray-500 hover:text-gray-700"
+                        className="text-muted-foreground hover:text-foreground"
                       >
                         <X className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
-                  <ChevronDown className="h-4 w-4 text-gray-400 ml-auto" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto" />
                 </div>
               </div>
             </div>
 
             {/* Enrollment Settings */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-900">Enrollment Settings</label>
+              <label className="text-sm font-medium text-foreground">Enrollment Settings</label>
               <div className="space-y-3">
                 <label className="flex items-center space-x-3">
                   <div className="relative">
@@ -176,14 +176,14 @@ const BulkEnrollment = () => {
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                       enrollmentSettings.enrollImmediately 
                         ? 'bg-purple-600 border-purple-600' 
-                        : 'border-gray-300'
+                        : 'border-border'
                     }`}>
                       {enrollmentSettings.enrollImmediately && (
                         <Check className="h-3 w-3 text-white" />
                       )}
                     </div>
                   </div>
-                  <span className="text-sm text-gray-700">Enroll learners immediately</span>
+                  <span className="text-sm text-foreground">Enroll learners immediately</span>
                 </label>
 
                 <label className="flex items-center space-x-3">
@@ -197,7 +197,7 @@ const BulkEnrollment = () => {
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                       enrollmentSettings.allowSelfEnrollment 
                         ? 'bg-purple-600 border-purple-600' 
-                        : 'border-gray-300'
+                        : 'border-border'
                     }`}>
                       {enrollmentSettings.allowSelfEnrollment && (
                         <Check className="h-3 w-3 text-white" />
@@ -218,7 +218,7 @@ const BulkEnrollment = () => {
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                       enrollmentSettings.addToCatalogVisibility 
                         ? 'bg-purple-600 border-purple-600' 
-                        : 'border-gray-300'
+                        : 'border-border'
                     }`}>
                       {enrollmentSettings.addToCatalogVisibility && (
                         <Check className="h-3 w-3 text-white" />
@@ -282,7 +282,7 @@ const BulkEnrollment = () => {
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                       notificationSettings.sendWelcomeEmail 
                         ? 'bg-purple-600 border-purple-600' 
-                        : 'border-gray-300'
+                        : 'border-border'
                     }`}>
                       {notificationSettings.sendWelcomeEmail && (
                         <Check className="h-3 w-3 text-white" />
@@ -304,7 +304,7 @@ const BulkEnrollment = () => {
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                         notificationSettings.sendReminder 
                           ? 'bg-purple-600 border-purple-600' 
-                          : 'border-gray-300'
+                          : 'border-border'
                       }`}>
                         {notificationSettings.sendReminder && (
                           <Check className="h-3 w-3 text-white" />
@@ -351,7 +351,7 @@ const BulkEnrollment = () => {
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                       notificationSettings.sendEnrollmentConfirmation 
                         ? 'bg-purple-600 border-purple-600' 
-                        : 'border-gray-300'
+                        : 'border-border'
                     }`}>
                       {notificationSettings.sendEnrollmentConfirmation && (
                         <Check className="h-3 w-3 text-white" />
@@ -372,7 +372,7 @@ const BulkEnrollment = () => {
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                       notificationSettings.sendCalendarInvite 
                         ? 'bg-purple-600 border-purple-600' 
-                        : 'border-gray-300'
+                        : 'border-border'
                     }`}>
                       {notificationSettings.sendCalendarInvite && (
                         <Check className="h-3 w-3 text-white" />

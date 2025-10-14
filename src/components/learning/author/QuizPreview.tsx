@@ -124,12 +124,12 @@ const QuizPreview: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-background border-b border-border px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
               onClick={handleBackToPreview}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft size={16} className="mr-2" />
               Back
@@ -137,7 +137,7 @@ const QuizPreview: React.FC = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">You are currently in preview mode</span>
+            <span className="text-sm text-muted-foreground">You are currently in preview mode</span>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -153,10 +153,10 @@ const QuizPreview: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-6">
-        <Card className="w-full max-w-4xl bg-white shadow-lg">
+        <Card className="w-full max-w-4xl bg-card shadow-lg">
           <div className="p-8">
             {/* Quiz Title */}
-            <h1 className="text-2xl font-bold text-gray-900 mb-8">
+            <h1 className="text-2xl font-bold text-foreground mb-8">
               Quiz: Collaboration basics
             </h1>
 
@@ -166,10 +166,10 @@ const QuizPreview: React.FC = () => {
                 <div key={question.id} className="space-y-4">
                   {/* Question Header */}
                   <div className="space-y-2">
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-lg font-semibold text-foreground">
                       Q{questionIndex + 1} {question.question}
                     </h2>
-                    <p className="text-sm text-gray-600">(Select one answer)</p>
+                    <p className="text-sm text-muted-foreground">(Select one answer)</p>
                   </div>
 
                   {/* Options */}
@@ -182,14 +182,14 @@ const QuizPreview: React.FC = () => {
                             id={`${question.id}-${option.id}`}
                             checked={isOptionSelected(question.id, option.id)}
                             onChange={(e) => handleAnswerChange(question.id, option.id, e.target.checked)}
-                            className="w-4 h-4 text-purple-600 bg-white border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
+                            className="w-4 h-4 text-purple-600 bg-background border-border rounded focus:ring-purple-500 focus:ring-2"
                             style={{
                               accentColor: '#9333ea'
                             }}
                           />
                           <label 
                             htmlFor={`${question.id}-${option.id}`}
-                            className="text-gray-900 cursor-pointer"
+                            className="text-foreground cursor-pointer"
                           >
                             {option.text}
                           </label>

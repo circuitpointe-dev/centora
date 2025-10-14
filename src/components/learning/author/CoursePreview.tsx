@@ -191,14 +191,14 @@ const CoursePreview: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-background border-b border-border px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
               onClick={handleBackToCourseBuilder}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft size={16} className="mr-2" />
               Back
@@ -206,7 +206,7 @@ const CoursePreview: React.FC = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">You are currently in preview mode</span>
+            <span className="text-sm text-muted-foreground">You are currently in preview mode</span>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -237,9 +237,9 @@ const CoursePreview: React.FC = () => {
             {/* Right Half - Course Details */}
             <div className="w-1/2 p-8 flex flex-col justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">{courseTitle}</h1>
-                <p className="text-gray-600 mb-4">{courseDescription}</p>
-                <Badge variant="secondary" className="bg-gray-100 text-gray-600 mb-6">
+                <h1 className="text-3xl font-bold text-foreground mb-4">{courseTitle}</h1>
+                <p className="text-muted-foreground mb-4">{courseDescription}</p>
+                <Badge variant="secondary" className="bg-muted text-muted-foreground mb-6">
                   Beginner
                 </Badge>
               </div>
@@ -250,8 +250,8 @@ const CoursePreview: React.FC = () => {
                   <span className="text-purple-600 font-medium text-lg">LA</span>
                 </div>
                 <div>
-                  <div className="font-medium text-gray-900">Leslie Alex</div>
-                  <div className="text-sm text-gray-500">Instructor</div>
+                  <div className="font-medium text-foreground">Leslie Alex</div>
+                  <div className="text-sm text-muted-foreground">Instructor</div>
                 </div>
               </div>
             </div>
