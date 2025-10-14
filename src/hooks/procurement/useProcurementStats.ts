@@ -106,56 +106,27 @@ export const usePendingApprovals = () => {
         queryFn: async (): Promise<PendingApproval[]> => {
             if (!user?.org_id) throw new Error('No organization');
 
-            // Fetch pending approvals from database
+            // Fetch pending approvals from database - using actual schema columns
             const { data: approvals, error } = await supabase
                 .from('procurement_approvals')
-                .select('id, entity_type, entity_id, status, comments, created_at, approver_id')
+                .select('id, type, requestor_name, amount, currency, description, priority, created_at, date_submitted')
                 .eq('org_id', user.org_id)
                 .eq('status', 'pending')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
 
-            // Fetch related entity details
-            const approvalsWithDetails = await Promise.all(
-                (approvals || []).map(async (approval) => {
-                    let entityDetails = null;
-
-                    if (approval.entity_type === 'requisition') {
-                        const { data } = await supabase
-                            .from('requisitions')
-                            .select('title, total_amount, currency, priority')
-                            .eq('id', approval.entity_id)
-                            .single();
-                        entityDetails = data;
-                    } else if (approval.entity_type === 'purchase_order') {
-                        const { data } = await supabase
-                            .from('purchase_orders')
-                            .select('title, total_amount, currency, priority')
-                            .eq('id', approval.entity_id)
-                            .single();
-                        entityDetails = data;
-                    } else if (approval.entity_type === 'invoice') {
-                        const { data } = await supabase
-                            .from('invoices')
-                            .select('total_amount, currency')
-                            .eq('id', approval.entity_id)
-                            .single();
-                        entityDetails = data;
-                    }
-
-                    return {
-                        id: approval.id,
-                        type: approval.entity_type as 'requisition' | 'purchase_order' | 'payment',
-                        title: entityDetails?.title || `Invoice #${approval.entity_id}`,
-                        amount: Number(entityDetails?.total_amount || 0),
-                        currency: entityDetails?.currency || 'USD',
-                        submittedBy: 'Unknown',
-                        submittedAt: approval.created_at,
-                        priority: (entityDetails?.priority || 'medium') as 'low' | 'medium' | 'high'
-                    };
-                })
-            );
+            // Map to PendingApproval format
+            const approvalsWithDetails: PendingApproval[] = (approvals || []).map((approval) => ({
+                id: approval.id,
+                type: approval.type as 'requisition' | 'purchase_order' | 'payment',
+                title: approval.description || `${approval.type} #${approval.id.slice(0, 8)}`,
+                amount: Number(approval.amount || 0),
+                currency: approval.currency || 'USD',
+                submittedBy: approval.requestor_name || 'Unknown',
+                submittedAt: approval.date_submitted || approval.created_at,
+                priority: (approval.priority || 'medium') as 'low' | 'medium' | 'high'
+            }));
 
             return approvalsWithDetails;
         },
