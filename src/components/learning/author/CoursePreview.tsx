@@ -21,13 +21,9 @@ interface CourseLesson {
 
 const CoursePreview: React.FC = () => {
   const navigate = useNavigate();
-  const { feature } = useParams();
   const location = useLocation();
   
-  // Extract courseId from feature parameter (format: courses-{courseId}-preview)
-  const courseId = feature?.replace('courses-', '').replace('-preview', '') || '';
-  
-  // Get course data from navigation state
+  // Static course data - no dynamic extraction
   const courseData = location.state?.courseData;
   const courseTitle = courseData?.title || 'Responsive Design Principles';
   const courseDescription = courseData?.description || 'Understand the key concepts to create designs that adapt to various screen sizes.';
@@ -73,7 +69,7 @@ const CoursePreview: React.FC = () => {
   ];
 
   const handleBackToCourseBuilder = () => {
-    navigate(`/dashboard/lmsAuthor/courses-${courseId}-builder`);
+    navigate('/dashboard/lmsAuthor/courses');
   };
 
   const handlePublish = () => {
@@ -83,26 +79,13 @@ const CoursePreview: React.FC = () => {
 
   const handleOpenLesson = (lesson: CourseLesson) => {
     console.log('Opening lesson:', lesson);
-    console.log('CourseId:', courseId);
-    console.log('Current URL:', window.location.href);
     
     // Navigate to appropriate preview based on lesson type
     if (lesson.type === 'quiz') {
-      const quizPreviewUrl = `/dashboard/lmsAuthor/courses-${courseId}-quiz-${lesson.id}-preview`;
-      console.log('Navigating to quiz preview URL:', quizPreviewUrl);
-      console.log('Full URL would be:', window.location.origin + quizPreviewUrl);
-      
-      // Try React Router navigate first
-      try {
-        navigate(quizPreviewUrl, {
-          state: { courseData: courseData },
-          replace: false
-        });
-      } catch (error) {
-        console.error('React Router navigate failed:', error);
-        // Fallback to window.location
-        window.location.href = quizPreviewUrl;
-      }
+      navigate('/dashboard/lmsAuthor/quiz-preview', {
+        state: { courseData: courseData },
+        replace: false
+      });
     } else {
       // For other lesson types, show a placeholder or navigate to appropriate preview
       console.log(`Preview for ${lesson.type} lesson not implemented yet`);

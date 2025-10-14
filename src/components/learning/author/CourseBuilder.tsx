@@ -35,13 +35,9 @@ interface CourseLesson {
 
 const CourseBuilder: React.FC = () => {
   const navigate = useNavigate();
-  const { feature } = useParams();
   const location = useLocation();
   
-  // Extract courseId from feature parameter (format: courses-{courseId}-builder)
-  const courseId = feature?.replace('courses-', '').replace('-builder', '') || 'default';
-  
-  // Get course data from navigation state
+  // Static course data - no dynamic extraction
   const courseData = location.state?.courseData;
   const courseTitle = courseData?.title || 'Introduction to Digital Marketing Strategies';
   
@@ -197,7 +193,12 @@ const CourseBuilder: React.FC = () => {
               <Eye size={16} className="mr-2" />
               Preview
             </Button>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => navigate('/dashboard/lmsAuthor/course-publish', {
+                state: { courseData: courseData }
+              })}
+            >
               Publish
             </Button>
           </div>

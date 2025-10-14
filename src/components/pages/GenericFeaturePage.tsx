@@ -65,6 +65,7 @@ import CreateCoursePage from '../learning/author/CreateCoursePage';
 import CreateCourseStep2 from '../learning/author/CreateCourseStep2';
 import CourseBuilder from '../lms-admin/CourseBuilder';
 import LearningCourseBuilder from '../learning/author/CourseBuilder';
+import CoursePublishPage from '../learning/author/CoursePublishPage';
 import AddSectionPage from '../lms-admin/AddSectionPage';
 import QuizEditor from '../learning/author/QuizEditor';
 import AssignmentEditor from '../learning/author/AssignmentEditor';
@@ -261,45 +262,29 @@ const GenericFeaturePage = () => {
     return <HelpCenterPage />;
   }
 
-  // Student course detail page (from course workspace start/continue buttons)
-  if (module === 'learning' && feature?.startsWith('enrolled-course-')) {
-    const courseId = feature.replace('enrolled-course-', '');
-    return <StudentCourseDetailPage courseId={courseId} />;
+  // Student course detail page - static route
+  if (module === 'learning' && feature === 'enrolled-course') {
+    return <StudentCourseDetailPage courseId="1" />;
   }
 
-  // Lesson page (when clicking video lessons from modules tab)
-  if (module === 'learning' && feature?.startsWith('lesson-')) {
-    const lessonId = feature.replace('lesson-', '');
-    // Extract courseId from lessonId if needed (e.g., lesson-1-course-2)
-    const parts = lessonId.split('-');
-    const lessonNum = parts[0];
-    const courseId = parts[1] || '1'; // Default courseId
-    return <LessonPage lessonId={lessonNum} courseId={courseId} />;
+  // Lesson page - static route
+  if (module === 'learning' && feature === 'lesson') {
+    return <LessonPage lessonId="1" courseId="1" />;
   }
 
-  // Quiz page (when clicking quiz lessons from modules tab)
-  if (module === 'learning' && feature?.startsWith('quiz-')) {
-    const quizId = feature.replace('quiz-', '');
-    // Extract courseId from quizId if needed (e.g., quiz-2.6-1)
-    const parts = quizId.split('-');
-    const quizNum = parts[0];
-    const courseId = parts[1] || '1'; // Default courseId
-    return <QuizPage quizId={quizNum} courseId={courseId} />;
+  // Quiz page - static route
+  if (module === 'learning' && feature === 'quiz') {
+    return <QuizPage quizId="1" courseId="1" />;
   }
 
-  // Assignment page (when clicking assignment lessons from modules tab)
-  if (module === 'learning' && feature?.startsWith('assignment-')) {
-    const assignmentId = feature.replace('assignment-', '');
-    // Extract courseId from assignmentId if needed (e.g., assignment-1-course-2)
-    const parts = assignmentId.split('-');
-    const assignmentNum = parts[0];
-    const courseId = parts[1] || '1'; // Default courseId
-    return <AssignmentPage assignmentId={assignmentNum} courseId={courseId} />;
+  // Assignment page - static route
+  if (module === 'learning' && feature === 'assignment') {
+    return <AssignmentPage assignmentId="1" courseId="1" />;
   }
 
-  if (module === 'learning' && feature?.startsWith('course-')) {
-    const courseId = feature.replace('course-', '');
-    return <CourseDetailPage courseId={courseId} />;
+  // Course detail page - static route
+  if (module === 'learning' && feature === 'course') {
+    return <CourseDetailPage courseId="1" />;
   }
 
   // LMS Author module routes
@@ -335,8 +320,8 @@ const GenericFeaturePage = () => {
     return <QuizBank />;
   }
 
-  // Course Analytics route (when clicking "View course analytics" button)
-  if (module === 'lmsAuthor' && feature?.startsWith('course-analytics-')) {
+  // Course Analytics route - static route
+  if (module === 'lmsAuthor' && feature === 'course-analytics') {
     return <CourseAnalyticsPage />;
   }
 
@@ -364,11 +349,6 @@ const GenericFeaturePage = () => {
     return <LearningCourseBuilder />;
   }
 
-  // Course Builder route - fallback for dynamic IDs (courses-*-builder)
-  if (module === 'lmsAuthor' && feature && feature.includes('courses') && feature.includes('builder')) {
-    console.log('Matched Course Builder route (dynamic):', feature);
-    return <CourseBuilder />;
-  }
 
   // Add Section route - simple static route
   if (module === 'lmsAuthor' && feature === 'courses-add-section') {
@@ -394,6 +374,18 @@ const GenericFeaturePage = () => {
   if (module === 'lmsAuthor' && feature === 'course-preview') {
     console.log('Matched Course Preview route:', feature);
     return <CoursePreview />;
+  }
+
+  // Course Publish route - simple static route
+  if (module === 'lmsAuthor' && feature === 'course-publish') {
+    console.log('Matched Course Publish route:', feature);
+    return <CoursePublishPage />;
+  }
+
+  // Quiz Preview route - static route
+  if (module === 'lmsAuthor' && feature === 'quiz-preview') {
+    console.log('Matched Quiz Preview route:', feature);
+    return <QuizPreview />;
   }
 
   // Lesson Editor routes - simple static routes

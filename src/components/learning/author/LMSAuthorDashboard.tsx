@@ -300,7 +300,7 @@ const LMSAuthorDashboard: React.FC = () => {
                     </Button>
                     <Button 
                       className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
-                      onClick={() => navigate(`/dashboard/lmsAuthor/course-analytics-${course.id}`)}
+                      onClick={() => navigate('/dashboard/lmsAuthor/course-analytics')}
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       Analytics
@@ -361,7 +361,7 @@ const LMSAuthorDashboard: React.FC = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => navigate(`/dashboard/lmsAuthor/course-analytics-${course.id}`)}
+                            onClick={() => navigate('/dashboard/lmsAuthor/course-analytics')}
                           >
                             <Eye className="w-4 h-4 mr-1" />
                             View
