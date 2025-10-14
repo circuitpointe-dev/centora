@@ -25,7 +25,7 @@ const VideoLessonEditor: React.FC = () => {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleBackToCourseBuilder = () => {
-    navigate(`/dashboard/lmsAuthor/courses-${courseId}-builder`);
+    navigate('/dashboard/lmsAuthor/courses-builder');
   };
 
   const handleSaveLesson = () => {

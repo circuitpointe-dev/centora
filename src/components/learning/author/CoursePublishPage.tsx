@@ -53,7 +53,7 @@ const CoursePublishPage: React.FC = () => {
   const [tracking, setTracking] = useState('');
 
   const handleBackToCourseBuilder = () => {
-    navigate('/dashboard/lmsAuthor/courses');
+    navigate('/dashboard/lmsAuthor/courses-builder');
   };
 
   const handlePreview = () => {

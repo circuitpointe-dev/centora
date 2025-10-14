@@ -63,7 +63,7 @@ const QuizEditor: React.FC = () => {
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
 
   const handleBackToCourseBuilder = () => {
-    navigate(`/dashboard/lmsAuthor/courses-${courseId}-builder`);
+    navigate('/dashboard/lmsAuthor/courses-builder');
   };
 
   const handleSaveLesson = () => {

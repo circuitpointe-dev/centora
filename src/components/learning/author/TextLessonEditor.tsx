@@ -31,7 +31,7 @@ const TextLessonEditor: React.FC = () => {
   const [isOptional, setIsOptional] = useState(false);
 
   const handleBackToCourseBuilder = () => {
-    navigate(`/dashboard/lmsAuthor/courses-${courseId}-builder`);
+    navigate('/dashboard/lmsAuthor/courses-builder');
   };
 
   const handleSaveLesson = () => {
