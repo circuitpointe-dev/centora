@@ -52,6 +52,7 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
 }) => {
   const location = useLocation();
   const prefilledData = prefilledDataProp ?? location.state?.prefilledData;
+  const creationContext = location.state?.creationContext || prefilledData?.creationContext;
   const isEditing = prefilledData?.source === 'proposal' && prefilledData?.creationContext?.type === 'editing';
   const [proposalId, setProposalId] = useState<string | null>(isEditing ? prefilledData.proposal.id : null);
   const [activeTab, setActiveTab] = useState("overview");
@@ -197,6 +198,11 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
   const removeTeamMember = useRemoveProposalTeamMember();
   const { data: comments = [] } = useProposalComments(proposalId || "");
   const addComment = useAddProposalComment();
+  
+  // Use the title and opportunity from creation context if available
+  const displayTitle = creationContext?.title || proposalTitle;
+  const selectedOpportunity = opportunities.find(opp => opp.id === creationContext?.opportunityId);
+  const displayOpportunity = selectedOpportunity?.title || creationContext?.opportunityName || opportunityName;
 
   // Auto-save when fields change (only when editing)
   useEffect(() => {
@@ -275,16 +281,21 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         summary?.trim().split('\n')[0].substring(0, 100) ||
         'Untitled Proposal';
 
+      // Only add (Copy) if reusing a proposal, not for manual creation
+      const isReusingProposal = prefilledData?.source === 'proposal' && prefilledData?.creationContext?.method === 'reuse';
+      const titleWithCopy = isReusingProposal ? `${finalTitle} (Copy)` : finalTitle;
+
       createProposal.mutate({
-        name: finalTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
-        title: finalTitle + (prefilledData?.proposal ? ' (Copy)' : ''),
+        name: titleWithCopy,
+        title: titleWithCopy,
         opportunity_id: finalOpportunityId,
         ...initialFields,
         budget_currency: budgetCurrency || 'USD',
         budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
         dueDate: dueDate || undefined,
         attachments: [],
-        submission_status: 'draft'
+        submission_status: 'draft',
+        cover_image: creationContext?.coverImage || prefilledData?.proposal?.cover_image
       }, {
         onSuccess: (proposal) => {
           setProposalId(proposal.id);
@@ -387,7 +398,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
         budget_amount: budgetAmount ? parseFloat(budgetAmount) : undefined,
         dueDate: dueDate || undefined,
         attachments: [],
-        submission_status: 'submitted'
+        submission_status: 'submitted',
+        cover_image: creationContext?.coverImage || prefilledData?.proposal?.cover_image
       }, {
         onSuccess: (proposal) => {
           setProposalId(proposal.id);
@@ -494,8 +506,8 @@ const ManualProposalCreationDialog: React.FC<Props> = ({
     <LargeSideDialog open={open} onOpenChange={onOpenChange}>
       <LargeSideDialogContent className="bg-white">
         <ProposalDialogHeader
-          proposalTitle={proposalTitle}
-          opportunityName={opportunityName}
+          proposalTitle={displayTitle}
+          opportunityName={displayOpportunity}
           onSave={handleSave}
           onSubmit={handleSubmit}
           onSubmissionTracker={() => setShowSubmissionTrackerDialog(true)}

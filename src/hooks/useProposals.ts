@@ -23,6 +23,7 @@ export interface Proposal {
   updated_at?: string;
   created_by?: string;
   org_id?: string;
+  cover_image?: string;
 }
 
 export interface ProposalTeamMember {
@@ -61,7 +62,8 @@ export const useProposals = () => {
           budget_amount,
           logframe_fields,
           attachments,
-          submission_status
+          submission_status,
+          cover_image
         `)
         .eq('org_id', user.org_id)
         .order('created_at', { ascending: false });
@@ -95,7 +97,8 @@ export const useProposals = () => {
         budget_amount: proposal.budget_amount,
         logframe_fields: proposal.logframe_fields,
         attachments: proposal.attachments,
-        submission_status: proposal.submission_status
+        submission_status: proposal.submission_status,
+        cover_image: proposal.cover_image
       }));
     },
     enabled: !!user?.org_id,
@@ -166,6 +169,7 @@ export const useCreateProposal = (options?: { silent?: boolean }) => {
       logframe_fields?: any[];
       attachments?: any[];
       submission_status?: string;
+      cover_image?: string;
     }) => {
       if (!user?.org_id) throw new Error('No organization');
 
@@ -186,6 +190,7 @@ export const useCreateProposal = (options?: { silent?: boolean }) => {
           attachments: data.attachments || [],
           submission_status: data.submission_status || 'draft',
           status: 'draft',
+          cover_image: data.cover_image,
           created_by: user.id
         })
         .select()
@@ -233,6 +238,7 @@ export const useUpdateProposal = (options?: { silent?: boolean }) => {
       logframe_fields?: any[];
       attachments?: any[];
       submission_status?: string;
+      cover_image?: string;
     }) => {
       const updateData: any = {};
       if (data.name !== undefined) updateData.name = data.name;
@@ -248,6 +254,7 @@ export const useUpdateProposal = (options?: { silent?: boolean }) => {
       if (data.logframe_fields !== undefined) updateData.logframe_fields = data.logframe_fields;
       if (data.attachments !== undefined) updateData.attachments = data.attachments;
       if (data.submission_status !== undefined) updateData.submission_status = data.submission_status;
+      if (data.cover_image !== undefined) updateData.cover_image = data.cover_image;
 
       const { data: proposal, error } = await supabase
         .from('proposals')

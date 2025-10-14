@@ -10,11 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Upload, FileText, FilePlus, Bot } from "lucide-react";
+import { Upload, FileText, FilePlus, Bot, Image as ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ProposalWizard from "@/components/fundraising/ai/ProposalWizard";
 import { useOpportunities } from "@/hooks/useOpportunities";
+import { useFileUpload } from "@/hooks/useFileUpload";
 
 type Props = {
   open: boolean;
@@ -27,11 +28,21 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
   const [isTemplate, setIsTemplate] = useState(false);
   const [creationMethod, setCreationMethod] = useState<string>("");
   const [isCreating, setIsCreating] = useState(false);
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string>("");
   const navigate = useNavigate();
   const [showWizard, setShowWizard] = useState(false);
   
   // Fetch real opportunities from backend
   const { data: opportunities = [] } = useOpportunities();
+  
+  // File upload hook for proposal images
+  const { uploadFile, isUploading } = useFileUpload({
+    bucket: 'proposal-attachments',
+    folder: 'cover-images',
+    allowedTypes: ['image/*'],
+    maxSize: 5 * 1024 * 1024, // 5MB
+  });
 
   // Get sorted opportunity options for select
   const opportunityOptions = opportunities
@@ -45,10 +56,39 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
     { value: "create-manually", label: "Create Manually", icon: FilePlus },
   ];
 
-  const handleCreate = () => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCoverImage(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setCoverImage(null);
+    setCoverImagePreview("");
+  };
+
+  const handleCreate = async () => {
     if (!creationMethod || isCreating) return;
 
     setIsCreating(true);
+
+    // Upload image if provided
+    let uploadedImagePath = "";
+    if (coverImage) {
+      try {
+        const uploadResult = await uploadFile(coverImage);
+        uploadedImagePath = uploadResult.path;
+      } catch (error) {
+        console.error("Failed to upload cover image:", error);
+      }
+    }
 
     // Close the dialog
     onOpenChange(false);
@@ -66,7 +106,8 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
               method: "template",
               title,
               opportunityId,
-              isTemplate
+              isTemplate,
+              coverImage: uploadedImagePath
             }
           }
         });
@@ -79,7 +120,8 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
               method: "reuse",
               title,
               opportunityId,
-              isTemplate
+              isTemplate,
+              coverImage: uploadedImagePath
             }
           }
         });
@@ -91,7 +133,8 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
               method: "manual",
               title,
               opportunityId,
-              isTemplate
+              isTemplate,
+              coverImage: uploadedImagePath
             }
           }
         });
@@ -162,6 +205,45 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
             </Select>
           </div>
 
+          {/* Cover Image Upload */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="cover-image">
+              Cover Image (Optional)
+            </Label>
+            {coverImagePreview ? (
+              <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-200">
+                <img
+                  src={coverImagePreview}
+                  alt="Cover preview"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
+                >
+                  <X className="h-4 w-4 text-gray-600" />
+                </button>
+              </div>
+            ) : (
+              <label
+                htmlFor="cover-image"
+                className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-violet-500 hover:bg-violet-50 transition-colors"
+              >
+                <ImageIcon className="h-10 w-10 text-gray-400 mb-2" />
+                <span className="text-sm text-gray-500">Click to upload cover image</span>
+                <span className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</span>
+                <input
+                  id="cover-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
+
           {/* Creation Method Select */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="creation-method">
@@ -208,7 +290,7 @@ const CreateProposalDialog: React.FC<Props> = ({ open, onOpenChange }) => {
               type="submit"
               variant="default"
               className="flex-1 flex items-center justify-center"
-              disabled={!creationMethod || isCreating}
+              disabled={!creationMethod || isCreating || isUploading}
             >
               {selectedOption && <selectedOption.icon className="mr-2 w-5 h-5" />}
               {isCreating ? "Creating..." : "Create Proposal"}

@@ -707,6 +707,7 @@ export type Database = {
       documents: {
         Row: {
           category: Database["public"]["Enums"]["document_category"]
+          cover_image: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -726,6 +727,7 @@ export type Database = {
         }
         Insert: {
           category?: Database["public"]["Enums"]["document_category"]
+          cover_image?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -745,6 +747,7 @@ export type Database = {
         }
         Update: {
           category?: Database["public"]["Enums"]["document_category"]
+          cover_image?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -2365,42 +2368,84 @@ export type Database = {
       }
       procurement_approvals: {
         Row: {
+          amount: number
+          approval_comment: string | null
           approved_at: string | null
-          approver_id: string
-          comments: string | null
-          created_at: string
-          entity_id: string
-          entity_type: string
+          approved_by: string | null
+          attachments: string[] | null
+          created_at: string | null
+          currency: string
+          date_submitted: string
+          department: string | null
+          description: string
+          display_id: string
+          due_date: string | null
           id: string
           org_id: string
+          priority: string
+          rejection_reason: string | null
+          requestor_id: string
+          requestor_name: string
+          risk_level: string
           status: string
+          type: string
+          updated_at: string | null
+          vendor_name: string | null
         }
         Insert: {
+          amount: number
+          approval_comment?: string | null
           approved_at?: string | null
-          approver_id: string
-          comments?: string | null
-          created_at?: string
-          entity_id: string
-          entity_type: string
+          approved_by?: string | null
+          attachments?: string[] | null
+          created_at?: string | null
+          currency?: string
+          date_submitted?: string
+          department?: string | null
+          description: string
+          display_id: string
+          due_date?: string | null
           id?: string
           org_id: string
+          priority?: string
+          rejection_reason?: string | null
+          requestor_id: string
+          requestor_name: string
+          risk_level: string
           status?: string
+          type: string
+          updated_at?: string | null
+          vendor_name?: string | null
         }
         Update: {
+          amount?: number
+          approval_comment?: string | null
           approved_at?: string | null
-          approver_id?: string
-          comments?: string | null
-          created_at?: string
-          entity_id?: string
-          entity_type?: string
+          approved_by?: string | null
+          attachments?: string[] | null
+          created_at?: string | null
+          currency?: string
+          date_submitted?: string
+          department?: string | null
+          description?: string
+          display_id?: string
+          due_date?: string | null
           id?: string
           org_id?: string
+          priority?: string
+          rejection_reason?: string | null
+          requestor_id?: string
+          requestor_name?: string
+          risk_level?: string
           status?: string
+          type?: string
+          updated_at?: string | null
+          vendor_name?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "procurement_approvals_approver_id_fkey"
-            columns: ["approver_id"]
+            foreignKeyName: "procurement_approvals_approved_by_fkey"
+            columns: ["approved_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -2410,6 +2455,13 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procurement_approvals_requestor_id_fkey"
+            columns: ["requestor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2663,6 +2715,7 @@ export type Database = {
           budget_narrative: string | null
           comments: Json | null
           content: Json | null
+          cover_image: string | null
           created_at: string
           created_by: string
           due_date: string | null
@@ -2696,6 +2749,7 @@ export type Database = {
           budget_narrative?: string | null
           comments?: Json | null
           content?: Json | null
+          cover_image?: string | null
           created_at?: string
           created_by: string
           due_date?: string | null
@@ -2729,6 +2783,7 @@ export type Database = {
           budget_narrative?: string | null
           comments?: Json | null
           content?: Json | null
+          cover_image?: string | null
           created_at?: string
           created_by?: string
           due_date?: string | null
@@ -3618,6 +3673,10 @@ export type Database = {
         }[]
       }
       current_org_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_procurement_display_id: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

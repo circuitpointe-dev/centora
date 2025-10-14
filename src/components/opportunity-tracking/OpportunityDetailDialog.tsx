@@ -11,10 +11,22 @@ import AddNoteDialog from "./AddNoteDialog";
 import AddFileDialog from "./AddFileDialog";
 import AddTaskDialog from "./AddTaskDialog";
 import { DatabaseOpportunity } from "@/hooks/useOpportunities";
+import { useUpdateOpportunity } from "@/hooks/useOpportunities";
 import { useToast } from "@/hooks/use-toast";
 import { useOpportunityNotes } from "@/hooks/useOpportunityNotes";
 import { useOpportunityTasks } from "@/hooks/useOpportunityTasks";
 import { useOpportunityAttachments } from "@/hooks/useOpportunityAttachments";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Section subcomponents
 import DonorProfileCard from "./DonorProfileCard";
@@ -42,8 +54,10 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
   const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
   const [showAddFileDialog, setShowAddFileDialog] = useState(false);
   const [showAddTaskDialog, setShowAddTaskDialog] = useState(false);
+  const [confirmNotEligibleOpen, setConfirmNotEligibleOpen] = useState(false);
   const { toast } = useToast();
-  
+  const updateOpportunity = useUpdateOpportunity();
+
   // Fetch data from backend
   const { data: notes = [] } = useOpportunityNotes(opportunity?.id || "");
   const { data: tasks = [] } = useOpportunityTasks(opportunity?.id || "");
@@ -107,6 +121,25 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
     onClose();
   };
 
+  const handleMoveToProcess = async () => {
+    try {
+      await updateOpportunity.mutateAsync({ id: opportunity.id, status: "In Progress" });
+      onClose();
+    } catch (e: any) {
+      toast({ title: "Error", description: e?.message || "Failed to move to process", variant: "destructive" });
+    }
+  };
+
+  const handleMarkNotEligible = async () => {
+    try {
+      await updateOpportunity.mutateAsync({ id: opportunity.id, status: "Declined" });
+      setConfirmNotEligibleOpen(false);
+      onClose();
+    } catch (e: any) {
+      toast({ title: "Error", description: e?.message || "Failed to mark not eligible", variant: "destructive" });
+    }
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -116,11 +149,27 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
           }
         >
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold mb-2 text-black">
-              {opportunity.title}
-            </DialogTitle>
-            <div className={`text-sm font-medium ${getStatusTextColor(opportunity.status)}`}>
-              {opportunity.status}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <DialogTitle className="text-xl font-bold mb-2 text-black">
+                  {opportunity.title}
+                </DialogTitle>
+                <div className={`text-sm font-medium ${getStatusTextColor(opportunity.status)}`}>
+                  {opportunity.status}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {opportunity.status === "To Review" && (
+                  <Button variant="outline" onClick={handleMoveToProcess} disabled={updateOpportunity.isPending}>
+                    Move to Process
+                  </Button>
+                )}
+                {opportunity.status !== "Awarded" && opportunity.status !== "Declined" && (
+                  <Button variant="destructive" onClick={() => setConfirmNotEligibleOpen(true)} disabled={updateOpportunity.isPending}>
+                    Mark Not Eligible
+                  </Button>
+                )}
+              </div>
             </div>
           </DialogHeader>
           <div className="mt-6">
@@ -158,7 +207,7 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
                   onAddFile={() => setShowAddFileDialog(true)}
                   sectionHeight={SECTION_HEIGHT}
                 />
-                <QuickActionsCard 
+                <QuickActionsCard
                   contactEmail={opportunity.contact_email}
                   contactName={opportunity.donor?.name}
                   opportunityTitle={opportunity.title}
@@ -169,6 +218,23 @@ const OpportunityDetailDialog: React.FC<OpportunityDetailDialogProps> = ({
           </div>
         </DialogContent>
       </Dialog>
+      {/* Confirm Not Eligible */}
+      <AlertDialog open={confirmNotEligibleOpen} onOpenChange={setConfirmNotEligibleOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark as Not Eligible?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will mark the opportunity as Declined. You can change status later if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={updateOpportunity.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleMarkNotEligible} disabled={updateOpportunity.isPending}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {/* Dialog for adding notes */}
       <AddNoteDialog
         isOpen={showAddNoteDialog}

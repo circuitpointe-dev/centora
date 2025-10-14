@@ -90,49 +90,11 @@ const ProcurementDashboard = () => {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
                     <p className="text-gray-600 mt-1">Procurement management dashboard</p>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    {/* Search Bar */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                        <input
-                            type="text"
-                            placeholder="Search documents, templates, or policies..."
-                            className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-80"
-                        />
-                    </div>
-
-                    {/* Notifications */}
-                    <Button variant="ghost" size="icon" className="relative">
-                        <Bell className="h-5 w-5" />
-                        <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
-                    </Button>
-
-                    {/* User Profile */}
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                            <span className="text-white text-sm font-medium">JD</span>
-                        </div>
-                        <ChevronDown className="h-4 w-4 text-gray-400" />
-                    </div>
-                </div>
             </div>
 
-            {/* Time Filter */}
-            <div className="flex justify-end">
-                <select
-                    value={timeFilter}
-                    onChange={(e) => setTimeFilter(e.target.value as 'monthly' | 'quarterly' | 'yearly')}
-                    className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                    <option value="monthly">Monthly</option>
-                    <option value="quarterly">Quarterly</option>
-                    <option value="yearly">Yearly</option>
-                </select>
-            </div>
 
             {/* Key Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

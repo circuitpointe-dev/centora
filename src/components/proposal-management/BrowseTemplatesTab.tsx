@@ -18,6 +18,7 @@ interface Template {
   file_path?: string;
   file_name?: string;
   preview_url?: string;
+  cover_image?: string;
 }
 
 interface CreationContext {
@@ -141,19 +142,35 @@ const BrowseTemplatesTab: React.FC<BrowseTemplatesTabProps> = ({ creationContext
   }, [isLoading, backendTemplates.length, seedSamples]);
 
   // Convert backend templates to display format (limit to 10)
-  const displayTemplates: Template[] = backendTemplates.slice(0, 10).map(t => ({
-    id: t.id,
-    title: t.title,
-    description: t.description || '',
-    fileType: t.mime_type?.includes('word') ? 'Word' :
+  const displayTemplates: Template[] = backendTemplates.slice(0, 10).map(t => {
+    // Determine file type from mime type
+    const fileType = t.mime_type?.includes('word') ? 'Word' :
       t.mime_type?.includes('pdf') ? 'PDF' :
-        t.mime_type?.includes('presentation') ? 'PowerPoint' : 'Document',
-    uses: 0,
-    imageSrc: t.preview_url || "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
-    rating: 5,
-    file_path: t.file_path,
-    file_name: t.file_name
-  }));
+        t.mime_type?.includes('presentation') ? 'PowerPoint' : 'Document';
+    
+    // Use cover_image from documents table if available, otherwise use preview_url, otherwise default
+    let imageSrc = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop";
+    
+    if (t.cover_image) {
+      // Construct public URL for cover image in documents/proposal-attachments bucket
+      imageSrc = `https://kspzfifdwfpirgqstzhz.supabase.co/storage/v1/object/public/proposal-attachments/${t.cover_image}`;
+    } else if (t.preview_url) {
+      imageSrc = t.preview_url;
+    }
+    
+    return {
+      id: t.id,
+      title: t.title,
+      description: t.description || '',
+      fileType: fileType,
+      uses: 0,
+      imageSrc: imageSrc,
+      rating: 5,
+      file_path: t.file_path,
+      file_name: t.file_name,
+      cover_image: t.cover_image
+    };
+  });
 
   const filteredTemplates = displayTemplates.filter((template) => {
     const matchesFileType =
