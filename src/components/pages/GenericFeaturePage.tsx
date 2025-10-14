@@ -36,6 +36,7 @@ import ProcurementFeaturePage from '@/components/procurement/ProcurementFeatureP
 import ProcurementAnalyticsPage from '@/components/procurement/ProcurementAnalyticsPage';
 import ProcurementApprovalsPage from '@/components/procurement/ProcurementApprovalsPage';
 import ProcurementDeliveriesPage from '@/components/procurement/ProcurementDeliveriesPage';
+import ProcurementPlanningPage from '@/components/procurement/ProcurementPlanningPage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -154,6 +155,14 @@ const GenericFeaturePage = () => {
 
   if (module === 'procurement' && feature === 'deliveries') {
     return <ProcurementDeliveriesPage />;
+  }
+
+  if (module === 'procurement' && feature === 'planning') {
+    return <ProcurementPlanningPage />;
+  }
+
+  if (module === 'procurement' && feature === 'procurement-planning') {
+    return <ProcurementPlanningPage />;
   }
 
   if (module === 'procurement') {
