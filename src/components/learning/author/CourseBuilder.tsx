@@ -16,7 +16,8 @@ import {
   ChevronDown,
   ChevronRight,
   GripVertical,
-  Eye
+  Eye,
+  ArrowUpDown
 } from 'lucide-react';
 
 interface CourseModule {
@@ -55,6 +56,7 @@ const CourseBuilder: React.FC = () => {
   const [showAddSectionForm, setShowAddSectionForm] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState<string>('1');
   const [newSectionTitle, setNewSectionTitle] = useState('Module 1: Introduction to digital tools');
+  const [showSwapView, setShowSwapView] = useState(false);
 
   const lessonTypeIcons = {
     video: Play,
@@ -281,6 +283,16 @@ const CourseBuilder: React.FC = () => {
             <Plus size={16} />
             <span>Add section</span>
           </button>
+
+          {/* Swap View Button */}
+          <button
+            onClick={() => setShowSwapView(!showSwapView)}
+            className="flex items-center space-x-2 p-3 mt-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors w-full"
+          >
+            <ArrowUpDown size={16} />
+            <span>Swap view</span>
+          </button>
+
         </div>
 
         {/* Main Content Area */}

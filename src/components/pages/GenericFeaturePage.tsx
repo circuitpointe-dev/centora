@@ -64,6 +64,9 @@ import LMSAuthorDashboard from '../learning/author/LMSAuthorDashboard';
 import CourseAnalyticsPage from '../learning/author/CourseAnalyticsPage';
 import CreateCoursePage from '../learning/author/CreateCoursePage';
 import CreateCourseStep2 from '../learning/author/CreateCourseStep2';
+import CourseEditorChoice from '../learning/author/CourseEditorChoice';
+import SlideEditor from '../learning/author/SlideEditor';
+import SlideEditorPreview from '../learning/author/SlideEditorPreview';
 import CourseBuilder from '../lms-admin/CourseBuilder';
 import LearningCourseBuilder from '../learning/author/CourseBuilder';
 import CoursePublishPage from '../learning/author/CoursePublishPage';
@@ -340,6 +343,24 @@ const GenericFeaturePage = () => {
   if (module === 'lmsAuthor' && feature === 'create-course-step2') {
     console.log('Matched Create Course Step 2 route:', feature);
     return <CreateCourseStep2 />;
+  }
+
+  // Course Editor Choice route
+  if (module === 'lmsAuthor' && feature === 'course-editor-choice') {
+    console.log('Matched Course Editor Choice route:', feature);
+    return <CourseEditorChoice />;
+  }
+
+  // Slide Editor route
+  if (module === 'lmsAuthor' && feature === 'slide-editor') {
+    console.log('Matched Slide Editor route:', feature);
+    return <SlideEditor />;
+  }
+
+  // Slide Editor Preview route
+  if (module === 'lmsAuthor' && feature === 'slide-editor-preview') {
+    console.log('Matched Slide Editor Preview route:', feature);
+    return <SlideEditorPreview />;
   }
 
   // Course Builder route - simple static route

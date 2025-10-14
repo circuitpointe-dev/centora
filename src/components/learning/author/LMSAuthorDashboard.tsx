@@ -247,19 +247,22 @@ const LMSAuthorDashboard: React.FC = () => {
                     alt={course.title}
                     className="w-full h-48 object-cover"
                   />
-                  <div className="absolute top-3 left-3">
-                    {getStatusBadge(course.status)}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-3 right-3 p-1 h-8 w-8"
-                  >
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
                 </div>
                 
                 <div className="p-4 flex flex-col flex-grow">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      {getStatusBadge(course.status)}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-1 h-8 w-8"
+                    >
+                      <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                    </Button>
+                  </div>
+                  
                   <div className="flex-grow space-y-3">
                     <div>
                       <h3 className="font-semibold text-foreground">{course.title}</h3>

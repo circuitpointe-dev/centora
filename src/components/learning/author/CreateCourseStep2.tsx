@@ -82,8 +82,8 @@ const CreateCourseStep2: React.FC = () => {
 
     console.log('Course data prepared:', finalCourseData);
     
-    // Navigate directly to Course Builder without creating course
-    const targetUrl = `/dashboard/lmsAuthor/courses`;
+    // Navigate to Course Editor Choice page
+    const targetUrl = `/dashboard/lmsAuthor/course-editor-choice`;
     console.log('Navigating to:', targetUrl);
     navigate(targetUrl, {
       state: { courseData: finalCourseData }
