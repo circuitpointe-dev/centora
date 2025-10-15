@@ -60,37 +60,37 @@ export function useCreatePlanItem() {
 }
 
 export function useUpdatePlanItem() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<{ item: string; description?: string; est_cost?: number; budget_source?: string; status?: string; planned_date?: string }> }) => {
-      const { error } = await supabase
-        .from("procurement_plan_items")
-        .update(updates)
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["plan-items"] });
-      qc.invalidateQueries({ queryKey: ["plan-stats"] });
-    }
-  });
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ id, updates }: { id: string; updates: Partial<{ item: string; description?: string; est_cost?: number; budget_source?: string; status?: string; planned_date?: string }> }) => {
+            const { error } = await supabase
+                .from("procurement_plan_items")
+                .update(updates)
+                .eq("id", id);
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["plan-items"] });
+            qc.invalidateQueries({ queryKey: ["plan-stats"] });
+        }
+    });
 }
 
 export function useDeletePlanItem() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("procurement_plan_items")
-        .delete()
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["plan-items"] });
-      qc.invalidateQueries({ queryKey: ["plan-stats"] });
-    }
-  });
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const { error } = await supabase
+                .from("procurement_plan_items")
+                .delete()
+                .eq("id", id);
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["plan-items"] });
+            qc.invalidateQueries({ queryKey: ["plan-stats"] });
+        }
+    });
 }
 
 

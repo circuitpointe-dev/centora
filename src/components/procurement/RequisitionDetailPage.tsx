@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "react-router-dom";
 import {
-  useRequisitionDetail,
-  useRequisitionWorkflow,
-  useRequisitionDocuments,
-  useRequisitionActivity,
-  useUpdateRequisitionFields,
-  useSubmitRequisitionForApproval,
+    useRequisitionDetail,
+    useRequisitionWorkflow,
+    useRequisitionDocuments,
+    useRequisitionActivity,
+    useUpdateRequisitionFields,
+    useSubmitRequisitionForApproval,
 } from "../../hooks/procurement/useRequisitionDetail";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -37,10 +37,10 @@ const RequisitionDetailPage: React.FC<RequisitionDetailPageProps> = ({ requisiti
     const { data: documents } = useRequisitionDocuments(id);
     const { data: activity } = useRequisitionActivity(id);
     const d: any = detail || {};
-  const updateFields = useUpdateRequisitionFields();
-  const submitForApproval = useSubmitRequisitionForApproval();
-  const [editing, setEditing] = React.useState(false);
-  const [draft, setDraft] = React.useState<any>({});
+    const updateFields = useUpdateRequisitionFields();
+    const submitForApproval = useSubmitRequisitionForApproval();
+    const [editing, setEditing] = React.useState(false);
+    const [draft, setDraft] = React.useState<any>({});
 
     return (
         <div className="space-y-6">
@@ -59,31 +59,31 @@ const RequisitionDetailPage: React.FC<RequisitionDetailPageProps> = ({ requisiti
             </button>
 
             {/* Summary card */}
-      <Card>
+            <Card>
                 <CardHeader className="border-b">
                     <CardTitle className="flex items-center justify-between">
                         <span>Requisition detail ({d.reference || id})</span>
                         <div className="flex gap-2">
-              {!editing && (
-                <Button variant="outline" size="sm" onClick={() => { setEditing(true); setDraft({ item_name: d.item_name, description: d.description, unit_cost: d.unit_cost, category: d.category, budget_source: d.budget_source }); }}>Edit</Button>
-              )}
-              {editing && (
-                <>
-                  <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" onClick={async () => {
-                    try { await updateFields.mutateAsync({ id: id!, updates: draft }); setEditing(false); toast.success('Requisition updated'); } catch (e: any) { toast.error(e.message || 'Update failed'); }
-                  }}>Save</Button>
-                  <Button variant="outline" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
-                </>
-              )}
-              <Button variant="outline" size="sm" onClick={async () => { try { await submitForApproval.mutateAsync({ id: id! }); toast.success('Submitted for approval'); } catch (e: any) { toast.error(e.message || 'Submit failed'); } }}>Submit for approval</Button>
-              <Button variant="outline" size="sm">
-                <img src="/material-symbols-download0.svg" className="w-4 h-4 mr-2" alt="Export" />
-                Export
-              </Button>
+                            {!editing && (
+                                <Button variant="outline" size="sm" onClick={() => { setEditing(true); setDraft({ item_name: d.item_name, description: d.description, unit_cost: d.unit_cost, category: d.category, budget_source: d.budget_source }); }}>Edit</Button>
+                            )}
+                            {editing && (
+                                <>
+                                    <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" onClick={async () => {
+                                        try { await updateFields.mutateAsync({ id: id!, updates: draft }); setEditing(false); toast.success('Requisition updated'); } catch (e: any) { toast.error(e.message || 'Update failed'); }
+                                    }}>Save</Button>
+                                    <Button variant="outline" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
+                                </>
+                            )}
+                            <Button variant="outline" size="sm" onClick={async () => { try { await submitForApproval.mutateAsync({ id: id! }); toast.success('Submitted for approval'); } catch (e: any) { toast.error(e.message || 'Submit failed'); } }}>Submit for approval</Button>
+                            <Button variant="outline" size="sm">
+                                <img src="/material-symbols-download0.svg" className="w-4 h-4 mr-2" alt="Export" />
+                                Export
+                            </Button>
                         </div>
                     </CardTitle>
                 </CardHeader>
-        <CardContent className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <CardContent className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div className="space-y-1">
                         <div className="text-xs text-gray-500">Status</div>
                         <StatusBadge status={d.status || "pending"} />
@@ -94,9 +94,9 @@ const RequisitionDetailPage: React.FC<RequisitionDetailPageProps> = ({ requisiti
                     </div>
                     <div className="space-y-1">
                         <div className="text-xs text-gray-500">Budget source</div>
-            {editing ? (
-              <Input value={draft.budget_source || ''} onChange={e => setDraft((v: any) => ({...v, budget_source: e.target.value}))} />
-            ) : <div className="text-sm text-gray-900">{d.budget_source || 'N/A'}</div>}
+                        {editing ? (
+                            <Input value={draft.budget_source || ''} onChange={e => setDraft((v: any) => ({ ...v, budget_source: e.target.value }))} />
+                        ) : <div className="text-sm text-gray-900">{d.budget_source || 'N/A'}</div>}
                     </div>
                     <div className="space-y-1">
                         <div className="text-xs text-gray-500">Requester</div>
@@ -132,12 +132,12 @@ const RequisitionDetailPage: React.FC<RequisitionDetailPageProps> = ({ requisiti
                 <CardHeader>
                     <CardTitle>Item Details</CardTitle>
                 </CardHeader>
-        <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DetailRow label="Item name" value={d.item_name} editing={editing} onChange={(val) => setDraft((v: any) => ({...v, item_name: val}))} />
-          <DetailRow label="Description" value={d.description} editing={editing} onChange={(val) => setDraft((v: any) => ({...v, description: val}))} />
-          <DetailRow label="Unit cost" value={`${d.currency || 'USD'} ${Intl.NumberFormat('en-US').format(d.unit_cost || 0)}`} editing={false} />
-          <DetailRow label="Category" value={d.category} editing={editing} onChange={(val) => setDraft((v: any) => ({...v, category: val}))} />
-          <DetailRow label="Date Submitted" value={d.date_submitted ? new Date(d.date_submitted).toLocaleDateString() : ''} editing={false} />
+                <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <DetailRow label="Item name" value={d.item_name} editing={editing} onChange={(val) => setDraft((v: any) => ({ ...v, item_name: val }))} />
+                    <DetailRow label="Description" value={d.description} editing={editing} onChange={(val) => setDraft((v: any) => ({ ...v, description: val }))} />
+                    <DetailRow label="Unit cost" value={`${d.currency || 'USD'} ${Intl.NumberFormat('en-US').format(d.unit_cost || 0)}`} editing={false} />
+                    <DetailRow label="Category" value={d.category} editing={editing} onChange={(val) => setDraft((v: any) => ({ ...v, category: val }))} />
+                    <DetailRow label="Date Submitted" value={d.date_submitted ? new Date(d.date_submitted).toLocaleDateString() : ''} editing={false} />
                 </CardContent>
             </Card>
 
