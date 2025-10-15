@@ -52,6 +52,7 @@ import CataloguePage from "../learning/CataloguePage";
 import PeopleManagement from "@/components/hr/PeopleManagement";
 import StaffDetailView from "@/components/hr/StaffDetailView";
 import VolunteerProfile from "@/components/hr/VolunteerProfile";
+import BoardMemberDetailView from "@/components/hr/BoardMemberDetailView";
 import CourseDetailPage from "../learning/CourseDetailPage";
 import CourseWorkspacePage from "../learning/CourseWorkspacePage";
 import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
@@ -554,9 +555,13 @@ const GenericFeaturePage = () => {
     return <StaffDetailView />;
   }
 
-  if (module === 'hr' && feature === 'volunteer-profile') {
-    return <VolunteerProfile />;
-  }
+      if (module === 'hr' && feature === 'volunteer-profile') {
+        return <VolunteerProfile />;
+      }
+
+      if (module === 'hr' && feature === 'board-member-detail') {
+        return <BoardMemberDetailView />;
+      }
 
   // Fallback for unmatched routes
   console.log('No route matched for:', module, feature);

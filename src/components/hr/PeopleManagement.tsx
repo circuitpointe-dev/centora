@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   Search,
   Filter,
@@ -12,7 +13,15 @@ import {
   Plus,
   Eye,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  List,
+  Grid3X3,
+  User,
+  Diamond,
+  Users,
+  ChevronUp,
+  ChevronDown,
+  FileText
 } from 'lucide-react';
 
 const PeopleManagement = () => {
@@ -20,6 +29,8 @@ const PeopleManagement = () => {
   const [activeTab, setActiveTab] = useState('staff-directory');
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'grid' | 'person'>('list');
+  const [expandedCommittees, setExpandedCommittees] = useState<Set<string>>(new Set(['audit']));
 
   // Mock data for staff directory
   const staffData = [
@@ -165,10 +176,177 @@ const PeopleManagement = () => {
     }
   ];
 
+  // Mock data for board management
+  const boardData = [
+    {
+      id: 1,
+      name: 'John doe',
+      email: 'johndoe@company.com',
+      role: 'Chairperson',
+      independence: 'Independent',
+      tenure: '6 years',
+      attendance: '95%',
+      compliance: 'Action required',
+      status: 'Active'
+    },
+    {
+      id: 2,
+      name: 'Jane Smith',
+      email: 'janesmith@company.com',
+      role: 'CEO',
+      independence: 'Executive',
+      tenure: '4 years',
+      attendance: '89%',
+      compliance: 'Overdue',
+      status: 'Former'
+    },
+    {
+      id: 3,
+      name: 'Emily Johnson',
+      email: 'emilyj@company.com',
+      role: 'CTO',
+      independence: 'Independent',
+      tenure: '3 years',
+      attendance: '92%',
+      compliance: 'Completed',
+      status: 'Active'
+    },
+    {
+      id: 4,
+      name: 'Michael Brown',
+      email: 'michaelb@company.com',
+      role: 'CFO',
+      independence: 'Independent',
+      tenure: '5 years',
+      attendance: '94%',
+      compliance: 'Completed',
+      status: 'Incoming'
+    },
+    {
+      id: 5,
+      name: 'Sarah Davis',
+      email: 'sarahd@company.com',
+      role: 'COO',
+      independence: 'Executive',
+      tenure: '2 years',
+      attendance: '87%',
+      compliance: 'Action required',
+      status: 'Active'
+    },
+    {
+      id: 6,
+      name: 'David Wilson',
+      email: 'davidw@company.com',
+      role: 'CMO',
+      independence: 'Executive',
+      tenure: '7 years',
+      attendance: '91%',
+      compliance: 'Overdue',
+      status: 'Active'
+    },
+    {
+      id: 7,
+      name: 'Laura Martinez',
+      email: 'lauram@company.com',
+      role: 'VP of Sales',
+      independence: 'Independent',
+      tenure: '8 years',
+      attendance: '90%',
+      compliance: 'Action required',
+      status: 'Active'
+    },
+    {
+      id: 8,
+      name: 'Robert Garcia',
+      email: 'robertg@company.com',
+      role: 'Head of HR',
+      independence: 'Independent',
+      tenure: '1 year',
+      attendance: '85%',
+      compliance: 'Action required',
+      status: 'Former'
+    }
+  ];
+
+  // Mock data for committees
+  const committeeData = [
+    {
+      id: 'audit',
+      name: 'Audit Committee',
+      memberCount: 3,
+      members: [
+        {
+          id: 1,
+          name: 'John Doe',
+          initials: 'JD',
+          role: 'Chairperson',
+          independence: 'Independent',
+          alsoServesOn: 'Nomination',
+          tenure: '6y',
+          attendance: '95%',
+          status: 'Active'
+        },
+        {
+          id: 2,
+          name: 'Alice Smith',
+          initials: 'AS',
+          role: 'Vice Chair',
+          independence: 'Independent',
+          alsoServesOn: 'Finance',
+          tenure: '4y',
+          attendance: '90%',
+          status: 'Active'
+        },
+        {
+          id: 3,
+          name: 'Bob Martin',
+          initials: 'BM',
+          role: 'Secretary',
+          independence: 'Independent',
+          alsoServesOn: 'Audit',
+          tenure: '3y',
+          attendance: '88%',
+          status: 'Active'
+        }
+      ]
+    },
+    {
+      id: 'compensation',
+      name: 'Compensation Committee',
+      memberCount: 5,
+      members: []
+    },
+    {
+      id: 'executive',
+      name: 'Executive Committee',
+      memberCount: 8,
+      members: []
+    },
+    {
+      id: 'nomination',
+      name: 'Nomination Committee',
+      memberCount: 3,
+      members: []
+    },
+    {
+      id: 'risk',
+      name: 'Risk Committee',
+      memberCount: 3,
+      members: []
+    },
+    {
+      id: 'unassigned',
+      name: 'Unassigned Members',
+      memberCount: 1,
+      members: []
+    }
+  ];
+
   const handleSelectAll = (checked: boolean) => {
     setSelectAll(checked);
     if (checked) {
-      const currentData = activeTab === 'staff-directory' ? staffData : volunteerData;
+      const currentData = activeTab === 'staff-directory' ? staffData : 
+                         activeTab === 'volunteer-management' ? volunteerData : boardData;
       setSelectedRows(currentData.map(item => item.id));
     } else {
       setSelectedRows([]);
@@ -189,6 +367,56 @@ const PeopleManagement = () => {
     } else {
       return <Badge className="bg-red-100 text-red-800">Inactive</Badge>;
     }
+  };
+
+  const getBoardStatusBadge = (status: string) => {
+    switch (status) {
+      case 'Active':
+        return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+      case 'Former':
+        return <Badge className="bg-purple-100 text-purple-800">Former</Badge>;
+      case 'Incoming':
+        return <Badge className="bg-blue-100 text-blue-800">Incoming</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
+    }
+  };
+
+  const getComplianceBadge = (compliance: string) => {
+    switch (compliance) {
+      case 'Completed':
+        return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
+      case 'Action required':
+        return <Badge className="bg-red-100 text-red-800">Action required</Badge>;
+      case 'Overdue':
+        return <Badge className="bg-yellow-100 text-yellow-800">Overdue</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-800">{compliance}</Badge>;
+    }
+  };
+
+  const getIndependenceIcon = (independence: string) => {
+    if (independence === 'Independent') {
+      return <Diamond className="h-4 w-4 text-gray-600" />;
+    } else {
+      return <Users className="h-4 w-4 text-gray-600" />;
+    }
+  };
+
+  const getAttendancePercentage = (attendance: string) => {
+    return parseInt(attendance.replace('%', ''));
+  };
+
+  const toggleCommittee = (committeeId: string) => {
+    setExpandedCommittees(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(committeeId)) {
+        newSet.delete(committeeId);
+      } else {
+        newSet.add(committeeId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -446,10 +674,309 @@ const PeopleManagement = () => {
         </TabsContent>
 
         <TabsContent value="board-management">
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Board Management</h3>
-            <p className="text-gray-500">This section is coming soon.</p>
-          </div>
+          {/* Board Management Lists Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold">Board management lists</CardTitle>
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search...."
+                      className="w-64 px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button 
+                      variant={viewMode === 'list' ? 'default' : 'ghost'} 
+                      size="sm" 
+                      className={`p-2 ${viewMode === 'list' ? 'bg-violet-600 text-white' : ''}`}
+                      onClick={() => setViewMode('list')}
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant={viewMode === 'grid' ? 'default' : 'ghost'} 
+                      size="sm" 
+                      className={`p-2 ${viewMode === 'grid' ? 'bg-violet-600 text-white' : ''}`}
+                      onClick={() => setViewMode('grid')}
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant={viewMode === 'person' ? 'default' : 'ghost'} 
+                      size="sm" 
+                      className={`p-2 ${viewMode === 'person' ? 'bg-violet-600 text-white' : ''}`}
+                      onClick={() => setViewMode('person')}
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <Filter className="h-4 w-4" />
+                    <span>Filter</span>
+                  </Button>
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <Upload className="h-4 w-4" />
+                    <span>Export</span>
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Board Data - List View */}
+              {viewMode === 'list' && (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-3 px-4">
+                          <Checkbox
+                            checked={selectAll}
+                            onCheckedChange={handleSelectAll}
+                          />
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Member</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Role</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Independence</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Tenure</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Attendance</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Compliance</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {boardData.map((member) => (
+                        <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <Checkbox
+                              checked={selectedRows.includes(member.id)}
+                              onCheckedChange={(checked) => handleSelectRow(member.id, checked as boolean)}
+                            />
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="font-medium text-gray-900">{member.name}</div>
+                              <div className="text-sm text-gray-500">{member.email}</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 text-gray-600">{member.role}</td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-2">
+                              {getIndependenceIcon(member.independence)}
+                              <span className="text-sm text-gray-600">{member.independence}</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 text-gray-600">{member.tenure}</td>
+                          <td className="py-3 px-4 text-gray-600">{member.attendance}</td>
+                          <td className="py-3 px-4">
+                            {getComplianceBadge(member.compliance)}
+                          </td>
+                          <td className="py-3 px-4">
+                            {getBoardStatusBadge(member.status)}
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center space-x-1"
+                              onClick={() => navigate('/dashboard/hr/board-member-detail')}
+                            >
+                              <Eye className="h-4 w-4" />
+                              <span>View</span>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Board Data - Grid View */}
+              {viewMode === 'grid' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {boardData.map((member) => (
+                    <div key={member.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="space-y-4">
+                        {/* Name */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-500">Name</span>
+                          <span className="text-sm font-medium text-gray-900">{member.name}</span>
+                        </div>
+
+                        {/* Email */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-500">Email</span>
+                          <span className="text-sm text-gray-600">{member.email}</span>
+                        </div>
+
+                        {/* Independence */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-500">Independence</span>
+                          <div className="flex items-center space-x-2">
+                            {getIndependenceIcon(member.independence)}
+                            <span className="text-sm text-gray-600">{member.independence}</span>
+                          </div>
+                        </div>
+
+                        {/* Tenure */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-500">Tenure</span>
+                          <span className="text-sm text-gray-600">{member.tenure}</span>
+                        </div>
+
+                        {/* Attendance */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-500">Attendance</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-16 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-violet-600 h-2 rounded-full" 
+                                style={{ width: `${getAttendancePercentage(member.attendance)}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm text-gray-600">{member.attendance}</span>
+                          </div>
+                        </div>
+
+                        {/* Status */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-500">Status</span>
+                          {getBoardStatusBadge(member.status)}
+                        </div>
+
+                        {/* Compliance */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-500">Compliance</span>
+                          {getComplianceBadge(member.compliance)}
+                        </div>
+
+                        {/* Action */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-500">Action</span>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex items-center space-x-1"
+                            onClick={() => navigate('/dashboard/hr/board-member-detail')}
+                          >
+                            <Eye className="h-4 w-4" />
+                            <span>View</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Board Data - Person View */}
+              {viewMode === 'person' && (
+                <div className="space-y-4">
+                  {committeeData.map((committee) => (
+                    <Card key={committee.id} className="overflow-hidden">
+                      <Collapsible 
+                        open={expandedCommittees.has(committee.id)} 
+                        onOpenChange={() => toggleCommittee(committee.id)}
+                      >
+                        <CollapsibleTrigger asChild>
+                          <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <CardTitle className="text-lg font-semibold">
+                                  {committee.name}
+                                </CardTitle>
+                                <span className="text-sm text-gray-500">
+                                  {committee.memberCount} members
+                                </span>
+                              </div>
+                              {expandedCommittees.has(committee.id) ? (
+                                <ChevronUp className="h-5 w-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="h-5 w-5 text-gray-500" />
+                              )}
+                            </div>
+                          </CardHeader>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <CardContent className="pt-0">
+                            {committee.members.length > 0 ? (
+                              <div className="space-y-4">
+                                {committee.members.map((member) => (
+                                  <div key={member.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                                    {/* Member Avatar */}
+                                    <div className="w-12 h-12 bg-violet-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                      {member.initials}
+                                    </div>
+                                    
+                                    {/* Member Details */}
+                                    <div className="flex-1 space-y-1">
+                                      <div className="flex items-center space-x-4">
+                                        <span className="font-medium text-gray-900">{member.name}</span>
+                                        <span className="text-sm text-gray-600">{member.role}</span>
+                                        <div className="flex items-center space-x-1">
+                                          {getIndependenceIcon(member.independence)}
+                                          <span className="text-sm text-gray-600">{member.independence}</span>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                        <span>Also serves on: {member.alsoServesOn}</span>
+                                        <span>Tenure: {member.tenure}</span>
+                                        <span>Attendance: {member.attendance}</span>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Status and Action */}
+                                    <div className="flex items-center space-x-3">
+                                      {getBoardStatusBadge(member.status)}
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="flex items-center space-x-1"
+                                        onClick={() => navigate('/dashboard/hr/board-member-detail')}
+                                      >
+                                        <Eye className="h-4 w-4" />
+                                        <span>View</span>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-center py-8 text-gray-500">
+                                No members assigned to this committee
+                              </div>
+                            )}
+                          </CardContent>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              <div className="flex items-center justify-between mt-6">
+                <div className="text-sm text-gray-600">
+                  Showing 1 to 8 of 120 board management lists
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                    <ChevronLeft className="h-4 w-4" />
+                    <span>Previous</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                    <span>Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
