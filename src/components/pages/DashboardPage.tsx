@@ -10,6 +10,7 @@ import LearningDashboard from '@/components/learning/LearningDashboard';
 import LMSAuthorDashboard from '@/components/learning/author/LMSAuthorDashboard';
 import LMSAdminDashboard from '@/components/lms-admin/LMSAdminDashboard';
 import ProcurementDashboard from '@/components/procurement/ProcurementDashboard';
+import HRDashboard from '@/components/hr/HRDashboard';
 import GenericDashboard from '@/components/dashboard/GenericDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -78,6 +79,11 @@ const DashboardPage = () => {
   // Procurement Management specific content
   if (module === 'procurement') {
     return <ProcurementDashboard />;
+  }
+
+  // HR Management specific content
+  if (module === 'hr') {
+    return <HRDashboard />;
   }
 
   // Default content for other modules

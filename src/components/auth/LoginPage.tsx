@@ -5,7 +5,7 @@ import LoginForm from "./LoginForm";
 
 const LoginPage = () => {
   return (
-    <div className="flex h-screen w-full bg-white overflow-hidden">
+    <div className="flex h-screen w-full bg-white overflow-hidden" style={{ colorScheme: 'light' }}>
       {/* Left Column – Graphic */}
       <LoginLeftColumn />
 

@@ -47,6 +47,9 @@ import {
   GraduationCap,
   UserCog,
   Accessibility,
+  UserPlus,
+  DollarSign,
+  LogOut,
 } from 'lucide-react';
 
 interface ModuleFeature {
@@ -213,9 +216,12 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     color: 'text-pink-600',
     features: [
       { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
-      { id: 'employee-management', name: 'Employee Management', icon: Users },
-      { id: 'payroll', name: 'Payroll', icon: Calculator },
-      { id: 'hr-analytics', name: 'Analytics', icon: BarChart3 },
+      { id: 'people-management', name: 'People Management', icon: Users },
+      { id: 'recruitment-onboarding', name: 'Recruitment & Onboarding', icon: UserPlus },
+      { id: 'performance-management', name: 'Performance Management', icon: TrendingUp },
+      { id: 'learning-development', name: 'Learning & Development', icon: GraduationCap },
+      { id: 'compensation-policies', name: 'Compensation & Policies', icon: DollarSign },
+      { id: 'exits', name: 'Exits', icon: LogOut },
     ]
   },
   users: {

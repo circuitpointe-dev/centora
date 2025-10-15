@@ -202,15 +202,15 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="h-screen bg-background flex items-center justify-center p-1 sm:p-2">
-      <div className="w-full max-w-6xl bg-card rounded-lg border shadow-sm flex flex-col lg:flex-row overflow-hidden h-full max-h-[98vh]">
+    <div className="h-screen bg-white flex items-center justify-center p-1 sm:p-2" style={{ colorScheme: 'light' }}>
+      <div className="w-full max-w-6xl bg-white rounded-lg border shadow-sm flex flex-col lg:flex-row overflow-hidden h-full max-h-[98vh]">
         {/* Left illustration (reused from login) */}
         <div className="hidden lg:flex lg:w-1/2">
           <LoginLeftColumn full />
         </div>
 
         {/* Right: Signup form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center px-2 sm:px-4 py-2 overflow-y-auto">
+        <div className="w-full lg:w-1/2 flex items-center justify-center px-2 sm:px-4 py-2 overflow-y-auto bg-white">
           <div className="w-full max-w-sm">
             {/* Header */}
             <div className="mb-3">
@@ -331,8 +331,8 @@ const SignupPage = () => {
                   {/* Module Selection */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center">
-                      <h3 className="text-sm font-semibold text-foreground">Select Modules</h3>
-                      <span className="text-xs text-muted-foreground">
+                      <h3 className="text-sm font-semibold text-gray-900">Select Modules</h3>
+                      <span className="text-xs text-gray-500">
                         {formData.selectedModules.length} selected
                       </span>
                     </div>
@@ -341,8 +341,8 @@ const SignupPage = () => {
                         <div
                           key={module.name}
                           className={`flex items-start space-x-1.5 p-1.5 rounded border transition-all duration-200 ${!module.available
-                            ? 'opacity-50 bg-muted/50 cursor-not-allowed'
-                            : 'bg-background hover:border-primary/50 hover:shadow-sm cursor-pointer'
+                            ? 'opacity-50 bg-gray-100 cursor-not-allowed'
+                            : 'bg-white hover:border-violet-500/50 hover:shadow-sm cursor-pointer'
                             }`}
                         >
                           <Checkbox
@@ -355,7 +355,7 @@ const SignupPage = () => {
                           <Label
                             htmlFor={module.name}
                             className={`text-xs font-normal leading-tight cursor-pointer ${!module.available
-                              ? 'text-muted-foreground cursor-not-allowed'
+                              ? 'text-gray-500 cursor-not-allowed'
                               : module.name === 'User Management' ? 'opacity-70 cursor-not-allowed' : 'peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
                               }`}
                           >
@@ -370,7 +370,7 @@ const SignupPage = () => {
                 <>
                   {/* Review Section - Professional layout */}
                   <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-foreground">Confirm Registration Details</h3>
+                    <h3 className="text-sm font-semibold text-gray-900">Confirm Registration Details</h3>
 
                     {/* Summary card */}
                     <div className="bg-white border rounded-md p-3 shadow-sm">

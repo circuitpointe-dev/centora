@@ -48,6 +48,9 @@ import TenantSubscriptionsPage from "../users/tenant-subscriptions/TenantSubscri
 import SupportTicketsPage from "../users/support/tickets/SupportTicketsPage";
 import TenantIntegrationsPage from "../users/integrations/TenantIntegrationsPage";
 import CataloguePage from "../learning/CataloguePage";
+import PeopleManagement from "@/components/hr/PeopleManagement";
+import StaffDetailView from "@/components/hr/StaffDetailView";
+import VolunteerProfile from "@/components/hr/VolunteerProfile";
 import CourseDetailPage from "../learning/CourseDetailPage";
 import CourseWorkspacePage from "../learning/CourseWorkspacePage";
 import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
@@ -540,6 +543,19 @@ const GenericFeaturePage = () => {
 
   if (module === 'users' && feature === 'role-requests') {
     return <RoleRequestPage />;
+  }
+
+  // HR Management routes
+  if (module === 'hr' && feature === 'people-management') {
+    return <PeopleManagement />;
+  }
+
+  if (module === 'hr' && feature === 'staff-detail') {
+    return <StaffDetailView />;
+  }
+
+  if (module === 'hr' && feature === 'volunteer-profile') {
+    return <VolunteerProfile />;
   }
 
   // Fallback for unmatched routes

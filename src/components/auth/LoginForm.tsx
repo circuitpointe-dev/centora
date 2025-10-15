@@ -104,8 +104,8 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
   };
 
   return (
-    <div className="w-full lg:w-1/2 flex items-center lg:justify-start justify-center px-2 sm:px-12">
-      <div className="w-full max-w-xs sm:max-w-sm p-8 rounded-lg shadow-sm">
+    <div className="w-full lg:w-1/2 flex items-center lg:justify-start justify-center px-2 sm:px-12 bg-white">
+      <div className="w-full max-w-xs sm:max-w-sm p-8 rounded-lg shadow-sm bg-white">
         {/* Welcome message */}
         <div className="mb-8">
           <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
         {/* Login form */}
         <form className="space-y-5" onSubmit={handleLogin}>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-gray-700">Email</Label>
             <Input
               id="email"
               type="email"
@@ -128,13 +128,13 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 h-10 rounded-md border border-gray-300 bg-gray-50 focus-visible:ring-2 focus-visible:ring-violet-500"
+              className="w-full px-4 py-2 h-10 rounded-md border border-gray-300 bg-gray-50 focus-visible:ring-2 focus-visible:ring-violet-500 text-gray-900"
             />
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-gray-700">Password</Label>
               <button
                 type="button"
                 onClick={() => setForgotPasswordOpen(true)}
@@ -151,7 +151,7 @@ const LoginForm = ({ onShowRegistration }: LoginFormProps) => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 h-10 rounded-md border border-gray-300 bg-gray-50 focus-visible:ring-2 focus-visible:ring-violet-500"
+                className="w-full px-4 py-2 h-10 rounded-md border border-gray-300 bg-gray-50 focus-visible:ring-2 focus-visible:ring-violet-500 text-gray-900"
               />
               <button
                 type="button"

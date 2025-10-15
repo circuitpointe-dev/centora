@@ -24,7 +24,7 @@ const LoginLeftColumn = ({ full = false }: LoginLeftColumnProps) => {
   ];
 
   return (
-    <div className={`hidden lg:flex ${full ? 'lg:w-full h-full' : 'lg:w-1/2'} items-center justify-end mr-auto px-8`}>
+    <div className={`hidden lg:flex ${full ? 'lg:w-full h-full' : 'lg:w-1/2'} items-center justify-end mr-auto px-8 bg-white`}>
       <div className={`relative w-full ${full ? 'h-full max-w-none' : 'min-h-[300px] h-96 max-w-sm'}`}>
         {/* Violet colored rectangle background with gradient */}
         <div
