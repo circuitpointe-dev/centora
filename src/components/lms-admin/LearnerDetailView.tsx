@@ -146,24 +146,24 @@ const LearnerDetailView = () => {
                 <thead className="bg-muted">
                   <tr>
                     <th className="text-left py-3 px-4 font-medium text-foreground">Course</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Issue date</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Issue date</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {certificates.map((certificate) => (
-                    <tr key={certificate.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <tr key={certificate.id} className="border-b border-border hover:bg-accent">
                       <td className="py-3 px-4">
-                        <p className="text-sm font-medium text-gray-900">{certificate.course}</p>
+                        <p className="text-sm font-medium text-foreground">{certificate.course}</p>
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{certificate.issueDate}</td>
+                      <td className="py-3 px-4 text-sm text-muted-foreground">{certificate.issueDate}</td>
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-2">
-                          <button className="flex items-center space-x-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors">
+                          <button className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                             <Eye className="h-3 w-3" />
                             <span>View</span>
                           </button>
-                          <button className="flex items-center space-x-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors">
+                          <button className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                             <Download className="h-3 w-3" />
                             <span>Download</span>
                           </button>
@@ -178,21 +178,21 @@ const LearnerDetailView = () => {
         );
       case 'compliance':
         return (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <p className="text-gray-600">Compliance & Alerts content will be displayed here.</p>
+          <div className="bg-card rounded-xl border border-border shadow-sm p-6">
+            <p className="text-muted-foreground">Compliance & Alerts content will be displayed here.</p>
           </div>
         );
       case 'audit':
         return (
           <div className="space-y-4">
             {auditLogs.map((log) => (
-              <div key={log.id} className="bg-gray-50 rounded-lg p-4">
+              <div key={log.id} className="bg-muted rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900">{log.action}</p>
+                    <p className="text-sm text-foreground">{log.action}</p>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm text-gray-600">{log.timestamp}</p>
+                    <p className="text-sm text-muted-foreground">{log.timestamp}</p>
                   </div>
                 </div>
               </div>
@@ -205,19 +205,19 @@ const LearnerDetailView = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-white min-h-screen">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Learner management</h1>
+        <h1 className="text-2xl font-bold text-foreground">Learner management</h1>
       </div>
 
       {/* Learner Profile Card */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-card rounded-xl border border-border shadow-sm p-6">
         <div className="flex items-start space-x-6">
           {/* Profile Picture and Basic Info */}
           <div className="flex flex-col items-center">
-            <div className="h-20 w-20 bg-gray-300 rounded-full flex items-center justify-center mb-3">
-              <span className="text-2xl font-medium text-gray-600">JD</span>
+            <div className="h-20 w-20 bg-muted rounded-full flex items-center justify-center mb-3">
+              <span className="text-2xl font-medium text-muted-foreground">JD</span>
             </div>
             <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full mb-2">
               Active
@@ -226,24 +226,24 @@ const LearnerDetailView = () => {
           
           {/* Learner Details */}
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">Jane Doe</h2>
-            <p className="text-gray-600 mb-1">janedoe@gmail.com</p>
-            <p className="text-gray-600">Field Ops</p>
+            <h2 className="text-2xl font-bold text-foreground mb-1">Jane Doe</h2>
+            <p className="text-muted-foreground mb-1">janedoe@gmail.com</p>
+            <p className="text-muted-foreground">Field Ops</p>
           </div>
           
           {/* Action Buttons */}
           <div className="flex items-center space-x-3">
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
-              <Send className="h-4 w-4 text-gray-600" />
-              <span className="text-sm text-gray-700">Send remainder</span>
+            <button className="flex items-center space-x-2 px-3 py-2 border border-border rounded-lg bg-background hover:bg-accent transition-colors">
+              <Send className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-foreground">Send remainder</span>
             </button>
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
-              <RotateCcw className="h-4 w-4 text-gray-600" />
-              <span className="text-sm text-gray-700">Reset password</span>
+            <button className="flex items-center space-x-2 px-3 py-2 border border-border rounded-lg bg-background hover:bg-accent transition-colors">
+              <RotateCcw className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-foreground">Reset password</span>
             </button>
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
-              <UserX className="h-4 w-4 text-gray-600" />
-              <span className="text-sm text-gray-700">Deactivate</span>
+            <button className="flex items-center space-x-2 px-3 py-2 border border-border rounded-lg bg-background hover:bg-accent transition-colors">
+              <UserX className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-foreground">Deactivate</span>
             </button>
             <button className="flex items-center space-x-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
               <FileText className="h-4 w-4" />
@@ -256,7 +256,7 @@ const LearnerDetailView = () => {
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Overall Progress */}
-        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+        <div className="bg-muted rounded-xl p-6 border border-border shadow-sm">
           <div className="flex flex-col items-center text-center">
             <div className="relative h-16 w-16 mb-4">
               <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 64 64">
@@ -284,47 +284,47 @@ const LearnerDetailView = () => {
                 <span className="text-sm font-bold text-purple-600">65%</span>
               </div>
             </div>
-            <p className="text-sm font-medium text-gray-600">Overall progress (%)</p>
+            <p className="text-sm font-medium text-muted-foreground">Overall progress (%)</p>
           </div>
         </div>
 
         {/* Enrollments */}
-        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+        <div className="bg-muted rounded-xl p-6 border border-border shadow-sm">
           <div className="flex flex-col items-center text-center">
             <div className="h-16 w-16 bg-yellow-100 rounded-xl flex items-center justify-center mb-4">
               <BookOpen className="h-8 w-8 text-yellow-600" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 mb-1">4</p>
-            <p className="text-sm font-medium text-gray-600">Enrollments</p>
+            <p className="text-3xl font-bold text-foreground mb-1">4</p>
+            <p className="text-sm font-medium text-muted-foreground">Enrollments</p>
           </div>
         </div>
 
         {/* Total Certificates */}
-        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+        <div className="bg-muted rounded-xl p-6 border border-border shadow-sm">
           <div className="flex flex-col items-center text-center">
             <div className="h-16 w-16 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
               <Award className="h-8 w-8 text-purple-600" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 mb-1">2</p>
-            <p className="text-sm font-medium text-gray-600">Total certificates</p>
+            <p className="text-3xl font-bold text-foreground mb-1">2</p>
+            <p className="text-sm font-medium text-muted-foreground">Total certificates</p>
           </div>
         </div>
 
         {/* Last Activity */}
-        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+        <div className="bg-muted rounded-xl p-6 border border-border shadow-sm">
           <div className="flex flex-col items-center text-center">
             <div className="h-16 w-16 bg-green-100 rounded-xl flex items-center justify-center mb-4">
               <Clock className="h-8 w-8 text-green-600" />
             </div>
-            <p className="text-lg font-bold text-gray-900 mb-1">Aug 7, 2023</p>
-            <p className="text-sm font-medium text-gray-600">Last activity</p>
+            <p className="text-lg font-bold text-foreground mb-1">Aug 7, 2023</p>
+            <p className="text-sm font-medium text-muted-foreground">Last activity</p>
           </div>
         </div>
       </div>
 
       {/* Tabbed Navigation */}
       <div className="space-y-4">
-        <div className="flex items-center space-x-6 border-b border-gray-200">
+        <div className="flex items-center space-x-6 border-b border-border">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -332,7 +332,7 @@ const LearnerDetailView = () => {
               className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? 'border-purple-600 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
             >
               {tab.label}

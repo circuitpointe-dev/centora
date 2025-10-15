@@ -137,7 +137,7 @@ const CourseManagement = () => {
                   <button
                     key={period}
                     onClick={() => handlePeriodSelect(period)}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors ${
                       selectedPeriod === period ? 'bg-accent text-accent-foreground font-medium' : 'text-foreground'
                     }`}
                   >
@@ -158,8 +158,8 @@ const CourseManagement = () => {
             <div className="h-16 w-16 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
               <FolderOpen className="h-8 w-8 text-purple-600" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 mb-1">110</p>
-            <p className="text-sm font-medium text-gray-600">Total courses</p>
+            <p className="text-3xl font-bold text-foreground mb-1">110</p>
+            <p className="text-sm font-medium text-muted-foreground">Total courses</p>
           </div>
         </div>
 
@@ -169,8 +169,8 @@ const CourseManagement = () => {
             <div className="h-16 w-16 bg-green-100 rounded-xl flex items-center justify-center mb-4">
               <FolderOpen className="h-8 w-8 text-green-600" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 mb-1">95</p>
-            <p className="text-sm font-medium text-gray-600">Published courses</p>
+            <p className="text-3xl font-bold text-foreground mb-1">95</p>
+            <p className="text-sm font-medium text-muted-foreground">Published courses</p>
           </div>
         </div>
 
@@ -180,8 +180,8 @@ const CourseManagement = () => {
             <div className="h-16 w-16 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
               <FolderOpen className="h-8 w-8 text-gray-600" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 mb-1">10</p>
-            <p className="text-sm font-medium text-gray-600">Draft courses</p>
+            <p className="text-3xl font-bold text-foreground mb-1">10</p>
+            <p className="text-sm font-medium text-muted-foreground">Draft courses</p>
           </div>
         </div>
 
@@ -191,7 +191,7 @@ const CourseManagement = () => {
             <div className="h-16 w-16 bg-yellow-100 rounded-xl flex items-center justify-center mb-4">
               <FolderOpen className="h-8 w-8 text-yellow-600" />
             </div>
-            <p className="text-3xl font-bold text-gray-900 mb-1">5</p>
+            <p className="text-3xl font-bold text-foreground mb-1">5</p>
             <p className="text-sm font-medium text-muted-foreground">Pending approval</p>
           </div>
         </div>
@@ -203,20 +203,20 @@ const CourseManagement = () => {
           <h2 className="text-lg font-bold text-foreground">Courses list</h2>
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <input
                 type="text"
                 placeholder="Search users, department..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 pr-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
-              <Filter className="h-4 w-4 text-gray-600" />
-              <span className="text-sm text-gray-700">Filter</span>
+            <button className="flex items-center space-x-2 px-3 py-2 border border-border rounded-lg bg-background hover:bg-accent transition-colors">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-foreground">Filter</span>
             </button>
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors">
-              <Trash2 className="h-4 w-4 text-gray-600" />
-              <span className="text-sm text-gray-700">Delete</span>
+            <button className="flex items-center space-x-2 px-3 py-2 border border-border rounded-lg bg-background hover:bg-accent transition-colors">
+              <Trash2 className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-foreground">Delete</span>
             </button>
             <button className="flex items-center space-x-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
               <Plus className="h-4 w-4" />
@@ -228,34 +228,34 @@ const CourseManagement = () => {
         {/* Course Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course) => (
-            <div key={course.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <div key={course.id} className="bg-card rounded-xl border border-border shadow-sm p-6">
               <div className="space-y-4">
                 {/* Course Title and Description */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{course.title}</h3>
-                  <p className="text-sm text-gray-600">{course.description}</p>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{course.title}</h3>
+                  <p className="text-sm text-muted-foreground">{course.description}</p>
                 </div>
 
                 {/* Learners Count */}
                 <div className="flex items-center">
-                  <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                  <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                     {course.learners} learners
                   </span>
                 </div>
 
                 {/* Author Info */}
                 <div className="flex items-center space-x-3">
-                  <div className="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-medium text-gray-600">{course.author.avatar}</span>
+                  <div className="h-8 w-8 bg-muted rounded-full flex items-center justify-center">
+                    <span className="text-xs font-medium text-muted-foreground">{course.author.avatar}</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{course.author.name}</p>
-                    <p className="text-xs text-gray-500">{course.author.role}</p>
+                    <p className="text-sm font-medium text-foreground">{course.author.name}</p>
+                    <p className="text-xs text-muted-foreground">{course.author.role}</p>
                   </div>
                 </div>
 
                 {/* Date and Time */}
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   <p>{course.date}</p>
                   <p>{course.time}</p>
                 </div>
@@ -268,19 +268,19 @@ const CourseManagement = () => {
                   <div className="flex items-center space-x-2">
                     <button 
                       onClick={() => handleViewCourse(course.id)}
-                      className="flex items-center space-x-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors"
+                      className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Eye className="h-3 w-3" />
                       <span>View</span>
                     </button>
                     {course.status === "Archived" && (
-                      <button className="flex items-center space-x-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors">
+                      <button className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                         <Archive className="h-3 w-3" />
                         <span>Rearchived</span>
                       </button>
                     )}
                     {course.status === "Published" && (
-                      <button className="flex items-center space-x-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors">
+                      <button className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                         <Archive className="h-3 w-3" />
                         <span>Archived</span>
                       </button>
@@ -294,13 +294,13 @@ const CourseManagement = () => {
 
         {/* Pagination */}
         <div className="flex items-center justify-between pt-6">
-          <p className="text-sm text-gray-600">Showing 1 to 8 of 12 course list</p>
+          <p className="text-sm text-muted-foreground">Showing 1 to 8 of 12 course list</p>
           <div className="flex items-center space-x-2">
-            <button className="flex items-center space-x-1 px-3 py-2 text-sm text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <button className="flex items-center space-x-1 px-3 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               <ChevronLeft className="h-4 w-4" />
               <span>Previous</span>
             </button>
-            <button className="flex items-center space-x-1 px-3 py-2 text-sm text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <button className="flex items-center space-x-1 px-3 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-accent transition-colors">
               <span>Next</span>
               <ChevronRight className="h-4 w-4" />
             </button>

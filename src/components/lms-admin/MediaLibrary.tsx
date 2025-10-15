@@ -202,7 +202,7 @@ const MediaLibrary = () => {
                         onChange={(e) => setSelectedType(e.target.value)}
                         className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                       />
-                      <span className="text-sm text-gray-700">{type}</span>
+                      <span className="text-sm text-muted-foreground">{type}</span>
                     </label>
                   ))}
                 </div>
@@ -210,19 +210,19 @@ const MediaLibrary = () => {
 
               {/* Date Uploaded Filter */}
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Date uploaded</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">Date uploaded</h3>
                 <div className="relative">
                   <Input
                     type="date"
                     className="w-full pr-10"
                   />
-                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
 
               {/* Sort By Filter */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Sort by</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">Sort by</h3>
                 <div className="space-y-2">
                   {['Newest', 'Oldest', 'A-Z', 'Z-A'].map((sort) => (
                     <label key={sort} className="flex items-center space-x-2 cursor-pointer">
@@ -234,7 +234,7 @@ const MediaLibrary = () => {
                         onChange={(e) => setSortBy(e.target.value)}
                         className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                       />
-                      <span className="text-sm text-gray-700">{sort}</span>
+                      <span className="text-sm text-muted-foreground">{sort}</span>
                     </label>
                   ))}
                 </div>
@@ -249,10 +249,10 @@ const MediaLibrary = () => {
             <CardContent className="p-6">
               {/* Top Bar */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">Media library</h2>
+                <h2 className="text-lg font-semibold text-foreground">Media library</h2>
                 <div className="flex items-center space-x-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       placeholder="Search....."
                       value={searchQuery}
@@ -274,7 +274,7 @@ const MediaLibrary = () => {
               {/* Media Items Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 {mediaItems.map((item) => (
-                  <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div key={item.id} className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow bg-card">
                     {/* Checkbox */}
                     <div className="flex items-start justify-between mb-3">
                       <input
@@ -295,8 +295,8 @@ const MediaLibrary = () => {
 
                     {/* File Info */}
                     <div className="mb-3">
-                      <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
-                      <p className="text-xs text-gray-500">{item.type} {item.size}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
+                      <p className="text-xs text-muted-foreground">{item.type} {item.size}</p>
                     </div>
 
                     {/* Action Buttons */}
@@ -309,7 +309,7 @@ const MediaLibrary = () => {
 
               {/* Pagination */}
               <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   Showing 1 to 6 of 32 media library
                 </p>
                 <div className="flex items-center space-x-2">

@@ -110,7 +110,7 @@ const ReportsAnalytics = () => {
       return (
         <div className="bg-card p-3 border border-border rounded-lg shadow-lg">
           <p className="font-medium text-foreground">{label}</p>
-          <p className="text-sm text-purple-600">{payload[0].value}</p>
+          <p className="text-sm text-purple-600 dark:text-purple-400">{payload[0].value}</p>
         </div>
       );
     }
@@ -132,7 +132,7 @@ const ReportsAnalytics = () => {
               onClick={() => setActiveTab('platform')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'platform'
-                  ? 'border-purple-500 text-purple-600'
+                  ? 'border-purple-500 text-purple-600 dark:text-purple-400'
                   : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
             >
@@ -142,7 +142,7 @@ const ReportsAnalytics = () => {
               onClick={() => setActiveTab('course')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'course'
-                  ? 'border-purple-500 text-purple-600'
+                  ? 'border-purple-500 text-purple-600 dark:text-purple-400'
                   : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
             >
@@ -162,11 +162,11 @@ const ReportsAnalytics = () => {
           {/* Key Metrics Cards - 4 cards matching the design */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Total Enrollments */}
-            <Card className="bg-purple-50 border-purple-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <BookOpen className="h-8 w-8 text-purple-600" />
+                  <div className="h-16 w-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-4">
+                    <BookOpen className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                   </div>
                   <p className="text-3xl font-bold text-foreground mb-1">2590</p>
                   <p className="text-sm font-medium text-muted-foreground">Total enrollements</p>
@@ -175,40 +175,40 @@ const ReportsAnalytics = () => {
             </Card>
 
             {/* Active Learners */}
-            <Card className="bg-green-50 border-green-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <Users className="h-8 w-8 text-green-600" />
+                  <div className="h-16 w-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
+                    <Users className="h-8 w-8 text-green-600 dark:text-green-400" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">95</p>
-                  <p className="text-sm font-medium text-gray-600">Active learners</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">95</p>
+                  <p className="text-sm font-medium text-muted-foreground">Active learners</p>
                 </div>
               </CardContent>
             </Card>
 
             {/* Completion Rate */}
-            <Card className="bg-blue-50 border-blue-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle className="h-8 w-8 text-blue-600" />
+                  <div className="h-16 w-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4">
+                    <CheckCircle className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">62%</p>
-                  <p className="text-sm font-medium text-gray-600">Completion rate</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">62%</p>
+                  <p className="text-sm font-medium text-muted-foreground">Completion rate</p>
                 </div>
               </CardContent>
             </Card>
 
             {/* Average Quiz Score */}
-            <Card className="bg-orange-50 border-orange-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-                    <ClipboardList className="h-8 w-8 text-orange-600" />
+                  <div className="h-16 w-16 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center mb-4">
+                    <ClipboardList className="h-8 w-8 text-orange-600 dark:text-orange-400" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">84%</p>
-                  <p className="text-sm font-medium text-gray-600">Average quiz score</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">84%</p>
+                  <p className="text-sm font-medium text-muted-foreground">Average quiz score</p>
                 </div>
               </CardContent>
             </Card>
@@ -331,11 +331,11 @@ const ReportsAnalytics = () => {
                 <div className="flex items-center justify-end space-x-4 pt-4">
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 bg-purple-200 rounded"></div>
-                    <span className="text-sm text-gray-600">Low</span>
+                    <span className="text-sm text-muted-foreground">Low</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 bg-purple-600 rounded"></div>
-                    <span className="text-sm text-gray-600">High</span>
+                    <span className="text-sm text-muted-foreground">High</span>
                   </div>
                 </div>
               </div>
@@ -350,11 +350,11 @@ const ReportsAnalytics = () => {
           {/* Key Metrics Cards - 5 cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Total Enrollments */}
-            <Card className="bg-purple-50 border-purple-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <Package className="h-8 w-8 text-purple-600" />
+                  <div className="h-16 w-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-4">
+                    <Package className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                   </div>
                   <p className="text-3xl font-bold text-foreground mb-1">2590</p>
                   <p className="text-sm font-medium text-muted-foreground">Total enrollements</p>
@@ -363,53 +363,53 @@ const ReportsAnalytics = () => {
             </Card>
 
             {/* Active Learners */}
-            <Card className="bg-green-50 border-green-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <Users className="h-8 w-8 text-green-600" />
+                  <div className="h-16 w-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
+                    <Users className="h-8 w-8 text-green-600 dark:text-green-400" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">95</p>
-                  <p className="text-sm font-medium text-gray-600">Active learners</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">95</p>
+                  <p className="text-sm font-medium text-muted-foreground">Active learners</p>
                 </div>
               </CardContent>
             </Card>
 
             {/* Completions (%) */}
-            <Card className="bg-orange-50 border-orange-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-                    <FileText className="h-8 w-8 text-orange-600" />
+                  <div className="h-16 w-16 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center mb-4">
+                    <FileText className="h-8 w-8 text-orange-600 dark:text-orange-400" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">60%</p>
-                  <p className="text-sm font-medium text-gray-600">Completions (%)</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">60%</p>
+                  <p className="text-sm font-medium text-muted-foreground">Completions (%)</p>
                 </div>
               </CardContent>
             </Card>
 
             {/* Average completion rate */}
-            <Card className="bg-blue-50 border-blue-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle className="h-8 w-8 text-blue-600" />
+                  <div className="h-16 w-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4">
+                    <CheckCircle className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">62%</p>
-                  <p className="text-sm font-medium text-gray-600">Average completion rate</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">62%</p>
+                  <p className="text-sm font-medium text-muted-foreground">Average completion rate</p>
                 </div>
               </CardContent>
             </Card>
 
             {/* Time spent (median) */}
-            <Card className="bg-pink-50 border-pink-200 rounded-xl">
+            <Card className="bg-card border-border rounded-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="h-16 w-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
-                    <Clock className="h-8 w-8 text-pink-600" />
+                  <div className="h-16 w-16 bg-pink-100 dark:bg-pink-900 rounded-full flex items-center justify-center mb-4">
+                    <Clock className="h-8 w-8 text-pink-600 dark:text-pink-400" />
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 mb-1">38min</p>
-                  <p className="text-sm font-medium text-gray-600">Time spent (median)</p>
+                  <p className="text-3xl font-bold text-foreground mb-1">38min</p>
+                  <p className="text-sm font-medium text-muted-foreground">Time spent (median)</p>
                 </div>
               </CardContent>
             </Card>
@@ -490,7 +490,7 @@ const ReportsAnalytics = () => {
                   {topCoursesData.map((course, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                       <span className="font-medium text-gray-900">{course.name}</span>
-                      <span className="text-purple-600 font-semibold">{course.engagement}%</span>
+                      <span className="text-purple-600 dark:text-purple-400 font-semibold">{course.engagement}%</span>
                     </div>
                   ))}
                 </div>
@@ -531,7 +531,7 @@ const ReportsAnalytics = () => {
                         className="w-3 h-3 rounded-full" 
                         style={{ backgroundColor: item.color }}
                       />
-                      <span className="text-sm text-gray-600">{item.name}</span>
+                      <span className="text-sm text-muted-foreground">{item.name}</span>
                     </div>
                   ))}
                 </div>
@@ -548,19 +548,19 @@ const ReportsAnalytics = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-gray-200">
-                        <th className="text-left py-2 text-sm font-medium text-gray-600">Department</th>
-                        <th className="text-left py-2 text-sm font-medium text-gray-600">Active users</th>
-                        <th className="text-left py-2 text-sm font-medium text-gray-600">Enrolled</th>
-                        <th className="text-left py-2 text-sm font-medium text-gray-600">Completion %</th>
+                        <th className="text-left py-2 text-sm font-medium text-muted-foreground">Department</th>
+                        <th className="text-left py-2 text-sm font-medium text-muted-foreground">Active users</th>
+                        <th className="text-left py-2 text-sm font-medium text-muted-foreground">Enrolled</th>
+                        <th className="text-left py-2 text-sm font-medium text-muted-foreground">Completion %</th>
                       </tr>
                     </thead>
                     <tbody>
                       {departmentSnapshotData.map((dept, index) => (
                         <tr key={index} className="border-b border-gray-100">
                           <td className="py-3 text-sm text-gray-900">{dept.department}</td>
-                          <td className="py-3 text-sm text-gray-600">{dept.activeUsers}</td>
-                          <td className="py-3 text-sm text-gray-600">{dept.enrolled}</td>
-                          <td className="py-3 text-sm text-gray-600">{dept.completion}%</td>
+                          <td className="py-3 text-sm text-muted-foreground">{dept.activeUsers}</td>
+                          <td className="py-3 text-sm text-muted-foreground">{dept.enrolled}</td>
+                          <td className="py-3 text-sm text-muted-foreground">{dept.completion}%</td>
                         </tr>
                       ))}
                     </tbody>
