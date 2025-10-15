@@ -16,7 +16,7 @@ import {
   RequisitionFilters
 } from "@/hooks/procurement/useProcurementRequisitions";
 import { toast } from "sonner";
-import { usePlanItems, usePlanStats, useCreatePlanItem } from "@/hooks/procurement/useProcurementPlanBuilder";
+import { usePlanItems, usePlanStats, useCreatePlanItem, useUpdatePlanItem, useDeletePlanItem } from "@/hooks/procurement/useProcurementPlanBuilder";
 import { useApprovalMatrix } from "@/hooks/procurement/useProcurementApprovalMatrix";
 
 const ProcurementPlanningPage: React.FC = () => {
@@ -39,6 +39,10 @@ const ProcurementPlanningPage: React.FC = () => {
   const { data: planStats } = usePlanStats();
   const { data: planItems } = usePlanItems({ page: currentPage, limit: 8, search: searchTerm });
   const createPlanItem = useCreatePlanItem();
+  const updatePlanItem = useUpdatePlanItem();
+  const deletePlanItem = useDeletePlanItem();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<any>({});
   const { data: matrix } = useApprovalMatrix({ page: currentPage, limit: 8, search: searchTerm });
 
   const { data: stats, isLoading: statsLoading, error: statsError } = useRequisitionStats();
@@ -84,15 +88,15 @@ const ProcurementPlanningPage: React.FC = () => {
 
   const handleExport = () => {
     const rows = [
-      ['REQ ID','ITEM','QUANTITY','EST. COST','CURRENCY','DATE SUBMITTED','BUDGET SOURCE','STATUS'],
+      ['REQ ID', 'ITEM', 'QUANTITY', 'EST. COST', 'CURRENCY', 'DATE SUBMITTED', 'BUDGET SOURCE', 'STATUS'],
       ...requisitions.map(r => [r.req_id, r.item_name, String(r.quantity), String(r.estimated_cost), r.currency, new Date(r.date_submitted).toISOString(), r.budget_source || '', r.status])
     ];
-    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `requisitions-${new Date().toISOString().slice(0,10)}.csv`;
+    a.download = `requisitions-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -118,7 +122,7 @@ const ProcurementPlanningPage: React.FC = () => {
         budget_source: cols[idx('budget_source')] || undefined,
         status: (cols[idx('status')] as any) || 'pending',
       } as any;
-      try { await createRequisitionMutation.mutateAsync(payload as Requisition); } catch {}
+      try { await createRequisitionMutation.mutateAsync(payload as Requisition); } catch { }
     }
     toast.success('Bulk upload completed');
     (e.target as any).value = '';
@@ -302,6 +306,76 @@ const ProcurementPlanningPage: React.FC = () => {
         </div>
       )}
 
+      {activeTab === 'plan-builder' && (
+        <Card>
+          <CardContent className="p-0">
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b">
+                  <tr className="text-left text-xs text-gray-500">
+                    <th className="px-4 py-3">Item</th>
+                    <th className="px-4 py-3">Description</th>
+                    <th className="px-4 py-3">Est. cost</th>
+                    <th className="px-4 py-3">Budget source</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Planned date</th>
+                    <th className="px-4 py-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(planItems?.items || []).map((it: any) => (
+                    <tr key={it.id} className="border-b text-sm">
+                      <td className="px-4 py-3 text-gray-700">
+                        {editingId === it.id ? (
+                          <Input value={editDraft.item} onChange={e => setEditDraft((v: any) => ({...v, item: e.target.value}))} />
+                        ) : it.item}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {editingId === it.id ? (
+                          <Input value={editDraft.description} onChange={e => setEditDraft((v: any) => ({...v, description: e.target.value}))} />
+                        ) : it.description}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {editingId === it.id ? (
+                          <Input type="number" value={editDraft.est_cost} onChange={e => setEditDraft((v: any) => ({...v, est_cost: Number(e.target.value)}))} />
+                        ) : `$${Number(it.est_cost || 0).toLocaleString()}`}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {editingId === it.id ? (
+                          <Input value={editDraft.budget_source} onChange={e => setEditDraft((v: any) => ({...v, budget_source: e.target.value}))} />
+                        ) : it.budget_source}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {editingId === it.id ? (
+                          <Input value={editDraft.status} onChange={e => setEditDraft((v: any) => ({...v, status: e.target.value}))} />
+                        ) : it.status}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {editingId === it.id ? (
+                          <Input value={editDraft.planned_date} onChange={e => setEditDraft((v: any) => ({...v, planned_date: e.target.value}))} />
+                        ) : it.planned_date}
+                      </td>
+                      <td className="px-4 py-3">
+                        {editingId === it.id ? (
+                          <div className="flex gap-2">
+                            <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" onClick={async () => { await updatePlanItem.mutateAsync({ id: it.id, updates: editDraft }); setEditingId(null); }}>Save</Button>
+                            <Button variant="outline" size="sm" onClick={() => setEditingId(null)}>Cancel</Button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => { setEditingId(it.id); setEditDraft({ item: it.item, description: it.description, est_cost: it.est_cost, budget_source: it.budget_source, status: it.status, planned_date: it.planned_date }); }}>Edit</Button>
+                            <Button variant="outline" size="sm" onClick={async () => { if (confirm('Delete this item?')) { await deletePlanItem.mutateAsync(it.id); } }}>Delete</Button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       {/* Approval matrix & workflows tab */}
       {activeTab === 'approval-matrix' && (
         <Card>
@@ -551,50 +625,50 @@ const ProcurementPlanningPage: React.FC = () => {
             </CardContent>
           </Card>
 
-      {/* Create Requisition Modal */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-            <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-semibold">New requisition</h3>
-              <button onClick={() => setIsCreateOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
-            </div>
-            <div className="p-4 space-y-3">
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">REQ ID</label>
-                <Input value={newReq.req_id || ''} onChange={e => setNewReq(v => ({...v, req_id: e.target.value}))} />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Item</label>
-                <Input value={newReq.item_name || ''} onChange={e => setNewReq(v => ({...v, item_name: e.target.value}))} />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-sm text-gray-600 mb-1">Quantity</label>
-                  <Input type="number" value={newReq.quantity || 1} onChange={e => setNewReq(v => ({...v, quantity: Number(e.target.value)}))} />
+          {/* Create Requisition Modal */}
+          {isCreateOpen && (
+            <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
+                <div className="p-4 border-b flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">New requisition</h3>
+                  <button onClick={() => setIsCreateOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
                 </div>
-                <div>
-                  <label className="block text-sm text-gray-600 mb-1">Est. cost</label>
-                  <Input type="number" value={newReq.estimated_cost || 0} onChange={e => setNewReq(v => ({...v, estimated_cost: Number(e.target.value)}))} />
+                <div className="p-4 space-y-3">
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">REQ ID</label>
+                    <Input value={newReq.req_id || ''} onChange={e => setNewReq(v => ({ ...v, req_id: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Item</label>
+                    <Input value={newReq.item_name || ''} onChange={e => setNewReq(v => ({ ...v, item_name: e.target.value }))} />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">Quantity</label>
+                      <Input type="number" value={newReq.quantity || 1} onChange={e => setNewReq(v => ({ ...v, quantity: Number(e.target.value) }))} />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">Est. cost</label>
+                      <Input type="number" value={newReq.estimated_cost || 0} onChange={e => setNewReq(v => ({ ...v, estimated_cost: Number(e.target.value) }))} />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">Currency</label>
+                      <Input value={newReq.currency || 'USD'} onChange={e => setNewReq(v => ({ ...v, currency: e.target.value }))} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Budget source</label>
+                    <Input value={newReq.budget_source || ''} onChange={e => setNewReq(v => ({ ...v, budget_source: e.target.value }))} />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm text-gray-600 mb-1">Currency</label>
-                  <Input value={newReq.currency || 'USD'} onChange={e => setNewReq(v => ({...v, currency: e.target.value}))} />
+                <div className="p-4 border-t flex items-center justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
+                  <Button onClick={handleCreateSubmit} className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">Create</Button>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Budget source</label>
-                <Input value={newReq.budget_source || ''} onChange={e => setNewReq(v => ({...v, budget_source: e.target.value}))} />
-              </div>
             </div>
-            <div className="p-4 border-t flex items-center justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreateSubmit} className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">Create</Button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* End Modal */}
+          )}
+          {/* End Modal */}
         </div>
       )}
 
