@@ -327,32 +327,32 @@ const ProcurementPlanningPage: React.FC = () => {
                     <tr key={it.id} className="border-b text-sm">
                       <td className="px-4 py-3 text-gray-700">
                         {editingId === it.id ? (
-                          <Input value={editDraft.item} onChange={e => setEditDraft((v: any) => ({...v, item: e.target.value}))} />
+                          <Input value={editDraft.item} onChange={e => setEditDraft((v: any) => ({ ...v, item: e.target.value }))} />
                         ) : it.item}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {editingId === it.id ? (
-                          <Input value={editDraft.description} onChange={e => setEditDraft((v: any) => ({...v, description: e.target.value}))} />
+                          <Input value={editDraft.description} onChange={e => setEditDraft((v: any) => ({ ...v, description: e.target.value }))} />
                         ) : it.description}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {editingId === it.id ? (
-                          <Input type="number" value={editDraft.est_cost} onChange={e => setEditDraft((v: any) => ({...v, est_cost: Number(e.target.value)}))} />
+                          <Input type="number" value={editDraft.est_cost} onChange={e => setEditDraft((v: any) => ({ ...v, est_cost: Number(e.target.value) }))} />
                         ) : `$${Number(it.est_cost || 0).toLocaleString()}`}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {editingId === it.id ? (
-                          <Input value={editDraft.budget_source} onChange={e => setEditDraft((v: any) => ({...v, budget_source: e.target.value}))} />
+                          <Input value={editDraft.budget_source} onChange={e => setEditDraft((v: any) => ({ ...v, budget_source: e.target.value }))} />
                         ) : it.budget_source}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {editingId === it.id ? (
-                          <Input value={editDraft.status} onChange={e => setEditDraft((v: any) => ({...v, status: e.target.value}))} />
+                          <Input value={editDraft.status} onChange={e => setEditDraft((v: any) => ({ ...v, status: e.target.value }))} />
                         ) : it.status}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {editingId === it.id ? (
-                          <Input value={editDraft.planned_date} onChange={e => setEditDraft((v: any) => ({...v, planned_date: e.target.value}))} />
+                          <Input value={editDraft.planned_date} onChange={e => setEditDraft((v: any) => ({ ...v, planned_date: e.target.value }))} />
                         ) : it.planned_date}
                       </td>
                       <td className="px-4 py-3">

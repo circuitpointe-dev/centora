@@ -37,6 +37,7 @@ import ProcurementAnalyticsPage from '@/components/procurement/ProcurementAnalyt
 import ProcurementApprovalsPage from '@/components/procurement/ProcurementApprovalsPage';
 import ProcurementDeliveriesPage from '@/components/procurement/ProcurementDeliveriesPage';
 import ProcurementPlanningPage from '@/components/procurement/ProcurementPlanningPage';
+import RequisitionDetailPage from '@/components/procurement/RequisitionDetailPage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -170,7 +171,6 @@ const GenericFeaturePage = () => {
 
   // Procurement requisition detail dynamic route: requisition-detail-<id>
   if (module === 'procurement' && feature?.startsWith('requisition-detail-')) {
-    const RequisitionDetailPage = require('@/components/procurement/RequisitionDetailPage').default;
     return <RequisitionDetailPage />;
   }
 
