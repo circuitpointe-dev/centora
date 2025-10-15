@@ -16,6 +16,8 @@ import {
   RequisitionFilters
 } from "@/hooks/procurement/useProcurementRequisitions";
 import { toast } from "sonner";
+import { usePlanItems, usePlanStats, useCreatePlanItem } from "@/hooks/procurement/useProcurementPlanBuilder";
+import { useApprovalMatrix } from "@/hooks/procurement/useProcurementApprovalMatrix";
 
 const ProcurementPlanningPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,6 +25,21 @@ const ProcurementPlanningPage: React.FC = () => {
   const [filters, setFilters] = useState<RequisitionFilters>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState('requisition-management');
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newReq, setNewReq] = useState<Partial<Requisition>>({
+    req_id: '',
+    item_name: '',
+    quantity: 1,
+    estimated_cost: 0,
+    currency: 'USD',
+    date_submitted: new Date().toISOString(),
+    status: 'pending',
+  });
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const { data: planStats } = usePlanStats();
+  const { data: planItems } = usePlanItems({ page: currentPage, limit: 8, search: searchTerm });
+  const createPlanItem = useCreatePlanItem();
+  const { data: matrix } = useApprovalMatrix({ page: currentPage, limit: 8, search: searchTerm });
 
   const { data: stats, isLoading: statsLoading, error: statsError } = useRequisitionStats();
   const { data: requisitionsData, isLoading: requisitionsLoading, error: requisitionsError } = useRequisitions({
@@ -47,9 +64,64 @@ const ProcurementPlanningPage: React.FC = () => {
   };
 
   const handleNewRequisition = () => {
-    // Navigate to create requisition page or open modal
-    console.log('Create new requisition');
-    toast.info('Create requisition functionality coming soon');
+    if (activeTab === 'plan-builder') {
+      createPlanItem.mutate({ item: 'New item', description: 'Describe item', est_cost: 0, status: 'Pending' }, { onSuccess: () => toast.success('Item added') });
+      return;
+    }
+    setIsCreateOpen(true);
+  };
+
+  const handleCreateSubmit = async () => {
+    try {
+      await createRequisitionMutation.mutateAsync(newReq as Requisition);
+      setIsCreateOpen(false);
+      toast.success('Requisition created');
+      setNewReq({ req_id: '', item_name: '', quantity: 1, estimated_cost: 0, currency: 'USD', date_submitted: new Date().toISOString(), status: 'pending' });
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to create requisition');
+    }
+  };
+
+  const handleExport = () => {
+    const rows = [
+      ['REQ ID','ITEM','QUANTITY','EST. COST','CURRENCY','DATE SUBMITTED','BUDGET SOURCE','STATUS'],
+      ...requisitions.map(r => [r.req_id, r.item_name, String(r.quantity), String(r.estimated_cost), r.currency, new Date(r.date_submitted).toISOString(), r.budget_source || '', r.status])
+    ];
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `requisitions-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleBulkClick = () => fileInputRef.current?.click();
+
+  const handleBulkFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const [headerLine, ...lines] = text.split(/\r?\n/).filter(Boolean);
+    const headers = headerLine.split(',').map(h => h.trim().toLowerCase());
+    const idx = (k: string) => headers.indexOf(k);
+    for (const line of lines) {
+      const cols = line.split(',');
+      const payload: Partial<Requisition> = {
+        req_id: cols[idx('req_id')] || cols[idx('REQ ID')],
+        item_name: cols[idx('item_name')] || cols[idx('ITEM')],
+        quantity: Number(cols[idx('quantity')] || 1),
+        estimated_cost: Number(cols[idx('estimated_cost')] || 0),
+        currency: cols[idx('currency')] || 'USD',
+        date_submitted: cols[idx('date_submitted')] || new Date().toISOString(),
+        budget_source: cols[idx('budget_source')] || undefined,
+        status: (cols[idx('status')] as any) || 'pending',
+      } as any;
+      try { await createRequisitionMutation.mutateAsync(payload as Requisition); } catch {}
+    }
+    toast.success('Bulk upload completed');
+    (e.target as any).value = '';
   };
 
   const getStatusBadge = (status: Requisition['status']) => {
@@ -203,6 +275,84 @@ const ProcurementPlanningPage: React.FC = () => {
         </Card>
       </div>
 
+      {/* Plan Builder Tab KPI (when active) */}
+      {activeTab === 'plan-builder' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+            <div className="bg-[rgba(124,58,237,0.15)] rounded-[42px] p-2.5 flex items-center justify-center w-12 h-12">
+              <img className="w-6 h-6" src="/group0.svg" alt="Total spend" />
+            </div>
+            <div className="text-2xl font-bold text-[#383839]">${(planStats as any)?.total_planned_spend || 0}</div>
+            <div className="text-sm text-[#6b7280]">Total planned spend</div>
+          </Card>
+          <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+            <div className="bg-[rgba(52,199,89,0.15)] rounded-[42px] p-2.5 flex items-center justify-center w-12 h-12">
+              <img className="w-6 h-6" src="/group1.svg" alt="Total items" />
+            </div>
+            <div className="text-2xl font-bold text-[#383839]">{(planStats as any)?.total_items || 0}</div>
+            <div className="text-sm text-[#6b7280]">Total items</div>
+          </Card>
+          <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+            <div className="bg-[rgba(255,193,7,0.15)] rounded-[42px] p-2.5 flex items-center justify-center w-12 h-12">
+              <img className="w-6 h-6" src="/group2.svg" alt="Pending items" />
+            </div>
+            <div className="text-2xl font-bold text-[#383839]">{(planStats as any)?.pending_items || 0}</div>
+            <div className="text-sm text-[#6b7280]">Pending items</div>
+          </Card>
+        </div>
+      )}
+
+      {/* Approval matrix & workflows tab */}
+      {activeTab === 'approval-matrix' && (
+        <Card>
+          <CardContent className="p-0">
+            <div className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="relative">
+                <img className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" src="/search0.svg" alt="search" />
+                <Input placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 w-full sm:w-64" />
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm"><img className="w-4 h-4 mr-2" src="/ion-filter0.svg" alt="filter" />Filter</Button>
+                <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">+ Add rule</Button>
+              </div>
+            </div>
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b">
+                  <tr className="text-left text-xs text-gray-500">
+                    <th className="px-4 py-3">Rule ID</th>
+                    <th className="px-4 py-3">Entity type</th>
+                    <th className="px-4 py-3">Condition</th>
+                    <th className="px-4 py-3">Approver sequence</th>
+                    <th className="px-4 py-3">Escalation SLA</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {matrix?.rules?.map((r: any) => (
+                    <tr key={r.id} className="border-b text-sm">
+                      <td className="px-4 py-3 text-gray-700">{r.rule_code}</td>
+                      <td className="px-4 py-3 text-gray-700">{r.entity_type}</td>
+                      <td className="px-4 py-3 text-gray-700">{r.condition}</td>
+                      <td className="px-4 py-3 text-gray-700">{(r.approver_sequence || []).join(' → ')}</td>
+                      <td className="px-4 py-3 text-gray-700">{r.escalation_sla}</td>
+                      <td className="px-4 py-3">{getStatusBadge((r.status || 'Active').toLowerCase() as any)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm">Edit</Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Mobile cards could be added similarly */}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Requisition Management Section */}
       {activeTab === 'requisition-management' && (
         <div className="space-y-6">
@@ -233,14 +383,15 @@ const ProcurementPlanningPage: React.FC = () => {
                 <img className="w-4 h-4 mr-2" src="/list0.svg" alt="List view" />
                 List
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleExport}>
                 <img className="w-4 h-4 mr-2" src="/uil-export0.svg" alt="Export" />
                 <span className="hidden sm:inline">Export</span>
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleBulkClick}>
                 <img className="w-4 h-4 mr-2" src="/typcn-upload0.svg" alt="Bulk upload" />
                 <span className="hidden sm:inline">Bulk upload</span>
               </Button>
+              <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleBulkFile} />
               <Button
                 onClick={handleNewRequisition}
                 className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white"
@@ -399,18 +550,61 @@ const ProcurementPlanningPage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+
+      {/* Create Requisition Modal */}
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
+            <div className="p-4 border-b flex items-center justify-between">
+              <h3 className="text-lg font-semibold">New requisition</h3>
+              <button onClick={() => setIsCreateOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">REQ ID</label>
+                <Input value={newReq.req_id || ''} onChange={e => setNewReq(v => ({...v, req_id: e.target.value}))} />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Item</label>
+                <Input value={newReq.item_name || ''} onChange={e => setNewReq(v => ({...v, item_name: e.target.value}))} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Quantity</label>
+                  <Input type="number" value={newReq.quantity || 1} onChange={e => setNewReq(v => ({...v, quantity: Number(e.target.value)}))} />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Est. cost</label>
+                  <Input type="number" value={newReq.estimated_cost || 0} onChange={e => setNewReq(v => ({...v, estimated_cost: Number(e.target.value)}))} />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Currency</label>
+                  <Input value={newReq.currency || 'USD'} onChange={e => setNewReq(v => ({...v, currency: e.target.value}))} />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Budget source</label>
+                <Input value={newReq.budget_source || ''} onChange={e => setNewReq(v => ({...v, budget_source: e.target.value}))} />
+              </div>
+            </div>
+            <div className="p-4 border-t flex items-center justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
+              <Button onClick={handleCreateSubmit} className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">Create</Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* End Modal */}
         </div>
       )}
 
-      {/* Other Tabs Content */}
-      {activeTab !== 'requisition-management' && (
+      {/* Calendar placeholder */}
+      {activeTab === 'calendar' && (
         <Card>
           <CardContent className="p-8 text-center">
             <div className="text-gray-500">
               <h3 className="text-lg font-medium mb-2">
-                {activeTab === 'plan-builder' && 'Procurement Plan Builder'}
-                {activeTab === 'approval-matrix' && 'Approval Matrix & Workflows'}
-                {activeTab === 'calendar' && 'Procurement Calendar'}
+                Procurement Calendar
               </h3>
               <p>This feature is coming soon!</p>
             </div>
