@@ -165,6 +165,12 @@ const GenericFeaturePage = () => {
     return <ProcurementPlanningPage />;
   }
 
+  // Procurement requisition detail dynamic route: requisition-detail-<id>
+  if (module === 'procurement' && feature?.startsWith('requisition-detail-')) {
+    const RequisitionDetailPage = require('@/components/procurement/RequisitionDetailPage').default;
+    return <RequisitionDetailPage />;
+  }
+
   if (module === 'procurement') {
     return <ProcurementFeaturePage />;
   }

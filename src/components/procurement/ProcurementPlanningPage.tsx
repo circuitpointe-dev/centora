@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, Upload, Download, Plus, Eye } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   useRequisitionStats,
   useRequisitions,
@@ -43,9 +43,7 @@ const ProcurementPlanningPage: React.FC = () => {
   const totalPages = Math.ceil(totalRequisitions / 8);
 
   const handleViewRequisition = (requisitionId: string) => {
-    // Navigate to requisition detail page or open modal
-    console.log('View requisition:', requisitionId);
-    toast.info('View requisition functionality coming soon');
+    navigate(`/dashboard/procurement/requisition-detail-${requisitionId}`);
   };
 
   const handleNewRequisition = () => {
@@ -130,8 +128,8 @@ const ProcurementPlanningPage: React.FC = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${activeTab === tab.id
-                ? 'bg-white text-[#7c3aed] shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-white text-[#7c3aed] shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
               }`}
           >
             {tab.label}
@@ -142,60 +140,66 @@ const ProcurementPlanningPage: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Pending Requisitions */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6 flex items-center space-x-4">
-            <div className="bg-[#fef3c7] rounded-full p-3">
+        <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+          <div className="bg-[rgba(255,193,7,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
+            <div className="shrink-0 w-6 h-6 relative overflow-hidden">
               <img
-                className="w-6 h-6"
-                src="/eye0.svg"
+                className="w-[95.45%] h-[96.97%] absolute right-[2.27%] left-[2.27%] bottom-[1.52%] top-[1.52%] overflow-visible"
+                src="/group0.svg"
                 alt="Pending requisitions"
               />
             </div>
-            <div>
-              <div className="text-2xl font-bold text-[#383839]">
-                {stats?.pendingRequisitions || 0}
-              </div>
-              <div className="text-sm text-[#6b7280]">Pending requisitions</div>
+          </div>
+          <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
+            <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
+              {stats?.pendingRequisitions || 0}
             </div>
-          </CardContent>
+            <div className="text-[#6b7280] text-center font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative w-[196px] flex items-center justify-center">
+              Pending requisitions
+            </div>
+          </div>
         </Card>
 
         {/* Approved Requisitions */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6 flex items-center space-x-4">
-            <div className="bg-[#d1fae5] rounded-full p-3">
+        <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+          <div className="bg-[rgba(52,199,89,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
+            <div className="shrink-0 w-6 h-6 relative overflow-hidden">
               <img
-                className="w-6 h-6"
-                src="/eye1.svg"
+                className="w-[95.45%] h-[96.97%] absolute right-[2.27%] left-[2.27%] bottom-[1.52%] top-[1.52%] overflow-visible"
+                src="/group1.svg"
                 alt="Approved requisitions"
               />
             </div>
-            <div>
-              <div className="text-2xl font-bold text-[#383839]">
-                {stats?.approvedRequisitions || 0}
-              </div>
-              <div className="text-sm text-[#6b7280]">Approved requisitions</div>
+          </div>
+          <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
+            <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
+              {stats?.approvedRequisitions || 0}
             </div>
-          </CardContent>
+            <div className="text-[#6b7280] text-left font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative flex items-center justify-start">
+              Approved requisitions
+            </div>
+          </div>
         </Card>
 
         {/* Average Approval Time */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6 flex items-center space-x-4">
-            <div className="bg-[#e0e7ff] rounded-full p-3">
+        <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+          <div className="bg-[rgba(124,58,237,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
+            <div className="shrink-0 w-6 h-6 relative overflow-hidden">
               <img
-                className="w-6 h-6"
-                src="/eye2.svg"
+                className="w-[88.28%] h-[79.17%] absolute right-[6.86%] left-[4.86%] bottom-[8.33%] top-[12.5%] overflow-visible"
+                src="/group2.svg"
                 alt="Average approval time"
               />
             </div>
-            <div>
-              <div className="text-2xl font-bold text-[#383839]">
-                {stats?.averageApprovalTime || 0} days
-              </div>
-              <div className="text-sm text-[#6b7280]">Average approval time</div>
+          </div>
+          <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
+            <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
+              {stats?.averageApprovalTime || 0} days
             </div>
-          </CardContent>
+            <div className="text-[#6b7280] text-left font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative flex items-center justify-start">
+              Average approval time
+            </div>
+          </div>
         </Card>
       </div>
 
@@ -211,7 +215,11 @@ const ProcurementPlanningPage: React.FC = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <img
+                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                  src="/search0.svg"
+                  alt="Search"
+                />
                 <Input
                   placeholder="Search...."
                   value={searchTerm}
@@ -226,18 +234,18 @@ const ProcurementPlanningPage: React.FC = () => {
                 List
               </Button>
               <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
+                <img className="w-4 h-4 mr-2" src="/uil-export0.svg" alt="Export" />
                 <span className="hidden sm:inline">Export</span>
               </Button>
               <Button variant="outline" size="sm">
-                <Upload className="h-4 w-4 mr-2" />
+                <img className="w-4 h-4 mr-2" src="/typcn-upload0.svg" alt="Bulk upload" />
                 <span className="hidden sm:inline">Bulk upload</span>
               </Button>
               <Button
                 onClick={handleNewRequisition}
                 className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <img className="w-4 h-4 mr-2" src="/material-symbols-add-rounded0.svg" alt="Add" />
                 <span className="hidden sm:inline">New requisition</span>
                 <span className="sm:hidden">New</span>
               </Button>
@@ -309,7 +317,7 @@ const ProcurementPlanningPage: React.FC = () => {
                             onClick={() => handleViewRequisition(requisition.id)}
                             className="text-[#7c3aed] border-[#7c3aed] hover:bg-[#7c3aed] hover:text-white"
                           >
-                            <Eye className="h-4 w-4 mr-1" />
+                            <img className="h-4 w-4 mr-1" src="/eye0.svg" alt="View" />
                             View
                           </Button>
                         </td>
@@ -354,7 +362,7 @@ const ProcurementPlanningPage: React.FC = () => {
                           onClick={() => handleViewRequisition(requisition.id)}
                           className="w-full text-[#7c3aed] border-[#7c3aed] hover:bg-[#7c3aed] hover:text-white"
                         >
-                          <Eye className="h-4 w-4 mr-1" />
+                          <img className="h-4 w-4 mr-1" src="/eye0.svg" alt="View" />
                           View Details
                         </Button>
                       </div>
