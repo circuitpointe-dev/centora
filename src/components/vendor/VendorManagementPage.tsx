@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
-import { useVendors, useCreateVendor, useUpdateVendor, useDeleteVendor, Vendor } from '@/hooks/procurement/useVendors';
+import { useVendors, useCreateVendor, useUpdateVendor, useDeleteVendor, Vendor, useVendorStats } from '@/hooks/procurement/useVendors';
 import VendorClarificationModal from './VendorClarificationModal';
 
 const pageSize = 10;
@@ -22,6 +22,7 @@ const VendorManagementPage: React.FC = () => {
 
     const navigate = useNavigate();
     const { data, isLoading, error } = useVendors({ page, limit: pageSize, search, status });
+    const { data: stats } = useVendorStats();
     const createVendor = useCreateVendor();
     const updateVendor = useUpdateVendor();
     const deleteVendor = useDeleteVendor();
@@ -133,11 +134,46 @@ const VendorManagementPage: React.FC = () => {
                 <h1 className="text-2xl font-semibold text-[#383839]">Vendor management</h1>
             </div>
 
+            {/* KPI Cards - pixel-perfect per Figma with exact SVGs */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="rounded-[12px] border border-[#EEF2F6] h-[136px]" style={{ boxShadow: '0px 12px 40px rgba(17, 12, 46, 0.06)' }}>
+                    <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
+                        <div className="mb-3 h-12 w-12 rounded-full bg-[#E6FAEF] flex items-center justify-center">
+                            <img src="/group0.svg" alt="Active vendors" className="h-6 w-6" />
+                        </div>
+                        <div className="text-[32px] leading-[40px] font-semibold text-[#111827]">{stats?.activeVendors ?? 0}</div>
+                        <div className="mt-1 text-sm text-[#6B7280]">Active vendors</div>
+                    </CardContent>
+                </Card>
+                <Card className="rounded-[12px] border border-[#EEF2F6] h-[136px]" style={{ boxShadow: '0px 12px 40px rgba(17, 12, 46, 0.06)' }}>
+                    <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
+                        <div className="mb-3 h-12 w-12 rounded-full bg-[#FFF7E6] flex items-center justify-center">
+                            <img src="/layer-12.svg" alt="Expiring contracts" className="h-6 w-6" />
+                        </div>
+                        <div className="text-[32px] leading-[40px] font-semibold text-[#111827]">{stats?.expiringContracts30d ?? 0}</div>
+                        <div className="mt-1 text-sm text-[#6B7280]">Expiring contracts (30 days)</div>
+                    </CardContent>
+                </Card>
+                <Card className="rounded-[12px] border border-[#EEF2F6] h-[136px]" style={{ boxShadow: '0px 12px 40px rgba(17, 12, 46, 0.06)' }}>
+                    <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
+                        <div className="mb-3 h-12 w-12 rounded-full bg-[#FDE7E7] flex items-center justify-center">
+                            <img src="/layer-13.svg" alt="High risk" className="h-6 w-6" />
+                        </div>
+                        <div className="text-[32px] leading-[40px] font-semibold text-[#111827]">{stats?.highRiskVendors ?? 0}</div>
+                        <div className="mt-1 text-sm text-[#6B7280]">High risk vendors</div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Toolbar title per Figma */}
+            <div className="flex items-center justify-between mt-6">
+                <div className="text-sm font-medium text-[#383839]">Vendor management lists</div>
+            </div>
+
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="relative">
-                        <img className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" src="/search0.svg" alt="search" />
-                        <Input placeholder="Search vendors..." value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} className="pl-10 w-full sm:w-64" />
+                        <Input placeholder="Search…" value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} className="w-full sm:w-64" />
                     </div>
                     <div className="flex items-center gap-2">
                         <select value={status} onChange={e => { setPage(1); setStatus(e.target.value); }} className="h-9 rounded-md border border-[#e5e7eb] bg-white px-3 text-sm">
@@ -148,15 +184,13 @@ const VendorManagementPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                    <Button variant="outline" size="sm" onClick={exportCsv}><img className="w-4 h-4 mr-2" src="/uil-export0.svg" alt="export" />Export</Button>
+                    <Button variant="outline" size="sm" onClick={exportCsv}>Export</Button>
                     <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleBulkUpload(f); }} />
                     <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isBulkUploading}>
-                        <img className="w-4 h-4 mr-2" src="/bulk-upload0.svg" alt="bulk upload" />
                         {isBulkUploading ? 'Uploading…' : 'Bulk upload'}
                     </Button>
                     <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" onClick={() => setIsCreateOpen(true)}>
-                        <img className="w-4 h-4 mr-2" src="/material-symbols-add-rounded0.svg" alt="add" />
-                        New vendor
+                        Add vendor
                     </Button>
                 </div>
             </div>
@@ -316,8 +350,8 @@ const VendorManagementPage: React.FC = () => {
                             </div>
                             <div>
                                 <label className="block text-sm text-gray-600 mb-1">Status</label>
-                                <select 
-                                    value={editingVendor.is_active ? 'active' : 'inactive'} 
+                                <select
+                                    value={editingVendor.is_active ? 'active' : 'inactive'}
                                     onChange={e => setEditingVendor(v => ({ ...(v as Vendor), is_active: e.target.value === 'active' }))}
                                     className="w-full h-9 rounded-md border border-[#e5e7eb] bg-white px-3 text-sm"
                                 >

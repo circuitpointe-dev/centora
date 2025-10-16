@@ -24,6 +24,12 @@ export type Vendor = {
     updated_at?: string;
 };
 
+export type VendorStats = {
+    activeVendors: number;
+    expiringContracts30d: number;
+    highRiskVendors: number;
+};
+
 export function useVendors(params: { page: number; limit: number; search?: string; status?: string }) {
     const { page, limit, search, status } = params;
     return useQuery({
@@ -50,6 +56,46 @@ export function useVendors(params: { page: number; limit: number; search?: strin
     });
 }
 
+export function useVendorStats() {
+    return useQuery<VendorStats>({
+        queryKey: ['vendor-stats'],
+        queryFn: async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('User not authenticated');
+            const { data: profile } = await supabase.from('profiles').select('org_id').eq('id', user.id).single();
+            const orgId = profile?.org_id;
+
+            const now = new Date();
+            const in30 = new Date(now);
+            in30.setDate(in30.getDate() + 30);
+            const in30ISO = in30.toISOString().slice(0, 10);
+
+            const [vendorsRes, contractsRes] = await Promise.all([
+                (supabase as any)
+                    .from('vendors')
+                    .select('id,status,risk_score')
+                    .eq('org_id', orgId),
+                (supabase as any)
+                    .from('vendor_contracts')
+                    .select('id,end_date,status')
+                    .eq('status', 'Active')
+                    .lte('end_date', in30ISO)
+            ]);
+
+            if (vendorsRes.error) throw vendorsRes.error;
+            if (contractsRes.error) throw contractsRes.error;
+
+            const vendors = vendorsRes.data || [];
+            const activeVendors = vendors.filter((v: any) => (v.status || '').toLowerCase() === 'active').length;
+            const highRiskVendors = vendors.filter((v: any) => Number(v.risk_score || 0) >= 70).length;
+            const expiringContracts30d = (contractsRes.data || []).length;
+
+            return { activeVendors, expiringContracts30d, highRiskVendors };
+        },
+        staleTime: 5 * 60 * 1000
+    });
+}
+
 export function useCreateVendor() {
     const qc = useQueryClient();
     return useMutation({
@@ -58,10 +104,10 @@ export function useCreateVendor() {
             if (!user) throw new Error('User not authenticated');
             const { data: profile } = await supabase.from('profiles').select('org_id').eq('id', user.id).single();
             const orgId = profile?.org_id;
-            const { error } = await (supabase as any).from('vendors').insert({ 
-                ...payload, 
+            const { error } = await (supabase as any).from('vendors').insert({
+                ...payload,
                 org_id: orgId,
-                created_by: user.id 
+                created_by: user.id
             });
             if (error) throw error;
         },
