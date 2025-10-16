@@ -199,10 +199,10 @@ const VendorManagementPage: React.FC = () => {
                             <thead className="bg-gray-50 border-b">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Person</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next expiry</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
@@ -211,10 +211,10 @@ const VendorManagementPage: React.FC = () => {
                                 {vendors.map(v => (
                                     <tr key={v.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/dashboard/vendors/${v.id}`)}>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#383839]">{v.vendor_name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.contact_person || '-'}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.city && v.country ? `${v.city}, ${v.country}` : v.city || v.country || '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.rating ?? '-'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.category || '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{nextExpiry(v.id)}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.risk_score != null ? (v.risk_score >= 70 ? 'High' : v.risk_score >= 40 ? 'Medium' : 'Low') : '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{statusBadge(v.is_active)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setEditingVendor(v); }}>Edit</Button>
