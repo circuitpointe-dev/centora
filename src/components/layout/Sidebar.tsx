@@ -31,6 +31,11 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
 
   const handleFeatureClick = (featureId: string) => {
     const [path, query] = featureId.split("?");
+    if (currentModule === 'procurement' && path === 'vendor-management') {
+      navigate('/dashboard/procurement/vendor-management');
+      setIsMobileOpen(false);
+      return;
+    }
     const url = `/dashboard/${currentModule}/${path}${query ? `?${query}` : ""}`;
     navigate(url);
     setIsMobileOpen(false);
@@ -70,7 +75,7 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
         />
       )}
 
-        {/* Mobile Toggle Button */}
+      {/* Mobile Toggle Button */}
       <Button
         variant="ghost"
         size="sm"
@@ -124,8 +129,8 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
               className={cn(
                 "flex items-center space-x-3",
                 isCollapsed &&
-                  !isMobileOpen &&
-                  "justify-center lg:block xl:flex"
+                !isMobileOpen &&
+                "justify-center lg:block xl:flex"
               )}
             >
               {(!isCollapsed || isMobileOpen) && (
@@ -161,20 +166,20 @@ const Sidebar = ({ currentModule, isCollapsed, onToggleCollapse }: SidebarProps)
 
         {/* Content Area - Either Features or Module Switcher */}
         <div className={cn("flex-1 overflow-auto min-h-0", isMobileOpen ? "block" : "hidden lg:block")}>
-        {!showModuleSwitcher ? (
-          <FeatureList
-            currentModule={currentModule}
-            isCollapsed={isCollapsed && !isMobileOpen}
-            onFeatureClick={handleFeatureClick}
-          />
-        ) : (
-          <ModuleSwitcher
-            currentModule={currentModule}
-            isCollapsed={isCollapsed && !isMobileOpen}
-            onModuleSwitch={handleModuleSwitch}
-          />
-        )}
-      </div>
+          {!showModuleSwitcher ? (
+            <FeatureList
+              currentModule={currentModule}
+              isCollapsed={isCollapsed && !isMobileOpen}
+              onFeatureClick={handleFeatureClick}
+            />
+          ) : (
+            <ModuleSwitcher
+              currentModule={currentModule}
+              isCollapsed={isCollapsed && !isMobileOpen}
+              onModuleSwitch={handleModuleSwitch}
+            />
+          )}
+        </div>
         {/* Module Switcher Toggle - Fixed to bottom */}
         {canSwitchModules && (
           <div

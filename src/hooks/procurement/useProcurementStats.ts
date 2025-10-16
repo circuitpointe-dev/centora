@@ -47,8 +47,8 @@ export const useProcurementStats = () => {
             // Fetch real data from database
             const [requisitionsResult, purchaseOrdersResult, invoicesResult] = await Promise.all([
                 supabase
-                    .from('requisitions')
-                    .select('id, status, total_amount')
+                    .from('procurement_requisitions')
+                    .select('id, status, estimated_cost')
                     .eq('org_id', user.org_id),
 
                 supabase
@@ -73,7 +73,7 @@ export const useProcurementStats = () => {
 
             // Count pending requisitions
             const pendingRequisitions = requisitionsResult.data
-                ?.filter(req => req.status === 'submitted' || req.status === 'draft')
+                ?.filter((req: any) => req.status === 'pending')
                 .length || 0;
 
             // Count open purchase orders

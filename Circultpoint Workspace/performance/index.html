@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./vars.css">
+  <link rel="stylesheet" href="./style.css">
+  <script src='https://cdn.tailwindcss.com/3.2.0' ></script>
+  <script src="./tailwind.config.js"></script>
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+   </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="bg-[#f5f7fa] h-[1271px] relative overflow-hidden">
+    <div
+      class="bg-[#ffffff] border-solid border-[#e6eff5] border-b pr-8 pl-8 flex flex-row items-center justify-between w-[1120px] h-[75px] absolute left-80 top-[75px]"
+    >
+      <div
+        class="border-solid border-[transparent] border-b-2 pt-2.5 pr-[5px] pb-2.5 pl-[5px] flex flex-row gap-[27px] items-center justify-start shrink-0 relative"
+      >
+        <div
+          class="flex flex-row gap-[9px] items-center justify-start shrink-0 relative"
+        >
+          <img
+            class="shrink-0 w-5 h-5 relative overflow-visible"
+            style="aspect-ratio: 1"
+            src="arrow-back0.svg"
+          />
+          <div
+            class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium relative flex items-center justify-center"
+          >
+            Back to Vendor management
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-[#ffffff] border-solid border-[#e6eff5] border-b pr-8 pl-8 flex flex-row items-center justify-between w-[1120px] h-[75px] absolute left-80 top-0"
+    >
+      <div
+        class="text-[#383839] text-center font-['Inter-Medium',_sans-serif] text-2xl font-medium relative"
+      >
+        Vendor management
+      </div>
+      <div
+        class="rounded-[20px] border-solid border-[#e1e1e1] border pt-2 pr-4 pb-2 pl-4 flex flex-row gap-4 items-center justify-start shrink-0 h-[30px] relative"
+      >
+        <div
+          class="text-[#9b9b9b] text-left font-['Inter-Regular',_sans-serif] text-xs leading-6 font-normal relative flex items-center justify-start"
+        >
+          Search documents, templates, or policies...
+        </div>
+        <img
+          class="shrink-0 w-4 h-4 relative overflow-visible"
+          style="aspect-ratio: 1"
+          src="search0.svg"
+        />
+      </div>
+      <div
+        class="flex flex-row gap-5 items-center justify-start shrink-0 relative"
+      >
+        <div class="shrink-0 w-[50px] h-[50px] static">
+          <div
+            class="bg-[#f5f7fa] rounded-[50%] w-[50px] h-[50px] absolute left-0 top-0"
+            style="box-shadow: 4px 4px 18px -2px rgba(231, 228, 232, 0.8)"
+          ></div>
+          <img
+            class="w-[25px] h-[25px] absolute left-[13px] top-3 overflow-visible"
+            src="_002-notification-10.svg"
+          />
+        </div>
+        <div
+          class="flex flex-row gap-1.5 items-center justify-start shrink-0 relative"
+        >
+          <img
+            class="rounded-full shrink-0 w-12 h-12 relative"
+            style="object-fit: cover; aspect-ratio: 1"
+            src="profile-picture-10.png"
+          />
+          <img
+            class="shrink-0 w-2.5 h-5 relative overflow-visible"
+            style="aspect-ratio: 10/20"
+            src="weui-arrow-filled0.svg"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-[#ffffff] pt-10 flex flex-col items-start justify-between w-80 h-[1271px] absolute left-0 top-0"
+      style="box-shadow: 2px 4px 4px 0px rgba(55, 55, 55, 0.05)"
+    >
+      <div
+        class="flex flex-col gap-8 items-center justify-start self-stretch shrink-0 relative"
+      >
+        <div
+          class="pr-2.5 pl-2.5 flex flex-row gap-2 items-center justify-start shrink-0 w-[290px] relative"
+        >
+          <img
+            class="shrink-0 w-10 h-10 relative overflow-visible"
+            style="aspect-ratio: 1"
+            src="game-icons-moon-orbit0.svg"
+          />
+          <div
+            class="text-[#2d2b2b] text-center font-['Inter-Medium',_sans-serif] text-lg leading-tight font-medium relative flex items-center justify-center"
+          >
+            Orbit ERP
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-2 items-start justify-start self-stretch shrink-0 relative"
+        >
+          <div
+            class="pl-[38px] flex flex-row gap-2.5 items-center justify-start self-stretch shrink-0 h-[39px] relative"
+          >
+            <div
+              class="text-[#7c3aed] text-center font-['Inter-Medium',_sans-serif] text-lg leading-tight font-medium relative flex items-center justify-center"
+            >
+              Procurement Management
+            </div>
+          </div>
+          <div
+            class="pr-1.5 pl-1.5 flex flex-col gap-4 items-start justify-start self-stretch shrink-0 relative"
+          >
+            <div
+              class="rounded-[5px] pl-6 flex flex-row gap-4 items-center justify-start self-stretch shrink-0 h-[52px] relative"
+            >
+              <div
+                class="flex flex-row gap-1.5 items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="flex flex-row gap-4 items-center justify-start shrink-0 relative"
+                >
+                  <img
+                    class="shrink-0 w-5 h-5 relative overflow-visible"
+                    src="tablet-portrait0.svg"
+                  />
+                  <div
+                    class="rounded-[5px] flex flex-col gap-0 items-start justify-center shrink-0 relative"
+                  >
+                    <div
+                      class="text-[rgba(56,56,57,0.60)] text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+                    >
+                      Dashboard
+                    </div>
+                    <div
+                      class="border-solid border-[rgba(56,56,57,0.60)] border-t border-r-[0] border-b-[0] border-l-[0] shrink-0 w-0 h-0 relative"
+                      style="margin-top: -1px"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rounded-[5px] pl-6 flex flex-row gap-4 items-center justify-start self-stretch shrink-0 h-[52px] relative"
+            >
+              <div
+                class="flex flex-row gap-1.5 items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="flex flex-row gap-4 items-center justify-start shrink-0 relative"
+                >
+                  <img
+                    class="shrink-0 w-6 h-6 relative overflow-visible"
+                    style="aspect-ratio: 1"
+                    src="layer-10.svg"
+                  />
+                  <div
+                    class="rounded-[5px] flex flex-col gap-0 items-start justify-center shrink-0 relative"
+                  >
+                    <div
+                      class="text-grey-color text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+                    >
+                      Procurement Planning 
+                    </div>
+                    <div
+                      class="border-solid border-grey-color border-t border-r-[0] border-b-[0] border-l-[0] shrink-0 w-0 h-0 relative"
+                      style="margin-top: -1px"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-primary-color rounded-[5px] pl-6 flex flex-row gap-4 items-center justify-start self-stretch shrink-0 h-[52px] relative"
+            >
+              <div
+                class="flex flex-row gap-1.5 items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="flex flex-row gap-4 items-center justify-start shrink-0 relative"
+                >
+                  <img
+                    class="shrink-0 w-6 h-6 relative overflow-visible"
+                    style="aspect-ratio: 1"
+                    src="layer-11.svg"
+                  />
+                  <div
+                    class="rounded-[5px] flex flex-col gap-0 items-start justify-center shrink-0 relative"
+                  >
+                    <div
+                      class="text-white-color text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+                    >
+                      Vendor Management 
+                    </div>
+                    <div
+                      class="border-solid border-white-color border-t border-r-[0] border-b-[0] border-l-[0] shrink-0 w-0 h-0 relative"
+                      style="margin-top: -1px"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rounded-[5px] pl-6 flex flex-row gap-4 items-center justify-start self-stretch shrink-0 h-[52px] relative"
+            >
+              <div
+                class="flex flex-row gap-1.5 items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="flex flex-row gap-4 items-center justify-start shrink-0 relative"
+                >
+                  <img
+                    class="shrink-0 w-6 h-6 relative overflow-visible"
+                    style="aspect-ratio: 1"
+                    src="layer-12.svg"
+                  />
+                  <div
+                    class="rounded-[5px] flex flex-col gap-0 items-start justify-center shrink-0 relative"
+                  >
+                    <div
+                      class="text-[rgba(56,56,57,0.60)] text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+                    >
+                      Procurement Execution
+                    </div>
+                    <div
+                      class="border-solid border-[rgba(56,56,57,0.60)] border-t border-r-[0] border-b-[0] border-l-[0] shrink-0 w-0 h-0 relative"
+                      style="margin-top: -1px"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rounded-[5px] pl-6 flex flex-row gap-4 items-center justify-start self-stretch shrink-0 h-[52px] relative"
+            >
+              <div
+                class="flex flex-row gap-1.5 items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="flex flex-row gap-4 items-center justify-start shrink-0 relative"
+                >
+                  <img
+                    class="shrink-0 w-6 h-6 relative overflow-visible"
+                    style="aspect-ratio: 1"
+                    src="layer-13.svg"
+                  />
+                  <div
+                    class="rounded-[5px] flex flex-col gap-0 items-start justify-center shrink-0 relative"
+                  >
+                    <div
+                      class="text-[rgba(56,56,57,0.60)] text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+                    >
+                      Procurement Reports
+                    </div>
+                    <div
+                      class="border-solid border-[rgba(56,56,57,0.60)] border-t border-r-[0] border-b-[0] border-l-[0] shrink-0 w-0 h-0 relative"
+                      style="margin-top: -1px"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-[#ffffff] pl-[39px] flex flex-row gap-[54px] items-center justify-start self-stretch shrink-0 h-[60px] relative"
+        style="box-shadow: 0px -2px 4px 0px rgba(0, 0, 0, 0.05)"
+      >
+        <img class="shrink-0 w-5 h-5 relative overflow-visible" src="menu0.svg" />
+        <div
+          class="text-[rgba(56,56,57,0.82)] text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+        >
+          Switch Module
+        </div>
+        <img
+          class="shrink-0 w-5 h-5 relative overflow-visible"
+          src="arrow-left0.svg"
+        />
+      </div>
+    </div>
+    <div
+      class="flex flex-col gap-9 items-start justify-start w-[1054px] absolute left-[349px] top-44"
+    >
+      <div
+        class="bg-[#ffffff] rounded-[5px] pt-6 pr-6 pb-10 pl-6 flex flex-col gap-[61px] items-start justify-start shrink-0 w-[1056px] relative"
+        style="box-shadow: 0px 4px 16px 0px rgba(234, 226, 253, 1)"
+      >
+        <div
+          class="flex flex-col gap-[21px] items-start justify-start shrink-0 w-[1008px] relative"
+        >
+          <div
+            class="flex flex-row items-center justify-between self-stretch shrink-0 relative"
+          >
+            <div
+              class="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-lg font-medium relative"
+            >
+              Vendor profile
+            </div>
+            <div
+              class="flex flex-row gap-4 items-center justify-start shrink-0 relative"
+            >
+              <div
+                class="rounded-[5px] border-solid border-[#e1e1e1] border pt-2 pr-[13px] pb-2 pl-[13px] flex flex-row gap-2 items-center justify-center self-stretch shrink-0 relative"
+              >
+                <div
+                  class="shrink-0 w-4 h-4 relative overflow-hidden"
+                  style="aspect-ratio: 1"
+                >
+                  <img
+                    class="w-[79.15%] h-[79.15%] absolute right-[8.35%] left-[12.5%] bottom-[12.5%] top-[8.35%] overflow-visible"
+                    src="group0.svg"
+                  />
+                </div>
+                <div
+                  class="flex flex-row gap-2 items-center justify-start shrink-0 relative"
+                >
+                  <div
+                    class="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Medium',_sans-serif] text-sm leading-6 font-medium relative flex items-center justify-start"
+                  >
+                    Edit vendor
+                  </div>
+                </div>
+              </div>
+              <div
+                class="rounded-[5px] border-solid border-[#e1e1e1] border pt-2 pr-5 pb-2 pl-5 flex flex-row gap-3.5 items-center justify-start shrink-0 h-[43px] relative"
+              >
+                <div
+                  class="flex flex-row gap-2 items-center justify-start shrink-0 relative"
+                >
+                  <img
+                    class="shrink-0 w-4 h-4 relative overflow-visible"
+                    style="aspect-ratio: 1"
+                    src="proicons-shield-cancel0.svg"
+                  />
+                  <div
+                    class="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Medium',_sans-serif] text-[13px] leading-6 font-medium relative flex items-center justify-start"
+                  >
+                    Suspend vendor
+                  </div>
+                </div>
+              </div>
+              <div
+                class="rounded-[5px] border-solid border-[#e1e1e1] border pt-2 pr-[13px] pb-2 pl-[13px] flex flex-row gap-2 items-center justify-center self-stretch shrink-0 w-[104px] relative"
+              >
+                <img
+                  class="shrink-0 w-4 h-4 relative overflow-visible"
+                  style="aspect-ratio: 1"
+                  src="uil-export0.svg"
+                />
+                <div
+                  class="flex flex-row gap-2 items-center justify-start shrink-0 relative"
+                >
+                  <div
+                    class="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Medium',_sans-serif] text-sm leading-6 font-medium relative flex items-center justify-start"
+                  >
+                    Export
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="bg-[#f5f7fa] rounded-[5px] border-solid border-[transparent] border pt-px pb-px flex flex-row gap-0 items-start justify-start self-stretch shrink-0 h-[46px] relative overflow-hidden"
+          >
+            <div
+              class="bg-grey-color rounded-[5px] pt-[15px] pr-[21px] pb-[15px] pl-[21px] flex flex-row gap-2.5 items-center justify-center flex-1 h-[45px] relative overflow-hidden"
+            >
+              <div
+                class="text-grey-color text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+              >
+                Overview
+              </div>
+            </div>
+            <div
+              class="bg-primary-color rounded-[5px] pt-[15px] pr-[21px] pb-[15px] pl-[21px] flex flex-row gap-2.5 items-center justify-center self-stretch flex-1 relative overflow-hidden"
+            >
+              <div
+                class="text-grey-color text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+              >
+                Vetting checklist
+              </div>
+            </div>
+            <div
+              class="bg-primary-color rounded-[5px] pt-[15px] pr-[21px] pb-[15px] pl-[21px] flex flex-row gap-2.5 items-center justify-center self-stretch flex-1 relative overflow-hidden"
+            >
+              <div
+                class="text-grey-color text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+              >
+                Classifications
+              </div>
+            </div>
+            <div
+              class="bg-primary-color rounded-[5px] pt-[15px] pr-[21px] pb-[15px] pl-[21px] flex flex-row gap-2.5 items-center justify-center self-stretch flex-1 relative overflow-hidden"
+            >
+              <div
+                class="text-grey-color text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+              >
+                Contracts
+              </div>
+            </div>
+            <div
+              class="bg-primary-color rounded-[5px] pt-[15px] pr-[21px] pb-[15px] pl-[21px] flex flex-row gap-2.5 items-center justify-center self-stretch flex-1 relative overflow-hidden"
+            >
+              <div
+                class="text-white-color text-center font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative flex items-center justify-center"
+              >
+                Performance
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col gap-[42px] items-start justify-start self-stretch shrink-0 relative"
+        >
+          <div
+            class="bg-[#ffffff] rounded-[5px] border-solid border-[#f5f7fa] border-2 p-4 flex flex-col gap-[38px] items-center justify-start self-stretch shrink-0 h-[314px] relative"
+          >
+            <div
+              class="flex flex-row gap-[49px] items-center justify-start self-stretch shrink-0 relative"
+            >
+              <div
+                class="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-lg font-medium relative"
+              >
+                Performance trend
+              </div>
+            </div>
+            <div class="self-stretch shrink-0 h-[209px] relative">
+              <div
+                class="flex flex-col items-end justify-between h-[164px] absolute left-0 top-0"
+              >
+                <div
+                  class="text-[rgba(102,102,102,0.75)] text-left font-['Inter-Regular',_sans-serif] text-xs font-normal relative"
+                >
+                  100
+                </div>
+                <div
+                  class="text-[rgba(102,102,102,0.75)] text-right font-['Inter-Regular',_sans-serif] text-xs font-normal relative"
+                >
+                  80
+                </div>
+                <div
+                  class="text-[rgba(102,102,102,0.75)] text-right font-['Inter-Regular',_sans-serif] text-xs font-normal relative"
+                >
+                  60
+                </div>
+                <div
+                  class="text-[rgba(102,102,102,0.75)] text-right font-['Inter-Regular',_sans-serif] text-xs font-normal relative"
+                >
+                  40
+                </div>
+                <div
+                  class="text-[rgba(102,102,102,0.75)] text-right font-['Inter-Regular',_sans-serif] text-xs font-normal relative"
+                >
+                  20
+                </div>
+                <div
+                  class="text-[rgba(102,102,102,0.75)] text-right font-['Inter-Regular',_sans-serif] text-xs font-normal relative self-stretch"
+                >
+                  0
+                </div>
+              </div>
+              <img
+                class="flex flex-col items-start justify-between w-[923px] h-[149px] absolute left-[53px] top-[7px] overflow-visible"
+                src="frame-16188773560.svg"
+              />
+              <div
+                class="flex flex-row items-start justify-between w-[923px] h-[175px] absolute left-[53px] bottom-[33px]"
+              >
+                <div
+                  class="flex flex-col gap-[3px] items-center justify-start self-stretch shrink-0 relative"
+                >
+                  <div
+                    class="border-solid border-[#f1f1f1] border-t border-r-[0] border-b-[0] border-l-[0] flex-1 w-40 relative"
+                    style="
+                      margin-top: -1px;
+                      transform-origin: 0 0;
+                      transform: rotate(-90deg) scale(1, 1);
+                    "
+                  ></div>
+                  <div
+                    class="text-[#7d7d7d] text-center font-['Inter-Medium',_sans-serif] text-[10px] font-medium relative flex items-center justify-center"
+                    style="letter-spacing: -0.3px"
+                  >
+                    Q1 2024
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col gap-[3px] items-center justify-start self-stretch shrink-0 relative"
+                >
+                  <div
+                    class="border-solid border-[#f1f1f1] border-t border-r-[0] border-b-[0] border-l-[0] flex-1 w-40 relative"
+                    style="
+                      margin-top: -1px;
+                      transform-origin: 0 0;
+                      transform: rotate(-90deg) scale(1, 1);
+                    "
+                  ></div>
+                  <div
+                    class="text-[#7d7d7d] text-center font-['Inter-Medium',_sans-serif] text-[10px] font-medium relative flex items-center justify-center"
+                    style="letter-spacing: -0.3px"
+                  >
+                    Q2 2024
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col gap-[3px] items-center justify-start self-stretch shrink-0 relative"
+                >
+                  <div
+                    class="border-solid border-light-gray border-t border-r-[0] border-b-[0] border-l-[0] flex-1 w-40 relative"
+                    style="
+                      margin-top: -1px;
+                      transform-origin: 0 0;
+                      transform: rotate(-90deg) scale(1, 1);
+                    "
+                  ></div>
+                  <div
+                    class="text-[#7d7d7d] text-center font-['Inter-Medium',_sans-serif] text-[10px] font-medium relative flex items-center justify-center"
+                    style="letter-spacing: -0.3px"
+                  >
+                    Q3 2024
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col gap-[3px] items-center justify-start self-stretch shrink-0 relative"
+                >
+                  <div
+                    class="border-solid border-light-gray border-t border-r-[0] border-b-[0] border-l-[0] flex-1 w-40 relative"
+                    style="
+                      margin-top: -1px;
+                      transform-origin: 0 0;
+                      transform: rotate(-90deg) scale(1, 1);
+                    "
+                  ></div>
+                  <div
+                    class="text-[#7d7d7d] text-center font-['Inter-Medium',_sans-serif] text-[10px] font-medium relative flex items-center justify-center"
+                    style="letter-spacing: -0.3px"
+                  >
+                    Q4 2024
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col gap-[3px] items-center justify-start self-stretch shrink-0 relative"
+                >
+                  <div
+                    class="border-solid border-light-gray border-t border-r-[0] border-b-[0] border-l-[0] flex-1 w-40 relative"
+                    style="
+                      margin-top: -1px;
+                      transform-origin: 0 0;
+                      transform: rotate(-90deg) scale(1, 1);
+                    "
+                  ></div>
+                  <div
+                    class="text-[#7d7d7d] text-center font-['Inter-Medium',_sans-serif] text-[10px] font-medium relative flex items-center justify-center"
+                    style="letter-spacing: -0.3px"
+                  >
+                    Q5 2025
+                  </div>
+                </div>
+              </div>
+              <img
+                class="w-[885.5px] h-[119.5px] absolute left-[71px] top-2.5 overflow-visible"
+                src="vector-70.svg"
+              />
+              <img
+                class="w-[886.5px] h-[125.5px] absolute left-[69.5px] top-[25.5px] overflow-visible"
+                src="vector-60.svg"
+              />
+              <img
+                class="w-[886.5px] h-[92.5px] absolute left-[70px] top-[7.5px] overflow-visible"
+                src="vector-80.svg"
+              />
+              <img
+                class="w-[884px] h-[119px] absolute left-[72.5px] top-[8.5px] overflow-visible"
+                src="vector-90.svg"
+              />
+            </div>
+            <div
+              class="flex flex-row items-center justify-between shrink-0 w-[441px] absolute left-[50%] bottom-3"
+              style="translate: -50%"
+            >
+              <div
+                class="flex flex-row gap-[7px] items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="bg-[#7c3aed] rounded-sm shrink-0 w-2.5 h-2.5 relative overflow-hidden"
+                  style="aspect-ratio: 1"
+                ></div>
+                <div
+                  class="text-[#383839] text-left font-['InstrumentSans-Regular',_sans-serif] text-[10px] leading-[175%] font-normal relative"
+                  style="letter-spacing: 0.2px"
+                >
+                  Delivery
+                </div>
+              </div>
+              <div
+                class="flex flex-row gap-[7px] items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="bg-colors-blue rounded-sm shrink-0 w-2.5 h-2.5 relative overflow-hidden"
+                  style="aspect-ratio: 1"
+                ></div>
+                <div
+                  class="text-[#383839] text-left font-['InstrumentSans-Regular',_sans-serif] text-[10px] leading-[175%] font-normal relative"
+                  style="letter-spacing: 0.2px"
+                >
+                  Quality
+                </div>
+              </div>
+              <div
+                class="flex flex-row gap-[7px] items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="bg-colors-pink rounded-sm shrink-0 w-2.5 h-2.5 relative overflow-hidden"
+                  style="aspect-ratio: 1"
+                ></div>
+                <div
+                  class="text-[#383839] text-left font-['InstrumentSans-Regular',_sans-serif] text-[10px] leading-[175%] font-normal relative"
+                  style="letter-spacing: 0.2px"
+                >
+                  Cost
+                </div>
+              </div>
+              <div
+                class="flex flex-row gap-[7px] items-center justify-start shrink-0 relative"
+              >
+                <div
+                  class="bg-colors-orange rounded-sm shrink-0 w-2.5 h-2.5 relative overflow-hidden"
+                  style="aspect-ratio: 1"
+                ></div>
+                <div
+                  class="text-[#383839] text-left font-['InstrumentSans-Regular',_sans-serif] text-[10px] leading-[175%] font-normal relative"
+                  style="letter-spacing: 0.2px"
+                >
+                  Service
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex flex-col gap-6 items-end justify-start self-stretch shrink-0 relative"
+          >
+            <div
+              class="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-base leading-tight font-medium relative self-stretch flex items-center justify-start"
+            >
+              Evaluation history
+            </div>
+            <div
+              class="bg-[#ffffff] rounded-[5px] border-solid border-[#f5f7fa] border pt-8 pr-6 pb-8 pl-6 flex flex-col gap-[38px] items-center justify-start self-stretch shrink-0 relative"
+              style="box-shadow: 0px 4px 16px 0px rgba(234, 226, 253, 1)"
+            >
+              <div
+                class="flex flex-col gap-6 items-start justify-start self-stretch shrink-0 relative"
+              >
+                <div
+                  class="flex flex-row items-center justify-between self-stretch shrink-0 relative"
+                >
+                  <div
+                    class="flex flex-row gap-2 items-center justify-start shrink-0 w-[88px] relative"
+                  >
+                    <div
+                      class="rounded-[3px] border-solid border-[#f0f2f5] border flex flex-row gap-2.5 items-center justify-center shrink-0 w-[17px] h-[17px] relative overflow-hidden"
+                      style="
+                        transform-origin: 0 0;
+                        transform: rotate(0deg) scale(1, 1);
+                        aspect-ratio: 1;
+                      "
+                    >
+                      <div
+                        class="bg-[#f5f7fa] shrink-0 w-4 h-4 relative overflow-hidden"
+                      ></div>
+                    </div>
+                    <div
+                      class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-base font-medium relative"
+                    >
+                      Period
+                    </div>
+                  </div>
+                  <div
+                    class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-base font-medium relative"
+                  >
+                    Overall score
+                  </div>
+                  <div
+                    class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-base font-medium relative w-[65px]"
+                  >
+                    Delivery
+                  </div>
+                  <div
+                    class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-base font-medium relative"
+                  >
+                    Quality
+                  </div>
+                  <div
+                    class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-base font-medium relative"
+                  >
+                    Cost
+                  </div>
+                  <div
+                    class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-base font-medium relative"
+                  >
+                    Service
+                  </div>
+                  <div
+                    class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-base font-medium relative"
+                  >
+                    Reviewer
+                  </div>
+                  <div
+                    class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-base font-medium relative w-[100px]"
+                  >
+                    Notes
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col gap-8 items-start justify-start self-stretch shrink-0 relative"
+                >
+                  <div
+                    class="flex flex-row items-center justify-between self-stretch shrink-0 relative"
+                  >
+                    <div
+                      class="flex flex-row gap-2 items-center justify-start shrink-0 w-[88px] relative"
+                    >
+                      <div
+                        class="rounded-[3px] border-solid border-[#f0f2f5] border flex flex-row gap-2.5 items-center justify-center shrink-0 w-[17px] h-[17px] relative overflow-hidden"
+                        style="
+                          transform-origin: 0 0;
+                          transform: rotate(0deg) scale(1, 1);
+                          aspect-ratio: 1;
+                        "
+                      >
+                        <div
+                          class="bg-[#f5f7fa] shrink-0 w-4 h-4 relative overflow-hidden"
+                        ></div>
+                      </div>
+                      <div
+                        class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative"
+                      >
+                        Q1 2024
+                      </div>
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[101px]"
+                    >
+                      85
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[65px]"
+                    >
+                      5
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[54px]"
+                    >
+                      40
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-9"
+                    >
+                      100
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[58px]"
+                    >
+                      70
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[71px]"
+                    >
+                      John Doe
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[100px]"
+                    >
+                      Strong enough
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-row items-center justify-between self-stretch shrink-0 relative"
+                  >
+                    <div
+                      class="flex flex-row gap-2 items-center justify-start shrink-0 w-[88px] relative"
+                    >
+                      <div
+                        class="rounded-[3px] border-solid border-[#f0f2f5] border flex flex-row gap-2.5 items-center justify-center shrink-0 w-[17px] h-[17px] relative overflow-hidden"
+                        style="
+                          transform-origin: 0 0;
+                          transform: rotate(0deg) scale(1, 1);
+                          aspect-ratio: 1;
+                        "
+                      >
+                        <div
+                          class="bg-[#f5f7fa] shrink-0 w-4 h-4 relative overflow-hidden"
+                        ></div>
+                      </div>
+                      <div
+                        class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative"
+                      >
+                        Q2 2024
+                      </div>
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[101px]"
+                    >
+                      73
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[65px]"
+                    >
+                      5
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[54px]"
+                    >
+                      40
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-9"
+                    >
+                      100
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[58px]"
+                    >
+                      70
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[71px]"
+                    >
+                      John Doe
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[100px]"
+                    >
+                      Need service
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-row items-center justify-between self-stretch shrink-0 relative"
+                  >
+                    <div
+                      class="flex flex-row gap-2 items-center justify-start shrink-0 w-[88px] relative"
+                    >
+                      <div
+                        class="rounded-[3px] border-solid border-[#f0f2f5] border flex flex-row gap-2.5 items-center justify-center shrink-0 w-[17px] h-[17px] relative overflow-hidden"
+                        style="
+                          transform-origin: 0 0;
+                          transform: rotate(0deg) scale(1, 1);
+                          aspect-ratio: 1;
+                        "
+                      >
+                        <div
+                          class="bg-[#f5f7fa] shrink-0 w-4 h-4 relative overflow-hidden"
+                        ></div>
+                      </div>
+                      <div
+                        class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative"
+                      >
+                        Q3 2024
+                      </div>
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[101px]"
+                    >
+                      85
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[65px]"
+                    >
+                      5
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[54px]"
+                    >
+                      40
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-9"
+                    >
+                      100
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[58px]"
+                    >
+                      70
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[71px]"
+                    >
+                      John Doe
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[100px]"
+                    >
+                      Strong enough
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-row items-center justify-between self-stretch shrink-0 relative"
+                  >
+                    <div
+                      class="flex flex-row gap-2 items-center justify-start shrink-0 w-[88px] relative"
+                    >
+                      <div
+                        class="rounded-[3px] border-solid border-[#f0f2f5] border flex flex-row gap-2.5 items-center justify-center shrink-0 w-[17px] h-[17px] relative overflow-hidden"
+                        style="
+                          transform-origin: 0 0;
+                          transform: rotate(0deg) scale(1, 1);
+                          aspect-ratio: 1;
+                        "
+                      >
+                        <div
+                          class="bg-[#f5f7fa] shrink-0 w-4 h-4 relative overflow-hidden"
+                        ></div>
+                      </div>
+                      <div
+                        class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative"
+                      >
+                        Q4 2024
+                      </div>
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[101px]"
+                    >
+                      85
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[65px]"
+                    >
+                      5
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[54px]"
+                    >
+                      40
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-9"
+                    >
+                      100
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[58px]"
+                    >
+                      70
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[71px]"
+                    >
+                      John Doe
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[100px]"
+                    >
+                      Need service
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-row items-center justify-between self-stretch shrink-0 relative"
+                  >
+                    <div
+                      class="flex flex-row gap-2 items-center justify-start shrink-0 w-[88px] relative"
+                    >
+                      <div
+                        class="rounded-[3px] border-solid border-[#f0f2f5] border flex flex-row gap-2.5 items-center justify-center shrink-0 w-[17px] h-[17px] relative overflow-hidden"
+                        style="
+                          transform-origin: 0 0;
+                          transform: rotate(0deg) scale(1, 1);
+                          aspect-ratio: 1;
+                        "
+                      >
+                        <div
+                          class="bg-[#f5f7fa] shrink-0 w-4 h-4 relative overflow-hidden"
+                        ></div>
+                      </div>
+                      <div
+                        class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative"
+                      >
+                        Q5 2024
+                      </div>
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[101px]"
+                    >
+                      85
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[65px]"
+                    >
+                      5
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[54px]"
+                    >
+                      40
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-9"
+                    >
+                      100
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-center font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[58px]"
+                    >
+                      70
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[71px]"
+                    >
+                      John Doe
+                    </div>
+                    <div
+                      class="text-[rgba(56,56,56,0.65)] text-left font-['Inter-Regular',_sans-serif] text-sm font-normal relative w-[100px]"
+                    >
+                      Strong enough
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-row items-center justify-between self-stretch shrink-0 relative"
+        >
+          <div
+            class="rounded-[5px] border-solid border-[#e1e1e1] border pt-2 pr-[13px] pb-2 pl-[13px] flex flex-row gap-3.5 items-center justify-center shrink-0 w-[79px] h-[41px] relative"
+          >
+            <div
+              class="flex flex-row gap-2 items-center justify-start shrink-0 relative"
+            >
+              <div
+                class="text-[#383838] text-left font-['Inter-Medium',_sans-serif] text-sm leading-6 font-medium relative flex items-center justify-start"
+              >
+                Cancel
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex flex-row gap-5 items-center justify-start shrink-0 relative"
+          >
+            <div
+              class="bg-[#7c3aed] rounded-[5px] pt-3 pr-8 pb-3 pl-8 flex flex-row gap-2.5 items-center justify-center shrink-0 relative"
+            >
+              <div
+                class="text-[#ffffff] text-left font-['Inter-Medium',_sans-serif] text-sm font-medium relative"
+              >
+                Submit for approval
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>
