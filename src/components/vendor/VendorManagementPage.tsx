@@ -28,6 +28,7 @@ const VendorManagementPage: React.FC = () => {
     const deleteVendor = useDeleteVendor();
 
     const vendors = data?.vendors || [];
+    const nextExpiry = (vendorId: string) => (data as any)?.nextExpiryByVendor?.[vendorId] || '-';
     const total = data?.total || 0;
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -185,10 +186,6 @@ const VendorManagementPage: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     <Button variant="outline" size="sm" onClick={exportCsv}>Export</Button>
-                    <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleBulkUpload(f); }} />
-                    <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isBulkUploading}>
-                        {isBulkUploading ? 'Uploading…' : 'Bulk upload'}
-                    </Button>
                     <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" onClick={() => setIsCreateOpen(true)}>
                         Add vendor
                     </Button>
@@ -201,28 +198,27 @@ const VendorManagementPage: React.FC = () => {
                         <table className="w-full">
                             <thead className="bg-gray-50 border-b">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next expiry</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {vendors.map(v => (
                                     <tr key={v.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/dashboard/vendors/${v.id}`)}>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#383839]">{v.vendor_name}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.contact_person || '-'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.email || '-'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.phone || '-'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.city || '-'}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.rating ?? '-'}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.category || '-'}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{nextExpiry(v.id)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.risk_score != null ? (v.risk_score >= 70 ? 'High' : v.risk_score >= 40 ? 'Medium' : 'Low') : '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{statusBadge(v.is_active)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setEditingVendor(v); }}>Edit</Button>
-                                            <Button variant="outline" size="sm" className="ml-2" onClick={(e) => { e.stopPropagation(); setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.vendor_name }); }}>Clarify</Button>
-                                            <Button variant="outline" size="sm" className="ml-2 text-red-600" onClick={async (e) => { e.stopPropagation(); if (confirm('Delete vendor?')) await deleteVendor.mutateAsync(v.id); }}>Delete</Button>
+                                            <Button variant="outline" size="sm" className="ml-2" onClick={(e) => { e.stopPropagation(); setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.vendor_name }); }}>View</Button>
                                         </td>
                                     </tr>
                                 ))}

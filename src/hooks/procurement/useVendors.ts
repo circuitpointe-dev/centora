@@ -43,15 +43,32 @@ export function useVendors(params: { page: number; limit: number; search?: strin
             const to = from + limit - 1;
             let query = (supabase as any)
                 .from('vendors')
-                .select('id,vendor_name,contact_person,email,phone,address,city,state,postal_code,country,tax_id,payment_terms,currency,is_active,rating,notes,created_at', { count: 'exact' })
+                .select('id,vendor_name,category,rating,is_active,city,country,created_at', { count: 'exact' })
                 .eq('org_id', orgId)
                 .order('created_at', { ascending: false })
                 .range(from, to);
             if (search) query = query.ilike('vendor_name', `%${search}%`);
-            if (status) query = query.eq('is_active', status === 'active');
+            if (status) query = status === 'active' ? query.eq('is_active', true) : status === 'inactive' ? query.eq('is_active', false) : query;
             const { data, error, count } = await query;
             if (error) throw error;
-            return { vendors: data || [], total: count || 0 };
+            // Fetch next expiry per vendor
+            const vendors = data || [];
+            const vendorIds = vendors.map((v: any) => v.id);
+            const today = new Date().toISOString().slice(0, 10);
+            let nextExpiryByVendor: Record<string, string | null> = {};
+            if (vendorIds.length) {
+                const { data: contracts } = await (supabase as any)
+                    .from('vendor_contracts')
+                    .select('vendor_id,end_date')
+                    .in('vendor_id', vendorIds)
+                    .gte('end_date', today)
+                    .order('end_date', { ascending: true });
+                for (const vId of vendorIds) {
+                    const first = (contracts || []).find((c: any) => c.vendor_id === vId);
+                    nextExpiryByVendor[vId] = first?.end_date || null;
+                }
+            }
+            return { vendors, total: count || 0, nextExpiryByVendor } as any;
         }
     });
 }
