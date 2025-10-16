@@ -213,71 +213,73 @@ const ProcurementPlanningPage: React.FC = () => {
         ))}
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Pending Requisitions */}
-        <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
-          <div className="bg-[rgba(255,193,7,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
-            <div className="shrink-0 w-6 h-6 relative overflow-hidden">
-              <img
-                className="w-[95.45%] h-[96.97%] absolute right-[2.27%] left-[2.27%] bottom-[1.52%] top-[1.52%] overflow-visible"
-                src="/group0.svg"
-                alt="Pending requisitions"
-              />
+      {/* KPI Cards - Only show when NOT on plan-builder tab */}
+      {activeTab !== 'plan-builder' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Pending Requisitions */}
+          <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+            <div className="bg-[rgba(255,193,7,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
+              <div className="shrink-0 w-6 h-6 relative overflow-hidden">
+                <img
+                  className="w-[95.45%] h-[96.97%] absolute right-[2.27%] left-[2.27%] bottom-[1.52%] top-[1.52%] overflow-visible"
+                  src="/group0.svg"
+                  alt="Pending requisitions"
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
-            <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
-              {stats?.pendingRequisitions || 0}
+            <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
+              <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
+                {stats?.pendingRequisitions || 0}
+              </div>
+              <div className="text-[#6b7280] text-center font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative w-[196px] flex items-center justify-center">
+                Pending requisitions
+              </div>
             </div>
-            <div className="text-[#6b7280] text-center font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative w-[196px] flex items-center justify-center">
-              Pending requisitions
-            </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Approved Requisitions */}
-        <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
-          <div className="bg-[rgba(52,199,89,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
-            <div className="shrink-0 w-6 h-6 relative overflow-hidden">
-              <img
-                className="w-[95.45%] h-[96.97%] absolute right-[2.27%] left-[2.27%] bottom-[1.52%] top-[1.52%] overflow-visible"
-                src="/group1.svg"
-                alt="Approved requisitions"
-              />
+          {/* Approved Requisitions */}
+          <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+            <div className="bg-[rgba(52,199,89,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
+              <div className="shrink-0 w-6 h-6 relative overflow-hidden">
+                <img
+                  className="w-[95.45%] h-[96.97%] absolute right-[2.27%] left-[2.27%] bottom-[1.52%] top-[1.52%] overflow-visible"
+                  src="/group1.svg"
+                  alt="Approved requisitions"
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
-            <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
-              {stats?.approvedRequisitions || 0}
+            <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
+              <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
+                {stats?.approvedRequisitions || 0}
+              </div>
+              <div className="text-[#6b7280] text-left font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative flex items-center justify-start">
+                Approved requisitions
+              </div>
             </div>
-            <div className="text-[#6b7280] text-left font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative flex items-center justify-start">
-              Approved requisitions
-            </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Average Approval Time */}
-        <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
-          <div className="bg-[rgba(124,58,237,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
-            <div className="shrink-0 w-6 h-6 relative overflow-hidden">
-              <img
-                className="w-[88.28%] h-[79.17%] absolute right-[6.86%] left-[4.86%] bottom-[8.33%] top-[12.5%] overflow-visible"
-                src="/group2.svg"
-                alt="Average approval time"
-              />
+          {/* Average Approval Time */}
+          <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+            <div className="bg-[rgba(124,58,237,0.15)] rounded-[42px] p-2.5 flex flex-row gap-2.5 items-center justify-center shrink-0 w-12 h-12 relative">
+              <div className="shrink-0 w-6 h-6 relative overflow-hidden">
+                <img
+                  className="w-[88.28%] h-[79.17%] absolute right-[6.86%] left-[4.86%] bottom-[8.33%] top-[12.5%] overflow-visible"
+                  src="/group2.svg"
+                  alt="Average approval time"
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
-            <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
-              {stats?.averageApprovalTime || 0} days
+            <div className="flex flex-col gap-2 items-center justify-start shrink-0 relative">
+              <div className="text-[#383839] text-center font-['Inter-Bold',_sans-serif] text-2xl font-bold relative">
+                {stats?.averageApprovalTime || 0} days
+              </div>
+              <div className="text-[#6b7280] text-left font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative flex items-center justify-start">
+                Average approval time
+              </div>
             </div>
-            <div className="text-[#6b7280] text-left font-['Inter-Regular',_sans-serif] text-xs leading-tight font-normal relative flex items-center justify-start">
-              Average approval time
-            </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
+      )}
 
       {/* Plan Builder Tab KPI (when active) */}
       {activeTab === 'plan-builder' && (
