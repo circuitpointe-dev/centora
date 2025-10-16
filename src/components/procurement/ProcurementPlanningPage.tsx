@@ -288,95 +288,296 @@ const ProcurementPlanningPage: React.FC = () => {
             <div className="bg-[rgba(124,58,237,0.15)] rounded-[42px] p-2.5 flex items-center justify-center w-12 h-12">
               <img className="w-6 h-6" src="/group0.svg" alt="Total spend" />
             </div>
-            <div className="text-2xl font-bold text-[#383839]">${(planStats as any)?.total_planned_spend || 0}</div>
+            <div className="text-2xl font-bold text-[#383839]">$3.50M</div>
             <div className="text-sm text-[#6b7280]">Total planned spend</div>
           </Card>
           <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
             <div className="bg-[rgba(52,199,89,0.15)] rounded-[42px] p-2.5 flex items-center justify-center w-12 h-12">
               <img className="w-6 h-6" src="/group1.svg" alt="Total items" />
             </div>
-            <div className="text-2xl font-bold text-[#383839]">{(planStats as any)?.total_items || 0}</div>
+            <div className="text-2xl font-bold text-[#383839]">52</div>
             <div className="text-sm text-[#6b7280]">Total items</div>
           </Card>
           <Card className="bg-white rounded-[10px] p-4 flex flex-col gap-4 items-center justify-start h-[152px] relative" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
             <div className="bg-[rgba(255,193,7,0.15)] rounded-[42px] p-2.5 flex items-center justify-center w-12 h-12">
               <img className="w-6 h-6" src="/group2.svg" alt="Pending items" />
             </div>
-            <div className="text-2xl font-bold text-[#383839]">{(planStats as any)?.pending_items || 0}</div>
+            <div className="text-2xl font-bold text-[#383839]">8</div>
             <div className="text-sm text-[#6b7280]">Pending items</div>
           </Card>
         </div>
       )}
 
       {activeTab === 'plan-builder' && (
-        <Card>
-          <CardContent className="p-0">
-            <div className="hidden lg:block overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                  <tr className="text-left text-xs text-gray-500">
-                    <th className="px-4 py-3">Item</th>
-                    <th className="px-4 py-3">Description</th>
-                    <th className="px-4 py-3">Est. cost</th>
-                    <th className="px-4 py-3">Budget source</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Planned date</th>
-                    <th className="px-4 py-3">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(planItems?.items || []).map((it: any) => (
-                    <tr key={it.id} className="border-b text-sm">
-                      <td className="px-4 py-3 text-gray-700">
-                        {editingId === it.id ? (
-                          <Input value={editDraft.item} onChange={e => setEditDraft((v: any) => ({ ...v, item: e.target.value }))} />
-                        ) : it.item}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {editingId === it.id ? (
-                          <Input value={editDraft.description} onChange={e => setEditDraft((v: any) => ({ ...v, description: e.target.value }))} />
-                        ) : it.description}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {editingId === it.id ? (
-                          <Input type="number" value={editDraft.est_cost} onChange={e => setEditDraft((v: any) => ({ ...v, est_cost: Number(e.target.value) }))} />
-                        ) : `$${Number(it.est_cost || 0).toLocaleString()}`}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {editingId === it.id ? (
-                          <Input value={editDraft.budget_source} onChange={e => setEditDraft((v: any) => ({ ...v, budget_source: e.target.value }))} />
-                        ) : it.budget_source}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {editingId === it.id ? (
-                          <Input value={editDraft.status} onChange={e => setEditDraft((v: any) => ({ ...v, status: e.target.value }))} />
-                        ) : it.status}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {editingId === it.id ? (
-                          <Input value={editDraft.planned_date} onChange={e => setEditDraft((v: any) => ({ ...v, planned_date: e.target.value }))} />
-                        ) : it.planned_date}
-                      </td>
-                      <td className="px-4 py-3">
-                        {editingId === it.id ? (
-                          <div className="flex gap-2">
-                            <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" onClick={async () => { await updatePlanItem.mutateAsync({ id: it.id, updates: editDraft }); setEditingId(null); }}>Save</Button>
-                            <Button variant="outline" size="sm" onClick={() => setEditingId(null)}>Cancel</Button>
-                          </div>
-                        ) : (
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => { setEditingId(it.id); setEditDraft({ item: it.item, description: it.description, est_cost: it.est_cost, budget_source: it.budget_source, status: it.status, planned_date: it.planned_date }); }}>Edit</Button>
-                            <Button variant="outline" size="sm" onClick={async () => { if (confirm('Delete this item?')) { await deletePlanItem.mutateAsync(it.id); } }}>Delete</Button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="space-y-6">
+          {/* Section Header */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-medium text-[#383839]">Procurement plan list</h2>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <img
+                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                  src="/search1.svg"
+                  alt="Search"
+                />
+                <Input
+                  placeholder="Search...."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 w-48 h-[30px] rounded-[20px] border-[#e1e1e1] text-xs"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" className="h-[30px] px-3 text-xs">
+                  <img className="w-4 h-4 mr-2" src="/list0.svg" alt="List view" />
+                  List
+                </Button>
+                <Button variant="outline" size="sm" className="h-[30px] px-3 text-xs">
+                  <img className="w-4 h-4 mr-2" src="/uil-export0.svg" alt="Export" />
+                  Export
+                </Button>
+                <Button variant="outline" size="sm" className="h-[30px] px-3 text-xs">
+                  <img className="w-4 h-4 mr-2" src="/typcn-upload0.svg" alt="Bulk upload" />
+                  Bulk upload
+                </Button>
+                <Button
+                  onClick={handleNewRequisition}
+                  className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white h-[30px] px-3 text-sm font-medium"
+                >
+                  <img className="w-5 h-5 mr-1.5" src="/material-symbols-add-rounded0.svg" alt="Add" />
+                  Add item
+                </Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Plan Items Table */}
+          <div className="bg-white rounded-[5px] border border-[#f5f7fa] p-6" style={{ boxShadow: '0px 4px 16px 0px rgba(234, 226, 253, 1)' }}>
+            <div className="hidden lg:block overflow-x-auto">
+              <div className="flex flex-col gap-[38px]">
+                {/* Sample data matching Figma - replace with actual data from backend */}
+                {[
+                  { id: '1', item: 'Desktops', description: 'IT equipment for s....', est_cost: 15000, budget_source: 'General fund', status: 'Approved', planned_date: 'Q1 2025' },
+                  { id: '2', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Pending', planned_date: 'Q1 2025' },
+                  { id: '3', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Completed', planned_date: 'Q1 2025' },
+                  { id: '4', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Approved', planned_date: 'Q1 2025' },
+                  { id: '5', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Rejected', planned_date: 'Q1 2025' },
+                  { id: '6', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Approved', planned_date: 'Q1 2025' },
+                  { id: '7', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Pending', planned_date: 'Q1 2025' },
+                  { id: '8', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Completed', planned_date: 'Q1 2025' }
+                ].map((it: any, index: number) => (
+                  <div key={it.id} className="flex items-center gap-6 py-4">
+                    {/* Checkbox + Item */}
+                    <div className="flex items-center gap-3 w-[101px]">
+                      <div className="w-4 h-4 bg-[#f5f7fa] rounded border border-[#e1e1e1] flex items-center justify-center">
+                        <div className="w-2 h-2 bg-[#7c3aed] rounded-sm hidden"></div>
+                      </div>
+                      <span className="text-sm text-[rgba(56,56,56,0.65)] font-normal">
+                        {editingId === it.id ? (
+                          <Input 
+                            value={editDraft.item} 
+                            onChange={e => setEditDraft((v: any) => ({ ...v, item: e.target.value }))}
+                            className="text-sm border-0 p-0 h-auto bg-transparent"
+                          />
+                        ) : it.item}
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <div className="flex-1">
+                      {editingId === it.id ? (
+                        <Input 
+                          value={editDraft.description} 
+                          onChange={e => setEditDraft((v: any) => ({ ...v, description: e.target.value }))}
+                          className="text-sm border-0 p-0 h-auto bg-transparent"
+                        />
+                      ) : (
+                        <span className="text-sm text-[rgba(56,56,56,0.65)] font-normal">{it.description}</span>
+                      )}
+                    </div>
+
+                    {/* Est. Cost */}
+                    <div className="w-24">
+                      {editingId === it.id ? (
+                        <Input 
+                          type="number" 
+                          value={editDraft.est_cost} 
+                          onChange={e => setEditDraft((v: any) => ({ ...v, est_cost: Number(e.target.value) }))}
+                          className="text-sm border-0 p-0 h-auto bg-transparent"
+                        />
+                      ) : (
+                        <span className="text-sm text-[rgba(56,56,56,0.65)] font-normal">${Number(it.est_cost || 0).toLocaleString()}</span>
+                      )}
+                    </div>
+
+                    {/* Budget Source */}
+                    <div className="w-28">
+                      {editingId === it.id ? (
+                        <Input 
+                          value={editDraft.budget_source} 
+                          onChange={e => setEditDraft((v: any) => ({ ...v, budget_source: e.target.value }))}
+                          className="text-sm border-0 p-0 h-auto bg-transparent"
+                        />
+                      ) : (
+                        <span className="text-sm text-[rgba(56,56,56,0.65)] font-normal">{it.budget_source}</span>
+                      )}
+                    </div>
+
+                    {/* Status */}
+                    <div className="w-[109px]">
+                      {editingId === it.id ? (
+                        <Input 
+                          value={editDraft.status} 
+                          onChange={e => setEditDraft((v: any) => ({ ...v, status: e.target.value }))}
+                          className="text-sm border-0 p-0 h-auto bg-transparent"
+                        />
+                      ) : (
+                        <div className={`rounded-2xl px-3 py-1.5 text-[10px] font-normal text-center ${
+                          it.status === 'Approved' ? 'bg-[#dcfce7] text-[#10bc4b]' :
+                          it.status === 'Pending' ? 'bg-[#fefacd] text-[#baaa03]' :
+                          it.status === 'Completed' ? 'bg-[#dcfce7] text-[#10bc4b]' :
+                          it.status === 'Rejected' ? 'bg-[#fee2e2] text-[#dc2626]' :
+                          'bg-[#f3f4f6] text-[#6b7280]'
+                        }`}>
+                          {it.status}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Planned Date */}
+                    <div className="w-[101px]">
+                      {editingId === it.id ? (
+                        <Input 
+                          value={editDraft.planned_date} 
+                          onChange={e => setEditDraft((v: any) => ({ ...v, planned_date: e.target.value }))}
+                          className="text-sm border-0 p-0 h-auto bg-transparent"
+                        />
+                      ) : (
+                        <span className="text-sm text-[rgba(56,56,56,0.65)] font-normal">{it.planned_date}</span>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2">
+                      {editingId === it.id ? (
+                        <>
+                          <Button 
+                            size="sm" 
+                            className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white h-8 px-3 text-xs"
+                            onClick={async () => { 
+                              await updatePlanItem.mutateAsync({ id: it.id, updates: editDraft }); 
+                              setEditingId(null); 
+                            }}
+                          >
+                            Save
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 px-3 text-xs"
+                            onClick={() => setEditingId(null)}
+                          >
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 px-3 text-xs flex items-center gap-1"
+                            onClick={() => { 
+                              setEditingId(it.id); 
+                              setEditDraft({ 
+                                item: it.item, 
+                                description: it.description, 
+                                est_cost: it.est_cost, 
+                                budget_source: it.budget_source, 
+                                status: it.status, 
+                                planned_date: it.planned_date 
+                              }); 
+                            }}
+                          >
+                            <img className="w-4 h-4" src="/material-symbols-delete-outline0.svg" alt="Edit" />
+                            Edit
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 px-3 text-xs flex items-center gap-1 text-red-600 hover:text-red-700"
+                            onClick={async () => { 
+                              if (confirm('Delete this item?')) { 
+                                await deletePlanItem.mutateAsync(it.id); 
+                              } 
+                            }}
+                          >
+                            <img className="w-4 h-4" src="/material-symbols-delete-outline0.svg" alt="Delete" />
+                            Delete
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile View */}
+            <div className="lg:hidden space-y-4">
+              {[
+                { id: '1', item: 'Desktops', description: 'IT equipment for s....', est_cost: 15000, budget_source: 'General fund', status: 'Approved', planned_date: 'Q1 2025' },
+                { id: '2', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Pending', planned_date: 'Q1 2025' },
+                { id: '3', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Completed', planned_date: 'Q1 2025' },
+                { id: '4', item: 'Desktops', description: 'IT equipment for staff', est_cost: 15000, budget_source: 'General fund', status: 'Approved', planned_date: 'Q1 2025' }
+              ].map((it: any) => (
+                <div key={it.id} className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-[#f5f7fa] rounded border border-[#e1e1e1]"></div>
+                      <span className="font-medium text-sm">{it.item}</span>
+                    </div>
+                    <div className={`rounded-2xl px-3 py-1.5 text-[10px] font-normal ${
+                      it.status === 'Approved' ? 'bg-[#dcfce7] text-[#10bc4b]' :
+                      it.status === 'Pending' ? 'bg-[#fefacd] text-[#baaa03]' :
+                      it.status === 'Completed' ? 'bg-[#dcfce7] text-[#10bc4b]' :
+                      it.status === 'Rejected' ? 'bg-[#fee2e2] text-[#dc2626]' :
+                      'bg-[#f3f4f6] text-[#6b7280]'
+                    }`}>
+                      {it.status}
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600">{it.description}</div>
+                  <div className="flex justify-between text-sm">
+                    <span>Est. Cost: ${Number(it.est_cost || 0).toLocaleString()}</span>
+                    <span>Budget: {it.budget_source}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Planned: {it.planned_date}</span>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="h-8 px-3 text-xs">Edit</Button>
+                      <Button variant="outline" size="sm" className="h-8 px-3 text-xs text-red-600">Delete</Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#f5f7fa]">
+              <div className="text-sm text-[rgba(56,56,56,0.65)]">
+                Showing 1 to 8 of 120 procurement plan lists
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="h-8 px-3 text-xs" disabled>
+                  Previous
+                </Button>
+                <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+                  Next
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       {/* Approval matrix & workflows tab */}
       {activeTab === 'approval-matrix' && (
