@@ -54,6 +54,9 @@ import StaffDetailView from "@/components/hr/StaffDetailView";
 import VolunteerProfile from "@/components/hr/VolunteerProfile";
 import BoardMemberDetailView from "@/components/hr/BoardMemberDetailView";
 import MeetingDetails from "@/components/hr/MeetingDetails";
+import RecruitmentOnboarding from "@/components/hr/RecruitmentOnboarding";
+import RequisitionDetailView from "@/components/hr/RequisitionDetailView";
+import ReferenceCheckDetailView from "@/components/hr/ReferenceCheckDetailView";
 import CourseDetailPage from "../learning/CourseDetailPage";
 import CourseWorkspacePage from "../learning/CourseWorkspacePage";
 import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
@@ -566,6 +569,18 @@ const GenericFeaturePage = () => {
 
       if (module === 'hr' && feature === 'meeting-details') {
         return <MeetingDetails />;
+      }
+
+      if (module === 'hr' && feature === 'recruitment-onboarding') {
+        return <RecruitmentOnboarding />;
+      }
+
+      if (module === 'hr' && feature === 'requisition-detail') {
+        return <RequisitionDetailView />;
+      }
+
+      if (module === 'hr' && feature === 'reference-check-detail') {
+        return <ReferenceCheckDetailView />;
       }
 
   // Fallback for unmatched routes
