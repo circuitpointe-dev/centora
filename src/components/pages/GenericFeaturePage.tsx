@@ -53,6 +53,7 @@ import PeopleManagement from "@/components/hr/PeopleManagement";
 import StaffDetailView from "@/components/hr/StaffDetailView";
 import VolunteerProfile from "@/components/hr/VolunteerProfile";
 import BoardMemberDetailView from "@/components/hr/BoardMemberDetailView";
+import MeetingDetails from "@/components/hr/MeetingDetails";
 import CourseDetailPage from "../learning/CourseDetailPage";
 import CourseWorkspacePage from "../learning/CourseWorkspacePage";
 import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
@@ -561,6 +562,10 @@ const GenericFeaturePage = () => {
 
       if (module === 'hr' && feature === 'board-member-detail') {
         return <BoardMemberDetailView />;
+      }
+
+      if (module === 'hr' && feature === 'meeting-details') {
+        return <MeetingDetails />;
       }
 
   // Fallback for unmatched routes

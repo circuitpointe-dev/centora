@@ -42,12 +42,15 @@ import {
   Sigma,
   Send,
   CalendarDays as CalendarDaysIcon,
-  UserX
+  UserX,
+  RotateCcw,
+  Vote,
+  CheckCircle2
 } from 'lucide-react';
 
 const VolunteerProfile = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('term-tracker');
   const [personalInfoOpen, setPersonalInfoOpen] = useState(true);
   const [upcomingShiftsOpen, setUpcomingShiftsOpen] = useState(true);
   const [complianceOpen, setComplianceOpen] = useState(true);
@@ -221,7 +224,10 @@ const VolunteerProfile = () => {
             <span>Volunteer management</span>
           </Button>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Volunteer profile</h1>
+        <div className="flex items-center space-x-3">
+          <h1 className="text-2xl font-bold text-gray-900">Member detail view</h1>
+          <Badge className="bg-red-500 text-white border-red-500">Action required</Badge>
+        </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline" className="flex items-center space-x-2">
             <Calendar className="h-4 w-4" />
@@ -277,22 +283,22 @@ const VolunteerProfile = () => {
             Overview
           </TabsTrigger>
           <TabsTrigger 
-            value="assignment-logs"
+            value="term-tracker"
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
           >
-            Assignment logs
+            Term tracker
           </TabsTrigger>
           <TabsTrigger 
-            value="hours-tracker"
+            value="meeting-attendance"
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
           >
-            Hours tracker
+            Meeting attendance
           </TabsTrigger>
           <TabsTrigger 
-            value="exit-feedback"
+            value="governance-scorecards"
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
           >
-            Exit feedback
+            Governance scorecards
           </TabsTrigger>
         </TabsList>
 
@@ -450,416 +456,150 @@ const VolunteerProfile = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="assignment-logs">
-          {/* Assignment Logs Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">Assignment logs</CardTitle>
-                <div className="flex items-center space-x-4">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search...."
-                      className="w-64 px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  </div>
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Filter className="h-4 w-4" />
-                    <span>Filter</span>
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Assignment Logs Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Date</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Program</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Event</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Role</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Shift (start - end)</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {assignmentLogs.map((assignment) => (
-                      <tr key={assignment.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4 text-gray-900">{assignment.date}</td>
-                        <td className="py-3 px-4 text-gray-600">{assignment.program}</td>
-                        <td className="py-3 px-4 text-gray-600">{assignment.event}</td>
-                        <td className="py-3 px-4 text-gray-600">{assignment.role}</td>
-                        <td className="py-3 px-4 text-gray-600">{assignment.shift}</td>
-                        <td className="py-3 px-4">
-                          {getStatusBadge(assignment.status)}
-                        </td>
-                        <td className="py-3 px-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="flex items-center space-x-1"
-                            onClick={() => handleViewAssignment(assignment)}
-                          >
-                            <Eye className="h-4 w-4" />
-                            <span>View</span>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="hours-tracker">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {/* Approved Hours Card */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
-                    <CheckCircle className="h-4 w-4 text-violet-600" />
-                  </div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">42 h</div>
-                <div className="text-sm text-gray-600">Approved hours (range)</div>
-              </CardContent>
-            </Card>
-
-            {/* Pending Rows Card */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <Smile className="h-4 w-4 text-yellow-600" />
-                  </div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">1</div>
-                <div className="text-sm text-gray-600">Pending rows</div>
-              </CardContent>
-            </Card>
-
-            {/* Rejection Card */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                    <XCircle className="h-4 w-4 text-red-600" />
-                  </div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">2</div>
-                <div className="text-sm text-gray-600">Rejection</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Hours Tracker List Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">Hours tracker list</CardTitle>
-                <div className="flex items-center space-x-4">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      className="w-64 px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  </div>
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Filter className="h-4 w-4" />
-                    <span>Filter</span>
-                  </Button>
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Upload className="h-4 w-4" />
-                    <span>Export</span>
-                  </Button>
-                      <Button 
-                        className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2"
-                        onClick={() => setIsAddHoursModalOpen(true)}
-                      >
-                        <Plus className="h-4 w-4" />
-                        <span>Add hours</span>
-                      </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Hours Tracker Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4">
-                        <input type="checkbox" className="rounded" />
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Name</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Program</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Event</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Role</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Start - End</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Hours</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {hoursTrackerData.map((entry) => (
-                      <tr key={entry.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4">
-                          <input type="checkbox" className="rounded" />
-                        </td>
-                        <td className="py-3 px-4 font-medium text-gray-900">{entry.name}</td>
-                        <td className="py-3 px-4 text-gray-600">{entry.program}</td>
-                        <td className="py-3 px-4 text-gray-600">{entry.event}</td>
-                        <td className="py-3 px-4 text-gray-600">{entry.role}</td>
-                        <td className="py-3 px-4 text-gray-600">{entry.shift}</td>
-                        <td className="py-3 px-4 text-gray-600">{entry.hours}</td>
-                        <td className="py-3 px-4">
-                          {getStatusBadge(entry.status)}
-                        </td>
-                        <td className="py-3 px-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="flex items-center space-x-1"
-                            onClick={() => handleViewHoursEntry(entry)}
-                          >
-                            <Eye className="h-4 w-4" />
-                            <span>View</span>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="exit-feedback" className="space-y-6">
-          {/* Exit Details */}
+        <TabsContent value="term-tracker" className="space-y-6">
+          {/* My Term History Section */}
           <Card>
             <CardContent className="p-6">
-              <div className="grid grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CalendarDaysIcon className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Effective date:</span>
+              <div className="space-y-6">
+                {/* Section Header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">My term history</h2>
+                    <p className="text-sm text-gray-600">View your current term status and renewal timeline</p>
                   </div>
-                  <span className="text-sm font-medium text-gray-900">Nov 12, 2025</span>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <RotateCcw className="h-4 w-4" />
+                      <span>Propose renewal</span>
+                    </Button>
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <Vote className="h-4 w-4" />
+                      <span>Record vote</span>
+                    </Button>
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Mark vacancy</span>
+                    </Button>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <UserX className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Exit type:</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">Voluntary</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <MessageCircle className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Reason:</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">Relocation</span>
+
+                {/* Metric Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {/* Current Term */}
+                  <Card className="border-purple-200">
+                    <CardContent className="p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <Calendar className="h-4 w-4 text-purple-600" />
+                        </div>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">1/2</div>
+                      <div className="text-sm text-gray-600">Current</div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Days to Renewal */}
+                  <Card className="border-purple-200">
+                    <CardContent className="p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <Calendar className="h-4 w-4 text-purple-600" />
+                        </div>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">365</div>
+                      <div className="text-sm text-gray-600">Days to renewal</div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Renewal Eligibility */}
+                  <Card className="border-green-200">
+                    <CardContent className="p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                          <FileCheck className="h-4 w-4 text-green-600" />
+                        </div>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">Yes</div>
+                      <div className="text-sm text-gray-600">Renewal eligible</div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Total Terms */}
+                  <Card className="border-blue-200">
+                    <CardContent className="p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <MessageCircle className="h-4 w-4 text-blue-600" />
+                        </div>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900">2</div>
+                      <div className="text-sm text-gray-600">Total terms</div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Questionnaire */}
+          {/* My Term Timeline Section */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Questionnaire</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Satisfaction Questions */}
-              <div className="space-y-4">
-                {/* Volunteering Experience */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900">
-                    Satisfaction with volunteering experience
-                  </Label>
-                  <RadioGroup
-                    value={questionnaireResponses.volunteeringExperience}
-                    onValueChange={(value) => setQuestionnaireResponses(prev => ({
-                      ...prev,
-                      volunteeringExperience: value
-                    }))}
-                    className="flex space-x-6"
-                  >
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <div key={value} className="flex items-center space-x-2">
-                        <RadioGroupItem value={value.toString()} id={`volunteering-${value}`} />
-                        <Label htmlFor={`volunteering-${value}`} className="text-sm text-gray-700">
-                          {value}
-                        </Label>
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <h2 className="text-lg font-semibold text-gray-900">My term timeline</h2>
+                
+                {/* Timeline */}
+                <div className="space-y-4">
+                  {/* Member Name */}
+                  <div className="text-sm font-medium text-gray-900">Alice smith</div>
+                  
+                  {/* Timeline Bar */}
+                  <div className="relative">
+                    {/* Year Labels */}
+                    <div className="flex justify-between text-xs text-gray-500 mb-2">
+                      <span>2023</span>
+                      <span>2024</span>
+                      <span>2025</span>
+                      <span>2026</span>
+                    </div>
+                    
+                    {/* Timeline Track */}
+                    <div className="relative h-8 bg-gray-100 rounded-full border border-gray-200">
+                      {/* Current Term Bar */}
+                      <div className="absolute left-1/4 right-1/4 h-full bg-violet-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-medium">2024 - 2025</span>
                       </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-
-                {/* Training and Development */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900">
-                    Satisfaction with training and development opportunities
-                  </Label>
-                  <RadioGroup
-                    value={questionnaireResponses.trainingDevelopment}
-                    onValueChange={(value) => setQuestionnaireResponses(prev => ({
-                      ...prev,
-                      trainingDevelopment: value
-                    }))}
-                    className="flex space-x-6"
-                  >
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <div key={value} className="flex items-center space-x-2">
-                        <RadioGroupItem value={value.toString()} id={`training-${value}`} />
-                        <Label htmlFor={`training-${value}`} className="text-sm text-gray-700">
-                          {value}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-
-                {/* Team Collaboration */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900">
-                    Satisfaction with team collaboration and support
-                  </Label>
-                  <RadioGroup
-                    value={questionnaireResponses.teamCollaboration}
-                    onValueChange={(value) => setQuestionnaireResponses(prev => ({
-                      ...prev,
-                      teamCollaboration: value
-                    }))}
-                    className="flex space-x-6"
-                  >
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <div key={value} className="flex items-center space-x-2">
-                        <RadioGroupItem value={value.toString()} id={`team-${value}`} />
-                        <Label htmlFor={`team-${value}`} className="text-sm text-gray-700">
-                          {value}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-
-                {/* Leadership and Management */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900">
-                    Satisfaction with leadership and management effectiveness
-                  </Label>
-                  <RadioGroup
-                    value={questionnaireResponses.leadershipManagement}
-                    onValueChange={(value) => setQuestionnaireResponses(prev => ({
-                      ...prev,
-                      leadershipManagement: value
-                    }))}
-                    className="flex space-x-6"
-                  >
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <div key={value} className="flex items-center space-x-2">
-                        <RadioGroupItem value={value.toString()} id={`leadership-${value}`} />
-                        <Label htmlFor={`leadership-${value}`} className="text-sm text-gray-700">
-                          {value}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-
-                {/* Work-Life Balance */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900">
-                    Satisfaction with work-life balance initiatives
-                  </Label>
-                  <RadioGroup
-                    value={questionnaireResponses.workLifeBalance}
-                    onValueChange={(value) => setQuestionnaireResponses(prev => ({
-                      ...prev,
-                      workLifeBalance: value
-                    }))}
-                    className="flex space-x-6"
-                  >
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <div key={value} className="flex items-center space-x-2">
-                        <RadioGroupItem value={value.toString()} id={`worklife-${value}`} />
-                        <Label htmlFor={`worklife-${value}`} className="text-sm text-gray-700">
-                          {value}
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-              </div>
-
-              {/* Additional Thoughts */}
-              <div className="space-y-3">
-                <Label htmlFor="additional-thoughts" className="text-sm font-medium text-gray-900">
-                  Any additional thoughts?
-                </Label>
-                <div className="flex space-x-3">
-                  <Textarea
-                    id="additional-thoughts"
-                    placeholder="Share any additional feedback..."
-                    value={additionalThoughts}
-                    onChange={(e) => setAdditionalThoughts(e.target.value)}
-                    className="flex-1 min-h-[100px]"
-                  />
-                  <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2">
-                    <Send className="h-4 w-4" />
-                    <span>Send</span>
-                  </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-
-          {/* Blockers and Action Buttons */}
-          <div className="space-y-6">
-            {/* Blockers */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">Blockers</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-2 text-sm text-gray-700">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
-                  <span>2 unapproved hours</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-gray-700">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
-                  <span>1 open assignment</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <div className="flex justify-between">
-              <Button variant="outline" className="flex items-center space-x-2">
-                <CalendarDaysIcon className="h-4 w-4" />
-                <span>Schedule interview</span>
-              </Button>
-              <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2">
-                <UserX className="h-4 w-4" />
-                <span>Finalize exit</span>
-              </Button>
-            </div>
-          </div>
         </TabsContent>
+
+        <TabsContent value="meeting-attendance">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center py-12">
+                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Meeting Attendance</h3>
+                <p className="text-gray-600">Meeting attendance tracking will be implemented here.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="governance-scorecards">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center py-12">
+                <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Governance Scorecards</h3>
+                <p className="text-gray-600">Governance scorecards will be implemented here.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
       </Tabs>
 
       {/* Assignment Details Modal */}

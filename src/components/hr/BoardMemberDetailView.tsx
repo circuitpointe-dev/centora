@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,17 @@ import {
   Users as UsersIcon,
   Check,
   Minus,
-  X as XIcon
+  X as XIcon,
+  RotateCcw,
+  FileText,
+  CheckCircle2,
+  MessageSquare,
+  ChevronDown as ChevronDownIcon,
+  Upload,
+  Award,
+  BookOpen,
+  Shield,
+  TrendingUp
 } from 'lucide-react';
 
 const BoardMemberDetailView = () => {
@@ -40,6 +50,23 @@ const BoardMemberDetailView = () => {
   const [complianceOpen, setComplianceOpen] = useState(true);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState('Yearly');
+  const [isPeriodDropdownOpen, setIsPeriodDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsPeriodDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Mock data for board member
   const memberData = {
@@ -275,24 +302,70 @@ const BoardMemberDetailView = () => {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
-      <div className="flex items-center space-x-2">
-        <Button
-          variant="ghost"
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
-          onClick={() => navigate('/dashboard/hr/people-management')}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Board management</span>
-        </Button>
+      {/* Breadcrumb and Period Selector */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+            onClick={() => navigate('/dashboard/hr/people-management')}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Board management</span>
+          </Button>
+        </div>
+        
+        {/* Period Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <Button
+            variant="outline"
+            className="flex items-center space-x-2 bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            onClick={() => setIsPeriodDropdownOpen(!isPeriodDropdownOpen)}
+          >
+            <span>{selectedPeriod}</span>
+            <ChevronDownIcon className="h-4 w-4" />
+          </Button>
+          
+          {isPeriodDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+              <div className="py-1">
+                <button
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  onClick={() => {
+                    setSelectedPeriod('Yearly');
+                    setIsPeriodDropdownOpen(false);
+                  }}
+                >
+                  Yearly
+                </button>
+                <button
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  onClick={() => {
+                    setSelectedPeriod('Monthly');
+                    setIsPeriodDropdownOpen(false);
+                  }}
+                >
+                  Monthly
+                </button>
+                <button
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  onClick={() => {
+                    setSelectedPeriod('Quarterly');
+                    setIsPeriodDropdownOpen(false);
+                  }}
+                >
+                  Quarterly
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold text-gray-900">Member detail view</h1>
-          <Badge className="bg-red-100 text-red-800">Action required</Badge>
-        </div>
+      <div className="flex items-center space-x-4">
+        <h1 className="text-2xl font-bold text-gray-900">Member detail view</h1>
+        <Badge className="bg-red-100 text-red-800">Action required</Badge>
       </div>
 
       {/* Tabs */}
@@ -572,150 +645,122 @@ const BoardMemberDetailView = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="term-tracker">
-          {/* Term Tracker Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Assignment Logs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Assignment Logs Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Date</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Program</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Event</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Role</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Shift</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {termTrackerData.map((assignment) => (
-                      <tr key={assignment.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4 text-gray-600">{assignment.date}</td>
-                        <td className="py-3 px-4 text-gray-600">{assignment.program}</td>
-                        <td className="py-3 px-4 text-gray-600">{assignment.event}</td>
-                        <td className="py-3 px-4 text-gray-600">{assignment.role}</td>
-                        <td className="py-3 px-4 text-gray-600">{assignment.shift}</td>
-                        <td className="py-3 px-4">
-                          {getAssignmentStatusBadge(assignment.status)}
-                        </td>
-                        <td className="py-3 px-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="flex items-center space-x-1"
-                            onClick={() => handleViewAssignment(assignment)}
-                          >
-                            <Eye className="h-4 w-4" />
-                            <span>View</span>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        <TabsContent value="term-tracker" className="space-y-8">
+          {/* My Term History Section */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">My term history</h2>
+                <p className="text-sm text-gray-600">View your current term status and renewal timeline</p>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Assignment Details Modal */}
-          {isAssignmentModalOpen && selectedAssignment && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              {/* Blur Overlay */}
-              <div 
-                className="absolute inset-0 backdrop-blur-sm bg-white/20"
-                onClick={() => setIsAssignmentModalOpen(false)}
-              />
-              
-              {/* Modal Content */}
-              <div className="relative bg-white rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
-                <div className="space-y-6">
-                  {/* Header */}
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold">Assignment details</h2>
-                    <button
-                      onClick={() => setIsAssignmentModalOpen(false)}
-                      className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                  
-                  {/* Assignment Details */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Date:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.date}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Program:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.program}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Event:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.event}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Role:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.role}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Start - End:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.shift}</span>
-                    </div>
-                  </div>
-
-                  {/* Conflicts Section */}
-                  {selectedAssignment.conflicts.length > 0 && (
-                    <div className="space-y-2">
-                      <h3 className="text-sm font-medium text-gray-900">Conflicts</h3>
-                      {selectedAssignment.conflicts.map((conflict: string, index: number) => (
-                        <div key={index} className="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-md">
-                          <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0" />
-                          <span className="text-sm text-red-800">{conflict}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="flex justify-end space-x-2 pt-4">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setIsAssignmentModalOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      className="bg-gray-600 hover:bg-gray-700"
-                      onClick={() => setIsAssignmentModalOpen(false)}
-                    >
-                      Reassign
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      onClick={() => setIsAssignmentModalOpen(false)}
-                    >
-                      Mark no-show
-                    </Button>
-                  </div>
-                </div>
+              <div className="flex items-center space-x-2">
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <RotateCcw className="h-4 w-4" />
+                  <span>Propose renewal</span>
+                </Button>
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span>Record vote</span>
+                </Button>
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Mark vacancy</span>
+                </Button>
               </div>
             </div>
-          )}
+
+            {/* Term Metrics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Current Term */}
+              <Card className="border-purple-200">
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <CalendarIcon className="h-6 w-6 text-purple-600 mr-1" />
+                    <ArrowLeft className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">1/2</div>
+                  <div className="text-sm text-gray-600">Current</div>
+                </CardContent>
+              </Card>
+
+              {/* Days to Renewal */}
+              <Card className="border-purple-200">
+                <CardContent className="p-4 text-center">
+                  <CalendarIcon className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-gray-900">365</div>
+                  <div className="text-sm text-gray-600">Days to renewal</div>
+                </CardContent>
+              </Card>
+
+              {/* Renewal Eligibility */}
+              <Card className="border-green-200">
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <FileText className="h-6 w-6 text-green-600 mr-1" />
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">Yes</div>
+                  <div className="text-sm text-gray-600">Renewal eligible</div>
+                </CardContent>
+              </Card>
+
+              {/* Total Terms */}
+              <Card className="border-blue-200">
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <MessageSquare className="h-6 w-6 text-blue-600 mr-1" />
+                    <FileText className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">2</div>
+                  <div className="text-sm text-gray-600">Total terms</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* My Term Timeline Section */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900">My term timeline</h2>
+            
+            {/* Timeline */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {/* Year Labels */}
+                  <div className="flex justify-between px-2">
+                    <span className="text-sm text-gray-500">2023</span>
+                    <span className="text-sm text-gray-500">2024</span>
+                    <span className="text-sm text-gray-500">2025</span>
+                    <span className="text-sm text-gray-500">2026</span>
+                  </div>
+
+                  {/* Member Row */}
+                  <div className="flex items-center space-x-4">
+                    <div className="w-20 text-sm font-medium text-gray-900">{memberData.name}</div>
+                    <div className="flex-1 relative h-6">
+                      {/* Member timeline bar */}
+                      <div className="absolute inset-0 bg-gray-100 border border-gray-300 rounded-full">
+                        {/* Active term (2024-2025) - starts at beginning of 2024, ends at middle of 2025 */}
+                        <div className="absolute left-1/4 w-1/2 h-full bg-purple-600 rounded-full flex items-center justify-center" style={{width: '37.5%'}}>
+                          <span className="text-white text-sm font-medium">2024 - 2025</span>
+                        </div>
+                        {/* Future/inactive period (mid-2025 to 2026) */}
+                        <div className="absolute h-full bg-gray-200 border border-gray-300 rounded-r-full" style={{left: '62.5%', width: '37.5%'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
-        <TabsContent value="meeting-attendance" className="space-y-6">
+        <TabsContent value="meeting-attendance" className="space-y-8">
           {/* My Meeting Attendance Section */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">My meeting attendance</h2>
-              <p className="text-sm text-gray-600">Track your personal attendance record and upcoming meetings.</p>
+              <p className="text-sm text-gray-600">Track your personal attendance record and upcoming meetings</p>
             </div>
 
             {/* Attendance Metrics Cards */}
@@ -774,30 +819,50 @@ const BoardMemberDetailView = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Monthly Grid */}
-                <div className="grid grid-cols-12 gap-2">
+                {/* Month Headers */}
+                <div className="grid gap-2" style={{gridTemplateColumns: '80px repeat(12, 1fr)'}}>
+                  <div className="text-sm font-medium text-gray-600">Month</div>
                   {monthlyAttendance.map((month) => (
                     <div key={month.month} className="text-center">
-                      <div className="text-xs font-medium text-gray-600 mb-1">{month.month}</div>
-                      <div className="flex justify-center">
-                        {getAttendanceIcon(month.status)}
-                      </div>
+                      <div className="text-xs font-medium text-gray-600">{month.month}</div>
                     </div>
                   ))}
                 </div>
 
+                {/* Separator Line */}
+                <div className="border-t border-gray-200"></div>
+
+                {/* My Attendance Row */}
+                <div className="grid gap-2" style={{gridTemplateColumns: '80px repeat(12, 1fr)'}}>
+                  <div className="text-sm font-medium text-gray-900">My Attendance</div>
+                  {monthlyAttendance.map((month) => (
+                    <div key={month.month} className="flex justify-center">
+                      {getAttendanceIcon(month.status)}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Separator Line */}
+                <div className="border-t border-gray-200"></div>
+
                 {/* Legend */}
-                <div className="flex items-center justify-center space-x-6 text-sm">
+                <div className="flex items-center space-x-6 text-sm">
                   <div className="flex items-center space-x-2">
-                    <Check className="h-4 w-4 text-green-600" />
+                    <div className="w-4 h-4 bg-green-600 rounded-full flex items-center justify-center">
+                      <Check className="h-3 w-3 text-white" />
+                    </div>
                     <span className="text-gray-600">Present</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Minus className="h-4 w-4 text-yellow-600" />
+                    <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
+                      <Minus className="h-3 w-3 text-white" />
+                    </div>
                     <span className="text-gray-600">Excused</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <XIcon className="h-4 w-4 text-red-600" />
+                    <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center">
+                      <XIcon className="h-3 w-3 text-white" />
+                    </div>
                     <span className="text-gray-600">Absent</span>
                   </div>
                 </div>
@@ -806,51 +871,223 @@ const BoardMemberDetailView = () => {
           </Card>
 
           {/* Individual Meetings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Recent Meetings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {meetingData.map((meeting) => (
-                <div key={meeting.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center space-x-4">
-                      <div className="font-medium text-gray-900">{meeting.date}</div>
-                      <div className="font-medium text-gray-900">{meeting.title}</div>
-                      <div className="flex items-center space-x-2">
-                        {getMeetingStatusBadge(meeting.status)}
-                        <span className="text-sm text-gray-600">{meeting.quorumCount}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-6 text-sm text-gray-600">
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-4 w-4" />
-                        <span>{meeting.time}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <MapPinIcon className="h-4 w-4" />
-                        <span>{meeting.location}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <UsersIcon className="h-4 w-4" />
-                        <span>{meeting.attendees}</span>
-                      </div>
+          <div className="space-y-4">
+            {meetingData.map((meeting) => (
+              <div key={meeting.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="font-medium text-gray-900">{meeting.date}</div>
+                    <span className="text-gray-400">•</span>
+                    <div className="font-medium text-gray-900">{meeting.title}</div>
+                    <div className="flex items-center space-x-2">
+                      {getMeetingStatusBadge(meeting.status)}
+                      <span className="text-sm text-gray-600">{meeting.quorumCount}</span>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="flex items-center space-x-1">
-                    <Eye className="h-4 w-4" />
-                    <span>View detail</span>
-                  </Button>
+                  <div className="flex items-center space-x-6 text-sm text-gray-600">
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{meeting.time}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <MapPinIcon className="h-4 w-4" />
+                      <span>{meeting.location}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <UsersIcon className="h-4 w-4" />
+                      <span>{meeting.attendees}</span>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center space-x-1"
+                  onClick={() => navigate('/dashboard/hr/meeting-details')}
+                >
+                  <Eye className="h-4 w-4" />
+                  <span>View detail</span>
+                </Button>
+              </div>
+            ))}
+          </div>
         </TabsContent>
 
-        <TabsContent value="governance-scorecards">
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Governance Scorecards</h3>
-            <p className="text-gray-500">This section is coming soon.</p>
+        <TabsContent value="governance-scorecards" className="space-y-6 py-6">
+          {/* My Governance Dashboard Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">My Governance Dashboard</h2>
+              <p className="text-sm text-gray-600">Personal compliance status and performance metrics</p>
+            </div>
+            <Button variant="outline" className="flex items-center space-x-2">
+              <Upload className="h-4 w-4" />
+              <span>Export</span>
+            </Button>
+          </div>
+
+          {/* Governance Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* My Committee Roles */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">My committee roles</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-gray-900">Board committee</div>
+                      <div className="text-sm text-gray-600">Chair</div>
+                    </div>
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-gray-900">Finance committee</div>
+                      <div className="text-sm text-gray-600">Member</div>
+                    </div>
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-gray-900">Audit committee</div>
+                      <div className="text-sm text-gray-600">Observer</div>
+                    </div>
+                    <Badge className="bg-blue-100 text-blue-800">Invited</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* My Skills & Expertise */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">My skills & expertise</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-900">Board committee</span>
+                    <Badge variant="outline" className="text-purple-600 border-purple-200">Expert</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-900">Strategic planning</span>
+                    <Badge variant="outline" className="text-purple-600 border-purple-200">Expert</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-900">Finance committee</span>
+                    <Badge variant="outline" className="text-blue-600 border-blue-200">Basic</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-900">Risk management</span>
+                    <Badge variant="outline" className="text-green-600 border-green-200">Proficient</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-900">Technology</span>
+                    <Badge variant="outline" className="text-blue-600 border-blue-200">Basic</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-900">Legal & compliance</span>
+                    <Badge variant="outline" className="text-green-600 border-green-200">Proficient</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Professional Development */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Professional development</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900">Effective communication strategies</span>
+                      <span className="text-sm text-gray-600">85%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '85%' }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900">Board leadership training</span>
+                      <span className="text-sm text-gray-600">75%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900">Creative problem-solving session</span>
+                      <span className="text-sm text-gray-600">70%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '70%' }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900">Conflict resolution techniques</span>
+                      <span className="text-sm text-gray-600">60%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '60%' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Compliance Tracker */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Compliance tracker</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900">Directors & Officers Insurance</span>
+                      <span className="text-sm text-gray-600">100%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '100%' }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900">Conflict of interest</span>
+                      <span className="text-sm text-gray-600">100%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '100%' }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900">Code of conduct</span>
+                      <span className="text-sm text-gray-600">70%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '70%' }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-900">Declaration of interest</span>
+                      <span className="text-sm text-gray-600">60%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{ width: '60%' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
       </Tabs>
