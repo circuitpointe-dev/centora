@@ -30,12 +30,12 @@ const VendorManagementPage: React.FC = () => {
     const total = data?.total || 0;
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-    const [draft, setDraft] = useState<Partial<Vendor>>({ name: '', email: '', phone: '', status: 'Active', category: '' });
+    const [draft, setDraft] = useState<Partial<Vendor>>({ vendor_name: '', email: '', phone: '', is_active: true, contact_person: '' });
 
     const exportCsv = () => {
         const rows = [
-            ['Name', 'Email', 'Phone', 'Category', 'Status', 'Rating', 'City', 'Country', 'Risk score', 'Vetting'],
-            ...vendors.map(v => [v.name, v.email || '', v.phone || '', v.category || '', v.status || '', String(v.rating || ''), v.city || '', v.country || '', String(v.risk_score || ''), v.vetting_status || ''])
+            ['Name', 'Contact Person', 'Email', 'Phone', 'City', 'Country', 'Status', 'Rating'],
+            ...vendors.map(v => [v.vendor_name, v.contact_person || '', v.email || '', v.phone || '', v.city || '', v.country || '', v.is_active ? 'Active' : 'Inactive', String(v.rating || '')])
         ];
         const csv = rows.map(r => r.map(val => `"${String(val ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -45,10 +45,10 @@ const VendorManagementPage: React.FC = () => {
     };
 
     const handleCreate = async () => {
-        if (!draft.name) return;
+        if (!draft.vendor_name) return;
         await createVendor.mutateAsync(draft as any);
         setIsCreateOpen(false);
-        setDraft({ name: '', email: '', phone: '', status: 'Active', category: '' });
+        setDraft({ vendor_name: '', email: '', phone: '', is_active: true, contact_person: '' });
     };
 
     const handleUpdate = async () => {
@@ -81,15 +81,15 @@ const VendorManagementPage: React.FC = () => {
             const records = parseCsv(text);
             const mapped = records
                 .map(r => ({
-                    name: r.name || r.vendor || '',
+                    vendor_name: r.name || r.vendor || r.vendor_name || '',
+                    contact_person: r.contact || r.contact_person || undefined,
                     email: r.email || undefined,
                     phone: r.phone || undefined,
-                    category: r.category || undefined,
-                    status: r.status || 'Active',
+                    is_active: r.status?.toLowerCase() !== 'inactive',
                     city: r.city || undefined,
                     country: r.country || undefined,
                 }))
-                .filter(r => r.name);
+                .filter(r => r.vendor_name);
             // Insert sequentially to respect RLS with org_id from hook
             for (const rec of mapped) {
                 // eslint-disable-next-line no-await-in-loop
@@ -101,12 +101,9 @@ const VendorManagementPage: React.FC = () => {
         }
     };
 
-    const statusBadge = (s?: string) => {
-        const val = (s || 'Active').toLowerCase();
-        if (val === 'active') return <Badge className="bg-[#d1fae5] text-[#059669] hover:bg-[#d1fae5]">Active</Badge>;
-        if (val === 'inactive') return <Badge className="bg-[#f3f4f6] text-[#6b7280] hover:bg-[#f3f4f6]">Inactive</Badge>;
-        if (val === 'blocked') return <Badge className="bg-[#fee2e2] text-[#dc2626] hover:bg-[#fee2e2]">Blocked</Badge>;
-        return <Badge variant="secondary">{s}</Badge>;
+    const statusBadge = (isActive: boolean) => {
+        if (isActive) return <Badge className="bg-[#d1fae5] text-[#059669] hover:bg-[#d1fae5]">Active</Badge>;
+        return <Badge className="bg-[#f3f4f6] text-[#6b7280] hover:bg-[#f3f4f6]">Inactive</Badge>;
     };
 
     if (isLoading) {
@@ -143,11 +140,10 @@ const VendorManagementPage: React.FC = () => {
                         <Input placeholder="Search vendors..." value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} className="pl-10 w-full sm:w-64" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <select value={status} onChange={e => { setPage(1); setStatus(e.target.value); }} className="h- nine rounded-md border border-[#e5e7eb] bg-white px-3 text-sm">
+                        <select value={status} onChange={e => { setPage(1); setStatus(e.target.value); }} className="h-9 rounded-md border border-[#e5e7eb] bg-white px-3 text-sm">
                             <option value="">All status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                            <option value="Blocked">Blocked</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
                         </select>
                     </div>
                 </div>
@@ -172,27 +168,27 @@ const VendorManagementPage: React.FC = () => {
                             <thead className="bg-gray-50 border-b">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {vendors.map(v => (
                                     <tr key={v.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/dashboard/vendors/${v.id}`)}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#383839]">{v.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#383839]">{v.vendor_name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.contact_person || '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.email || '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.phone || '-'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.category || '-'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{statusBadge(v.status)}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.risk_score ?? '-'}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.city || '-'}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{statusBadge(v.is_active)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setEditingVendor(v); }}>Edit</Button>
-                                            <Button variant="outline" size="sm" className="ml-2" onClick={(e) => { e.stopPropagation(); setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.name }); }}>Clarify</Button>
-                                            <Button variant="outline" size="sm" className="ml-2 text-red-600" onClick={async () => { if (confirm('Delete vendor?')) await deleteVendor.mutateAsync(v.id); }}>Delete</Button>
+                                            <Button variant="outline" size="sm" className="ml-2" onClick={(e) => { e.stopPropagation(); setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.vendor_name }); }}>Clarify</Button>
+                                            <Button variant="outline" size="sm" className="ml-2 text-red-600" onClick={async (e) => { e.stopPropagation(); if (confirm('Delete vendor?')) await deleteVendor.mutateAsync(v.id); }}>Delete</Button>
                                         </td>
                                     </tr>
                                 ))}
@@ -206,16 +202,17 @@ const VendorManagementPage: React.FC = () => {
                             <Card key={v.id} className="p-4">
                                 <div className="flex items-start justify-between">
                                     <div>
-                                        <div className="font-medium text-[#383839]">{v.name}</div>
+                                        <div className="font-medium text-[#383839]">{v.vendor_name}</div>
+                                        {v.contact_person && <div className="text-xs text-[#6b7280]">{v.contact_person}</div>}
                                         <div className="text-xs text-[#6b7280]">{v.email || '-'}</div>
                                         <div className="text-xs text-[#6b7280]">{v.phone || '-'}</div>
                                     </div>
-                                    {statusBadge(v.status)}
+                                    {statusBadge(v.is_active)}
                                 </div>
                                 <div className="flex items-center gap-2 mt-3">
                                     <Button variant="outline" size="sm" onClick={() => navigate(`/dashboard/vendors/${v.id}`)}>View</Button>
                                     <Button variant="outline" size="sm" onClick={() => setEditingVendor(v)}>Edit</Button>
-                                    <Button variant="outline" size="sm" onClick={() => setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.name })}>Clarify</Button>
+                                    <Button variant="outline" size="sm" onClick={() => setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.vendor_name })}>Clarify</Button>
                                     <Button variant="outline" size="sm" className="text-red-600" onClick={async () => { if (confirm('Delete vendor?')) await deleteVendor.mutateAsync(v.id); }}>Delete</Button>
                                 </div>
                             </Card>
@@ -244,31 +241,31 @@ const VendorManagementPage: React.FC = () => {
                         </div>
                         <div className="p-4 space-y-3">
                             <div>
-                                <label className="block text-sm text-gray-600 mb-1">Name</label>
-                                <Input value={draft.name || ''} onChange={e => setDraft(v => ({ ...v, name: e.target.value }))} />
+                                <label className="block text-sm text-gray-600 mb-1">Vendor Name *</label>
+                                <Input value={draft.vendor_name || ''} onChange={e => setDraft(v => ({ ...v, vendor_name: e.target.value }))} />
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-600 mb-1">Contact Person</label>
+                                <Input value={draft.contact_person || ''} onChange={e => setDraft(v => ({ ...v, contact_person: e.target.value }))} />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-sm text-gray-600 mb-1">Email</label>
-                                    <Input value={draft.email || ''} onChange={e => setDraft(v => ({ ...v, email: e.target.value }))} />
+                                    <Input type="email" value={draft.email || ''} onChange={e => setDraft(v => ({ ...v, email: e.target.value }))} />
                                 </div>
                                 <div>
                                     <label className="block text-sm text-gray-600 mb-1">Phone</label>
                                     <Input value={draft.phone || ''} onChange={e => setDraft(v => ({ ...v, phone: e.target.value }))} />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <div>
-                                    <label className="block text-sm text-gray-600 mb-1">Category</label>
-                                    <Input value={draft.category || ''} onChange={e => setDraft(v => ({ ...v, category: e.target.value }))} />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-600 mb-1">Status</label>
-                                    <Input value={draft.status || 'Active'} onChange={e => setDraft(v => ({ ...v, status: e.target.value }))} />
-                                </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-sm text-gray-600 mb-1">City</label>
                                     <Input value={draft.city || ''} onChange={e => setDraft(v => ({ ...v, city: e.target.value }))} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-600 mb-1">Country</label>
+                                    <Input value={draft.country || ''} onChange={e => setDraft(v => ({ ...v, country: e.target.value }))} />
                                 </div>
                             </div>
                         </div>
@@ -290,8 +287,12 @@ const VendorManagementPage: React.FC = () => {
                         </div>
                         <div className="p-4 space-y-3">
                             <div>
-                                <label className="block text-sm text-gray-600 mb-1">Name</label>
-                                <Input value={editingVendor.name || ''} onChange={e => setEditingVendor(v => ({ ...(v as Vendor), name: e.target.value }))} />
+                                <label className="block text-sm text-gray-600 mb-1">Vendor Name *</label>
+                                <Input value={editingVendor.vendor_name || ''} onChange={e => setEditingVendor(v => ({ ...(v as Vendor), vendor_name: e.target.value }))} />
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-600 mb-1">Contact Person</label>
+                                <Input value={editingVendor.contact_person || ''} onChange={e => setEditingVendor(v => ({ ...(v as Vendor), contact_person: e.target.value }))} />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
@@ -303,19 +304,26 @@ const VendorManagementPage: React.FC = () => {
                                     <Input value={editingVendor.phone || ''} onChange={e => setEditingVendor(v => ({ ...(v as Vendor), phone: e.target.value }))} />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <div>
-                                    <label className="block text-sm text-gray-600 mb-1">Category</label>
-                                    <Input value={editingVendor.category || ''} onChange={e => setEditingVendor(v => ({ ...(v as Vendor), category: e.target.value }))} />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-600 mb-1">Status</label>
-                                    <Input value={editingVendor.status || ''} onChange={e => setEditingVendor(v => ({ ...(v as Vendor), status: e.target.value }))} />
-                                </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-sm text-gray-600 mb-1">City</label>
                                     <Input value={editingVendor.city || ''} onChange={e => setEditingVendor(v => ({ ...(v as Vendor), city: e.target.value }))} />
                                 </div>
+                                <div>
+                                    <label className="block text-sm text-gray-600 mb-1">Country</label>
+                                    <Input value={editingVendor.country || ''} onChange={e => setEditingVendor(v => ({ ...(v as Vendor), country: e.target.value }))} />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-600 mb-1">Status</label>
+                                <select 
+                                    value={editingVendor.is_active ? 'active' : 'inactive'} 
+                                    onChange={e => setEditingVendor(v => ({ ...(v as Vendor), is_active: e.target.value === 'active' }))}
+                                    className="w-full h-9 rounded-md border border-[#e5e7eb] bg-white px-3 text-sm"
+                                >
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
                             </div>
                         </div>
                         <div className="p-4 border-t flex items-center justify-end gap-2">

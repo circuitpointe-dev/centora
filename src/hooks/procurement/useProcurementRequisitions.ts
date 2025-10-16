@@ -190,7 +190,7 @@ export const useRequisitions = (params: RequisitionSearchParams = {}) => {
       if (error) throw error;
 
       return {
-        requisitions: data || [],
+        requisitions: (data || []) as Requisition[],
         total: count || 0,
       };
     },
@@ -217,11 +217,11 @@ export const useCreateRequisition = () => {
 
       const { data, error } = await supabase
         .from('procurement_requisitions')
-        .insert({
-          ...requisitionData,
+        .insert([{
           org_id: profile.org_id,
           requested_by: user.id,
-        })
+          ...requisitionData,
+        } as any])
         .select()
         .single();
 

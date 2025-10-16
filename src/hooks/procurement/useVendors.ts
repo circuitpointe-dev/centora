@@ -4,17 +4,24 @@ import { supabase } from '@/integrations/supabase/client';
 export type Vendor = {
     id: string;
     org_id: string;
-    name: string;
+    vendor_name: string;
+    contact_person?: string;
     email?: string;
     phone?: string;
-    category?: string;
-    status?: string;
-    rating?: number;
     address?: string;
     city?: string;
+    state?: string;
+    postal_code?: string;
     country?: string;
-    risk_score?: number;
-    vetting_status?: string;
+    tax_id?: string;
+    payment_terms?: number;
+    currency: string;
+    is_active: boolean;
+    rating?: number;
+    notes?: string;
+    created_by: string;
+    created_at?: string;
+    updated_at?: string;
 };
 
 export function useVendors(params: { page: number; limit: number; search?: string; status?: string }) {
@@ -30,12 +37,12 @@ export function useVendors(params: { page: number; limit: number; search?: strin
             const to = from + limit - 1;
             let query = (supabase as any)
                 .from('vendors')
-                .select('id,name,email,phone,category,status,rating,city,country,risk_score,vetting_status,created_at', { count: 'exact' })
+                .select('id,vendor_name,contact_person,email,phone,address,city,state,postal_code,country,tax_id,payment_terms,currency,is_active,rating,notes,created_at', { count: 'exact' })
                 .eq('org_id', orgId)
                 .order('created_at', { ascending: false })
                 .range(from, to);
-            if (search) query = query.ilike('name', `%${search}%`);
-            if (status) query = query.eq('status', status);
+            if (search) query = query.ilike('vendor_name', `%${search}%`);
+            if (status) query = query.eq('is_active', status === 'active');
             const { data, error, count } = await query;
             if (error) throw error;
             return { vendors: data || [], total: count || 0 };
@@ -46,12 +53,16 @@ export function useVendors(params: { page: number; limit: number; search?: strin
 export function useCreateVendor() {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: async (payload: Partial<Vendor> & { name: string }) => {
+        mutationFn: async (payload: Partial<Vendor> & { vendor_name: string }) => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
             const { data: profile } = await supabase.from('profiles').select('org_id').eq('id', user.id).single();
             const orgId = profile?.org_id;
-            const { error } = await (supabase as any).from('vendors').insert({ ...payload, org_id: orgId });
+            const { error } = await (supabase as any).from('vendors').insert({ 
+                ...payload, 
+                org_id: orgId,
+                created_by: user.id 
+            });
             if (error) throw error;
         },
         onSuccess: () => { qc.invalidateQueries({ queryKey: ['vendors'] }); }
