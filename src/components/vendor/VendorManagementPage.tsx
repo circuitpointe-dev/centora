@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { useVendors, useCreateVendor, useUpdateVendor, useDeleteVendor, Vendor } from '@/hooks/procurement/useVendors';
+import VendorClarificationModal from './VendorClarificationModal';
 
 const pageSize = 10;
 
@@ -15,7 +16,9 @@ const VendorManagementPage: React.FC = () => {
     const [page, setPage] = useState(1);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
+    const [clarificationModal, setClarificationModal] = useState<{ isOpen: boolean; vendorId: string; vendorName: string }>({ isOpen: false, vendorId: '', vendorName: '' });
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [isBulkUploading, setIsBulkUploading] = useState(false);
 
     const navigate = useNavigate();
     const { data, isLoading, error } = useVendors({ page, limit: pageSize, search, status });
@@ -52,6 +55,50 @@ const VendorManagementPage: React.FC = () => {
         if (!editingVendor) return;
         await updateVendor.mutateAsync({ id: editingVendor.id, updates: editingVendor });
         setEditingVendor(null);
+    };
+
+    const parseCsv = (text: string) => {
+        const lines = text.split(/\r?\n/).filter(l => l.trim().length);
+        if (lines.length === 0) return [] as any[];
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        const rows: any[] = [];
+        for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',');
+            if (!cols.length) continue;
+            const obj: any = {};
+            headers.forEach((h, idx) => {
+                obj[h] = (cols[idx] ?? '').trim();
+            });
+            rows.push(obj);
+        }
+        return rows;
+    };
+
+    const handleBulkUpload = async (file: File) => {
+        setIsBulkUploading(true);
+        try {
+            const text = await file.text();
+            const records = parseCsv(text);
+            const mapped = records
+                .map(r => ({
+                    name: r.name || r.vendor || '',
+                    email: r.email || undefined,
+                    phone: r.phone || undefined,
+                    category: r.category || undefined,
+                    status: r.status || 'Active',
+                    city: r.city || undefined,
+                    country: r.country || undefined,
+                }))
+                .filter(r => r.name);
+            // Insert sequentially to respect RLS with org_id from hook
+            for (const rec of mapped) {
+                // eslint-disable-next-line no-await-in-loop
+                await createVendor.mutateAsync(rec as any);
+            }
+        } finally {
+            setIsBulkUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
     };
 
     const statusBadge = (s?: string) => {
@@ -106,6 +153,11 @@ const VendorManagementPage: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     <Button variant="outline" size="sm" onClick={exportCsv}><img className="w-4 h-4 mr-2" src="/uil-export0.svg" alt="export" />Export</Button>
+                    <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleBulkUpload(f); }} />
+                    <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isBulkUploading}>
+                        <img className="w-4 h-4 mr-2" src="/bulk-upload0.svg" alt="bulk upload" />
+                        {isBulkUploading ? 'Uploading…' : 'Bulk upload'}
+                    </Button>
                     <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" onClick={() => setIsCreateOpen(true)}>
                         <img className="w-4 h-4 mr-2" src="/material-symbols-add-rounded0.svg" alt="add" />
                         New vendor
@@ -139,6 +191,7 @@ const VendorManagementPage: React.FC = () => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.risk_score ?? '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setEditingVendor(v); }}>Edit</Button>
+                                            <Button variant="outline" size="sm" className="ml-2" onClick={(e) => { e.stopPropagation(); setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.name }); }}>Clarify</Button>
                                             <Button variant="outline" size="sm" className="ml-2 text-red-600" onClick={async () => { if (confirm('Delete vendor?')) await deleteVendor.mutateAsync(v.id); }}>Delete</Button>
                                         </td>
                                     </tr>
@@ -162,6 +215,7 @@ const VendorManagementPage: React.FC = () => {
                                 <div className="flex items-center gap-2 mt-3">
                                     <Button variant="outline" size="sm" onClick={() => navigate(`/dashboard/vendors/${v.id}`)}>View</Button>
                                     <Button variant="outline" size="sm" onClick={() => setEditingVendor(v)}>Edit</Button>
+                                    <Button variant="outline" size="sm" onClick={() => setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.name })}>Clarify</Button>
                                     <Button variant="outline" size="sm" className="text-red-600" onClick={async () => { if (confirm('Delete vendor?')) await deleteVendor.mutateAsync(v.id); }}>Delete</Button>
                                 </div>
                             </Card>
@@ -271,6 +325,14 @@ const VendorManagementPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Clarification Modal */}
+            <VendorClarificationModal
+                isOpen={clarificationModal.isOpen}
+                onClose={() => setClarificationModal({ isOpen: false, vendorId: '', vendorName: '' })}
+                vendorId={clarificationModal.vendorId}
+                vendorName={clarificationModal.vendorName}
+            />
         </div>
     );
 };

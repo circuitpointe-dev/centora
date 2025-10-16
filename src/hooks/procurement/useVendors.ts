@@ -136,4 +136,131 @@ export function useVendorPerformance(vendorId: string | null, params: { from?: s
     });
 }
 
+export function useCreateVendorDocument() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: { vendor_id: string; title: string; type?: string; url: string; status?: string; expires_at?: string }) => {
+            const { error } = await (supabase as any)
+                .from('vendor_documents')
+                .insert(payload);
+            if (error) throw error;
+        },
+        onSuccess: (_data, variables) => {
+            qc.invalidateQueries({ queryKey: ['vendor-docs', variables.vendor_id] });
+        }
+    });
+}
+
+export function useCreateVendorContract() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: { vendor_id: string; contract_code: string; title: string; start_date?: string; end_date?: string; value?: number; currency?: string; status?: string }) => {
+            const { error } = await (supabase as any)
+                .from('vendor_contracts')
+                .insert(payload);
+            if (error) throw error;
+        },
+        onSuccess: (_data, variables) => {
+            qc.invalidateQueries({ queryKey: ['vendor-contracts', variables.vendor_id] });
+        }
+    });
+}
+
+export function useCreateVendorPerformance() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: { vendor_id: string; period_start: string; period_end: string; delivery_score?: number; quality_score?: number; cost_score?: number; overall_score?: number; notes?: string }) => {
+            const { error } = await (supabase as any)
+                .from('vendor_performance')
+                .insert(payload);
+            if (error) throw error;
+        },
+        onSuccess: (_data, variables) => {
+            qc.invalidateQueries({ queryKey: ['vendor-performance', variables.vendor_id] });
+        }
+    });
+}
+
+export function useUploadVendorDocument() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (args: { vendor_id: string; file: File }) => {
+            const { vendor_id, file } = args;
+            // Validate file
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (!allowedTypes.includes(file.type)) {
+                throw new Error('File type not allowed. Please upload PDF, images, or Word documents.');
+            }
+            if (file.size > maxSize) {
+                throw new Error('File size too large. Maximum size is 10MB.');
+            }
+            const ext = file.name.split('.').pop() || 'dat';
+            const path = `${vendor_id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+            const { data, error } = await supabase.storage.from('vendor-documents').upload(path, file, { upsert: false });
+            if (error) throw error;
+            const { data: pub } = supabase.storage.from('vendor-documents').getPublicUrl(data.path);
+            return { url: pub.publicUrl };
+        },
+        onSuccess: (_res, variables) => {
+            qc.invalidateQueries({ queryKey: ['vendor-docs', variables.vendor_id] });
+        }
+    });
+}
+
+export function useBulkCreateVendorContracts() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (args: { vendor_id: string; contracts: Array<{ title: string; start_date?: string; end_date?: string; value?: number; currency?: string; status?: string }> }) => {
+            const { vendor_id, contracts } = args;
+            const now = new Date();
+            const ymd = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+
+            const contractData = contracts.map((contract, index) => ({
+                vendor_id,
+                contract_code: `CON-${ymd}-${String(index + 1).padStart(4, '0')}`,
+                title: contract.title,
+                start_date: contract.start_date,
+                end_date: contract.end_date,
+                value: contract.value,
+                currency: contract.currency,
+                status: contract.status || 'Active'
+            }));
+
+            const { error } = await (supabase as any)
+                .from('vendor_contracts')
+                .insert(contractData);
+            if (error) throw error;
+        },
+        onSuccess: (_res, variables) => {
+            qc.invalidateQueries({ queryKey: ['vendor-contracts', variables.vendor_id] });
+        }
+    });
+}
+
+export function useBulkCreateVendorDocuments() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (args: { vendor_id: string; documents: Array<{ title: string; type?: string; url: string; status?: string; expires_at?: string }> }) => {
+            const { vendor_id, documents } = args;
+            const docData = documents.map(doc => ({
+                vendor_id,
+                title: doc.title,
+                type: doc.type,
+                url: doc.url,
+                status: doc.status || 'Active',
+                expires_at: doc.expires_at
+            }));
+
+            const { error } = await (supabase as any)
+                .from('vendor_documents')
+                .insert(docData);
+            if (error) throw error;
+        },
+        onSuccess: (_res, variables) => {
+            qc.invalidateQueries({ queryKey: ['vendor-docs', variables.vendor_id] });
+        }
+    });
+}
+
 

@@ -17,6 +17,8 @@ import DashboardPage from "./components/pages/DashboardPage";
 import GenericFeaturePage from "./components/pages/GenericFeaturePage";
 import VendorManagementPage from "./components/vendor/VendorManagementPage";
 import VendorProfilePage from "./components/vendor/VendorProfilePage";
+import VendorContractDetailPage from "./components/vendor/VendorContractDetailPage";
+import VendorClassificationPage from "./components/vendor/VendorClassificationPage";
 import ManualProposalCreationPage from "./components/pages/ManualProposalCreationPage";
 import GrantViewPage from "./components/grants/view/GrantViewPage";
 import CloseGrantPage from "./components/grants/view/CloseGrantPage";
@@ -168,7 +170,9 @@ const AppRoutes = () => {
           <Route path=":feature" element={<GenericFeaturePage />} />
           {/* Procurement → Vendor Management dedicated routes */}
           <Route path="vendor-management" element={<VendorManagementPage />} />
+          <Route path="vendor-classification" element={<VendorClassificationPage />} />
           <Route path="vendors/:vendorId" element={<VendorProfilePage />} />
+          <Route path="vendors/:vendorId/contracts/:contractId" element={<VendorContractDetailPage />} />
         </Route>
 
         {/* Catch-all: send anything else back to "/" */}
