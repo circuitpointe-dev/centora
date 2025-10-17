@@ -2366,6 +2366,45 @@ export type Database = {
           },
         ]
       }
+      procurement_approval_rules: {
+        Row: {
+          approver_sequence: string[] | null
+          condition: string | null
+          created_at: string
+          entity_type: string
+          escalation_sla: string | null
+          id: string
+          org_id: string
+          rule_code: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          approver_sequence?: string[] | null
+          condition?: string | null
+          created_at?: string
+          entity_type: string
+          escalation_sla?: string | null
+          id?: string
+          org_id: string
+          rule_code: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approver_sequence?: string[] | null
+          condition?: string | null
+          created_at?: string
+          entity_type?: string
+          escalation_sla?: string | null
+          id?: string
+          org_id?: string
+          rule_code?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       procurement_approvals: {
         Row: {
           amount: number
@@ -2568,6 +2607,167 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      procurement_plan_items: {
+        Row: {
+          budget_source: string | null
+          created_at: string
+          description: string | null
+          est_cost: number | null
+          id: string
+          item: string
+          org_id: string
+          plan_id: string | null
+          planned_date: string | null
+          status: string | null
+        }
+        Insert: {
+          budget_source?: string | null
+          created_at?: string
+          description?: string | null
+          est_cost?: number | null
+          id?: string
+          item: string
+          org_id: string
+          plan_id?: string | null
+          planned_date?: string | null
+          status?: string | null
+        }
+        Update: {
+          budget_source?: string | null
+          created_at?: string
+          description?: string | null
+          est_cost?: number | null
+          id?: string
+          item?: string
+          org_id?: string
+          plan_id?: string | null
+          planned_date?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procurement_plan_items_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "procurement_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      procurement_plans: {
+        Row: {
+          created_at: string
+          id: string
+          org_id: string
+          pending_items: number | null
+          title: string
+          total_items: number | null
+          total_planned_spend: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          org_id: string
+          pending_items?: number | null
+          title: string
+          total_items?: number | null
+          total_planned_spend?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          org_id?: string
+          pending_items?: number | null
+          title?: string
+          total_items?: number | null
+          total_planned_spend?: number | null
+        }
+        Relationships: []
+      }
+      procurement_requisition_activity: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          org_id: string
+          requisition_id: string
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          org_id: string
+          requisition_id: string
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          org_id?: string
+          requisition_id?: string
+        }
+        Relationships: []
+      }
+      procurement_requisition_documents: {
+        Row: {
+          created_at: string
+          id: string
+          org_id: string
+          requisition_id: string
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          org_id: string
+          requisition_id: string
+          title: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          org_id?: string
+          requisition_id?: string
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      procurement_requisition_workflow: {
+        Row: {
+          acted_at: string | null
+          created_at: string
+          id: string
+          label: string
+          org_id: string
+          requisition_id: string
+          sequence: number
+          status: string
+        }
+        Insert: {
+          acted_at?: string | null
+          created_at?: string
+          id?: string
+          label: string
+          org_id: string
+          requisition_id: string
+          sequence: number
+          status?: string
+        }
+        Update: {
+          acted_at?: string | null
+          created_at?: string
+          id?: string
+          label?: string
+          org_id?: string
+          requisition_id?: string
+          sequence?: number
+          status?: string
+        }
+        Relationships: []
       }
       procurement_requisitions: {
         Row: {
@@ -3674,6 +3874,156 @@ export type Database = {
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_contracts: {
+        Row: {
+          contract_code: string
+          created_at: string
+          currency: string | null
+          end_date: string | null
+          id: string
+          org_id: string
+          start_date: string | null
+          status: string | null
+          terms: string | null
+          title: string
+          updated_at: string
+          value: number | null
+          vendor_id: string
+        }
+        Insert: {
+          contract_code: string
+          created_at?: string
+          currency?: string | null
+          end_date?: string | null
+          id?: string
+          org_id: string
+          start_date?: string | null
+          status?: string | null
+          terms?: string | null
+          title: string
+          updated_at?: string
+          value?: number | null
+          vendor_id: string
+        }
+        Update: {
+          contract_code?: string
+          created_at?: string
+          currency?: string | null
+          end_date?: string | null
+          id?: string
+          org_id?: string
+          start_date?: string | null
+          status?: string | null
+          terms?: string | null
+          title?: string
+          updated_at?: string
+          value?: number | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_contracts_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_documents: {
+        Row: {
+          expires_at: string | null
+          id: string
+          org_id: string
+          status: string | null
+          title: string
+          type: string | null
+          uploaded_at: string
+          url: string
+          vendor_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          id?: string
+          org_id: string
+          status?: string | null
+          title: string
+          type?: string | null
+          uploaded_at?: string
+          url: string
+          vendor_id: string
+        }
+        Update: {
+          expires_at?: string | null
+          id?: string
+          org_id?: string
+          status?: string | null
+          title?: string
+          type?: string | null
+          uploaded_at?: string
+          url?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_documents_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_performance: {
+        Row: {
+          cost_score: number | null
+          created_at: string
+          delivery_score: number | null
+          id: string
+          notes: string | null
+          org_id: string
+          overall_score: number | null
+          period_end: string
+          period_start: string
+          quality_score: number | null
+          vendor_id: string
+        }
+        Insert: {
+          cost_score?: number | null
+          created_at?: string
+          delivery_score?: number | null
+          id?: string
+          notes?: string | null
+          org_id: string
+          overall_score?: number | null
+          period_end: string
+          period_start: string
+          quality_score?: number | null
+          vendor_id: string
+        }
+        Update: {
+          cost_score?: number | null
+          created_at?: string
+          delivery_score?: number | null
+          id?: string
+          notes?: string | null
+          org_id?: string
+          overall_score?: number | null
+          period_end?: string
+          period_start?: string
+          quality_score?: number | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_performance_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
             referencedColumns: ["id"]
           },
         ]
