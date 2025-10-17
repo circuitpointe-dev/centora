@@ -58,7 +58,7 @@ const VendorManagementPage: React.FC = () => {
             await createVendor.mutateAsync(draft as any);
             toast.success('Vendor created successfully');
             setIsCreateOpen(false);
-            setDraft({ vendor_name: '', email: '', phone: '', is_active: true, contact_person: '', city: '', country: '', category: '', rating: undefined } as any);
+            setDraft({ vendor_name: '', email: '', phone: '', is_active: true, contact_person: '', city: '', country: '', rating: undefined } as any);
         } catch (error) {
             console.error('Error creating vendor:', error);
             toast.error((error as any)?.message || 'Failed to create vendor');
@@ -211,8 +211,7 @@ const VendorManagementPage: React.FC = () => {
                             <thead className="bg-gray-50 border-b">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next expiry</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -224,7 +223,6 @@ const VendorManagementPage: React.FC = () => {
                                     <tr key={v.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/dashboard/procurement/vendors/${v.id}`)}>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#383839]">{v.vendor_name}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.rating ?? '-'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.category || '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{nextExpiry(v.id)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">
                                             {v.rating != null ? (
@@ -398,30 +396,15 @@ const VendorManagementPage: React.FC = () => {
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-[#374151] mb-2">Category</label>
-                                        <select
-                                            value={(draft as any).category || ''}
-                                            onChange={e => setDraft(v => ({ ...v, category: e.target.value } as any))}
-                                            className="w-full h-11 rounded-md border border-gray-200 bg-white px-3 text-sm focus:border-[#7c3aed] focus:ring-[#7c3aed]"
-                                        >
-                                            <option value="">Select category</option>
-                                            <option value="Hardware">Hardware</option>
-                                            <option value="Software">Software</option>
-                                            <option value="Services">Services</option>
-                                            <option value="Consulting">Consulting</option>
-                                            <option value="Manufacturing">Manufacturing</option>
-                                        </select>
-                                    </div>
-                                    <div>
                                         <label className="block text-sm font-medium text-[#374151] mb-2">Initial Rating</label>
-                                        <Input
+                                        <input
                                             type="number"
                                             min="0"
                                             max="100"
-                                            value={draft.rating || ''}
-                                            onChange={e => setDraft(v => ({ ...v, rating: Number(e.target.value) }))}
+                                            value={(draft as any).rating || ''}
+                                            onChange={e => setDraft(v => ({ ...v, rating: Number(e.target.value) } as any))}
+                                            className="w-full h-11 rounded-md border border-gray-200 bg-white px-3 text-sm focus:border-[#7c3aed] focus:ring-[#7c3aed]"
                                             placeholder="0-100"
-                                            className="h-11 border-gray-200 focus:border-[#7c3aed] focus:ring-[#7c3aed]"
                                         />
                                     </div>
                                 </div>

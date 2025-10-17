@@ -18,7 +18,6 @@ export type Vendor = {
     currency: string;
     is_active: boolean;
     rating?: number;
-    category?: string;
     notes?: string;
     created_by: string;
     created_at?: string;

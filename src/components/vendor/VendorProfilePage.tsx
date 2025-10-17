@@ -338,10 +338,6 @@ const VendorProfilePage: React.FC = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <div className="text-xs text-gray-500">Primary Category</div>
-                                        <div className="text-sm text-[#383839]">{vendor?.category || '-'}</div>
-                                    </div>
-                                    <div>
                                         <div className="text-xs text-gray-500">Next Contract Expiry</div>
                                         <div className="text-sm text-[#383839]">
                                             {contractsData?.contracts?.find((c: any) => c.end_date)?.end_date ?
@@ -429,11 +425,7 @@ const VendorProfilePage: React.FC = () => {
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-semibold text-[#383839]">Vendor Classifications</h3>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="border rounded-lg p-4">
-                                <div className="text-sm font-medium text-[#383839] mb-2">Primary Category</div>
-                                <div className="text-lg text-[#6B7280]">{vendor?.category || 'Uncategorized'}</div>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="border rounded-lg p-4">
                                 <div className="text-sm font-medium text-[#383839] mb-2">Risk Level</div>
                                 <div className="text-lg text-[#6B7280]">

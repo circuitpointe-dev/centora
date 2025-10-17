@@ -20,10 +20,9 @@ const VendorClassificationPage: React.FC = () => {
 
     const classified = useMemo(() => {
         const groups: Record<string, typeof vendors> = {};
-        for (const v of vendors) {
-            const key = (v.category || 'Uncategorized').toString();
-            if (!groups[key]) groups[key] = [] as any;
-            groups[key].push(v);
+        const key = 'All Vendors';
+        if (vendors.length > 0) {
+            groups[key] = vendors;
         }
         return groups;
     }, [vendors]);
