@@ -18,6 +18,7 @@ export type Vendor = {
     currency: string;
     is_active: boolean;
     rating?: number;
+    category?: string;
     notes?: string;
     created_by: string;
     created_at?: string;
@@ -43,16 +44,20 @@ export function useVendors(params: { page: number; limit: number; search?: strin
             const to = from + limit - 1;
             let query = (supabase as any)
                 .from('vendors')
-                .select('id,vendor_name,contact_person,email,phone,rating,is_active,city,country,created_at', { count: 'exact' })
+                .select('id,name,category,rating,status,city,country,created_at', { count: 'exact' })
                 .eq('org_id', orgId)
                 .order('created_at', { ascending: false })
                 .range(from, to);
-            if (search) query = query.ilike('vendor_name', `%${search}%`);
-            if (status) query = status === 'active' ? query.eq('is_active', true) : status === 'inactive' ? query.eq('is_active', false) : query;
+            if (search) query = query.ilike('name', `%${search}%`);
+            if (status) query = status === 'active' ? query.eq('status', 'Active') : status === 'inactive' ? query.eq('status', 'Inactive') : query;
             const { data, error, count } = await query;
             if (error) throw error;
-            // Fetch next expiry per vendor
-            const vendors = data || [];
+            // Map database fields to TypeScript interface
+            const vendors = (data || []).map((v: any) => ({
+                ...v,
+                vendor_name: v.name,
+                is_active: v.status === 'Active'
+            }));
             const vendorIds = vendors.map((v: any) => v.id);
             const today = new Date().toISOString().slice(0, 10);
             let nextExpiryByVendor: Record<string, string | null> = {};
@@ -90,7 +95,7 @@ export function useVendorStats() {
             const [vendorsRes, contractsRes] = await Promise.all([
                 (supabase as any)
                     .from('vendors')
-                    .select('id,is_active,rating')
+                    .select('id,status,rating')
                     .eq('org_id', orgId),
                 (supabase as any)
                     .from('vendor_contracts')
@@ -103,7 +108,7 @@ export function useVendorStats() {
             if (contractsRes.error) throw contractsRes.error;
 
             const vendors = vendorsRes.data || [];
-            const activeVendors = vendors.filter((v: any) => v.is_active === true).length;
+            const activeVendors = vendors.filter((v: any) => v.status === 'Active').length;
             const highRiskVendors = vendors.filter((v: any) => Number(v.rating || 0) >= 70).length; // Using rating as risk indicator
             const expiringContracts30d = (contractsRes.data || []).length;
 
@@ -121,14 +126,26 @@ export function useCreateVendor() {
             if (!user) throw new Error('User not authenticated');
             const { data: profile } = await supabase.from('profiles').select('org_id').eq('id', user.id).single();
             const orgId = profile?.org_id;
-            const { error } = await (supabase as any).from('vendors').insert({
-                ...payload,
-                org_id: orgId,
-                created_by: user.id
-            });
-            if (error) throw error;
+
+            // Map vendor_name to name for database compatibility
+            const { vendor_name, ...rest } = payload;
+            const dbPayload = {
+                ...rest,
+                name: vendor_name,
+                org_id: orgId
+            };
+
+            console.log('Inserting vendor with payload:', dbPayload);
+            const { error } = await (supabase as any).from('vendors').insert(dbPayload);
+            if (error) {
+                console.error('Database error:', error);
+                throw error;
+            }
         },
-        onSuccess: () => { qc.invalidateQueries({ queryKey: ['vendors'] }); }
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['vendors'] });
+            qc.invalidateQueries({ queryKey: ['vendor-stats'] });
+        }
     });
 }
 
