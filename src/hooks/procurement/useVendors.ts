@@ -44,19 +44,17 @@ export function useVendors(params: { page: number; limit: number; search?: strin
             const to = from + limit - 1;
             let query = (supabase as any)
                 .from('vendors')
-                .select('id,name,category,rating,status,city,country,created_at', { count: 'exact' })
+                .select('id,vendor_name,contact_person,email,phone,city,country,is_active,rating,created_at', { count: 'exact' })
                 .eq('org_id', orgId)
                 .order('created_at', { ascending: false })
                 .range(from, to);
-            if (search) query = query.ilike('name', `%${search}%`);
-            if (status) query = status === 'active' ? query.eq('status', 'Active') : status === 'inactive' ? query.eq('status', 'Inactive') : query;
+            if (search) query = query.ilike('vendor_name', `%${search}%`);
+            if (status) query = status === 'active' ? query.eq('is_active', true) : status === 'inactive' ? query.eq('is_active', false) : query;
             const { data, error, count } = await query;
             if (error) throw error;
             // Map database fields to TypeScript interface
             const vendors = (data || []).map((v: any) => ({
-                ...v,
-                vendor_name: v.name,
-                is_active: v.status === 'Active'
+                ...v
             }));
             const vendorIds = vendors.map((v: any) => v.id);
             const today = new Date().toISOString().slice(0, 10);
@@ -95,7 +93,7 @@ export function useVendorStats() {
             const [vendorsRes, contractsRes] = await Promise.all([
                 (supabase as any)
                     .from('vendors')
-                    .select('id,status,rating')
+                    .select('id,is_active,rating')
                     .eq('org_id', orgId),
                 (supabase as any)
                     .from('vendor_contracts')
@@ -108,7 +106,7 @@ export function useVendorStats() {
             if (contractsRes.error) throw contractsRes.error;
 
             const vendors = vendorsRes.data || [];
-            const activeVendors = vendors.filter((v: any) => v.status === 'Active').length;
+            const activeVendors = vendors.filter((v: any) => v.is_active === true).length;
             const highRiskVendors = vendors.filter((v: any) => Number(v.rating || 0) >= 70).length; // Using rating as risk indicator
             const expiringContracts30d = (contractsRes.data || []).length;
 
@@ -127,12 +125,11 @@ export function useCreateVendor() {
             const { data: profile } = await supabase.from('profiles').select('org_id').eq('id', user.id).single();
             const orgId = profile?.org_id;
 
-            // Map vendor_name to name for database compatibility
-            const { vendor_name, ...rest } = payload;
+            // Prepare database payload
             const dbPayload = {
-                ...rest,
-                name: vendor_name,
-                org_id: orgId
+                ...payload,
+                org_id: orgId,
+                created_by: user.id
             };
 
             console.log('Inserting vendor with payload:', dbPayload);
