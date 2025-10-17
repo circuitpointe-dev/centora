@@ -39,20 +39,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AppUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
 
-  // Load profile + org + modules for Supabase users
-  const fetchProfileAndModules = async (userId: string) => {
-    try {
-      // Fetch profile data, including the new `is_super_admin` column
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('id, email, full_name, org_id, is_super_admin')
-        .eq('id', userId)
-        .single();
+  // Load profile + org + modules for Supabase users
+  const fetchProfileAndModules = async (userId: string) => {
+    try {
+      // Fetch profile data, including the new `is_super_admin` column
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, email, full_name, org_id, is_super_admin')
+        .eq('id', userId)
+        .single();
 
-      if (profileError || !profile) {
-        console.error('Error loading profile:', profileError);
-        return;
-      }
+      if (profileError || !profile) {
+        // Only log non-network errors
+        if (profileError?.message && !profileError.message.includes('Failed to fetch')) {
+          console.error('Error loading profile:', profileError);
+        }
+        return;
+      }
 
       // If the user is a Super Admin, their org-related data is null
       const isSuperAdmin = profile.is_super_admin;

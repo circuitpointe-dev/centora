@@ -30,11 +30,14 @@ export const useAnnouncements = () => {
       setAnnouncements((data || []) as Announcement[]);
     } catch (error: any) {
       console.error('Error fetching announcements:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch announcements',
-        variant: 'destructive',
-      });
+      // Only show error toast if not a network error
+      if (error?.message && !error.message.includes('Failed to fetch')) {
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch announcements',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(false);
     }

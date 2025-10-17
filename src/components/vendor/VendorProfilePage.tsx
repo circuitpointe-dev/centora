@@ -12,7 +12,9 @@ import { useVendors, useVendorContracts, useVendorDocuments, useVendorPerformanc
 const VendorProfilePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<'overview' | 'vetting' | 'contracts' | 'performance'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'vetting' | 'contracts' | 'performance' | 'contracts-list'>('overview');
+    const [isSnapshotExpanded, setIsSnapshotExpanded] = useState(true);
+    const [isContactExpanded, setIsContactExpanded] = useState(true);
 
     const { data, isLoading, error } = useVendors({ page: 1, limit: 1, search: id || '', status: '' });
     const vendor = (data?.vendors || []).find(v => v.id === id) || (data?.vendors || [])[0];
@@ -218,53 +220,177 @@ const VendorProfilePage: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-[#383839]">{vendor.name}</h1>
-                <Button variant="outline" onClick={() => navigate(-1)}>Back</Button>
+            {/* Back Navigation */}
+            <div className="flex items-center gap-2">
+                <img src="/arrow-back0.svg" alt="back" className="w-4 h-4" />
+                <button onClick={() => navigate(-1)} className="text-sm text-[#6B7280] hover:text-[#383839]">Back to Vendor management</button>
             </div>
 
-            <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-lg w-full lg:w-fit">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-semibold text-[#383839]">Vendor profile</h1>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm">
+                        <img src="/group0.svg" alt="edit" className="w-4 h-4 mr-2" />
+                        Edit vendor
+                    </Button>
+                    <Button variant="outline" size="sm">
+                        <img src="/proicons-shield-cancel0.svg" alt="suspend" className="w-4 h-4 mr-2" />
+                        Suspend vendor
+                    </Button>
+                    <Button variant="outline" size="sm">
+                        <img src="/uil-export0.svg" alt="export" className="w-4 h-4 mr-2" />
+                        Export
+                    </Button>
+                </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-lg w-full">
                 {[
                     { id: 'overview', label: 'Overview' },
-                    { id: 'vetting', label: 'Vetting' },
-                    { id: 'contracts', label: 'Contracts' },
+                    { id: 'vetting', label: 'Vetting checklist' },
+                    { id: 'contracts', label: 'Classifications' },
                     { id: 'performance', label: 'Performance' },
+                    { id: 'contracts-list', label: 'Contracts' },
                 ].map(tab => (
-                    <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${activeTab === tab.id ? 'bg-white text-[#7c3aed] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>{tab.label}</button>
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap flex-1 sm:flex-none ${activeTab === tab.id ? 'bg-white text-[#7c3aed] shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>{tab.label}</button>
                 ))}
             </div>
 
             {activeTab === 'overview' && (
-                <Card>
-                    <CardContent className="p-6 space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                                <div className="text-xs text-gray-500">Email</div>
-                                <div className="text-sm text-[#383839]">{vendor.email || '-'}</div>
+                <div className="space-y-6">
+                    {/* KPI Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Card className="rounded-[12px] border border-[#EEF2F6] h-[136px]" style={{ boxShadow: '0px 12px 40px rgba(17, 12, 46, 0.06)' }}>
+                            <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
+                                <div className="mb-3 h-12 w-12 rounded-full bg-[#E6FAEF] flex items-center justify-center">
+                                    <img src="/group0.svg" alt="Total spend" className="h-6 w-6" />
+                                </div>
+                                <div className="text-[32px] leading-[40px] font-semibold text-[#111827]">
+                                    ${contractsData?.contracts?.reduce((sum: number, c: any) => sum + (Number(c.value) || 0), 0).toLocaleString() || '0'}
+                                </div>
+                                <div className="mt-1 text-sm text-[#6B7280]">Total spend (YTD)</div>
+                            </CardContent>
+                        </Card>
+                        <Card className="rounded-[12px] border border-[#EEF2F6] h-[136px]" style={{ boxShadow: '0px 12px 40px rgba(17, 12, 46, 0.06)' }}>
+                            <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
+                                <div className="mb-3 h-12 w-12 rounded-full bg-[#E6FAEF] flex items-center justify-center">
+                                    <img src="/group1.svg" alt="Active contracts" className="h-6 w-6" />
+                                </div>
+                                <div className="text-[32px] leading-[40px] font-semibold text-[#111827]">
+                                    {contractsData?.contracts?.filter((c: any) => c.status === 'Active').length || 0}
+                                </div>
+                                <div className="mt-1 text-sm text-[#6B7280]">Active contracts</div>
+                            </CardContent>
+                        </Card>
+                        <Card className="rounded-[12px] border border-[#EEF2F6] h-[136px]" style={{ boxShadow: '0px 12px 40px rgba(17, 12, 46, 0.06)' }}>
+                            <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
+                                <div className="mb-3 h-12 w-12 rounded-full bg-[#FEF3C7] flex items-center justify-center">
+                                    <img src="/layer-12.svg" alt="Pending invoices" className="h-6 w-6" />
+                                </div>
+                                <div className="text-[32px] leading-[40px] font-semibold text-[#111827]">
+                                    {contractsData?.contracts?.filter((c: any) => c.status === 'Pending').length || 0}
+                                </div>
+                                <div className="mt-1 text-sm text-[#6B7280]">Pending invoices</div>
+                            </CardContent>
+                        </Card>
+                        <Card className="rounded-[12px] border border-[#EEF2F6] h-[136px]" style={{ boxShadow: '0px 12px 40px rgba(17, 12, 46, 0.06)' }}>
+                            <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
+                                <div className="mb-3 h-12 w-12 rounded-full bg-[#DBEAFE] flex items-center justify-center">
+                                    <img src="/layer-13.svg" alt="On-time delivery" className="h-6 w-6" />
+                                </div>
+                                <div className="text-[32px] leading-[40px] font-semibold text-[#111827]">
+                                    {performanceKPIs.avgDelivery}%
+                                </div>
+                                <div className="mt-1 text-sm text-[#6B7280]">On-time delivery rate</div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Snapshot Section */}
+                    <Card>
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-4 cursor-pointer" onClick={() => setIsSnapshotExpanded(!isSnapshotExpanded)}>
+                                <h3 className="text-lg font-semibold text-[#383839]">Snapshot</h3>
+                                <img
+                                    src="/weui-arrow-filled0.svg"
+                                    alt="expand"
+                                    className={`w-4 h-4 transition-transform ${isSnapshotExpanded ? 'rotate-180' : ''}`}
+                                />
                             </div>
-                            <div>
-                                <div className="text-xs text-gray-500">Phone</div>
-                                <div className="text-sm text-[#383839]">{vendor.phone || '-'}</div>
+                            {isSnapshotExpanded && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <div>
+                                        <div className="text-xs text-gray-500">Vendor ID</div>
+                                        <div className="text-sm text-[#383839]">{vendor?.id ? `VND-${vendor.id.slice(-6).toUpperCase()}` : '-'}</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-500">Performance Score</div>
+                                        <div className="text-sm text-[#383839]">{vendor?.rating || '-'}</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-500">Risk Level</div>
+                                        <div className="text-sm text-[#383839]">
+                                            {vendor?.rating != null ? (
+                                                vendor.rating >= 70 ? 'High' : vendor.rating >= 40 ? 'Medium' : 'Low'
+                                            ) : '-'}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-500">Next Contract Expiry</div>
+                                        <div className="text-sm text-[#383839]">
+                                            {contractsData?.contracts?.find((c: any) => c.end_date)?.end_date ?
+                                                new Date(contractsData.contracts.find((c: any) => c.end_date).end_date).toLocaleDateString() : '-'}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Contact Information Section */}
+                    <Card>
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-4 cursor-pointer" onClick={() => setIsContactExpanded(!isContactExpanded)}>
+                                <h3 className="text-lg font-semibold text-[#383839]">Contact Information</h3>
+                                <img
+                                    src="/weui-arrow-filled1.svg"
+                                    alt="expand"
+                                    className={`w-4 h-4 transition-transform ${isContactExpanded ? 'rotate-180' : ''}`}
+                                />
                             </div>
-                            <div>
-                                <div className="text-xs text-gray-500">Category</div>
-                                <div className="text-sm text-[#383839]">{vendor.category || '-'}</div>
-                            </div>
-                            <div>
-                                <div className="text-xs text-gray-500">Status</div>
-                                <div className="text-sm text-[#383839]">{vendor.status || '-'}</div>
-                            </div>
-                            <div>
-                                <div className="text-xs text-gray-500">Location</div>
-                                <div className="text-sm text-[#383839]">{[vendor.city, vendor.country].filter(Boolean).join(', ') || '-'}</div>
-                            </div>
-                            <div>
-                                <div className="text-xs text-gray-500">Risk score</div>
-                                <div className="text-sm text-[#383839]">{vendor.risk_score ?? '-'}</div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                            {isContactExpanded && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <div>
+                                        <div className="text-xs text-gray-500">Name</div>
+                                        <div className="text-sm text-[#383839]">{vendor?.vendor_name || '-'}</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-500">Email</div>
+                                        <div className="text-sm text-[#383839]">{vendor?.email || '-'}</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-500">Phone Number</div>
+                                        <div className="text-sm text-[#383839]">{vendor?.phone || '-'}</div>
+                                    </div>
+                                    <div className="sm:col-span-2 lg:col-span-3">
+                                        <div className="text-xs text-gray-500">Address</div>
+                                        <div className="text-sm text-[#383839]">
+                                            {[vendor?.city, vendor?.country].filter(Boolean).join(', ') || '-'}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Bottom Navigation */}
+                    <div className="flex items-center justify-end gap-2">
+                        <Button variant="outline">Cancel</Button>
+                        <Button className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">Next</Button>
+                    </div>
+                </div>
             )}
 
             {activeTab === 'vetting' && (
@@ -295,37 +421,23 @@ const VendorProfilePage: React.FC = () => {
 
             {activeTab === 'contracts' && (
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="p-4 flex items-center justify-end gap-2">
-                            <input ref={contractsCsvRef} type="file" accept=".csv" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleBulkContracts(f); }} />
-                            <Button variant="outline" size="sm" onClick={() => contractsCsvRef.current?.click()}>Bulk import</Button>
-                            <Button size="sm" onClick={() => setIsContractOpen(true)} className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">New contract</Button>
+                    <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-[#383839]">Vendor Classifications</h3>
                         </div>
-                        <div className="hidden lg:block overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b">
-                                    <tr className="text-left text-xs text-gray-500">
-                                        <th className="px-4 py-3">Code</th>
-                                        <th className="px-4 py-3">Title</th>
-                                        <th className="px-4 py-3">Start</th>
-                                        <th className="px-4 py-3">End</th>
-                                        <th className="px-4 py-3">Value</th>
-                                        <th className="px-4 py-3">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {(contractsData?.contracts || []).map((c: any) => (
-                                        <tr key={c.id} className="border-b text-sm hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/dashboard/procurement/vendors/${vendor.id}/contracts/${c.id}`)}>
-                                            <td className="px-4 py-3 text-gray-700">{c.contract_code}</td>
-                                            <td className="px-4 py-3 text-gray-700">{c.title}</td>
-                                            <td className="px-4 py-3 text-gray-700">{c.start_date || '-'}</td>
-                                            <td className="px-4 py-3 text-gray-700">{c.end_date || '-'}</td>
-                                            <td className="px-4 py-3 text-gray-700">{c.currency || ''} {c.value || '-'}</td>
-                                            <td className="px-4 py-3 text-gray-700">{c.status}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="border rounded-lg p-4">
+                                <div className="text-sm font-medium text-[#383839] mb-2">Risk Level</div>
+                                <div className="text-lg text-[#6B7280]">
+                                    {vendor?.rating != null ? (
+                                        vendor.rating >= 70 ? 'High' : vendor.rating >= 40 ? 'Medium' : 'Low'
+                                    ) : 'Unknown'}
+                                </div>
+                            </div>
+                            <div className="border rounded-lg p-4">
+                                <div className="text-sm font-medium text-[#383839] mb-2">Performance Score</div>
+                                <div className="text-lg text-[#6B7280]">{vendor?.rating || 'N/A'}</div>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -406,6 +518,60 @@ const VendorProfilePage: React.FC = () => {
                         </CardContent>
                     </Card>
                 </div>
+            )}
+
+            {activeTab === 'contracts-list' && (
+                <Card>
+                    <CardContent className="p-0">
+                        <div className="p-4 flex items-center justify-end gap-2">
+                            <input ref={contractsCsvRef} type="file" accept=".csv" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleBulkContracts(f); }} />
+                            <Button variant="outline" size="sm" onClick={() => contractsCsvRef.current?.click()}>Bulk import</Button>
+                            <Button size="sm" onClick={() => setIsContractOpen(true)} className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">New contract</Button>
+                        </div>
+                        <div className="hidden lg:block overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 border-b">
+                                    <tr className="text-left text-xs text-gray-500">
+                                        <th className="px-4 py-3">Code</th>
+                                        <th className="px-4 py-3">Title</th>
+                                        <th className="px-4 py-3">Start</th>
+                                        <th className="px-4 py-3">End</th>
+                                        <th className="px-4 py-3">Value</th>
+                                        <th className="px-4 py-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {(contractsData?.contracts || []).map((c: any) => (
+                                        <tr key={c.id} className="border-b text-sm hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/dashboard/procurement/vendors/${vendor.id}/contracts/${c.id}`)}>
+                                            <td className="px-4 py-3 text-gray-700">{c.contract_code}</td>
+                                            <td className="px-4 py-3 text-gray-700">{c.title}</td>
+                                            <td className="px-4 py-3 text-gray-700">{c.start_date || '-'}</td>
+                                            <td className="px-4 py-3 text-gray-700">{c.end_date || '-'}</td>
+                                            <td className="px-4 py-3 text-gray-700">{c.currency || ''} {c.value || '-'}</td>
+                                            <td className="px-4 py-3 text-gray-700">{c.status}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {/* Mobile cards for contracts */}
+                        <div className="lg:hidden p-4 space-y-3">
+                            {(contractsData?.contracts || []).map((c: any) => (
+                                <Card key={c.id} className="p-4">
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <div className="font-medium text-[#383839]">{c.title}</div>
+                                            <div className="text-xs text-[#6b7280]">Code: {c.contract_code}</div>
+                                            <div className="text-xs text-[#6b7280]">Value: {c.currency || ''} {c.value || '-'}</div>
+                                            <div className="text-xs text-[#6b7280]">Status: {c.status}</div>
+                                        </div>
+                                        <Button variant="outline" size="sm" onClick={() => navigate(`/dashboard/procurement/vendors/${vendor.id}/contracts/${c.id}`)}>View</Button>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Upload Document Modal */}

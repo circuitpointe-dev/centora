@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { useVendors, useCreateVendor, useUpdateVendor, useDeleteVendor, Vendor, useVendorStats } from '@/hooks/procurement/useVendors';
 import VendorClarificationModal from './VendorClarificationModal';
+import { toast } from 'sonner';
 
 const pageSize = 10;
 
@@ -47,10 +48,21 @@ const VendorManagementPage: React.FC = () => {
     };
 
     const handleCreate = async () => {
-        if (!draft.vendor_name) return;
-        await createVendor.mutateAsync(draft as any);
-        setIsCreateOpen(false);
-        setDraft({ vendor_name: '', email: '', phone: '', is_active: true, contact_person: '' });
+        try {
+            if (!draft.vendor_name?.trim()) {
+                toast.error('Vendor name is required');
+                return;
+            }
+
+            console.log('Creating vendor with data:', draft);
+            await createVendor.mutateAsync(draft as any);
+            toast.success('Vendor created successfully');
+            setIsCreateOpen(false);
+            setDraft({ vendor_name: '', email: '', phone: '', is_active: true, contact_person: '', city: '', country: '', rating: undefined } as any);
+        } catch (error) {
+            console.error('Error creating vendor:', error);
+            toast.error((error as any)?.message || 'Failed to create vendor');
+        }
     };
 
     const handleUpdate = async () => {
@@ -199,26 +211,35 @@ const VendorManagementPage: React.FC = () => {
                             <thead className="bg-gray-50 border-b">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Person</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next expiry</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {vendors.map(v => (
-                                    <tr key={v.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/dashboard/vendors/${v.id}`)}>
+                                    <tr key={v.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/dashboard/procurement/vendors/${v.id}`)}>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#383839]">{v.vendor_name}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.contact_person || '-'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.city && v.country ? `${v.city}, ${v.country}` : v.city || v.country || '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{v.rating ?? '-'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">{nextExpiry(v.id)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">
+                                            {v.rating != null ? (
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${v.rating >= 70 ? 'bg-red-100 text-red-800' :
+                                                    v.rating >= 40 ? 'bg-yellow-100 text-yellow-800' :
+                                                        'bg-green-100 text-green-800'
+                                                    }`}>
+                                                    {v.rating >= 70 ? 'High' : v.rating >= 40 ? 'Medium' : 'Low'}
+                                                </span>
+                                            ) : '-'}
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap">{statusBadge(v.is_active)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                            <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setEditingVendor(v); }}>Edit</Button>
-                                            <Button variant="outline" size="sm" className="ml-2" onClick={(e) => { e.stopPropagation(); setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.vendor_name }); }}>View</Button>
+                                            <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/procurement/vendors/${v.id}`); }}>
+                                                <img src="/eye0.svg" alt="view" className="w-4 h-4 mr-1" />
+                                                View
+                                            </Button>
                                         </td>
                                     </tr>
                                 ))}
@@ -240,7 +261,7 @@ const VendorManagementPage: React.FC = () => {
                                     {statusBadge(v.is_active)}
                                 </div>
                                 <div className="flex items-center gap-2 mt-3">
-                                    <Button variant="outline" size="sm" onClick={() => navigate(`/dashboard/vendors/${v.id}`)}>View</Button>
+                                    <Button variant="outline" size="sm" onClick={() => navigate(`/dashboard/procurement/vendors/${v.id}`)}>View</Button>
                                     <Button variant="outline" size="sm" onClick={() => setEditingVendor(v)}>Edit</Button>
                                     <Button variant="outline" size="sm" onClick={() => setClarificationModal({ isOpen: true, vendorId: v.id, vendorName: v.vendor_name })}>Clarify</Button>
                                     <Button variant="outline" size="sm" className="text-red-600" onClick={async () => { if (confirm('Delete vendor?')) await deleteVendor.mutateAsync(v.id); }}>Delete</Button>
@@ -264,44 +285,161 @@ const VendorManagementPage: React.FC = () => {
             {/* Create Vendor Modal */}
             {isCreateOpen && (
                 <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-                        <div className="p-4 border-b flex items-center justify-between">
-                            <h3 className="text-lg font-semibold">New vendor</h3>
-                            <button onClick={() => setIsCreateOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
-                        </div>
-                        <div className="p-4 space-y-3">
+                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                             <div>
-                                <label className="block text-sm text-gray-600 mb-1">Vendor Name *</label>
-                                <Input value={draft.vendor_name || ''} onChange={e => setDraft(v => ({ ...v, vendor_name: e.target.value }))} />
+                                <h3 className="text-xl font-semibold text-[#383839]">New vendor</h3>
+                                <p className="text-sm text-[#6B7280] mt-1">Add a new vendor to your procurement system</p>
                             </div>
+                            <button
+                                onClick={() => setIsCreateOpen(false)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            {/* Basic Information Section */}
                             <div>
-                                <label className="block text-sm text-gray-600 mb-1">Contact Person</label>
-                                <Input value={draft.contact_person || ''} onChange={e => setDraft(v => ({ ...v, contact_person: e.target.value }))} />
+                                <h4 className="text-sm font-medium text-[#383839] mb-4 flex items-center">
+                                    <div className="w-2 h-2 bg-[#7c3aed] rounded-full mr-2"></div>
+                                    Basic Information
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-2">
+                                            Vendor Name <span className="text-red-500">*</span>
+                                        </label>
+                                        <Input
+                                            value={draft.vendor_name || ''}
+                                            onChange={e => setDraft(v => ({ ...v, vendor_name: e.target.value }))}
+                                            placeholder="Enter vendor company name"
+                                            className="h-11 border-gray-200 focus:border-[#7c3aed] focus:ring-[#7c3aed]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-2">Contact Person</label>
+                                        <Input
+                                            value={draft.contact_person || ''}
+                                            onChange={e => setDraft(v => ({ ...v, contact_person: e.target.value }))}
+                                            placeholder="Enter primary contact name"
+                                            className="h-11 border-gray-200 focus:border-[#7c3aed] focus:ring-[#7c3aed]"
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-sm text-gray-600 mb-1">Email</label>
-                                    <Input type="email" value={draft.email || ''} onChange={e => setDraft(v => ({ ...v, email: e.target.value }))} />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-600 mb-1">Phone</label>
-                                    <Input value={draft.phone || ''} onChange={e => setDraft(v => ({ ...v, phone: e.target.value }))} />
+
+                            {/* Contact Information Section */}
+                            <div>
+                                <h4 className="text-sm font-medium text-[#383839] mb-4 flex items-center">
+                                    <div className="w-2 h-2 bg-[#7c3aed] rounded-full mr-2"></div>
+                                    Contact Information
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-2">Email Address</label>
+                                        <Input
+                                            type="email"
+                                            value={draft.email || ''}
+                                            onChange={e => setDraft(v => ({ ...v, email: e.target.value }))}
+                                            placeholder="vendor@company.com"
+                                            className="h-11 border-gray-200 focus:border-[#7c3aed] focus:ring-[#7c3aed]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-2">Phone Number</label>
+                                        <Input
+                                            value={draft.phone || ''}
+                                            onChange={e => setDraft(v => ({ ...v, phone: e.target.value }))}
+                                            placeholder="+1 (555) 123-4567"
+                                            className="h-11 border-gray-200 focus:border-[#7c3aed] focus:ring-[#7c3aed]"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-sm text-gray-600 mb-1">City</label>
-                                    <Input value={draft.city || ''} onChange={e => setDraft(v => ({ ...v, city: e.target.value }))} />
+
+                            {/* Location Information Section */}
+                            <div>
+                                <h4 className="text-sm font-medium text-[#383839] mb-4 flex items-center">
+                                    <div className="w-2 h-2 bg-[#7c3aed] rounded-full mr-2"></div>
+                                    Location Information
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-2">City</label>
+                                        <Input
+                                            value={draft.city || ''}
+                                            onChange={e => setDraft(v => ({ ...v, city: e.target.value }))}
+                                            placeholder="Enter city"
+                                            className="h-11 border-gray-200 focus:border-[#7c3aed] focus:ring-[#7c3aed]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-2">Country</label>
+                                        <Input
+                                            value={draft.country || ''}
+                                            onChange={e => setDraft(v => ({ ...v, country: e.target.value }))}
+                                            placeholder="Enter country"
+                                            className="h-11 border-gray-200 focus:border-[#7c3aed] focus:ring-[#7c3aed]"
+                                        />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-sm text-gray-600 mb-1">Country</label>
-                                    <Input value={draft.country || ''} onChange={e => setDraft(v => ({ ...v, country: e.target.value }))} />
+                            </div>
+
+                            {/* Additional Information Section */}
+                            <div>
+                                <h4 className="text-sm font-medium text-[#383839] mb-4 flex items-center">
+                                    <div className="w-2 h-2 bg-[#7c3aed] rounded-full mr-2"></div>
+                                    Additional Information
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-2">Initial Rating</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            value={(draft as any).rating || ''}
+                                            onChange={e => setDraft(v => ({ ...v, rating: Number(e.target.value) } as any))}
+                                            className="w-full h-11 rounded-md border border-gray-200 bg-white px-3 text-sm focus:border-[#7c3aed] focus:ring-[#7c3aed]"
+                                            placeholder="0-100"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="p-4 border-t flex items-center justify-end gap-2">
-                            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
-                            <Button onClick={handleCreate} className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" disabled={createVendor.isPending}>Create</Button>
+                        <div className="p-6 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                            <div className="text-sm text-[#6B7280]">
+                                <span className="text-red-500">*</span> Required fields
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsCreateOpen(false)}
+                                    className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        console.log('Create button clicked');
+                                        handleCreate();
+                                    }}
+                                    className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-6 py-2 shadow-sm"
+                                    disabled={createVendor.isPending || !draft.vendor_name?.trim()}
+                                >
+                                    {createVendor.isPending ? (
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            Creating...
+                                        </div>
+                                    ) : (
+                                        'Create Vendor'
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
