@@ -57,6 +57,7 @@ import MeetingDetails from "@/components/hr/MeetingDetails";
 import RecruitmentOnboarding from "@/components/hr/RecruitmentOnboarding";
 import RequisitionDetailView from "@/components/hr/RequisitionDetailView";
 import ReferenceCheckDetailView from "@/components/hr/ReferenceCheckDetailView";
+import PerformanceManagement from "@/components/hr/PerformanceManagement";
 import CourseDetailPage from "../learning/CourseDetailPage";
 import CourseWorkspacePage from "../learning/CourseWorkspacePage";
 import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
@@ -581,6 +582,10 @@ const GenericFeaturePage = () => {
 
       if (module === 'hr' && feature === 'reference-check-detail') {
         return <ReferenceCheckDetailView />;
+      }
+
+      if (module === 'hr' && feature === 'performance-management') {
+        return <PerformanceManagement />;
       }
 
   // Fallback for unmatched routes
