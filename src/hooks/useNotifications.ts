@@ -31,11 +31,14 @@ export const useNotifications = () => {
       setUnreadCount((data || []).filter(n => !n.is_read).length);
     } catch (error: any) {
       console.error('Error fetching notifications:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch notifications',
-        variant: 'destructive',
-      });
+      // Only show error toast if not a network error
+      if (error?.message && !error.message.includes('Failed to fetch')) {
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch notifications',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(false);
     }

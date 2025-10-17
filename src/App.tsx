@@ -33,7 +33,17 @@ import PDFSigningPlatform from "./components/documents/pdf-signing-platform/PDFS
 import ProfessionalPDFEditor from "./components/documents/pdf-signing-platform/ProfessionalPDFEditor";
 import DocumentSettingsPage from "./components/documents/settings/DocumentSettingsPage";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+    },
+  },
+});
 
 const AppRoutes = () => {
   return (

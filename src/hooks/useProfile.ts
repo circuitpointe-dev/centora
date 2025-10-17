@@ -55,11 +55,14 @@ export const useProfile = () => {
       }
     } catch (error: any) {
       console.error('Error fetching profile:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch profile',
-        variant: 'destructive',
-      });
+      // Only show error toast if not a network error (those retry automatically)
+      if (error?.message && !error.message.includes('Failed to fetch')) {
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch profile',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(false);
     }
