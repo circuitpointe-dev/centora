@@ -43,7 +43,7 @@ export function useVendors(params: { page: number; limit: number; search?: strin
             const to = from + limit - 1;
             let query = (supabase as any)
                 .from('vendors')
-                .select('id,vendor_name,category,rating,is_active,city,country,created_at', { count: 'exact' })
+                .select('id,vendor_name,contact_person,email,phone,rating,is_active,city,country,created_at', { count: 'exact' })
                 .eq('org_id', orgId)
                 .order('created_at', { ascending: false })
                 .range(from, to);
