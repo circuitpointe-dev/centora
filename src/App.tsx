@@ -15,6 +15,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MainLayout from "./components/layout/MainLayout";
 import DashboardPage from "./components/pages/DashboardPage";
 import GenericFeaturePage from "./components/pages/GenericFeaturePage";
+import SuccessionCandidatePerformanceView from "./components/hr/SuccessionCandidatePerformanceView";
 import VendorManagementPage from "./components/vendor/VendorManagementPage";
 import VendorProfilePage from "./components/vendor/VendorProfilePage";
 import VendorContractDetailPage from "./components/vendor/VendorContractDetailPage";
@@ -178,6 +179,8 @@ const AppRoutes = () => {
 
           {/* Other features */}
           <Route path=":feature" element={<GenericFeaturePage />} />
+          {/* HR: Succession candidate performance (page) */}
+          <Route path="succession/candidate-performance" element={<SuccessionCandidatePerformanceView onBack={() => history.back()} candidateName="Alex Bello" />} />
           {/* Procurement → Vendor Management dedicated routes */}
           <Route path="vendor-management" element={<VendorManagementPage />} />
           <Route path="vendor-classification" element={<VendorClassificationPage />} />
