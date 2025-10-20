@@ -253,6 +253,22 @@ export function useCreateVendorContract() {
     });
 }
 
+export function useDeleteVendorContract() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (contractId: string) => {
+            const { error } = await (supabase as any)
+                .from('vendor_contracts')
+                .delete()
+                .eq('id', contractId);
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['vendor-contracts'] });
+        }
+    });
+}
+
 export function useCreateVendorPerformance() {
     const qc = useQueryClient();
     return useMutation({

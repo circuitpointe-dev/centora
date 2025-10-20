@@ -162,12 +162,12 @@ const ProcurementDashboard = () => {
             {/* Approvals & Deliveries */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Pending Approvals */}
-                <Card>
+                <Card className="flex flex-col">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold">Pending approvals</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
+                    <CardContent className="flex flex-col flex-1">
+                        <div className="space-y-4 flex-1">
                             {approvalsLoading ? (
                                 <div className="text-center py-4">
                                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
@@ -192,26 +192,26 @@ const ProcurementDashboard = () => {
                                             {pendingApprovals?.filter(a => a.type === 'payment').length || 0}
                                         </span>
                                     </div>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full mt-4"
-                                        onClick={() => navigate('/dashboard/procurement/approvals')}
-                                    >
-                                        Go to approvals list <ArrowRight className="h-4 w-4 ml-2" />
-                                    </Button>
                                 </>
                             )}
                         </div>
+                        <Button
+                            variant="outline"
+                            className="w-full mt-4"
+                            onClick={() => navigate('/dashboard/procurement/approvals')}
+                        >
+                            Go to approvals list <ArrowRight className="h-4 w-4 ml-2" />
+                        </Button>
                     </CardContent>
                 </Card>
 
                 {/* Upcoming Deliveries */}
-                <Card>
+                <Card className="flex flex-col">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold">Upcoming deliveries</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
+                    <CardContent className="flex flex-col flex-1">
+                        <div className="space-y-4 flex-1">
                             {deliveriesLoading ? (
                                 <div className="text-center py-4">
                                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
@@ -230,16 +230,16 @@ const ProcurementDashboard = () => {
                                             {upcomingDeliveries?.filter(d => d.status === 'overdue').length || 0}
                                         </span>
                                     </div>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full mt-4"
-                                        onClick={() => navigate('/dashboard/procurement/deliveries')}
-                                    >
-                                        Go to upcoming deliveries list <ArrowRight className="h-4 w-4 ml-2" />
-                                    </Button>
                                 </>
                             )}
                         </div>
+                        <Button
+                            variant="outline"
+                            className="w-full mt-4"
+                            onClick={() => navigate('/dashboard/procurement/deliveries')}
+                        >
+                            Go to upcoming deliveries list <ArrowRight className="h-4 w-4 ml-2" />
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
