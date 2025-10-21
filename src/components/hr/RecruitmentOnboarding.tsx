@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import OnboardingDetailView from './OnboardingDetailView';
+import JobDescriptionLibrary from './JobDescriptionLibrary';
 import {
   Search,
   Plus,
@@ -22,8 +24,9 @@ import {
 
 const RecruitmentOnboarding = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('vacancy-tracker');
+  const [activeTab, setActiveTab] = useState('onboarding-checklist');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
+  const [showDetailView, setShowDetailView] = useState(false);
 
   // Mock data for vacancy tracker
   const vacancyData = [
@@ -247,6 +250,10 @@ const RecruitmentOnboarding = () => {
 
   return (
     <div className="space-y-6">
+      {showDetailView ? (
+        <OnboardingDetailView onBack={() => setShowDetailView(false)} />
+      ) : (
+        <>
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Recruitment & onboarding</h1>
@@ -594,21 +601,424 @@ const RecruitmentOnboarding = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="onboarding-checklist">
-            <div className="text-center py-12">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Onboarding Checklist</h3>
-              <p className="text-gray-500">This section is coming soon.</p>
+          <TabsContent value="onboarding-checklist" className="space-y-6 mt-6">
+            {/* Onboarding Checklist Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">Onboarding checklist</h2>
+                
+                {/* Search and Filter */}
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input 
+                      placeholder="Search..." 
+                      className="pl-10 w-64"
+                    />
+                  </div>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Filter className="w-4 h-4" />
+                    Filter
+                  </Button>
+                </div>
+              </div>
+
+              {/* Onboarding Checklist Table */}
+              <Card>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b bg-gray-50">
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Hire</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Role</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Start date</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Manager</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Progress</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Blockers</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* Sarah Chen */}
+                        <tr className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <input type="checkbox" className="rounded" />
+                              <div>
+                                <div className="font-medium text-gray-900">Sarah Chen</div>
+                                <div className="text-sm text-gray-500">sarah.chen@gmail.com</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Software engineer</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="text-gray-700">Aug 5, 2025</div>
+                              <div className="text-sm text-gray-500">Engineering onboarding</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Alicia smith</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-yellow-600 font-medium">62%</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center text-red-600">
+                              <span className="mr-1">▲</span>
+                              <span className="font-medium">2</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => setShowDetailView(true)}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+
+                        {/* Michael Johnson */}
+                        <tr className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <input type="checkbox" className="rounded" />
+                              <div>
+                                <div className="font-medium text-gray-900">Michael Johnson</div>
+                                <div className="text-sm text-gray-500">michael.johnson@gmail.com</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Product manager</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="text-gray-700">Sep 12, 2025</div>
+                              <div className="text-sm text-gray-500">Product launch</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">John Doe</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-yellow-600 font-medium">75%</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center text-red-600">
+                              <span className="mr-1">▲</span>
+                              <span className="font-medium">2</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => setShowDetailView(true)}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+
+                        {/* Emily Davis */}
+                        <tr className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <input type="checkbox" className="rounded" />
+                              <div>
+                                <div className="font-medium text-gray-900">Emily Davis</div>
+                                <div className="text-sm text-gray-500">emily.davis@gmail.com</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Designer</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="text-gray-700">Oct 1, 2025</div>
+                              <div className="text-sm text-gray-500">Design sprint</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Alice Brown</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-green-600 font-medium">100%</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-500">0</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => setShowDetailView(true)}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+
+                        {/* David Kim */}
+                        <tr className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <input type="checkbox" className="rounded" />
+                              <div>
+                                <div className="font-medium text-gray-900">David Kim</div>
+                                <div className="text-sm text-gray-500">david.kim@gmail.com</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Data analyst</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="text-gray-700">Nov 17, 2025</div>
+                              <div className="text-sm text-gray-500">Data review</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Carol Jones</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-yellow-600 font-medium">70%</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center text-red-600">
+                              <span className="mr-1">▲</span>
+                              <span className="font-medium">2</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => setShowDetailView(true)}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+
+                        {/* Laura Wilson */}
+                        <tr className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <input type="checkbox" className="rounded" />
+                              <div>
+                                <div className="font-medium text-gray-900">Laura Wilson</div>
+                                <div className="text-sm text-gray-500">laura.wilson@gmail.com</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Marketing specialist</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="text-gray-700">Dec 9, 2025</div>
+                              <div className="text-sm text-gray-500">Campaign kickoff</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Tom White</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-yellow-600 font-medium">85%</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-500">0</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => setShowDetailView(true)}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+
+                        {/* Chris Lee */}
+                        <tr className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <input type="checkbox" className="rounded" />
+                              <div>
+                                <div className="font-medium text-gray-900">Chris Lee</div>
+                                <div className="text-sm text-gray-500">chris.lee@gmail.com</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">UX researcher</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="text-gray-700">Jan 15, 2026</div>
+                              <div className="text-sm text-gray-500">User testing</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">James Green</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-red-600 font-medium">30%</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center text-red-600">
+                              <span className="mr-1">▲</span>
+                              <span className="font-medium">1</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => setShowDetailView(true)}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+
+                        {/* Anna Martinez */}
+                        <tr className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <input type="checkbox" className="rounded" />
+                              <div>
+                                <div className="font-medium text-gray-900">Anna Martinez</div>
+                                <div className="text-sm text-gray-500">anna.martinez@gmail.com</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Frontend developer</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="text-gray-700">Feb 20, 2026</div>
+                              <div className="text-sm text-gray-500">Feature development</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Rebecca Black</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-green-600 font-medium">90%</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-500">0</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => setShowDetailView(true)}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+
+                        {/* Robert Taylor */}
+                        <tr className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <input type="checkbox" className="rounded" />
+                              <div>
+                                <div className="font-medium text-gray-900">Robert Taylor</div>
+                                <div className="text-sm text-gray-500">robert.taylor@gmail.com</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Backend developer</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div>
+                              <div className="text-gray-700">Mar 25, 2026</div>
+                              <div className="text-sm text-gray-500">System architecture</div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-700">Megan White</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-green-600 font-medium">88%</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-gray-500">0</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => setShowDetailView(true)}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
+                    <div className="text-sm text-gray-700">
+                      Showing 1 to 8 of 120 onboarding checklists
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button variant="outline" size="sm" disabled>
+                        <ChevronLeft className="w-4 h-4 mr-1" />
+                        Previous
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Next
+                        <ChevronRight className="w-4 h-4 ml-1" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
-          <TabsContent value="job-description-library">
-            <div className="text-center py-12">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Job Description Library</h3>
-              <p className="text-gray-500">This section is coming soon.</p>
-            </div>
+          <TabsContent value="job-description-library" className="space-y-6 mt-6">
+            <JobDescriptionLibrary />
           </TabsContent>
         </Tabs>
       </div>
+        </>
+      )}
     </div>
   );
 };

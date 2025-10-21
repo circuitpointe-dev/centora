@@ -59,6 +59,7 @@ import RequisitionDetailView from "@/components/hr/RequisitionDetailView";
 import ReferenceCheckDetailView from "@/components/hr/ReferenceCheckDetailView";
 import PerformanceManagement from "@/components/hr/PerformanceManagement";
 import LearningDevelopment from "@/components/hr/LearningDevelopment";
+import CompensationPolicies from "@/components/hr/CompensationPolicies";
 import CourseDetailPage from "../learning/CourseDetailPage";
 import CourseWorkspacePage from "../learning/CourseWorkspacePage";
 import StudentCourseDetailPage from "../learning/StudentCourseDetailPage";
@@ -591,6 +592,10 @@ const GenericFeaturePage = () => {
 
       if (module === 'hr' && feature === 'learning-development') {
         return <LearningDevelopment />;
+      }
+
+      if (module === 'hr' && feature === 'compensation-policies') {
+        return <CompensationPolicies />;
       }
 
   // Fallback for unmatched routes
