@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface ProcurementApproval {
     id: string;
+    friendly_id: string;
     org_id: string;
     type: 'requisition' | 'purchase_order' | 'payment';
     requestor_id: string;
@@ -160,8 +161,34 @@ export const useApprovals = (page = 1, limit = 10, filters: ApprovalFilters = {}
 
             if (error) throw error;
 
+            // Transform data to include user-friendly IDs
+            const transformedData = (data || []).map((item, index) => {
+                const globalIndex = (page - 1) * limit + index + 1;
+                let friendlyId = '';
+
+                switch (item.type) {
+                    case 'requisition':
+                        friendlyId = `REQ-${String(globalIndex).padStart(3, '0')}`;
+                        break;
+                    case 'purchase_order':
+                        friendlyId = `PO-${String(globalIndex).padStart(3, '0')}`;
+                        break;
+                    case 'payment':
+                        friendlyId = `PAY-${String(globalIndex).padStart(3, '0')}`;
+                        break;
+                    default:
+                        friendlyId = `APP-${String(globalIndex).padStart(3, '0')}`;
+                }
+
+                return {
+                    ...item,
+                    friendly_id: friendlyId,
+                    requestor_name: item.requestor?.full_name || item.requestor_name || 'Unknown'
+                };
+            });
+
             return {
-                data: data || [],
+                data: transformedData,
                 total: count || 0,
                 page,
                 limit,

@@ -562,37 +562,37 @@ const GenericFeaturePage = () => {
     return <StaffDetailView />;
   }
 
-      if (module === 'hr' && feature === 'volunteer-profile') {
-        return <VolunteerProfile />;
-      }
+  if (module === 'hr' && feature === 'volunteer-profile') {
+    return <VolunteerProfile />;
+  }
 
-      if (module === 'hr' && feature === 'board-member-detail') {
-        return <BoardMemberDetailView />;
-      }
+  if (module === 'hr' && feature === 'board-member-detail') {
+    return <BoardMemberDetailView />;
+  }
 
-      if (module === 'hr' && feature === 'meeting-details') {
-        return <MeetingDetails />;
-      }
+  if (module === 'hr' && feature === 'meeting-details') {
+    return <MeetingDetails />;
+  }
 
-      if (module === 'hr' && feature === 'recruitment-onboarding') {
-        return <RecruitmentOnboarding />;
-      }
+  if (module === 'hr' && feature === 'recruitment-onboarding') {
+    return <RecruitmentOnboarding />;
+  }
 
-      if (module === 'hr' && feature === 'requisition-detail') {
-        return <RequisitionDetailView />;
-      }
+  if (module === 'hr' && feature === 'requisition-detail') {
+    return <RequisitionDetailView />;
+  }
 
-      if (module === 'hr' && feature === 'reference-check-detail') {
-        return <ReferenceCheckDetailView />;
-      }
+  if (module === 'hr' && feature === 'reference-check-detail') {
+    return <ReferenceCheckDetailView />;
+  }
 
-      if (module === 'hr' && feature === 'performance-management') {
-        return <PerformanceManagement />;
-      }
+  if (module === 'hr' && feature === 'performance-management') {
+    return <PerformanceManagement />;
+  }
 
-      if (module === 'hr' && feature === 'learning-development') {
-        return <LearningDevelopment />;
-      }
+  if (module === 'hr' && feature === 'learning-development') {
+    return <LearningDevelopment />;
+  }
 
       if (module === 'hr' && feature === 'compensation-policies') {
         return <CompensationPolicies />;

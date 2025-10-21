@@ -242,10 +242,27 @@ export function useCreateVendorContract() {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: async (payload: { vendor_id: string; contract_code: string; title: string; start_date?: string; end_date?: string; value?: number; currency?: string; status?: string }) => {
-            const { error } = await (supabase as any)
-                .from('vendor_contracts')
-                .insert(payload);
-            if (error) throw error;
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error('User not authenticated');
+
+                const { data: profile } = await supabase.from('profiles').select('org_id').eq('id', user.id).single();
+                const orgId = profile?.org_id;
+
+                const { error } = await (supabase as any)
+                    .from('vendor_contracts')
+                    .insert({
+                        ...payload,
+                        org_id: orgId
+                    });
+                if (error) {
+                    console.error('Database error:', error);
+                    throw new Error(`Failed to create contract: ${error.message}`);
+                }
+            } catch (error) {
+                console.error('Error creating contract:', error);
+                throw error;
+            }
         },
         onSuccess: (_data, variables) => {
             qc.invalidateQueries({ queryKey: ['vendor-contracts', variables.vendor_id] });

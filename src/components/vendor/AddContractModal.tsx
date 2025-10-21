@@ -14,8 +14,16 @@ interface AddContractModalProps {
 }
 
 const AddContractModal: React.FC<AddContractModalProps> = ({ isOpen, onClose, vendorId, onSuccess }) => {
+    // Generate contract code automatically
+    const generateContractCode = () => {
+        const now = new Date();
+        const ymd = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+        const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+        return `CON-${ymd}-${random}`;
+    };
+
     const [formData, setFormData] = useState({
-        contract_code: '',
+        contract_code: generateContractCode(),
         title: '',
         start_date: '',
         end_date: '',
@@ -36,8 +44,8 @@ const AddContractModal: React.FC<AddContractModalProps> = ({ isOpen, onClose, ve
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.contract_code || !formData.title) {
-            toast.error('Contract code and title are required');
+        if (!formData.title) {
+            toast.error('Title is required');
             return;
         }
 
@@ -57,7 +65,7 @@ const AddContractModal: React.FC<AddContractModalProps> = ({ isOpen, onClose, ve
             onSuccess();
             onClose();
             setFormData({
-                contract_code: '',
+                contract_code: generateContractCode(),
                 title: '',
                 start_date: '',
                 end_date: '',
@@ -101,14 +109,14 @@ const AddContractModal: React.FC<AddContractModalProps> = ({ isOpen, onClose, ve
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Contract Code *
+                                    Contract Code
                                 </label>
                                 <Input
                                     value={formData.contract_code}
-                                    onChange={(e) => handleInputChange('contract_code', e.target.value)}
-                                    placeholder="e.g., C-00121"
-                                    required
+                                    disabled
+                                    className="bg-gray-50"
                                 />
+                                <p className="text-xs text-gray-500 mt-1">Auto-generated</p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
