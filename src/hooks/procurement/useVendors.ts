@@ -253,8 +253,7 @@ export function useCreateVendorContract() {
                     .from('vendor_contracts')
                     .insert({
                         ...payload,
-                        org_id: orgId,
-                        created_by: user.id
+                        org_id: orgId
                     });
                 if (error) {
                     console.error('Database error:', error);
