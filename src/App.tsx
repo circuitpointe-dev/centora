@@ -20,6 +20,7 @@ import VendorManagementPage from "./components/vendor/VendorManagementPage";
 import VendorProfilePage from "./components/vendor/VendorProfilePage";
 import VendorContractDetailPage from "./components/vendor/VendorContractDetailPage";
 import VendorClassificationPage from "./components/vendor/VendorClassificationPage";
+import ApprovalDetailPage from "./components/procurement/ApprovalDetailPage";
 import ManualProposalCreationPage from "./components/pages/ManualProposalCreationPage";
 import GrantViewPage from "./components/grants/view/GrantViewPage";
 import CloseGrantPage from "./components/grants/view/CloseGrantPage";
@@ -186,6 +187,8 @@ const AppRoutes = () => {
           <Route path="vendor-classification" element={<VendorClassificationPage />} />
           <Route path="vendors/:vendorId" element={<VendorProfilePage />} />
           <Route path="vendors/:vendorId/contracts/:contractId" element={<VendorContractDetailPage />} />
+          {/* Procurement → Approvals routes */}
+          <Route path="approvals/:id" element={<ApprovalDetailPage />} />
         </Route>
 
         {/* Catch-all: send anything else back to "/" */}

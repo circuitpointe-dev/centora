@@ -132,8 +132,7 @@ const ProcurementApprovalsPage = () => {
     };
 
     const handleView = (id: string) => {
-        console.log('Viewing:', id);
-        // TODO: Implement view logic
+        navigate(`/dashboard/procurement/approvals/${id}`);
     };
 
     const handleBulkApprove = () => {
@@ -379,7 +378,7 @@ const ProcurementApprovalsPage = () => {
                                                             className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800 truncate max-w-full"
                                                             onClick={() => handleView(approval.id)}
                                                         >
-                                                            <span className="truncate inline-block max-w-full align-bottom break-all">{approval.id}</span>
+                                                            <span className="truncate inline-block max-w-full align-bottom break-all">{approval.friendly_id}</span>
                                                         </Button>
                                                     </TableCell>
                                                     <TableCell>
