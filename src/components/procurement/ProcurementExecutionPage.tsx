@@ -1,0 +1,450 @@
+import React, { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    Search,
+    Upload,
+    Plus,
+    Award,
+    Clock,
+    AlertCircle,
+    MoreHorizontal,
+    ChevronLeft,
+    ChevronRight,
+    Loader2
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
+import { useProcurementExecutionStats, useTenders, useAwardTender, useRejectTender, useCreateTender } from '@/hooks/procurement/useProcurementExecution';
+import { usePurchaseOrders, usePurchaseOrderStats } from '@/hooks/procurement/usePurchaseOrders';
+
+const ProcurementExecutionPage: React.FC = () => {
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedTenders, setSelectedTenders] = useState<string[]>([]);
+    const [activeTab, setActiveTab] = useState('purchase-orders');
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Backend data hooks
+    const { data: stats, isLoading: statsLoading, error: statsError } = useProcurementExecutionStats();
+    const { data: tendersData, isLoading: tendersLoading, error: tendersError } = useTenders(1, 10, searchTerm);
+    const { data: purchaseOrdersData, isLoading: purchaseOrdersLoading, error: purchaseOrdersError } = usePurchaseOrders(1, 10, searchTerm);
+    const { data: poStats, isLoading: poStatsLoading, error: poStatsError } = usePurchaseOrderStats();
+    const awardTender = useAwardTender();
+    const rejectTender = useRejectTender();
+    const createTender = useCreateTender();
+
+    const tenders = tendersData?.data || [];
+    const purchaseOrders = purchaseOrdersData?.data || [];
+
+    const handleSelectTender = (tenderId: string, checked: boolean) => {
+        if (checked) {
+            setSelectedTenders(prev => [...prev, tenderId]);
+        } else {
+            setSelectedTenders(prev => prev.filter(id => id !== tenderId));
+        }
+    };
+
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedTenders(tenders.map((tender, index) => (tender as any).id || `tender-${index}`));
+        } else {
+            setSelectedTenders([]);
+        }
+    };
+
+    const handleAwardTender = async (tenderId: string) => {
+        try {
+            await awardTender.mutateAsync({ tenderId, comment: 'Awarded based on best score' });
+        } catch (error) {
+            console.error('Error awarding tender:', error);
+        }
+    };
+
+    const handleUploadBid = () => {
+        // TODO: Implement upload bid functionality
+        toast.info('Upload bid functionality coming soon');
+    };
+
+    const handleAddTender = () => {
+        // TODO: Navigate to add tender page
+        toast.info('Add tender functionality coming soon');
+    };
+
+    const getScoreColor = (score: number) => {
+        if (score >= 80) return 'bg-green-100 text-green-800';
+        if (score >= 60) return 'bg-yellow-100 text-yellow-800';
+        return 'bg-red-100 text-red-800';
+    };
+
+    const getComplianceStatus = (status: string) => {
+        switch (status) {
+            case 'compliant':
+                return { color: 'bg-green-100 text-green-800', text: 'Compliant' };
+            case 'pending':
+                return { color: 'bg-yellow-100 text-yellow-800', text: 'Pending' };
+            case 'non-compliant':
+                return { color: 'bg-red-100 text-red-800', text: 'Non-compliant' };
+            default:
+                return { color: 'bg-gray-100 text-gray-800', text: 'Unknown' };
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#f5f7fa]">
+            <div className="p-8">
+                {/* Tabs */}
+                <div className="flex gap-1 bg-white rounded-lg p-1 mb-8 w-fit">
+                    {[
+                        { id: 'quotations', label: 'Quotations & tendering' },
+                        { id: 'purchase-orders', label: 'Purchase orders' },
+                        { id: 'goods-received', label: 'Goods received notes' },
+                        { id: 'invoices', label: 'Invoices & payment trackers' },
+                        { id: 'mobile-approvals', label: 'Mobile approvals' }
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === tab.id
+                                ? 'bg-[#7c3aed] text-white'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* KPI Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                                    <span className="text-3xl font-bold text-purple-600">{poStats?.activePOs || 0}</span>
+                                </div>
+                                <div className="text-sm text-gray-600">Active POs</div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                                    <span className="text-3xl font-bold text-yellow-600">{poStats?.pendingApprovals || 0}</span>
+                                </div>
+                                <div className="text-sm text-gray-600">Pending approvals</div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                    <span className="text-3xl font-bold text-green-600">{poStats?.approvedPOs || 0}</span>
+                                </div>
+                                <div className="text-sm text-gray-600">Approved POs</div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                    <span className="text-3xl font-bold text-blue-600">
+                                        ${poStats?.totalValue ? (poStats.totalValue / 1000000).toFixed(1) + 'M' : '0M'}
+                                    </span>
+                                </div>
+                                <div className="text-sm text-gray-600">Total value of POs</div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Quotation & Tendering Section */}
+                {activeTab === 'quotations' && (
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-lg font-semibold text-gray-900">Quotation & tendering</h3>
+                                <div className="flex items-center gap-4">
+                                    <div className="relative">
+                                        <Input
+                                            placeholder="Search..."
+                                            className="w-64 pl-10 pr-4 py-2 border-gray-300 rounded-lg"
+                                        />
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleUploadBid}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <Upload className="w-4 h-4" />
+                                        Upload bid
+                                    </Button>
+                                    <Button
+                                        onClick={handleAddTender}
+                                        className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white flex items-center gap-2"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        + Add new tender
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Tenders Table */}
+                            <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-50">
+                                            <TableHead className="w-12">
+                                                <Checkbox
+                                                    checked={selectedTenders.length === tenders.length && tenders.length > 0}
+                                                    onCheckedChange={handleSelectAll}
+                                                />
+                                            </TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Vendor name</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Items</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Price</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Delivery terms</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Score</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {tendersLoading ? (
+                                            <TableRow>
+                                                <TableCell colSpan={7} className="py-8 text-center text-gray-500">
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                        Loading tenders...
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : tenders.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={7} className="py-8 text-center text-gray-500">
+                                                    No tenders found
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            tenders.map((tender, index) => (
+                                                <TableRow key={tender.id || tender.vendor_id || index} className="hover:bg-gray-50">
+                                                    <TableCell>
+                                                        <Checkbox
+                                                            checked={selectedTenders.includes(tenderId)}
+                                                            onCheckedChange={(checked) => handleSelectTender(tenderId, checked as boolean)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {tender.vendor_name}
+                                                    </TableCell>
+                                                    <TableCell className="text-gray-700">
+                                                        {tender.items}
+                                                    </TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        ${tender.price.toLocaleString()}
+                                                    </TableCell>
+                                                    <TableCell className="text-gray-700">
+                                                        {tender.delivery_terms}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge className={`${getScoreColor(tender.score)} px-2 py-1 rounded-full text-xs font-medium`}>
+                                                            {tender.score}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button
+                                                            onClick={() => handleAwardTender(tender.id || tender.vendor_id || '')}
+                                                            disabled={awardTender.isPending || tender.status === 'awarded'}
+                                                            className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                                                            size="sm"
+                                                        >
+                                                            {awardTender.isPending ? (
+                                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                            ) : (
+                                                                <img src="/mdi-award1.svg" alt="award" className="w-4 h-4" />
+                                                            )}
+                                                            {tender.status === 'awarded' ? 'Awarded' : 'Award'}
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+
+                            {/* Summary */}
+                            <div className="flex items-center gap-2 mt-6 text-sm text-gray-600">
+                                <img src="/nrk-check-active0.svg" alt="completed" className="w-4 h-4" />
+                                <span>{tenders.length} bid completed</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Purchase Orders Section */}
+                {activeTab === 'purchase-orders' && (
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-lg font-semibold text-gray-900">POs list</h3>
+                                <div className="flex items-center gap-4">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search...."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        />
+                                        <img src="/search0.svg" alt="search" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        className="flex items-center gap-2"
+                                    >
+                                        <img src="/uil-export0.svg" alt="export" className="w-4 h-4" />
+                                        Export POs
+                                    </Button>
+                                    <Button
+                                        className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white flex items-center gap-2"
+                                    >
+                                        <img src="/material-symbols-add-rounded0.svg" alt="add" className="w-4 h-4" />
+                                        + Add new PO
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Purchase Orders Table */}
+                            <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-50">
+                                            <TableHead className="font-semibold text-gray-900">PO#</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Vendor</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Amount</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Created</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {purchaseOrdersLoading ? (
+                                            <TableRow>
+                                                <TableCell colSpan={6} className="py-8 text-center text-gray-500">
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                        Loading purchase orders...
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : purchaseOrders.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={6} className="py-8 text-center text-gray-500">
+                                                    No purchase orders found
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            purchaseOrders.map((po, index) => (
+                                                <TableRow key={po.id} className="hover:bg-gray-50">
+                                                    <TableCell className="font-medium text-gray-900">{po.po_number}</TableCell>
+                                                    <TableCell className="text-gray-700">{po.vendor_name}</TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {new Intl.NumberFormat('en-US', {
+                                                            style: 'currency',
+                                                            currency: po.currency
+                                                        }).format(po.grand_total)}
+                                                    </TableCell>
+                                                    <TableCell className="text-gray-700">
+                                                        {new Date(po.po_date).toLocaleDateString('en-US', {
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            year: 'numeric'
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${po.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                                            po.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                                po.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                                                    'bg-gray-100 text-gray-800'
+                                                            }`}>
+                                                            {po.status.charAt(0).toUpperCase() + po.status.slice(1)}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="flex items-center gap-1"
+                                                            onClick={() => navigate(`/dashboard/procurement/purchase-orders/${po.id}`)}
+                                                        >
+                                                            <img src={`/eye${index % 9}.svg`} alt="view" className="w-4 h-4" />
+                                                            View
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+
+                            {/* Pagination */}
+                            <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                                <div className="text-sm text-gray-700">
+                                    Showing 1 to {purchaseOrders.length} of {purchaseOrdersData?.total || 0} purchase orders
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm" disabled>
+                                        Previous
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Other tabs content */}
+                {activeTab !== 'quotations' && activeTab !== 'purchase-orders' && (
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="text-center py-12">
+                                <div className="text-lg font-medium text-gray-900 mb-2">
+                                    {activeTab === 'goods-received' && 'Goods Received Notes'}
+                                    {activeTab === 'invoices' && 'Invoices & Payment Trackers'}
+                                    {activeTab === 'mobile-approvals' && 'Mobile Approvals'}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                    This section is coming soon
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default ProcurementExecutionPage;
