@@ -336,7 +336,7 @@ const CompensationPolicies = () => {
         <>
           {/* Tab Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
           <TabsTrigger value="salary-benchmarks">Salary benchmarks</TabsTrigger>
           <TabsTrigger value="policy-portal">Policy portal</TabsTrigger>
           <TabsTrigger value="acknowledgements">Acknowledgements</TabsTrigger>

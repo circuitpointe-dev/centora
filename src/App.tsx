@@ -16,6 +16,7 @@ import MainLayout from "./components/layout/MainLayout";
 import DashboardPage from "./components/pages/DashboardPage";
 import GenericFeaturePage from "./components/pages/GenericFeaturePage";
 import SuccessionCandidatePerformanceView from "./components/hr/SuccessionCandidatePerformanceView";
+import StartExit from "./components/hr/StartExit";
 import VendorManagementPage from "./components/vendor/VendorManagementPage";
 import VendorProfilePage from "./components/vendor/VendorProfilePage";
 import VendorContractDetailPage from "./components/vendor/VendorContractDetailPage";
@@ -154,6 +155,7 @@ const AppRoutes = () => {
           }
         />
 
+
         {/* Protected: Dashboard + Features */}
         <Route
           path="/dashboard/:module"
@@ -178,8 +180,6 @@ const AppRoutes = () => {
           {/* Grant Review - nested within dashboard structure */}
           <Route path="review" element={<GrantReviewPage />} />
 
-          {/* Other features */}
-          <Route path=":feature" element={<GenericFeaturePage />} />
           {/* HR: Succession candidate performance (page) */}
           <Route path="succession/candidate-performance" element={<SuccessionCandidatePerformanceView onBack={() => history.back()} candidateName="Alex Bello" />} />
           {/* Procurement → Vendor Management dedicated routes */}
@@ -189,6 +189,9 @@ const AppRoutes = () => {
           <Route path="vendors/:vendorId/contracts/:contractId" element={<VendorContractDetailPage />} />
           {/* Procurement → Approvals routes */}
           <Route path="approvals/:id" element={<ApprovalDetailPage />} />
+
+          {/* Other features */}
+          <Route path=":feature" element={<GenericFeaturePage />} />
         </Route>
 
         {/* Catch-all: send anything else back to "/" */}

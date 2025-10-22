@@ -456,7 +456,7 @@ const PerformanceManagement = () => {
 
       {/* Tab Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
           <TabsTrigger value="kpi-objectives">KPI & Objectives</TabsTrigger>
           <TabsTrigger value="appraisal-reviews">Appraisal & Reviews</TabsTrigger>
           <TabsTrigger value="feedback-history">Feedback History</TabsTrigger>
