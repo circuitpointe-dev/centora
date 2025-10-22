@@ -16,7 +16,7 @@ const SalaryBenchmarkDetail: React.FC<SalaryBenchmarkDetailProps> = ({
   return (
     <div className="space-y-6">
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -27,7 +27,7 @@ const SalaryBenchmarkDetail: React.FC<SalaryBenchmarkDetailProps> = ({
         </Button>
         <span>Salary benchmarking</span>
         <span>/</span>
-        <span className="text-gray-900 font-medium">Benchmark details</span>
+        <span className="text-foreground font-medium">Benchmark details</span>
       </div>
 
       {/* Main Content Cards */}
@@ -40,16 +40,16 @@ const SalaryBenchmarkDetail: React.FC<SalaryBenchmarkDetailProps> = ({
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">25th Percentile</span>
-                <span className="text-sm font-semibold text-gray-900">7.2m NGN</span>
+                <span className="text-sm text-muted-foreground">25th Percentile</span>
+                <span className="text-sm font-semibold text-foreground">7.2m NGN</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">50th Percentile (Median)</span>
-                <span className="text-sm font-semibold text-gray-900">8.5m NGN</span>
+                <span className="text-sm text-muted-foreground">50th Percentile (Median)</span>
+                <span className="text-sm font-semibold text-foreground">8.5m NGN</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">75th Percentile</span>
-                <span className="text-sm font-semibold text-gray-900">9.8m NGN</span>
+                <span className="text-sm text-muted-foreground">75th Percentile</span>
+                <span className="text-sm font-semibold text-foreground">9.8m NGN</span>
               </div>
             </div>
           </CardContent>
@@ -65,8 +65,8 @@ const SalaryBenchmarkDetail: React.FC<SalaryBenchmarkDetailProps> = ({
               {/* Band Range Bar */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Band range</span>
-                  <span className="text-sm text-gray-600">7.0m - 9.5m</span>
+                  <span className="text-sm font-medium text-muted-foreground">Band range</span>
+                  <span className="text-sm text-muted-foreground">7.0m - 9.5m</span>
                 </div>
                 <div className="h-4 bg-gradient-to-r from-orange-200 via-green-200 to-blue-200 rounded-full"></div>
               </div>
@@ -74,16 +74,16 @@ const SalaryBenchmarkDetail: React.FC<SalaryBenchmarkDetailProps> = ({
               {/* Band Values */}
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Minimum</span>
-                  <span className="text-sm font-semibold text-gray-900">7.0m NGN</span>
+                  <span className="text-sm text-muted-foreground">Minimum</span>
+                  <span className="text-sm font-semibold text-foreground">7.0m NGN</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Midpoint</span>
-                  <span className="text-sm font-semibold text-gray-900">8.3m NGN</span>
+                  <span className="text-sm text-muted-foreground">Midpoint</span>
+                  <span className="text-sm font-semibold text-foreground">8.3m NGN</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Maximum</span>
-                  <span className="text-sm font-semibold text-gray-900">9.5m NGN</span>
+                  <span className="text-sm text-muted-foreground">Maximum</span>
+                  <span className="text-sm font-semibold text-foreground">9.5m NGN</span>
                 </div>
               </div>
             </div>
@@ -100,7 +100,7 @@ const SalaryBenchmarkDetail: React.FC<SalaryBenchmarkDetailProps> = ({
               {/* Band vs Market P50 */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Band vs Market P50</span>
+                  <span className="text-sm font-medium text-muted-foreground">Band vs Market P50</span>
                   <Badge className="bg-green-600 text-white text-xs">
                     Within 3%
                   </Badge>
@@ -109,7 +109,7 @@ const SalaryBenchmarkDetail: React.FC<SalaryBenchmarkDetailProps> = ({
               </div>
 
               {/* Description */}
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Internal band aligns well with market median
               </p>
             </div>

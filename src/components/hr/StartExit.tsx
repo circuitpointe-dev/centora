@@ -69,7 +69,7 @@ const StartExit = () => {
   return (
     <div className="space-y-6">
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
         <Button
           variant="ghost"
           size="sm"
@@ -78,21 +78,21 @@ const StartExit = () => {
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
         </Button>
-        <span>Exit feedback / Start exit</span>
+        <span className="text-muted-foreground">Exit feedback / Start exit</span>
       </div>
 
       {/* Page Header */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-gray-900">Start exit</h1>
-        <p className="text-gray-600">Create a new exit case for an employee or volunteer</p>
+        <h1 className="text-2xl font-bold text-foreground">Start exit</h1>
+        <p className="text-muted-foreground">Create a new exit case for an employee or volunteer</p>
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+      <div className="bg-card rounded-lg border p-6 space-y-6">
         {/* Person & Role Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Person name</label>
+            <label className="text-sm font-medium text-muted-foreground">Person name</label>
             <Select
               value={formData.personName}
               onValueChange={(value) => setFormData({ ...formData, personName: value })}
@@ -112,7 +112,7 @@ const StartExit = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Role</label>
+            <label className="text-sm font-medium text-muted-foreground">Role</label>
             <Select
               value={formData.role}
               onValueChange={(value) => setFormData({ ...formData, role: value })}
@@ -135,7 +135,7 @@ const StartExit = () => {
         {/* Exit Type & Effective Date Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Exit type</label>
+            <label className="text-sm font-medium text-muted-foreground">Exit type</label>
             <Select
               value={formData.exitType}
               onValueChange={(value) => setFormData({ ...formData, exitType: value })}
@@ -153,7 +153,7 @@ const StartExit = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Effective date</label>
+            <label className="text-sm font-medium text-muted-foreground">Effective date</label>
             <div className="relative">
               <Input
                 type="date"
@@ -161,14 +161,14 @@ const StartExit = () => {
                 onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
                 className="pr-10"
               />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             </div>
           </div>
         </div>
 
         {/* Reason Section */}
         <div className="space-y-4">
-          <label className="text-sm font-medium text-gray-700">Reason</label>
+          <label className="text-sm font-medium text-muted-foreground">Reason</label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {reasonOptions.map((reason) => (
               <div key={reason} className="flex items-center space-x-2">
@@ -179,7 +179,7 @@ const StartExit = () => {
                 />
                 <label
                   htmlFor={reason}
-                  className="text-sm text-gray-700 cursor-pointer"
+                  className="text-sm text-muted-foreground cursor-pointer"
                 >
                   {reason}
                 </label>
@@ -190,7 +190,7 @@ const StartExit = () => {
 
         {/* Additional Notes Section */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Additional notes</label>
+          <label className="text-sm font-medium text-muted-foreground">Additional notes</label>
           <Textarea
             placeholder="Add context or additional details..."
             value={formData.additionalNotes}
@@ -207,7 +207,7 @@ const StartExit = () => {
         </Button>
         <Button
           onClick={handleCreateExit}
-          className="bg-gray-900 hover:bg-gray-800"
+          className="bg-primary hover:bg-primary/90"
         >
           Create exit case
         </Button>

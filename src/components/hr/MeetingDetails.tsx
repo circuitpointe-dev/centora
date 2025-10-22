@@ -151,7 +151,7 @@ const MeetingDetails = () => {
       <div className="flex items-center space-x-2">
         <Button
           variant="ghost"
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+          className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
           onClick={() => navigate('/dashboard/hr/board-member-detail')}
         >
           <ArrowLeft className="h-4 w-4" />
@@ -162,8 +162,8 @@ const MeetingDetails = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Meeting Details</h1>
-          <p className="text-sm text-gray-600">Advanced quorum management and attendance tracking</p>
+          <h1 className="text-2xl font-bold text-foreground">Meeting Details</h1>
+          <p className="text-sm text-muted-foreground">Advanced quorum management and attendance tracking</p>
         </div>
         <Button variant="outline" className="flex items-center space-x-2">
           <Upload className="h-4 w-4" />
@@ -176,11 +176,11 @@ const MeetingDetails = () => {
         <CardContent className="p-6">
           <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">{meetingData.title}</h2>
-              <p className="text-sm text-gray-600 mt-1">{meetingData.description}</p>
+              <h2 className="text-xl font-semibold text-foreground">{meetingData.title}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{meetingData.description}</p>
             </div>
             
-            <div className="flex items-center space-x-6 text-sm text-gray-600">
+            <div className="flex items-center space-x-6 text-sm text-muted-foreground">
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4" />
                 <span>{meetingData.date}</span>
@@ -217,13 +217,13 @@ const MeetingDetails = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5 text-green-600" />
-                <span className="text-lg font-semibold text-gray-900">{quorumData.status}</span>
+                <span className="text-lg font-semibold text-foreground">{quorumData.status}</span>
               </div>
-              <span className="text-sm text-gray-600">{quorumData.present} of {quorumData.required} required members present</span>
+              <span className="text-sm text-muted-foreground">{quorumData.present} of {quorumData.required} required members present</span>
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>0</span>
                 <span>Required: {quorumData.required}</span>
                 <span>Max: {quorumData.total}</span>
@@ -235,7 +235,7 @@ const MeetingDetails = () => {
                 ></div>
               </div>
               <div className="flex justify-end">
-                <span className="text-sm text-gray-600">{quorumData.present}/{quorumData.total} total members</span>
+                <span className="text-sm text-muted-foreground">{quorumData.present}/{quorumData.total} total members</span>
               </div>
             </div>
           </div>
@@ -246,13 +246,13 @@ const MeetingDetails = () => {
       <Card>
         <Collapsible open={quorumRulesOpen} onOpenChange={setQuorumRulesOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <CardHeader className="cursor-pointer hover:bg-muted/50">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold">Meeting Quorum Rules</CardTitle>
                 {quorumRulesOpen ? (
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
             </CardHeader>
@@ -261,8 +261,8 @@ const MeetingDetails = () => {
             <CardContent className="space-y-3">
               {quorumRules.map((rule, index) => (
                 <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-                  <span className="text-sm text-gray-600">{rule.label}:</span>
-                  <span className="text-sm font-medium text-gray-900">{rule.value}</span>
+                  <span className="text-sm text-muted-foreground">{rule.label}:</span>
+                  <span className="text-sm font-medium text-foreground">{rule.value}</span>
                 </div>
               ))}
             </CardContent>
@@ -274,13 +274,13 @@ const MeetingDetails = () => {
       <Card>
         <Collapsible open={attendanceManagementOpen} onOpenChange={setAttendanceManagementOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <CardHeader className="cursor-pointer hover:bg-muted/50">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold">Detailed attendance management</CardTitle>
                 {attendanceManagementOpen ? (
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
             </CardHeader>
@@ -288,32 +288,32 @@ const MeetingDetails = () => {
           <CollapsibleContent>
             <CardContent className="space-y-4">
               {attendees.map((attendee, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-900">{attendee.name}</span>
-                      <span className="text-sm text-gray-600">•</span>
-                      <span className="text-sm text-gray-600">{attendee.role}</span>
-                      <span className="text-sm text-gray-600">•</span>
-                      <span className="text-sm text-gray-600">{attendee.department}</span>
+                      <span className="font-medium text-foreground">{attendee.name}</span>
+                      <span className="text-sm text-muted-foreground">•</span>
+                      <span className="text-sm text-muted-foreground">{attendee.role}</span>
+                      <span className="text-sm text-muted-foreground">•</span>
+                      <span className="text-sm text-muted-foreground">{attendee.department}</span>
                       {attendee.type && (
                         <>
-                          <span className="text-sm text-gray-600">•</span>
-                          <span className="text-sm text-gray-600">{attendee.type}</span>
+                          <span className="text-sm text-muted-foreground">•</span>
+                          <span className="text-sm text-muted-foreground">{attendee.type}</span>
                         </>
                       )}
                     </div>
-                    <div className="text-sm text-gray-500">{attendee.email}</div>
+                    <div className="text-sm text-muted-foreground">{attendee.email}</div>
                   </div>
                   
                   <div className="flex items-center space-x-4">
                     {getStatusBadge(attendee)}
                     <div className="flex items-center space-x-2">
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <Mail className="h-4 w-4 text-gray-500" />
+                        <Mail className="h-4 w-4 text-muted-foreground" />
                       </Button>
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <Phone className="h-4 w-4 text-gray-500" />
+                        <Phone className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </div>
                   </div>

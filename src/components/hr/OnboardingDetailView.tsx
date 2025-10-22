@@ -102,7 +102,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-2">
-                <h3 className={`font-medium ${isCompleted ? 'text-green-800 line-through' : 'text-gray-900'}`}>
+                <h3 className={`font-medium ${isCompleted ? 'text-green-800 line-through' : 'text-foreground'}`}>
                   {title}
                 </h3>
                 {overdue && !isCompleted && (
@@ -113,12 +113,12 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
               </div>
               
               <div className="space-y-1">
-                <div className="flex items-center text-sm text-gray-600">
+                <div className="flex items-center text-sm text-muted-foreground">
                   <span className="font-medium">Assigned to:</span>
                   <span className="ml-1">{assignee}</span>
                 </div>
                 
-                <div className="flex items-center text-sm text-gray-600">
+                <div className="flex items-center text-sm text-muted-foreground">
                   <span className="font-medium">Due date:</span>
                   <span className={`ml-1 ${overdue && !isCompleted ? 'text-red-600 font-medium' : ''}`}>
                     {dueDate}
@@ -126,7 +126,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
                 </div>
                 
                 {note && (
-                  <div className="text-sm text-gray-500 italic mt-2">
+                  <div className="text-sm text-muted-foreground italic mt-2">
                     {note}
                   </div>
                 )}
@@ -135,7 +135,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
             
             {Icon && (
               <div className="flex-shrink-0">
-                <Icon className="w-5 h-5 text-gray-400" />
+                <Icon className="w-5 h-5 text-muted-foreground" />
               </div>
             )}
           </div>
@@ -148,7 +148,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
     <div className="space-y-6">
       {/* Breadcrumb Navigation */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <Button 
             variant="ghost" 
             size="sm" 
@@ -159,7 +159,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
           </Button>
           <span>Onboarding checklist</span>
           <span>/</span>
-          <span className="text-gray-900 font-medium">Hire detail view</span>
+          <span className="text-foreground font-medium">Hire detail view</span>
         </div>
         
         {/* View Toggle Button */}
@@ -174,8 +174,8 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
 
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Sarah Chen - Onboarding</h1>
-        <p className="text-gray-600">
+        <h1 className="text-2xl font-bold text-foreground mb-2">Sarah Chen - Onboarding</h1>
+        <p className="text-muted-foreground">
           Track onboarding progress, view tasks by category, and manage completion status for this new hire.
         </p>
       </div>
@@ -188,23 +188,23 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-600">Position</label>
-              <p className="text-gray-900">Software Engineer</p>
+              <label className="text-sm font-medium text-muted-foreground">Position</label>
+              <p className="text-foreground">Software Engineer</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-600">Start date</label>
-              <p className="text-gray-900">Aug 5, 2025</p>
+              <label className="text-sm font-medium text-muted-foreground">Start date</label>
+              <p className="text-foreground">Aug 5, 2025</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-600">Manager</label>
-              <p className="text-gray-900">Alicia smith</p>
+              <label className="text-sm font-medium text-muted-foreground">Manager</label>
+              <p className="text-foreground">Alicia smith</p>
             </div>
           </div>
           
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-600">Progress</label>
-              <span className="text-sm font-medium text-gray-900">
+              <label className="text-sm font-medium text-muted-foreground">Progress</label>
+              <span className="text-sm font-medium text-foreground">
                 {isPositiveView ? '100%' : '62%'}
               </span>
             </div>
@@ -215,7 +215,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
 
       {/* Pre-Day 1 Section */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900">Pre-Day 1</h2>
+        <h2 className="text-xl font-semibold text-foreground">Pre-Day 1</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <TaskCard
             taskId="offer-accepted"
@@ -247,7 +247,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
 
       {/* Day 1 Section */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900">Day 1 - Aug 15, 2025</h2>
+        <h2 className="text-xl font-semibold text-foreground">Day 1 - Aug 15, 2025</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <TaskCard
             taskId="access-codebase"

@@ -196,7 +196,7 @@ const VolunteerProfile = () => {
       case 'Rejected':
         return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
+        return <Badge className="bg-muted text-gray-800">{status}</Badge>;
     }
   };
 
@@ -217,7 +217,7 @@ const VolunteerProfile = () => {
         <div className="flex items-center space-x-4">
           <Button 
             variant="ghost" 
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
             onClick={() => navigate('/dashboard/hr/people-management')}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -225,7 +225,7 @@ const VolunteerProfile = () => {
           </Button>
         </div>
         <div className="flex items-center space-x-3">
-          <h1 className="text-2xl font-bold text-gray-900">Member detail view</h1>
+          <h1 className="text-2xl font-bold text-foreground">Member detail view</h1>
           <Badge className="bg-red-500 text-white border-red-500">Action required</Badge>
         </div>
         <div className="flex items-center space-x-2">
@@ -261,11 +261,11 @@ const VolunteerProfile = () => {
             </div>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">Full name:</span>
-                <span className="text-lg font-semibold text-gray-900">Alice smith</span>
+                <span className="text-sm text-muted-foreground">Full name:</span>
+                <span className="text-lg font-semibold text-foreground">Alice smith</span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">Status:</span>
+                <span className="text-sm text-muted-foreground">Status:</span>
                 <Badge className="bg-green-100 text-green-800">Active</Badge>
               </div>
             </div>
@@ -275,7 +275,7 @@ const VolunteerProfile = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
+        <TabsList className="grid w-full grid-cols-4 bg-muted">
           <TabsTrigger 
             value="overview" 
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
@@ -307,16 +307,16 @@ const VolunteerProfile = () => {
           <Card>
             <Collapsible open={personalInfoOpen} onOpenChange={setPersonalInfoOpen}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <CardHeader className="cursor-pointer hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold flex items-center space-x-2">
                       <User className="h-5 w-5" />
                       <span>Personal information</span>
                     </CardTitle>
                     {personalInfoOpen ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
                 </CardHeader>
@@ -324,53 +324,53 @@ const VolunteerProfile = () => {
               <CollapsibleContent>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <Mail className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Email:</span>
-                    <span className="text-sm text-gray-900">alicesmith@gmail.com</span>
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Email:</span>
+                    <span className="text-sm text-foreground">alicesmith@gmail.com</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Phone className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Phone number:</span>
-                    <span className="text-sm text-gray-900">+1 88 8334 8344</span>
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Phone number:</span>
+                    <span className="text-sm text-foreground">+1 88 8334 8344</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <MapPin className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Location:</span>
-                    <span className="text-sm text-gray-900">Texas, USA</span>
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Location:</span>
+                    <span className="text-sm text-foreground">Texas, USA</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Joined:</span>
-                    <span className="text-sm text-gray-900">July 2, 2025</span>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Joined:</span>
+                    <span className="text-sm text-foreground">July 2, 2025</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Award className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Skills:</span>
+                    <Award className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Skills:</span>
                     <div className="flex flex-wrap gap-2">
                       {['Leadership', 'First aid'].map((skill) => (
-                        <Badge key={skill} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                        <Badge key={skill} variant="secondary" className="text-xs bg-muted text-muted-foreground">
                           {skill}
                         </Badge>
                       ))}
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Heart className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Interest:</span>
+                    <Heart className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Interest:</span>
                     <div className="flex flex-wrap gap-2">
                       {['Community', 'Outreach'].map((interest) => (
-                        <Badge key={interest} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                        <Badge key={interest} variant="secondary" className="text-xs bg-muted text-muted-foreground">
                           {interest}
                         </Badge>
                       ))}
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <CalendarDays className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Availability:</span>
+                    <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Availability:</span>
                     <div className="flex flex-wrap gap-2">
                       {['Weekends', 'Evening'].map((availability) => (
-                        <Badge key={availability} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                        <Badge key={availability} variant="secondary" className="text-xs bg-muted text-muted-foreground">
                           {availability}
                         </Badge>
                       ))}
@@ -385,16 +385,16 @@ const VolunteerProfile = () => {
           <Card>
             <Collapsible open={upcomingShiftsOpen} onOpenChange={setUpcomingShiftsOpen}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <CardHeader className="cursor-pointer hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold flex items-center space-x-2">
                       <Calendar className="h-5 w-5" />
                       <span>Upcoming shifts</span>
                     </CardTitle>
                     {upcomingShiftsOpen ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
                 </CardHeader>
@@ -402,12 +402,12 @@ const VolunteerProfile = () => {
               <CollapsibleContent>
                 <CardContent className="space-y-4">
                   {upcomingShifts.map((shift) => (
-                    <div key={shift.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={shift.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div>
-                        <div className="font-medium text-gray-900">
+                        <div className="font-medium text-foreground">
                           {shift.date} • {shift.event}
                         </div>
-                        <div className="text-sm text-gray-600">{shift.time}</div>
+                        <div className="text-sm text-muted-foreground">{shift.time}</div>
                       </div>
                       <Button size="sm" variant="outline">
                         Reassign
@@ -423,16 +423,16 @@ const VolunteerProfile = () => {
           <Card>
             <Collapsible open={complianceOpen} onOpenChange={setComplianceOpen}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <CardHeader className="cursor-pointer hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold flex items-center space-x-2">
                       <Shield className="h-5 w-5" />
                       <span>Compliance</span>
                     </CardTitle>
                     {complianceOpen ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
                 </CardHeader>
@@ -440,14 +440,14 @@ const VolunteerProfile = () => {
               <CollapsibleContent>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <FileCheck className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Background check:</span>
-                    <span className="text-sm text-gray-900">Valid until 2026</span>
+                    <FileCheck className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Background check:</span>
+                    <span className="text-sm text-foreground">Valid until 2026</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <User className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">ID card:</span>
-                    <span className="text-sm text-gray-900">Expires in </span>
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">ID card:</span>
+                    <span className="text-sm text-foreground">Expires in </span>
                     <span className="text-sm text-red-600 font-medium">45 d</span>
                   </div>
                 </CardContent>
@@ -464,8 +464,8 @@ const VolunteerProfile = () => {
                 {/* Section Header */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">My term history</h2>
-                    <p className="text-sm text-gray-600">View your current term status and renewal timeline</p>
+                    <h2 className="text-lg font-semibold text-foreground">My term history</h2>
+                    <p className="text-sm text-muted-foreground">View your current term status and renewal timeline</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button variant="outline" className="flex items-center space-x-2">
@@ -493,8 +493,8 @@ const VolunteerProfile = () => {
                           <Calendar className="h-4 w-4 text-purple-600" />
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900">1/2</div>
-                      <div className="text-sm text-gray-600">Current</div>
+                      <div className="text-2xl font-bold text-foreground">1/2</div>
+                      <div className="text-sm text-muted-foreground">Current</div>
                     </CardContent>
                   </Card>
 
@@ -506,8 +506,8 @@ const VolunteerProfile = () => {
                           <Calendar className="h-4 w-4 text-purple-600" />
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900">365</div>
-                      <div className="text-sm text-gray-600">Days to renewal</div>
+                      <div className="text-2xl font-bold text-foreground">365</div>
+                      <div className="text-sm text-muted-foreground">Days to renewal</div>
                     </CardContent>
                   </Card>
 
@@ -519,8 +519,8 @@ const VolunteerProfile = () => {
                           <FileCheck className="h-4 w-4 text-green-600" />
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900">Yes</div>
-                      <div className="text-sm text-gray-600">Renewal eligible</div>
+                      <div className="text-2xl font-bold text-foreground">Yes</div>
+                      <div className="text-sm text-muted-foreground">Renewal eligible</div>
                     </CardContent>
                   </Card>
 
@@ -532,8 +532,8 @@ const VolunteerProfile = () => {
                           <MessageCircle className="h-4 w-4 text-blue-600" />
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900">2</div>
-                      <div className="text-sm text-gray-600">Total terms</div>
+                      <div className="text-2xl font-bold text-foreground">2</div>
+                      <div className="text-sm text-muted-foreground">Total terms</div>
                     </CardContent>
                   </Card>
                 </div>
@@ -545,17 +545,17 @@ const VolunteerProfile = () => {
           <Card>
             <CardContent className="p-6">
               <div className="space-y-6">
-                <h2 className="text-lg font-semibold text-gray-900">My term timeline</h2>
+                <h2 className="text-lg font-semibold text-foreground">My term timeline</h2>
                 
                 {/* Timeline */}
                 <div className="space-y-4">
                   {/* Member Name */}
-                  <div className="text-sm font-medium text-gray-900">Alice smith</div>
+                  <div className="text-sm font-medium text-foreground">Alice smith</div>
                   
                   {/* Timeline Bar */}
                   <div className="relative">
                     {/* Year Labels */}
-                    <div className="flex justify-between text-xs text-gray-500 mb-2">
+                    <div className="flex justify-between text-xs text-muted-foreground mb-2">
                       <span>2023</span>
                       <span>2024</span>
                       <span>2025</span>
@@ -563,7 +563,7 @@ const VolunteerProfile = () => {
                     </div>
                     
                     {/* Timeline Track */}
-                    <div className="relative h-8 bg-gray-100 rounded-full border border-gray-200">
+                    <div className="relative h-8 bg-muted rounded-full border border-gray-200">
                       {/* Current Term Bar */}
                       <div className="absolute left-1/4 right-1/4 h-full bg-violet-600 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs font-medium">2024 - 2025</span>
@@ -580,9 +580,9 @@ const VolunteerProfile = () => {
           <Card>
             <CardContent className="p-6">
               <div className="text-center py-12">
-                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Meeting Attendance</h3>
-                <p className="text-gray-600">Meeting attendance tracking will be implemented here.</p>
+                <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Meeting Attendance</h3>
+                <p className="text-muted-foreground">Meeting attendance tracking will be implemented here.</p>
               </div>
             </CardContent>
           </Card>
@@ -592,9 +592,9 @@ const VolunteerProfile = () => {
           <Card>
             <CardContent className="p-6">
               <div className="text-center py-12">
-                <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Governance Scorecards</h3>
-                <p className="text-gray-600">Governance scorecards will be implemented here.</p>
+                <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Governance Scorecards</h3>
+                <p className="text-muted-foreground">Governance scorecards will be implemented here.</p>
               </div>
             </CardContent>
           </Card>
@@ -607,12 +607,12 @@ const VolunteerProfile = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Blur Overlay */}
           <div 
-            className="absolute inset-0 backdrop-blur-sm bg-white/20"
+            className="absolute inset-0 backdrop-blur-sm bg-card/20"
             onClick={() => setIsAssignmentModalOpen(false)}
           />
           
           {/* Modal Content */}
-          <div className="relative bg-white rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
+          <div className="relative bg-card rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
             <div className="space-y-6">
               {/* Header */}
               <div className="flex items-center justify-between">
@@ -624,38 +624,38 @@ const VolunteerProfile = () => {
                   {/* Assignment Details */}
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Date:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.date}</span>
+                      <span className="text-sm text-muted-foreground">Date:</span>
+                      <span className="text-sm text-foreground">{selectedAssignment.date}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Program:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.program}</span>
+                      <span className="text-sm text-muted-foreground">Program:</span>
+                      <span className="text-sm text-foreground">{selectedAssignment.program}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Event:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.event}</span>
+                      <span className="text-sm text-muted-foreground">Event:</span>
+                      <span className="text-sm text-foreground">{selectedAssignment.event}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Role:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.role}</span>
+                      <span className="text-sm text-muted-foreground">Role:</span>
+                      <span className="text-sm text-foreground">{selectedAssignment.role}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Start - End:</span>
-                      <span className="text-sm text-gray-900">{selectedAssignment.shift}</span>
+                      <span className="text-sm text-muted-foreground">Start - End:</span>
+                      <span className="text-sm text-foreground">{selectedAssignment.shift}</span>
                     </div>
                   </div>
 
                   {/* Conflicts Section */}
                   <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-gray-900">Conflicts</h3>
+                    <h3 className="text-sm font-semibold text-foreground">Conflicts</h3>
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
                         <AlertTriangle className="h-4 w-4 text-red-500" />
-                        <span className="text-sm text-gray-700">Overlap with another assignment</span>
+                        <span className="text-sm text-muted-foreground">Overlap with another assignment</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <AlertTriangle className="h-4 w-4 text-red-500" />
-                        <span className="text-sm text-gray-700">Clearance not valid</span>
+                        <span className="text-sm text-muted-foreground">Clearance not valid</span>
                       </div>
                     </div>
                   </div>
@@ -693,19 +693,19 @@ const VolunteerProfile = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Blur Overlay */}
           <div 
-            className="absolute inset-0 backdrop-blur-sm bg-white/20"
+            className="absolute inset-0 backdrop-blur-sm bg-card/20"
             onClick={() => setIsHoursTrackerModalOpen(false)}
           />
           
           {/* Modal Content */}
-          <div className="relative bg-white rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
+          <div className="relative bg-card rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
             <div className="space-y-6">
               {/* Header */}
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Hours tracker detail</h2>
                 <button
                   onClick={() => setIsHoursTrackerModalOpen(false)}
-                  className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+                  className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -716,24 +716,24 @@ const VolunteerProfile = () => {
                   {/* Hours Details */}
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Name:</span>
-                      <span className="text-sm text-gray-900">{selectedHoursEntry.name}</span>
+                      <span className="text-sm text-muted-foreground">Name:</span>
+                      <span className="text-sm text-foreground">{selectedHoursEntry.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Date:</span>
-                      <span className="text-sm text-gray-900">July 2, 2025</span>
+                      <span className="text-sm text-muted-foreground">Date:</span>
+                      <span className="text-sm text-foreground">July 2, 2025</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Start - End:</span>
-                      <span className="text-sm text-gray-900">{selectedHoursEntry.shift}</span>
+                      <span className="text-sm text-muted-foreground">Start - End:</span>
+                      <span className="text-sm text-foreground">{selectedHoursEntry.shift}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Hours:</span>
-                      <span className="text-sm text-gray-900">{selectedHoursEntry.hours}</span>
+                      <span className="text-sm text-muted-foreground">Hours:</span>
+                      <span className="text-sm text-foreground">{selectedHoursEntry.hours}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Verified by:</span>
-                      <span className="text-sm text-gray-900">John david</span>
+                      <span className="text-sm text-muted-foreground">Verified by:</span>
+                      <span className="text-sm text-foreground">John david</span>
                     </div>
                   </div>
 
@@ -770,19 +770,19 @@ const VolunteerProfile = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Blur Overlay */}
           <div 
-            className="absolute inset-0 backdrop-blur-sm bg-white/20"
+            className="absolute inset-0 backdrop-blur-sm bg-card/20"
             onClick={() => setIsAddHoursModalOpen(false)}
           />
           
           {/* Modal Content */}
-          <div className="relative bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 p-6">
+          <div className="relative bg-card rounded-lg shadow-lg max-w-2xl w-full mx-4 p-6">
             <div className="space-y-6">
               {/* Header */}
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Add hours</h2>
                 <button
                   onClick={() => setIsAddHoursModalOpen(false)}
-                  className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+                  className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -843,7 +843,7 @@ const VolunteerProfile = () => {
                         placeholder="Select date"
                         className="pr-10"
                       />
-                      <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
                 </div>
@@ -859,7 +859,7 @@ const VolunteerProfile = () => {
                         placeholder="07:30 AM"
                         className="pr-10"
                       />
-                      <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -871,7 +871,7 @@ const VolunteerProfile = () => {
                         placeholder="11:30 AM"
                         className="pr-10"
                       />
-                      <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -897,7 +897,7 @@ const VolunteerProfile = () => {
                         className="pr-10"
                         readOnly
                       />
-                      <Sigma className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Sigma className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
                 </div>

@@ -143,7 +143,7 @@ const RequisitionDetailView = () => {
         <div className="flex items-center space-x-2">
           <Button
             variant="ghost"
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
             onClick={() => navigate('/dashboard/hr/recruitment-onboarding')}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -156,10 +156,10 @@ const RequisitionDetailView = () => {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center space-x-3 mb-2">
-            <h1 className="text-2xl font-bold text-gray-900">Software Engineer II</h1>
+            <h1 className="text-2xl font-bold text-foreground">Software Engineer II</h1>
             <Badge className="bg-red-100 text-red-800">High</Badge>
           </div>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             View detailed information about this requisition and its progress through the hiring pipeline.
           </p>
         </CardContent>
@@ -185,23 +185,23 @@ const RequisitionDetailView = () => {
                   onClick={() => setCurrentStageName(stage.name)}
                 >
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
-                    isActive ? 'bg-purple-600' : 'bg-gray-300'
+                    isActive ? 'bg-purple-600' : 'bg-muted'
                   }`}>
-                    <IconComponent className={`h-6 w-6 ${isActive ? 'text-white' : 'text-gray-600'}`} />
+                    <IconComponent className={`h-6 w-6 ${isActive ? 'text-white' : 'text-muted-foreground'}`} />
                   </div>
                   <div className="mt-2 text-center">
-                    <div className={`font-medium ${isActive ? 'text-gray-900' : 'text-gray-600'}`}>
+                    <div className={`font-medium ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
                       {stage.name}
                     </div>
                     {isCurrent && (
-                      <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full mt-1">Current</div>
+                      <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full mt-1">Current</div>
                     )}
                   </div>
                 </div>
               );
             })}
             {/* Connecting line - positioned between circles */}
-            <div className="absolute top-6 left-6 right-6 h-0.5 bg-gray-300 z-0"></div>
+            <div className="absolute top-6 left-6 right-6 h-0.5 bg-muted z-0"></div>
           </div>
         </CardContent>
       </Card>
@@ -210,16 +210,16 @@ const RequisitionDetailView = () => {
       <Card>
         <Collapsible open={requisitionOverviewOpen} onOpenChange={setRequisitionOverviewOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <CardHeader className="cursor-pointer hover:bg-muted/50">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center">
                   <ArrowUp className="h-4 w-4 mr-2" />
                   Requisition overview
                 </CardTitle>
                 {requisitionOverviewOpen ? (
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
             </CardHeader>
@@ -228,38 +228,38 @@ const RequisitionDetailView = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-3">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="text-sm text-gray-500">Manager</div>
-                    <div className="font-medium text-gray-900">Mary Ann</div>
+                    <div className="text-sm text-muted-foreground">Manager</div>
+                    <div className="font-medium text-foreground">Mary Ann</div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <DollarSign className="h-5 w-5 text-gray-400" />
+                  <DollarSign className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="text-sm text-gray-500">Salary</div>
-                    <div className="font-medium text-gray-900">$120,000 - $160,000</div>
+                    <div className="text-sm text-muted-foreground">Salary</div>
+                    <div className="font-medium text-foreground">$120,000 - $160,000</div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <MapPin className="h-5 w-5 text-gray-400" />
+                  <MapPin className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="text-sm text-gray-500">Location</div>
-                    <div className="font-medium text-gray-900">San Francisco, CA</div>
+                    <div className="text-sm text-muted-foreground">Location</div>
+                    <div className="font-medium text-foreground">San Francisco, CA</div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <ExternalLink className="h-5 w-5 text-gray-400" />
+                  <ExternalLink className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="text-sm text-gray-500">Source</div>
-                    <div className="font-medium text-gray-900">LinkedIn</div>
+                    <div className="text-sm text-muted-foreground">Source</div>
+                    <div className="font-medium text-foreground">LinkedIn</div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Building className="h-5 w-5 text-gray-400" />
+                  <Building className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="text-sm text-gray-500">Department</div>
-                    <div className="font-medium text-gray-900">Engineering</div>
+                    <div className="text-sm text-muted-foreground">Department</div>
+                    <div className="font-medium text-foreground">Engineering</div>
                   </div>
                 </div>
               </div>
@@ -272,16 +272,16 @@ const RequisitionDetailView = () => {
       <Card>
         <Collapsible open={candidatesOpen} onOpenChange={setCandidatesOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <CardHeader className="cursor-pointer hover:bg-muted/50">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center">
                   <ArrowUp className="h-4 w-4 mr-2" />
                   Candidate ({candidates.length})
                 </CardTitle>
                 {candidatesOpen ? (
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
             </CardHeader>
@@ -290,28 +290,28 @@ const RequisitionDetailView = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {candidates.map((candidate) => (
-                  <div key={candidate.id} className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  <div key={candidate.id} className="p-4 bg-card rounded-lg border border-border shadow-sm">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-sm font-medium text-gray-700">
+                        <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-sm font-medium text-muted-foreground">
                           {candidate.initials}
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900">{candidate.name}</div>
-                          <div className="flex items-center space-x-1 text-sm text-gray-500">
+                          <div className="font-medium text-foreground">{candidate.name}</div>
+                          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                             <Mail className="h-3 w-3" />
                             <span>{candidate.email}</span>
                           </div>
-                          <div className="text-sm text-gray-500">{candidate.source}</div>
+                          <div className="text-sm text-muted-foreground">{candidate.source}</div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <Badge className="bg-gray-100 text-gray-700 text-xs">{candidate.status}</Badge>
-                        <div className="flex items-center space-x-1 text-sm text-gray-500 mt-1">
+                        <Badge className="bg-muted text-muted-foreground text-xs">{candidate.status}</Badge>
+                        <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1">
                           <Phone className="h-3 w-3" />
                           <span>{candidate.phone}</span>
                         </div>
-                        <div className="text-sm text-gray-500 mt-1">{candidate.status} {candidate.date}</div>
+                        <div className="text-sm text-muted-foreground mt-1">{candidate.status} {candidate.date}</div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -340,16 +340,16 @@ const RequisitionDetailView = () => {
       <Card>
         <Collapsible open={interviewProgressOpen} onOpenChange={setInterviewProgressOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <CardHeader className="cursor-pointer hover:bg-muted/50">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center">
                   <ArrowUp className="h-4 w-4 mr-2" />
                   Interview progress
                 </CardTitle>
                 {interviewProgressOpen ? (
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
             </CardHeader>
@@ -357,13 +357,13 @@ const RequisitionDetailView = () => {
           <CollapsibleContent>
             <CardContent className="space-y-4">
               <div>
-                <div className="text-sm text-gray-500 mb-2">Phone screen</div>
+                <div className="text-sm text-muted-foreground mb-2">Phone screen</div>
                 <div className="space-y-3">
                   {interviewSchedules.map((interview, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <div className="font-medium text-gray-900">{interview.name}</div>
-                        <div className="text-sm text-gray-600">{interview.date} • {interview.time}</div>
+                        <div className="font-medium text-foreground">{interview.name}</div>
+                        <div className="text-sm text-muted-foreground">{interview.date} • {interview.time}</div>
                       </div>
                       <Badge className="bg-green-100 text-green-800">{interview.status}</Badge>
                     </div>
@@ -379,16 +379,16 @@ const RequisitionDetailView = () => {
       <Card>
         <Collapsible open={activityTimelineOpen} onOpenChange={setActivityTimelineOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <CardHeader className="cursor-pointer hover:bg-muted/50">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center">
                   <ArrowUp className="h-4 w-4 mr-2" />
                   Activity timeline
                 </CardTitle>
                 {activityTimelineOpen ? (
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
             </CardHeader>
@@ -399,9 +399,9 @@ const RequisitionDetailView = () => {
                 <div key={index} className="flex items-start space-x-4">
                   <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900">{activity.title}</div>
-                    <div className="text-sm text-gray-600">{activity.description}</div>
-                    <div className="text-sm text-gray-500 mt-1">
+                    <div className="font-medium text-foreground">{activity.title}</div>
+                    <div className="text-sm text-muted-foreground">{activity.description}</div>
+                    <div className="text-sm text-muted-foreground mt-1">
                       {activity.date} • By {activity.by}
                     </div>
                   </div>
@@ -416,23 +416,23 @@ const RequisitionDetailView = () => {
       <Card>
         <Collapsible open={nextStepOpen} onOpenChange={setNextStepOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <CardHeader className="cursor-pointer hover:bg-muted/50">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold flex items-center">
                   <ArrowUp className="h-4 w-4 mr-2" />
                   Next step
                 </CardTitle>
                 {nextStepOpen ? (
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
             </CardHeader>
           </CollapsibleTrigger>
           <CollapsibleContent>
             <CardContent>
-              <div className="text-gray-700">
+              <div className="text-muted-foreground">
                 Phone screen with candidate tomorrow.
               </div>
             </CardContent>

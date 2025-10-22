@@ -378,7 +378,7 @@ const PeopleManagement = () => {
       case 'Incoming':
         return <Badge className="bg-blue-100 text-blue-800">Incoming</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
+        return <Badge className="bg-muted text-muted-foreground">{status}</Badge>;
     }
   };
 
@@ -391,15 +391,15 @@ const PeopleManagement = () => {
       case 'Overdue':
         return <Badge className="bg-yellow-100 text-yellow-800">Overdue</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800">{compliance}</Badge>;
+        return <Badge className="bg-muted text-muted-foreground">{compliance}</Badge>;
     }
   };
 
   const getIndependenceIcon = (independence: string) => {
     if (independence === 'Independent') {
-      return <Diamond className="h-4 w-4 text-gray-600" />;
+      return <Diamond className="h-4 w-4 text-muted-foreground" />;
     } else {
-      return <Users className="h-4 w-4 text-gray-600" />;
+      return <Users className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -423,12 +423,12 @@ const PeopleManagement = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">People management</h1>
+        <h1 className="text-2xl font-bold text-foreground">People management</h1>
       </div>
 
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-100">
+        <TabsList className="grid w-full grid-cols-3 bg-muted">
           <TabsTrigger 
             value="staff-directory" 
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
@@ -460,9 +460,9 @@ const PeopleManagement = () => {
                     <input
                       type="text"
                       placeholder="Search..."
-                      className="w-64 px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                      className="w-64 px-4 py-2 pl-10 pr-4 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                     />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
                   <Button variant="outline" className="flex items-center space-x-2">
                     <Filter className="h-4 w-4" />
@@ -484,36 +484,36 @@ const PeopleManagement = () => {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-200">
+                    <tr className="border-b border-border">
                       <th className="text-left py-3 px-4">
                         <Checkbox
                           checked={selectAll}
                           onCheckedChange={handleSelectAll}
                         />
                       </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Name</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Job title</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Department</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Location</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Manager</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Name</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Job title</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Department</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Location</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Manager</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {staffData.map((staff) => (
-                      <tr key={staff.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <tr key={staff.id} className="border-b border-border hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <Checkbox
                             checked={selectedRows.includes(staff.id)}
                             onCheckedChange={(checked) => handleSelectRow(staff.id, checked as boolean)}
                           />
                         </td>
-                        <td className="py-3 px-4 font-medium text-gray-900">{staff.name}</td>
-                        <td className="py-3 px-4 text-gray-600">{staff.jobTitle}</td>
-                        <td className="py-3 px-4 text-gray-600">{staff.department}</td>
-                        <td className="py-3 px-4 text-gray-600">{staff.location}</td>
-                        <td className="py-3 px-4 text-gray-600">{staff.manager}</td>
+                        <td className="py-3 px-4 font-medium text-foreground">{staff.name}</td>
+                        <td className="py-3 px-4 text-muted-foreground">{staff.jobTitle}</td>
+                        <td className="py-3 px-4 text-muted-foreground">{staff.department}</td>
+                        <td className="py-3 px-4 text-muted-foreground">{staff.location}</td>
+                        <td className="py-3 px-4 text-muted-foreground">{staff.manager}</td>
                         <td className="py-3 px-4">
                           {getStatusBadge(staff.status)}
                         </td>
@@ -536,7 +536,7 @@ const PeopleManagement = () => {
 
               {/* Pagination */}
               <div className="flex items-center justify-between mt-6">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   Showing 1 to 8 of 120 staff directory lists
                 </div>
                 <div className="flex items-center space-x-2">
@@ -565,9 +565,9 @@ const PeopleManagement = () => {
                     <input
                       type="text"
                       placeholder="Search...."
-                      className="w-64 px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                      className="w-64 px-4 py-2 pl-10 pr-4 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                     />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
                   <Button variant="outline" className="flex items-center space-x-2">
                     <Filter className="h-4 w-4" />
@@ -589,35 +589,35 @@ const PeopleManagement = () => {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-200">
+                    <tr className="border-b border-border">
                       <th className="text-left py-3 px-4">
                         <Checkbox
                           checked={selectAll}
                           onCheckedChange={handleSelectAll}
                         />
                       </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Name</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Skills</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Availability</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Assignments</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Name</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Skills</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Availability</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Assignments</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {volunteerData.map((volunteer) => (
-                      <tr key={volunteer.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <tr key={volunteer.id} className="border-b border-border hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <Checkbox
                             checked={selectedRows.includes(volunteer.id)}
                             onCheckedChange={(checked) => handleSelectRow(volunteer.id, checked as boolean)}
                           />
                         </td>
-                        <td className="py-3 px-4 font-medium text-gray-900">{volunteer.name}</td>
+                        <td className="py-3 px-4 font-medium text-foreground">{volunteer.name}</td>
                         <td className="py-3 px-4">
                           <div className="flex flex-wrap gap-1">
                             {volunteer.skills.map((skill, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                              <Badge key={index} variant="secondary" className="text-xs bg-muted text-muted-foreground">
                                 {skill}
                               </Badge>
                             ))}
@@ -626,13 +626,13 @@ const PeopleManagement = () => {
                         <td className="py-3 px-4">
                           <div className="flex flex-wrap gap-1">
                             {volunteer.availability.map((availability, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                              <Badge key={index} variant="secondary" className="text-xs bg-muted text-muted-foreground">
                                 {availability}
                               </Badge>
                             ))}
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-gray-600">{volunteer.assignments}</td>
+                        <td className="py-3 px-4 text-muted-foreground">{volunteer.assignments}</td>
                         <td className="py-3 px-4">
                           {getStatusBadge(volunteer.status)}
                         </td>
@@ -655,7 +655,7 @@ const PeopleManagement = () => {
 
               {/* Pagination */}
               <div className="flex items-center justify-between mt-6">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   Showing 1 to 8 of 120 volunteer management lists
                 </div>
                 <div className="flex items-center space-x-2">
@@ -684,9 +684,9 @@ const PeopleManagement = () => {
                     <input
                       type="text"
                       placeholder="Search...."
-                      className="w-64 px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                      className="w-64 px-4 py-2 pl-10 pr-4 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                     />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button 
@@ -731,26 +731,26 @@ const PeopleManagement = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-gray-200">
+                      <tr className="border-b border-border">
                         <th className="text-left py-3 px-4">
                           <Checkbox
                             checked={selectAll}
                             onCheckedChange={handleSelectAll}
                           />
                         </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Member</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Role</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Independence</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Tenure</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Attendance</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Compliance</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Member</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Role</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Independence</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Tenure</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Attendance</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Compliance</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {boardData.map((member) => (
-                        <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50">
+                        <tr key={member.id} className="border-b border-border hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <Checkbox
                               checked={selectedRows.includes(member.id)}
@@ -759,19 +759,19 @@ const PeopleManagement = () => {
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="font-medium text-gray-900">{member.name}</div>
-                              <div className="text-sm text-gray-500">{member.email}</div>
+                              <div className="font-medium text-foreground">{member.name}</div>
+                              <div className="text-sm text-muted-foreground">{member.email}</div>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-gray-600">{member.role}</td>
+                          <td className="py-3 px-4 text-muted-foreground">{member.role}</td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-2">
                               {getIndependenceIcon(member.independence)}
-                              <span className="text-sm text-gray-600">{member.independence}</span>
+                              <span className="text-sm text-muted-foreground">{member.independence}</span>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-gray-600">{member.tenure}</td>
-                          <td className="py-3 px-4 text-gray-600">{member.attendance}</td>
+                          <td className="py-3 px-4 text-muted-foreground">{member.tenure}</td>
+                          <td className="py-3 px-4 text-muted-foreground">{member.attendance}</td>
                           <td className="py-3 px-4">
                             {getComplianceBadge(member.compliance)}
                           </td>
@@ -800,64 +800,64 @@ const PeopleManagement = () => {
               {viewMode === 'grid' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {boardData.map((member) => (
-                    <div key={member.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={member.id} className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
                       <div className="space-y-4">
                         {/* Name */}
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">Name</span>
-                          <span className="text-sm font-medium text-gray-900">{member.name}</span>
+                          <span className="text-sm font-medium text-muted-foreground">Name</span>
+                          <span className="text-sm font-medium text-foreground">{member.name}</span>
                         </div>
 
                         {/* Email */}
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">Email</span>
-                          <span className="text-sm text-gray-600">{member.email}</span>
+                          <span className="text-sm font-medium text-muted-foreground">Email</span>
+                          <span className="text-sm text-muted-foreground">{member.email}</span>
                         </div>
 
                         {/* Independence */}
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">Independence</span>
+                          <span className="text-sm font-medium text-muted-foreground">Independence</span>
                           <div className="flex items-center space-x-2">
                             {getIndependenceIcon(member.independence)}
-                            <span className="text-sm text-gray-600">{member.independence}</span>
+                            <span className="text-sm text-muted-foreground">{member.independence}</span>
                           </div>
                         </div>
 
                         {/* Tenure */}
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">Tenure</span>
-                          <span className="text-sm text-gray-600">{member.tenure}</span>
+                          <span className="text-sm font-medium text-muted-foreground">Tenure</span>
+                          <span className="text-sm text-muted-foreground">{member.tenure}</span>
                         </div>
 
                         {/* Attendance */}
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">Attendance</span>
+                          <span className="text-sm font-medium text-muted-foreground">Attendance</span>
                           <div className="flex items-center space-x-2">
-                            <div className="w-16 bg-gray-200 rounded-full h-2">
+                            <div className="w-16 bg-muted rounded-full h-2">
                               <div 
                                 className="bg-violet-600 h-2 rounded-full" 
                                 style={{ width: `${getAttendancePercentage(member.attendance)}%` }}
                               ></div>
                             </div>
-                            <span className="text-sm text-gray-600">{member.attendance}</span>
+                            <span className="text-sm text-muted-foreground">{member.attendance}</span>
                           </div>
                         </div>
 
                         {/* Status */}
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">Status</span>
+                          <span className="text-sm font-medium text-muted-foreground">Status</span>
                           {getBoardStatusBadge(member.status)}
                         </div>
 
                         {/* Compliance */}
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">Compliance</span>
+                          <span className="text-sm font-medium text-muted-foreground">Compliance</span>
                           {getComplianceBadge(member.compliance)}
                         </div>
 
                         {/* Action */}
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">Action</span>
+                          <span className="text-sm font-medium text-muted-foreground">Action</span>
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -884,20 +884,20 @@ const PeopleManagement = () => {
                         onOpenChange={() => toggleCommittee(committee.id)}
                       >
                         <CollapsibleTrigger asChild>
-                          <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+                          <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
                                 <CardTitle className="text-lg font-semibold">
                                   {committee.name}
                                 </CardTitle>
-                                <span className="text-sm text-gray-500">
+                                <span className="text-sm text-muted-foreground">
                                   {committee.memberCount} members
                                 </span>
                               </div>
                               {expandedCommittees.has(committee.id) ? (
-                                <ChevronUp className="h-5 w-5 text-gray-500" />
+                                <ChevronUp className="h-5 w-5 text-muted-foreground" />
                               ) : (
-                                <ChevronDown className="h-5 w-5 text-gray-500" />
+                                <ChevronDown className="h-5 w-5 text-muted-foreground" />
                               )}
                             </div>
                           </CardHeader>
@@ -907,7 +907,7 @@ const PeopleManagement = () => {
                             {committee.members.length > 0 ? (
                               <div className="space-y-4">
                                 {committee.members.map((member) => (
-                                  <div key={member.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                                  <div key={member.id} className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
                                     {/* Member Avatar */}
                                     <div className="w-12 h-12 bg-violet-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                                       {member.initials}
@@ -916,14 +916,14 @@ const PeopleManagement = () => {
                                     {/* Member Details */}
                                     <div className="flex-1 space-y-1">
                                       <div className="flex items-center space-x-4">
-                                        <span className="font-medium text-gray-900">{member.name}</span>
-                                        <span className="text-sm text-gray-600">{member.role}</span>
+                                        <span className="font-medium text-foreground">{member.name}</span>
+                                        <span className="text-sm text-muted-foreground">{member.role}</span>
                                         <div className="flex items-center space-x-1">
                                           {getIndependenceIcon(member.independence)}
-                                          <span className="text-sm text-gray-600">{member.independence}</span>
+                                          <span className="text-sm text-muted-foreground">{member.independence}</span>
                                         </div>
                                       </div>
-                                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                                         <span>Also serves on: {member.alsoServesOn}</span>
                                         <span>Tenure: {member.tenure}</span>
                                         <span>Attendance: {member.attendance}</span>
@@ -947,7 +947,7 @@ const PeopleManagement = () => {
                                 ))}
                               </div>
                             ) : (
-                              <div className="text-center py-8 text-gray-500">
+                              <div className="text-center py-8 text-muted-foreground">
                                 No members assigned to this committee
                               </div>
                             )}
@@ -961,7 +961,7 @@ const PeopleManagement = () => {
 
               {/* Pagination */}
               <div className="flex items-center justify-between mt-6">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   Showing 1 to 8 of 120 board management lists
                 </div>
                 <div className="flex items-center space-x-2">

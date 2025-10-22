@@ -442,7 +442,7 @@ const PerformanceManagement = () => {
         <>
       {/* Header */}
           <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Performance management</h1>
+        <h1 className="text-3xl font-bold text-foreground">Performance management</h1>
             <Button 
               onClick={() => {
                 console.log('Test button clicked');
@@ -456,7 +456,7 @@ const PerformanceManagement = () => {
 
       {/* Tab Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
+        <TabsList className="grid w-full grid-cols-4 bg-muted">
           <TabsTrigger value="kpi-objectives">KPI & Objectives</TabsTrigger>
           <TabsTrigger value="appraisal-reviews">Appraisal & Reviews</TabsTrigger>
           <TabsTrigger value="feedback-history">Feedback History</TabsTrigger>
@@ -475,8 +475,8 @@ const PerformanceManagement = () => {
                     <div className={`w-8 h-8 mx-auto mb-2 ${item.color}`}>
                       <IconComponent className="w-full h-full" />
                     </div>
-                    <div className="text-2xl font-bold text-gray-900 mb-1">{item.number}</div>
-                    <div className="text-sm text-gray-600">{item.label}</div>
+                    <div className="text-2xl font-bold text-foreground mb-1">{item.number}</div>
+                    <div className="text-sm text-muted-foreground">{item.label}</div>
                   </CardContent>
                 </Card>
               );
@@ -490,11 +490,11 @@ const PerformanceManagement = () => {
                 <CardTitle className="text-lg font-semibold">KPIs & Objectives</CardTitle>
                 <div className="flex items-center space-x-2">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type="text"
                       placeholder="Search..."
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   </div>
                   <Button variant="outline" size="sm">
@@ -520,7 +520,7 @@ const PerformanceManagement = () => {
                         {/* Goal Header */}
                         <div className="flex items-start justify-between">
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-900">{goal.title}</h3>
+                            <h3 className="text-lg font-semibold text-foreground">{goal.title}</h3>
                             <Badge variant="outline" className="mt-1">
                               {goal.type}
                             </Badge>
@@ -531,35 +531,35 @@ const PerformanceManagement = () => {
                         </div>
 
                         {/* Description */}
-                        <p className="text-gray-600 text-sm">{goal.description}</p>
+                        <p className="text-muted-foreground text-sm">{goal.description}</p>
 
                         {/* Goal Details */}
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Company OKR:</span>
-                            <span className="text-gray-900">{goal.companyOkr}</span>
+                            <span className="text-muted-foreground">Company OKR:</span>
+                            <span className="text-foreground">{goal.companyOkr}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Owner:</span>
-                            <span className="text-gray-900">{goal.owner}</span>
+                            <span className="text-muted-foreground">Owner:</span>
+                            <span className="text-foreground">{goal.owner}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Weight:</span>
-                            <span className="text-gray-900">{goal.weight}</span>
+                            <span className="text-muted-foreground">Weight:</span>
+                            <span className="text-foreground">{goal.weight}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-500">Next check-in:</span>
-                            <span className="text-gray-900">{goal.nextCheckIn}</span>
+                            <span className="text-muted-foreground">Next check-in:</span>
+                            <span className="text-foreground">{goal.nextCheckIn}</span>
                           </div>
                         </div>
 
                         {/* Progress Bar */}
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Progress</span>
-                            <span className="text-gray-900">{goal.progress}%</span>
+                            <span className="text-muted-foreground">Progress</span>
+                            <span className="text-foreground">{goal.progress}%</span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div
                               className="bg-purple-600 h-2 rounded-full"
                               style={{ width: `${goal.progress}%` }}
@@ -606,7 +606,7 @@ const PerformanceManagement = () => {
                           <IconComponent className="w-full h-full" />
                         </div>
                         <div className={`text-2xl font-bold mb-1 ${item.color}`}>{item.number}</div>
-                        <div className="text-sm text-gray-600">{item.label}</div>
+                        <div className="text-sm text-muted-foreground">{item.label}</div>
                       </CardContent>
                     </Card>
                   );
@@ -620,11 +620,11 @@ const PerformanceManagement = () => {
                     <CardTitle className="text-lg font-semibold">Calibration management</CardTitle>
                     <div className="flex items-center space-x-2">
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <input
                           type="text"
                           placeholder="Search..."
-                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
                       </div>
                       <Button variant="outline" size="sm">
@@ -649,13 +649,13 @@ const PerformanceManagement = () => {
                   <div className="flex space-x-6 border-b border-gray-200 mb-6">
                     <button
                       onClick={() => setCalibrationSubtab('distribution')}
-                      className={`pb-2 font-medium ${calibrationSubtab === 'distribution' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
+                      className={`pb-2 font-medium ${calibrationSubtab === 'distribution' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       Distribution
                     </button>
                     <button
                       onClick={() => setCalibrationSubtab('ninebox')}
-                      className={`pb-2 font-medium ${calibrationSubtab === 'ninebox' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
+                      className={`pb-2 font-medium ${calibrationSubtab === 'ninebox' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       Nine Box
                     </button>
@@ -666,7 +666,7 @@ const PerformanceManagement = () => {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column - Rating Distribution Chart */}
                     <div className="space-y-4">
-                      <h4 className="font-medium text-gray-900">Rating Distribution</h4>
+                      <h4 className="font-medium text-foreground">Rating Distribution</h4>
                       <div className="w-full h-64">
                         <ResponsiveContainer width="100%" height="100%">
                           <ReBarChart data={distributionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -688,7 +688,7 @@ const PerformanceManagement = () => {
                         {distributionData.map((item, index) => (
                           <div key={index} className="flex items-center space-x-2 text-sm">
                             <div className={`w-3 h-3 rounded ${item.color}`}></div>
-                            <span className="text-gray-600">{item.range}: {item.count} employees ({item.percentage}%)</span>
+                            <span className="text-muted-foreground">{item.range}: {item.count} employees ({item.percentage}%)</span>
                           </div>
                         ))}
                       </div>
@@ -698,10 +698,10 @@ const PerformanceManagement = () => {
                     <div className="space-y-6">
                       {/* Distribution Guidelines (Card + Bars) */}
                       <div className="space-y-4">
-                        <h4 className="font-medium text-gray-900">Distribution Guidelines</h4>
-                        <div className="border rounded-lg p-3 bg-gray-50 border-gray-200 flex items-start space-x-2">
+                        <h4 className="font-medium text-foreground">Distribution Guidelines</h4>
+                        <div className="border rounded-lg p-3 bg-muted/50 border-gray-200 flex items-start space-x-2">
                           <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
-                          <span className="text-sm text-gray-700">
+                          <span className="text-sm text-muted-foreground">
                             Target distribution: 5% Outstanding, 20% Exceeds, 60% Meets, 15% Needs Improvement.
                           </span>
                         </div>
@@ -733,11 +733,11 @@ const PerformanceManagement = () => {
                         <div className="space-y-2">
                           {distributionGuidelines.map((item, index) => (
                             <div key={index} className="flex items-center justify-between py-2">
-                              <span className="text-sm text-gray-700">{item.category}</span>
+                              <span className="text-sm text-muted-foreground">{item.category}</span>
                               <div className="flex items-center space-x-4">
-                                <span className="text-sm text-gray-600">Target: {item.target}</span>
+                                <span className="text-sm text-muted-foreground">Target: {item.target}</span>
                                 <span className={`text-sm font-medium px-2 py-1 rounded border ${
-                                  item.isDeviation ? 'bg-red-100 text-red-800 border-red-200' : 'bg-gray-100 text-gray-900 border-gray-200'
+                                  item.isDeviation ? 'bg-red-100 text-red-800 border-red-200' : 'bg-muted text-foreground border-gray-200'
                                 }`}>
                                   Actual: {item.actual}
                                 </span>
@@ -749,7 +749,7 @@ const PerformanceManagement = () => {
 
                       {/* Moderation Notes */}
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-gray-900">Moderation Notes</Label>
+                        <Label className="text-sm font-medium text-foreground">Moderation Notes</Label>
                         <Textarea
                           placeholder="Add notes about distribution decisions..."
                           className="min-h-[120px] focus:ring-purple-500 focus:border-purple-500 resize-none"
@@ -761,31 +761,31 @@ const PerformanceManagement = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       {/* Nine Box Grid */}
                       <div className="lg:col-span-2">
-                        <div className="mb-4 text-sm font-medium text-gray-900">Nine Box Grid</div>
+                        <div className="mb-4 text-sm font-medium text-foreground">Nine Box Grid</div>
                         <div className="grid grid-cols-3 gap-4">
                           {/* Row 1 - High Performance */}
                           <div className="space-y-2">
-                            <div className="text-sm text-gray-600 mb-1">High Potential</div>
+                            <div className="text-sm text-muted-foreground mb-1">High Potential</div>
                             <div className="rounded-lg border border-green-200 bg-green-50 p-3 min-h-[88px]">
-                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700">Sarah Chen</div>
-                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700 ml-2">Lisa Rodriguez</div>
+                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Sarah Chen</div>
+                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground ml-2">Lisa Rodriguez</div>
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <div className="text-sm text-gray-600 mb-1">Medium Potential</div>
+                            <div className="text-sm text-muted-foreground mb-1">Medium Potential</div>
                             <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 min-h-[88px]">
-                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700">Ryan Cole</div>
+                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Ryan Cole</div>
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <div className="text-sm text-gray-600 mb-1">Low Potential</div>
+                            <div className="text-sm text-muted-foreground mb-1">Low Potential</div>
                             <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]"></div>
                           </div>
 
                           {/* Row headers at left */}
                           <div className="col-span-3 grid grid-cols-3 gap-4">
                             <div>
-                              <div className="text-sm text-gray-600 mb-1">High Performance</div>
+                              <div className="text-sm text-muted-foreground mb-1">High Performance</div>
                             </div>
                             <div></div>
                             <div></div>
@@ -793,27 +793,27 @@ const PerformanceManagement = () => {
 
                           {/* Row 2 - Medium Performance */}
                           <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700">Marcus Thompson</div>
+                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Marcus Thompson</div>
                           </div>
                           <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700">Jane Doe</div>
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700 ml-2">Mike Wilson</div>
+                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Jane Doe</div>
+                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground ml-2">Mike Wilson</div>
                           </div>
                           <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700">Tom Brown</div>
+                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Tom Brown</div>
                           </div>
 
                           {/* Row 3 - Low Performance */}
                           <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]"></div>
                           <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700">Anna Davis</div>
+                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Anna Davis</div>
                           </div>
                           <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-white text-gray-700">John Smith</div>
+                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">John Smith</div>
                           </div>
                         </div>
 
-                        <div className="mt-4 flex items-start space-x-2 text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-md p-3">
+                        <div className="mt-4 flex items-start space-x-2 text-sm text-muted-foreground bg-muted/50 border border-gray-200 rounded-md p-3">
                           <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
                           <span>Drag employees between boxes to adjust their performance/potential ratings. Changes will be reflected in their review scores.</span>
                         </div>
@@ -830,30 +830,30 @@ const PerformanceManagement = () => {
                             <div className="flex items-center justify-between">
                               <div>
                                 <div>High Performance +</div>
-                                <div className="text-gray-600">High Potential</div>
+                                <div className="text-muted-foreground">High Potential</div>
                               </div>
-                              <div className="px-2 py-1 rounded bg-gray-100 text-gray-900 text-xs font-medium">4.8</div>
+                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">4.8</div>
                             </div>
                             <div className="flex items-center justify-between">
                               <div>
                                 <div>High Performance +</div>
-                                <div className="text-gray-600">Med Potential</div>
+                                <div className="text-muted-foreground">Med Potential</div>
                               </div>
-                              <div className="px-2 py-1 rounded bg-gray-100 text-gray-900 text-xs font-medium">4.5</div>
+                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">4.5</div>
                             </div>
                             <div className="flex items-center justify-between">
                               <div>
                                 <div>Med Performance +</div>
-                                <div className="text-gray-600">High Potential</div>
+                                <div className="text-muted-foreground">High Potential</div>
                               </div>
-                              <div className="px-2 py-1 rounded bg-gray-100 text-gray-900 text-xs font-medium">3.8</div>
+                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">3.8</div>
                             </div>
                             <div className="flex items-center justify-between">
                               <div>
                                 <div>Med Performance +</div>
-                                <div className="text-gray-600">Med Potential</div>
+                                <div className="text-muted-foreground">Med Potential</div>
                               </div>
-                              <div className="px-2 py-1 rounded bg-gray-100 text-gray-900 text-xs font-medium">3.1</div>
+                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">3.1</div>
                             </div>
                             <div className="flex items-center justify-between">
                               <div>Low Performance:</div>
@@ -871,20 +871,20 @@ const PerformanceManagement = () => {
                             <div className="flex items-start justify-between">
                               <div>
                                 <div className="font-medium">Anna Davis</div>
-                                <div className="text-gray-600">From: Low Performance / High Potential</div>
-                                <div className="text-gray-600">To: Low Performance / Medium Potential</div>
-                                <div className="text-gray-500">9/29/2025, 7:09:47 PM</div>
+                                <div className="text-muted-foreground">From: Low Performance / High Potential</div>
+                                <div className="text-muted-foreground">To: Low Performance / Medium Potential</div>
+                                <div className="text-muted-foreground">9/29/2025, 7:09:47 PM</div>
                               </div>
                               <div className="px-2 py-1 rounded bg-rose-100 text-rose-800 text-xs font-medium">-0.3</div>
                             </div>
                             <div className="flex items-start justify-between">
                               <div>
                                 <div className="font-medium">Anna Davis</div>
-                                <div className="text-gray-600">From: Low Performance / Medium Potential</div>
-                                <div className="text-gray-600">To: Low Performance / High Potential</div>
-                                <div className="text-gray-500">9/29/2025, 7:09:44 PM</div>
+                                <div className="text-muted-foreground">From: Low Performance / Medium Potential</div>
+                                <div className="text-muted-foreground">To: Low Performance / High Potential</div>
+                                <div className="text-muted-foreground">9/29/2025, 7:09:44 PM</div>
                               </div>
-                              <div className="px-2 py-1 rounded bg-gray-100 text-gray-900 text-xs font-medium">0.0</div>
+                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">0.0</div>
                             </div>
                           </CardContent>
                         </Card>
@@ -901,8 +901,8 @@ const PerformanceManagement = () => {
                               ['LH', 0], ['LM', 1], ['LL', 1]
                             ].map(([label, val], idx) => (
                               <div key={idx as number} className="flex items-center justify-between">
-                                <span className="text-gray-700">{label as string}</span>
-                                <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-900 text-xs">{val as number}</span>
+                                <span className="text-muted-foreground">{label as string}</span>
+                                <span className="px-2 py-0.5 rounded bg-muted text-foreground text-xs">{val as number}</span>
                               </div>
                             ))}
                           </CardContent>
@@ -927,7 +927,7 @@ const PerformanceManagement = () => {
                           <IconComponent className="w-full h-full" />
                         </div>
                         <div className={`text-2xl font-bold mb-1 ${item.color}`}>{item.number}</div>
-                        <div className="text-sm text-gray-600">{item.label}</div>
+                        <div className="text-sm text-muted-foreground">{item.label}</div>
                       </CardContent>
                     </Card>
                   );
@@ -941,11 +941,11 @@ const PerformanceManagement = () => {
                 <CardTitle className="text-lg font-semibold">Review overview</CardTitle>
                 <div className="flex items-center space-x-2">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type="text"
                       placeholder="Search..."
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   </div>
                   <Button variant="outline" size="sm">
@@ -966,40 +966,40 @@ const PerformanceManagement = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Employee</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Manager</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Due date</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Progress</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Rating</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Employee</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Manager</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Due date</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Progress</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Rating</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {reviews.map((review) => (
-                      <tr key={review.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <tr key={review.id} className="border-b border-gray-100 hover:bg-muted/50">
                         <td className="py-4 px-4">
                           <div>
-                            <div className="font-semibold text-gray-900">{review.employee.name}</div>
-                            <div className="text-sm text-gray-500">{review.employee.role}</div>
+                            <div className="font-semibold text-foreground">{review.employee.name}</div>
+                            <div className="text-sm text-muted-foreground">{review.employee.role}</div>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-gray-900">{review.manager}</td>
-                        <td className="py-4 px-4 text-gray-900">{review.dueDate}</td>
+                        <td className="py-4 px-4 text-foreground">{review.manager}</td>
+                        <td className="py-4 px-4 text-foreground">{review.dueDate}</td>
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-2">
-                            <div className="w-16 bg-gray-200 rounded-full h-2">
+                            <div className="w-16 bg-muted rounded-full h-2">
                               <div
                                 className="bg-purple-600 h-2 rounded-full"
                                 style={{ width: `${(review.progress.completed / review.progress.total) * 100}%` }}
                               />
                             </div>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-muted-foreground">
                               {review.progress.completed}/{review.progress.total}
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-gray-900">{review.rating}</td>
+                        <td className="py-4 px-4 text-foreground">{review.rating}</td>
                         <td className="py-4 px-4">
                           <Badge className={review.statusColor}>{review.status}</Badge>
                         </td>
@@ -1007,7 +1007,7 @@ const PerformanceManagement = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-400"
+                            className="bg-card border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground hover:border-border"
                             onClick={() => {
                               console.log('Appraisal view button clicked');
                               handleViewAppraisal();
@@ -1025,7 +1025,7 @@ const PerformanceManagement = () => {
               
               {/* Pagination */}
               <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   Showing 1 to 8 of 10 review overview
                 </div>
                 <div className="flex items-center space-x-2">
@@ -1048,14 +1048,14 @@ const PerformanceManagement = () => {
         <TabsContent value="feedback-history" className="space-y-6 mt-6">
           {/* Header row with title, search and actions */}
           <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold text-gray-900">Feedback history</div>
+            <div className="text-lg font-semibold text-foreground">Feedback history</div>
             <div className="flex items-center space-x-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
               <Button variant="outline" size="sm">
@@ -1071,29 +1071,29 @@ const PerformanceManagement = () => {
           {/* Feedback Feed */}
           <Card>
             <CardContent className="p-6">
-              <div className="text-sm font-medium text-gray-900 mb-4">Feedback Feed</div>
+              <div className="text-sm font-medium text-foreground mb-4">Feedback Feed</div>
               <div className="space-y-4">
                 {feedbackFeed.map((item) => (
                   <div key={item.id} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-700">
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
                           {item.authorInitials}
                         </div>
                         <div className={`text-xs font-medium px-2 py-1 rounded ${item.typeColor}`}>{item.type}</div>
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-foreground">
                           {item.author} → {item.to}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3 text-xs text-gray-500">
+                      <div className="flex items-center space-x-3 text-xs text-muted-foreground">
                         <span>{item.visibility}</span>
                         <span>{item.timestamp}</span>
                       </div>
                     </div>
-                    <p className="mt-3 text-gray-700 text-sm">{item.text}</p>
+                    <p className="mt-3 text-muted-foreground text-sm">{item.text}</p>
                     {item.linked && (
                       <div className="mt-3">
-                        <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 border border-gray-200">
+                        <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-gray-200">
                           Linked: {item.linked}
                         </span>
                       </div>
@@ -1108,14 +1108,14 @@ const PerformanceManagement = () => {
         <TabsContent value="succession-planning" className="space-y-6 mt-6">
           {/* Header Row */}
           <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold text-gray-900">Succession planning</div>
+            <div className="text-lg font-semibold text-foreground">Succession planning</div>
             <div className="flex items-center space-x-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
               <Button variant="outline" size="sm">
@@ -1127,15 +1127,15 @@ const PerformanceManagement = () => {
 
           {/* Subtabs */}
           <div className="flex items-center space-x-6 text-sm">
-            <button onClick={()=>setSuccessionSubtab('critical')} className={`pb-2 font-medium ${successionSubtab==='critical'?'border-b-2 border-purple-600 text-purple-600':'text-gray-600 hover:text-gray-900'}`}>Critical plan mapping</button>
-            <button onClick={()=>setSuccessionSubtab('development')} className={`pb-2 font-medium ${successionSubtab==='development'?'border-b-2 border-purple-600 text-purple-600':'text-gray-600 hover:text-gray-900'}`}>Successor development plans</button>
+            <button onClick={()=>setSuccessionSubtab('critical')} className={`pb-2 font-medium ${successionSubtab==='critical'?'border-b-2 border-purple-600 text-purple-600':'text-muted-foreground hover:text-foreground'}`}>Critical plan mapping</button>
+            <button onClick={()=>setSuccessionSubtab('development')} className={`pb-2 font-medium ${successionSubtab==='development'?'border-b-2 border-purple-600 text-purple-600':'text-muted-foreground hover:text-foreground'}`}>Successor development plans</button>
           </div>
 
           {/* Critical Roles Overview */}
           {successionSubtab==='critical' ? (
           <Card>
             <CardContent className="p-6">
-              <div className="text-sm font-medium text-gray-900 mb-4">Critical Roles Overview</div>
+              <div className="text-sm font-medium text-foreground mb-4">Critical Roles Overview</div>
               <div className="space-y-3">
                 {[
                   { role: 'Head of Operations', tags: ['High Risk','Critical','Diversity Slate Met'], incumbent: 'L. Mensah', dept: 'Operations', loc: 'New York', succ: '0 / 1 / 2', now: 'Now/12m/24m', coverage: 67 },
@@ -1148,14 +1148,14 @@ const PerformanceManagement = () => {
                   <div key={idx} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
                     <div className="space-y-2">
                       <div className="flex items-center space-x-3">
-                        <div className="font-semibold text-gray-900">{r.role}</div>
+                        <div className="font-semibold text-foreground">{r.role}</div>
                         <div className="flex flex-wrap gap-2">
                           {r.tags.map((t, i) => (
                             <span key={i} className={`text-xs px-2 py-1 rounded ${
                               t.includes('High Risk') ? 'bg-rose-100 text-rose-800' :
                               t.includes('Medium Risk') ? 'bg-amber-100 text-amber-800' :
                               t.includes('Low Risk') ? 'bg-emerald-100 text-emerald-800' :
-                              t.includes('Critical') ? 'bg-gray-100 text-gray-800' :
+                              t.includes('Critical') ? 'bg-muted text-muted-foreground' :
                               t.includes('Ready Now') ? 'bg-emerald-100 text-emerald-800' :
                               t.includes('High') ? 'bg-emerald-100 text-emerald-800' :
                               t.includes('Medium') ? 'bg-amber-100 text-amber-800' :
@@ -1164,7 +1164,7 @@ const PerformanceManagement = () => {
                           ))}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-6 text-sm text-gray-600">
+                      <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                         <span>Incumbent: {r.incumbent}</span>
                         <span>{r.dept}</span>
                         <span>{r.loc}</span>
@@ -1172,21 +1172,21 @@ const PerformanceManagement = () => {
                     </div>
 
                     <div className="flex items-center space-x-8">
-                      <div className="text-sm text-gray-600">
-                        <div className="font-medium text-gray-900">Successors</div>
+                      <div className="text-sm text-muted-foreground">
+                        <div className="font-medium text-foreground">Successors</div>
                         <div className="text-right">{r.succ}</div>
-                        <div className="text-right text-gray-500">{r.now}</div>
+                        <div className="text-right text-muted-foreground">{r.now}</div>
                       </div>
-                      <div className="text-sm text-gray-600 w-40">
-                        <div className="font-medium text-gray-900 flex items-center justify-between">
+                      <div className="text-sm text-muted-foreground w-40">
+                        <div className="font-medium text-foreground flex items-center justify-between">
                           <span>Coverage</span>
                           <span>{r.coverage}%</span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                          <div className="bg-gray-900 h-2 rounded-full" style={{ width: `${r.coverage}%` }} />
+                        <div className="w-full bg-muted rounded-full h-2 mt-1">
+                          <div className="bg-foreground h-2 rounded-full" style={{ width: `${r.coverage}%` }} />
                         </div>
                       </div>
-                      <Button variant="ghost" className="text-gray-700" onClick={() => setShowSuccessionDetail(true)}>Open ▸</Button>
+                      <Button variant="ghost" className="text-muted-foreground" onClick={() => setShowSuccessionDetail(true)}>Open ▸</Button>
                     </div>
                   </div>
                 ))}
@@ -1196,7 +1196,7 @@ const PerformanceManagement = () => {
           ) : (
           <Card>
             <CardContent className="p-6">
-              <div className="text-sm font-medium text-gray-900 mb-4">Development Plans Overview (5)</div>
+              <div className="text-sm font-medium text-foreground mb-4">Development Plans Overview (5)</div>
               <div className="space-y-3">
                 {[
                   { n: 'Alex Bello', role: 'Operations Manager', targetRole: 'Head of Operations', readiness: '≤12 months', progress: 60, overdue: 1, nextReview: '2025-07-15' },
@@ -1207,34 +1207,34 @@ const PerformanceManagement = () => {
                 ].map((d, i) => (
                   <div key={i} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-700">{d.n.split(' ').map(p=>p[0]).join('').slice(0,2)}</div>
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">{d.n.split(' ').map(p=>p[0]).join('').slice(0,2)}</div>
                       <div>
-                        <div className="font-medium text-gray-900">{d.n}</div>
-                        <div className="text-xs text-gray-600">{d.role} → {d.targetRole}</div>
+                        <div className="font-medium text-foreground">{d.n}</div>
+                        <div className="text-xs text-muted-foreground">{d.role} → {d.targetRole}</div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-8 text-sm">
                       <span className={`text-xs px-2 py-1 rounded ${d.readiness.includes('Ready') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{d.readiness}</span>
                       <div className="w-48">
-                        <div className="text-gray-500">Plan Progress</div>
+                        <div className="text-muted-foreground">Plan Progress</div>
                         <div className="flex items-center space-x-2">
-                          <div className="flex-1 bg-gray-200 rounded-full h-2">
-                            <div className="bg-gray-900 h-2 rounded-full" style={{ width: `${d.progress}%` }} />
+                          <div className="flex-1 bg-muted rounded-full h-2">
+                            <div className="bg-foreground h-2 rounded-full" style={{ width: `${d.progress}%` }} />
                           </div>
-                          <span className="text-gray-700 text-xs" style={{minWidth:28}}>{d.progress}%</span>
+                          <span className="text-muted-foreground text-xs" style={{minWidth:28}}>{d.progress}%</span>
                         </div>
                       </div>
                       <div className="w-24">
-                        <div className="text-gray-500">Overdue</div>
-                        <div className={`text-sm ${d.overdue>0?'text-rose-600':'text-gray-900'}`}>{d.overdue}</div>
+                        <div className="text-muted-foreground">Overdue</div>
+                        <div className={`text-sm ${d.overdue>0?'text-rose-600':'text-foreground'}`}>{d.overdue}</div>
                       </div>
                       <div className="w-40">
-                        <div className="text-gray-500">Next Review</div>
-                        <div className="text-sm text-gray-900">{d.nextReview}</div>
+                        <div className="text-muted-foreground">Next Review</div>
+                        <div className="text-sm text-foreground">{d.nextReview}</div>
                       </div>
                       <Button 
                         variant="ghost" 
-                        className="text-gray-700"
+                        className="text-muted-foreground"
                         onClick={() => handleViewPlan({ name: d.n, role: d.role, targetRole: d.targetRole })}
                       >
                         View Plan
@@ -1260,14 +1260,14 @@ const PerformanceManagement = () => {
           }}
         >
           {/* Blurred Background Overlay */}
-          <div className="fixed inset-0 backdrop-blur-md bg-white/30" />
+          <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
           
           {/* Modal Content */}
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 h-[540px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
+          <div className="relative bg-card rounded-lg shadow-xl w-full max-w-2xl mx-4 h-[540px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="p-6 border-b border-gray-200 flex-shrink-0">
-              <h2 className="text-2xl font-bold text-gray-900">Create new goal</h2>
-              <p className="text-gray-600 mt-1">
+              <h2 className="text-2xl font-bold text-foreground">Create new goal</h2>
+              <p className="text-muted-foreground mt-1">
                   Create a new goal with objectives, success criteria, and tracking details.
                 </p>
             </div>
@@ -1277,7 +1277,7 @@ const PerformanceManagement = () => {
               <form onSubmit={(e) => { e.preventDefault(); handleCreateGoal(); }} className="p-6 space-y-6">
               {/* Goal Title */}
               <div className="space-y-2">
-                <Label htmlFor="goal-title" className="text-sm font-semibold text-gray-900">
+                <Label htmlFor="goal-title" className="text-sm font-semibold text-foreground">
                   Goal title <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -1298,7 +1298,7 @@ const PerformanceManagement = () => {
 
               {/* Type */}
               <div className="space-y-2">
-                <Label htmlFor="goal-type" className="text-sm font-semibold text-gray-900">
+                <Label htmlFor="goal-type" className="text-sm font-semibold text-foreground">
                   Type <span className="text-red-500">*</span>
                 </Label>
                 <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
@@ -1316,7 +1316,7 @@ const PerformanceManagement = () => {
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="goal-description" className="text-sm font-semibold text-gray-900">
+                <Label htmlFor="goal-description" className="text-sm font-semibold text-foreground">
                   Description <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
@@ -1337,7 +1337,7 @@ const PerformanceManagement = () => {
               {/* Weight and Cycle */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="goal-weight" className="text-sm font-semibold text-gray-900">
+                  <Label htmlFor="goal-weight" className="text-sm font-semibold text-foreground">
                     Weight (%) <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -1358,7 +1358,7 @@ const PerformanceManagement = () => {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="goal-cycle" className="text-sm font-semibold text-gray-900">
+                  <Label htmlFor="goal-cycle" className="text-sm font-semibold text-foreground">
                     Cycle
                   </Label>
                   <Select value={formData.cycle} onValueChange={(value) => handleInputChange('cycle', value)}>
@@ -1377,7 +1377,7 @@ const PerformanceManagement = () => {
 
               {/* Next Check-in */}
               <div className="space-y-2">
-                <Label htmlFor="goal-checkin" className="text-sm font-semibold text-gray-900">
+                <Label htmlFor="goal-checkin" className="text-sm font-semibold text-foreground">
                   Next check-in
                 </Label>
                 <div className="relative">
@@ -1388,7 +1388,7 @@ const PerformanceManagement = () => {
                     onChange={(e) => handleInputChange('nextCheckIn', e.target.value)}
                     className="focus:ring-purple-500 focus:border-purple-500"
                   />
-                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 </div>
               </div>
             </form>
@@ -1400,7 +1400,7 @@ const PerformanceManagement = () => {
                 type="button"
                 variant="outline"
                 onClick={handleCancel}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-muted-foreground hover:text-foreground"
               >
                 Cancel
               </Button>
@@ -1425,17 +1425,17 @@ const PerformanceManagement = () => {
           }}
         >
           {/* Blurred Background Overlay */}
-          <div className="fixed inset-0 backdrop-blur-md bg-white/30" />
+          <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
 
           {/* Modal Content */}
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4 h-[560px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
+          <div className="relative bg-card rounded-lg shadow-xl w-full max-w-3xl mx-4 h-[560px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div>
-                <div className="text-lg font-semibold text-gray-900">Give feedback</div>
-                <p className="text-sm text-gray-600 mt-1">Provide feedback to colleagues including kudos, coaching, or 1:1 notes with appropriate visibility settings.</p>
+                <div className="text-lg font-semibold text-foreground">Give feedback</div>
+                <p className="text-sm text-muted-foreground mt-1">Provide feedback to colleagues including kudos, coaching, or 1:1 notes with appropriate visibility settings.</p>
               </div>
-              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600" onClick={() => setIsGiveFeedbackOpen(false)}>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" onClick={() => setIsGiveFeedbackOpen(false)}>
                 ✕
               </Button>
             </div>
@@ -1452,28 +1452,28 @@ const PerformanceManagement = () => {
                 {/* Type / To */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-900">Type</Label>
+                    <Label className="text-sm font-medium text-foreground">Type</Label>
                     <div className="relative">
                       <select
                         value={feedbackForm.type}
                         onChange={(e) => setFeedbackForm({ ...feedbackForm, type: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
+                        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
                       >
                         <option>Kudos</option>
                         <option>Coaching</option>
                         <option>1:1 Note</option>
                         <option>Recognition</option>
                       </select>
-                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">▾</div>
+                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">▾</div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-900">To</Label>
+                    <Label className="text-sm font-medium text-foreground">To</Label>
                     <input
                       type="text"
                       value={feedbackForm.to}
                       onChange={(e) => setFeedbackForm({ ...feedbackForm, to: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="Search name"
                     />
                   </div>
@@ -1481,7 +1481,7 @@ const PerformanceManagement = () => {
 
                 {/* Message */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900">Message</Label>
+                  <Label className="text-sm font-medium text-foreground">Message</Label>
                   <Textarea
                     value={feedbackForm.message}
                     onChange={(e) => setFeedbackForm({ ...feedbackForm, message: e.target.value })}
@@ -1493,28 +1493,28 @@ const PerformanceManagement = () => {
                 {/* Visibility & Link */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-900">Visibility</Label>
+                    <Label className="text-sm font-medium text-foreground">Visibility</Label>
                     <div className="relative">
                       <select
                         value={feedbackForm.visibility}
                         onChange={(e) => setFeedbackForm({ ...feedbackForm, visibility: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none bg-white"
+                        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
                       >
                         <option>Public (Visible to organization)</option>
                         <option>Manager+Employee</option>
                         <option>Manager Only</option>
                         <option>Private</option>
                       </select>
-                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">▾</div>
+                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">▾</div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-900">Link to goal (Optional)</Label>
+                    <Label className="text-sm font-medium text-foreground">Link to goal (Optional)</Label>
                     <input
                       type="text"
                       value={feedbackForm.linkToGoal}
                       onChange={(e) => setFeedbackForm({ ...feedbackForm, linkToGoal: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="Paste goal link or search"
                     />
                   </div>
@@ -1526,12 +1526,12 @@ const PerformanceManagement = () => {
                     checked={feedbackForm.anonymous}
                     onCheckedChange={(c) => setFeedbackForm({ ...feedbackForm, anonymous: !!c })}
                   />
-                  <span className="text-sm text-gray-700">Give feedback anonymously</span>
+                  <span className="text-sm text-muted-foreground">Give feedback anonymously</span>
                 </div>
 
                 {/* Footer */}
                 <div className="flex items-center justify-between">
-                  <Button type="button" variant="outline" onClick={() => setIsGiveFeedbackOpen(false)} className="text-gray-600 hover:text-gray-900">Cancel</Button>
+                  <Button type="button" variant="outline" onClick={() => setIsGiveFeedbackOpen(false)} className="text-muted-foreground hover:text-foreground">Cancel</Button>
                   <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">Send feedback</Button>
                 </div>
               </form>

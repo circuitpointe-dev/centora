@@ -242,7 +242,7 @@ const BoardMemberDetailView = () => {
       case 'Pending':
         return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
+        return <Badge className="bg-muted text-gray-800">{status}</Badge>;
     }
   };
 
@@ -265,7 +265,7 @@ const BoardMemberDetailView = () => {
       case 'Completed':
         return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
+        return <Badge className="bg-muted text-gray-800">{status}</Badge>;
     }
   };
 
@@ -283,7 +283,7 @@ const BoardMemberDetailView = () => {
       case 'Absent':
         return <XIcon className="h-4 w-4 text-red-600" />;
       default:
-        return <Minus className="h-4 w-4 text-gray-600" />;
+        return <Minus className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -296,7 +296,7 @@ const BoardMemberDetailView = () => {
       case 'Not met':
         return <Badge className="bg-red-100 text-red-800">ⓧ Not met</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
+        return <Badge className="bg-muted text-gray-800">{status}</Badge>;
     }
   };
 
@@ -307,7 +307,7 @@ const BoardMemberDetailView = () => {
         <div className="flex items-center space-x-2">
           <Button
             variant="ghost"
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground"
             onClick={() => navigate('/dashboard/hr/people-management')}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -319,7 +319,7 @@ const BoardMemberDetailView = () => {
         <div className="relative" ref={dropdownRef}>
           <Button
             variant="outline"
-            className="flex items-center space-x-2 bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="flex items-center space-x-2 bg-card border-gray-300 text-muted-foreground hover:bg-muted/50"
             onClick={() => setIsPeriodDropdownOpen(!isPeriodDropdownOpen)}
           >
             <span>{selectedPeriod}</span>
@@ -327,10 +327,10 @@ const BoardMemberDetailView = () => {
           </Button>
           
           {isPeriodDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-32 bg-card border border-gray-200 rounded-lg shadow-lg z-10">
               <div className="py-1">
                 <button
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-muted/50"
                   onClick={() => {
                     setSelectedPeriod('Yearly');
                     setIsPeriodDropdownOpen(false);
@@ -339,7 +339,7 @@ const BoardMemberDetailView = () => {
                   Yearly
                 </button>
                 <button
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-muted/50"
                   onClick={() => {
                     setSelectedPeriod('Monthly');
                     setIsPeriodDropdownOpen(false);
@@ -348,7 +348,7 @@ const BoardMemberDetailView = () => {
                   Monthly
                 </button>
                 <button
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-muted/50"
                   onClick={() => {
                     setSelectedPeriod('Quarterly');
                     setIsPeriodDropdownOpen(false);
@@ -364,13 +364,13 @@ const BoardMemberDetailView = () => {
 
       {/* Header */}
       <div className="flex items-center space-x-4">
-        <h1 className="text-2xl font-bold text-gray-900">Member detail view</h1>
+        <h1 className="text-2xl font-bold text-foreground">Member detail view</h1>
         <Badge className="bg-red-100 text-red-800">Action required</Badge>
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
+        <TabsList className="grid w-full grid-cols-4 bg-muted">
           <TabsTrigger
             value="overview"
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
@@ -400,7 +400,7 @@ const BoardMemberDetailView = () => {
         <TabsContent value="overview" className="space-y-6">
           {/* Overview Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Overview</h2>
+            <h2 className="text-lg font-semibold text-foreground">Overview</h2>
             <div className="flex items-center space-x-2">
               <Button variant="outline" className="flex items-center space-x-2">
                 <MessageCircle className="h-4 w-4" />
@@ -430,23 +430,23 @@ const BoardMemberDetailView = () => {
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">Full name:</span>
-                    <span className="text-lg font-semibold text-gray-900">{memberData.name}</span>
+                    <span className="text-sm text-muted-foreground">Full name:</span>
+                    <span className="text-lg font-semibold text-foreground">{memberData.name}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">Status:</span>
+                    <span className="text-sm text-muted-foreground">Status:</span>
                     {getStatusBadge(memberData.status)}
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">Independence:</span>
+                    <span className="text-sm text-muted-foreground">Independence:</span>
                     <div className="flex items-center space-x-1">
-                      <Diamond className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm text-gray-900">{memberData.independence}</span>
+                      <Diamond className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-foreground">{memberData.independence}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">Role:</span>
-                    <span className="text-sm text-gray-900">{memberData.role}</span>
+                    <span className="text-sm text-muted-foreground">Role:</span>
+                    <span className="text-sm text-foreground">{memberData.role}</span>
                   </div>
                 </div>
               </div>
@@ -457,13 +457,13 @@ const BoardMemberDetailView = () => {
           <Card>
             <Collapsible open={contactInfoOpen} onOpenChange={setContactInfoOpen}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <CardHeader className="cursor-pointer hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold">Contact information</CardTitle>
                     {contactInfoOpen ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
                 </CardHeader>
@@ -471,19 +471,19 @@ const BoardMemberDetailView = () => {
               <CollapsibleContent>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <Mail className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Email:</span>
-                    <span className="text-sm text-gray-900">{memberData.email}</span>
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Email:</span>
+                    <span className="text-sm text-foreground">{memberData.email}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Phone className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Phone number:</span>
-                    <span className="text-sm text-gray-900">{memberData.phone}</span>
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Phone number:</span>
+                    <span className="text-sm text-foreground">{memberData.phone}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <MapPin className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Location:</span>
-                    <span className="text-sm text-gray-900">{memberData.location}</span>
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Location:</span>
+                    <span className="text-sm text-foreground">{memberData.location}</span>
                   </div>
                 </CardContent>
               </CollapsibleContent>
@@ -494,20 +494,20 @@ const BoardMemberDetailView = () => {
           <Card>
             <Collapsible open={biographyOpen} onOpenChange={setBiographyOpen}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <CardHeader className="cursor-pointer hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold">Biography</CardTitle>
                     {biographyOpen ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
                 </CardHeader>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <CardContent>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {memberData.biography}
                   </p>
                 </CardContent>
@@ -519,13 +519,13 @@ const BoardMemberDetailView = () => {
           <Card>
             <Collapsible open={currentAppointmentOpen} onOpenChange={setCurrentAppointmentOpen}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <CardHeader className="cursor-pointer hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold">Current appointment</CardTitle>
                     {currentAppointmentOpen ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
                 </CardHeader>
@@ -533,22 +533,22 @@ const BoardMemberDetailView = () => {
               <CollapsibleContent>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Term start:</span>
-                    <span className="text-sm text-gray-900">{memberData.termStart}</span>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Term start:</span>
+                    <span className="text-sm text-foreground">{memberData.termStart}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Term end:</span>
-                    <span className="text-sm text-gray-900">{memberData.termEnd}</span>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Term end:</span>
+                    <span className="text-sm text-foreground">{memberData.termEnd}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-500">Tenure:</span>
-                    <span className="text-sm text-gray-900">{memberData.tenure}</span>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Tenure:</span>
+                    <span className="text-sm text-foreground">{memberData.tenure}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <span className="text-sm text-gray-500">Attendance:</span>
+                    <span className="text-sm text-muted-foreground">Attendance:</span>
                     <div className="flex items-center space-x-2">
                       <div className="w-20 bg-gray-200 rounded-full h-2">
                         <div 
@@ -556,14 +556,14 @@ const BoardMemberDetailView = () => {
                           style={{ width: `${parseInt(memberData.attendance.replace('%', ''))}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm text-gray-600">{memberData.attendance}</span>
+                      <span className="text-sm text-muted-foreground">{memberData.attendance}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <span className="text-sm text-gray-500">Committee memberships:</span>
+                    <span className="text-sm text-muted-foreground">Committee memberships:</span>
                     <div className="flex flex-wrap gap-2">
                       {memberData.committees.map((committee) => (
-                        <Badge key={committee} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                        <Badge key={committee} variant="secondary" className="text-xs bg-muted text-muted-foreground">
                           {committee}
                         </Badge>
                       ))}
@@ -578,13 +578,13 @@ const BoardMemberDetailView = () => {
           <Card>
             <Collapsible open={roleHistoryOpen} onOpenChange={setRoleHistoryOpen}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <CardHeader className="cursor-pointer hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold">Role history</CardTitle>
                     {roleHistoryOpen ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
                 </CardHeader>
@@ -592,12 +592,12 @@ const BoardMemberDetailView = () => {
               <CollapsibleContent>
                 <CardContent className="space-y-4">
                   {memberData.roleHistory.map((role, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div>
-                        <div className="font-medium text-gray-900">{role.role}</div>
-                        <div className="text-sm text-gray-600">{role.period}</div>
+                        <div className="font-medium text-foreground">{role.role}</div>
+                        <div className="text-sm text-muted-foreground">{role.period}</div>
                       </div>
-                      <Badge className={role.status === 'Current' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                      <Badge className={role.status === 'Current' ? 'bg-green-100 text-green-800' : 'bg-muted text-gray-800'}>
                         {role.status}
                       </Badge>
                     </div>
@@ -611,13 +611,13 @@ const BoardMemberDetailView = () => {
           <Card>
             <Collapsible open={complianceOpen} onOpenChange={setComplianceOpen}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <CardHeader className="cursor-pointer hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold">Compliance & declarations</CardTitle>
                     {complianceOpen ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
                 </CardHeader>
@@ -625,12 +625,12 @@ const BoardMemberDetailView = () => {
               <CollapsibleContent>
                 <CardContent className="space-y-4">
                   {memberData.compliance.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div className="flex items-center space-x-3">
                         {getComplianceIcon(item.status)}
                         <div>
-                          <div className="font-medium text-gray-900">{item.item}</div>
-                          <div className="text-sm text-gray-600">
+                          <div className="font-medium text-foreground">{item.item}</div>
+                          <div className="text-sm text-muted-foreground">
                             Due: {item.dueDate}
                             {item.completedDate && ` • Completed: ${item.completedDate}`}
                           </div>
@@ -650,8 +650,8 @@ const BoardMemberDetailView = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">My term history</h2>
-                <p className="text-sm text-gray-600">View your current term status and renewal timeline</p>
+                <h2 className="text-lg font-semibold text-foreground">My term history</h2>
+                <p className="text-sm text-muted-foreground">View your current term status and renewal timeline</p>
               </div>
               <div className="flex items-center space-x-2">
                 <Button variant="outline" className="flex items-center space-x-2">
@@ -678,8 +678,8 @@ const BoardMemberDetailView = () => {
                     <CalendarIcon className="h-6 w-6 text-purple-600 mr-1" />
                     <ArrowLeft className="h-4 w-4 text-purple-600" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">1/2</div>
-                  <div className="text-sm text-gray-600">Current</div>
+                  <div className="text-2xl font-bold text-foreground">1/2</div>
+                  <div className="text-sm text-muted-foreground">Current</div>
                 </CardContent>
               </Card>
 
@@ -687,8 +687,8 @@ const BoardMemberDetailView = () => {
               <Card className="border-purple-200">
                 <CardContent className="p-4 text-center">
                   <CalendarIcon className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">365</div>
-                  <div className="text-sm text-gray-600">Days to renewal</div>
+                  <div className="text-2xl font-bold text-foreground">365</div>
+                  <div className="text-sm text-muted-foreground">Days to renewal</div>
                 </CardContent>
               </Card>
 
@@ -699,8 +699,8 @@ const BoardMemberDetailView = () => {
                     <FileText className="h-6 w-6 text-green-600 mr-1" />
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">Yes</div>
-                  <div className="text-sm text-gray-600">Renewal eligible</div>
+                  <div className="text-2xl font-bold text-foreground">Yes</div>
+                  <div className="text-sm text-muted-foreground">Renewal eligible</div>
                 </CardContent>
               </Card>
 
@@ -711,8 +711,8 @@ const BoardMemberDetailView = () => {
                     <MessageSquare className="h-6 w-6 text-blue-600 mr-1" />
                     <FileText className="h-4 w-4 text-blue-600" />
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">2</div>
-                  <div className="text-sm text-gray-600">Total terms</div>
+                  <div className="text-2xl font-bold text-foreground">2</div>
+                  <div className="text-sm text-muted-foreground">Total terms</div>
                 </CardContent>
               </Card>
             </div>
@@ -720,7 +720,7 @@ const BoardMemberDetailView = () => {
 
           {/* My Term Timeline Section */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">My term timeline</h2>
+            <h2 className="text-lg font-semibold text-foreground">My term timeline</h2>
             
             {/* Timeline */}
             <Card>
@@ -728,18 +728,18 @@ const BoardMemberDetailView = () => {
                 <div className="space-y-4">
                   {/* Year Labels */}
                   <div className="flex justify-between px-2">
-                    <span className="text-sm text-gray-500">2023</span>
-                    <span className="text-sm text-gray-500">2024</span>
-                    <span className="text-sm text-gray-500">2025</span>
-                    <span className="text-sm text-gray-500">2026</span>
+                    <span className="text-sm text-muted-foreground">2023</span>
+                    <span className="text-sm text-muted-foreground">2024</span>
+                    <span className="text-sm text-muted-foreground">2025</span>
+                    <span className="text-sm text-muted-foreground">2026</span>
                   </div>
 
                   {/* Member Row */}
                   <div className="flex items-center space-x-4">
-                    <div className="w-20 text-sm font-medium text-gray-900">{memberData.name}</div>
+                    <div className="w-20 text-sm font-medium text-foreground">{memberData.name}</div>
                     <div className="flex-1 relative h-6">
                       {/* Member timeline bar */}
-                      <div className="absolute inset-0 bg-gray-100 border border-gray-300 rounded-full">
+                      <div className="absolute inset-0 bg-muted border border-gray-300 rounded-full">
                         {/* Active term (2024-2025) - starts at beginning of 2024, ends at middle of 2025 */}
                         <div className="absolute left-1/4 w-1/2 h-full bg-purple-600 rounded-full flex items-center justify-center" style={{width: '37.5%'}}>
                           <span className="text-white text-sm font-medium">2024 - 2025</span>
@@ -759,8 +759,8 @@ const BoardMemberDetailView = () => {
           {/* My Meeting Attendance Section */}
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">My meeting attendance</h2>
-              <p className="text-sm text-gray-600">Track your personal attendance record and upcoming meetings</p>
+              <h2 className="text-lg font-semibold text-foreground">My meeting attendance</h2>
+              <p className="text-sm text-muted-foreground">Track your personal attendance record and upcoming meetings</p>
             </div>
 
             {/* Attendance Metrics Cards */}
@@ -821,10 +821,10 @@ const BoardMemberDetailView = () => {
               <div className="space-y-4">
                 {/* Month Headers */}
                 <div className="grid gap-2" style={{gridTemplateColumns: '80px repeat(12, 1fr)'}}>
-                  <div className="text-sm font-medium text-gray-600">Month</div>
+                  <div className="text-sm font-medium text-muted-foreground">Month</div>
                   {monthlyAttendance.map((month) => (
                     <div key={month.month} className="text-center">
-                      <div className="text-xs font-medium text-gray-600">{month.month}</div>
+                      <div className="text-xs font-medium text-muted-foreground">{month.month}</div>
                     </div>
                   ))}
                 </div>
@@ -834,7 +834,7 @@ const BoardMemberDetailView = () => {
 
                 {/* My Attendance Row */}
                 <div className="grid gap-2" style={{gridTemplateColumns: '80px repeat(12, 1fr)'}}>
-                  <div className="text-sm font-medium text-gray-900">My Attendance</div>
+                  <div className="text-sm font-medium text-foreground">My Attendance</div>
                   {monthlyAttendance.map((month) => (
                     <div key={month.month} className="flex justify-center">
                       {getAttendanceIcon(month.status)}
@@ -851,19 +851,19 @@ const BoardMemberDetailView = () => {
                     <div className="w-4 h-4 bg-green-600 rounded-full flex items-center justify-center">
                       <Check className="h-3 w-3 text-white" />
                     </div>
-                    <span className="text-gray-600">Present</span>
+                    <span className="text-muted-foreground">Present</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
                       <Minus className="h-3 w-3 text-white" />
                     </div>
-                    <span className="text-gray-600">Excused</span>
+                    <span className="text-muted-foreground">Excused</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center">
                       <XIcon className="h-3 w-3 text-white" />
                     </div>
-                    <span className="text-gray-600">Absent</span>
+                    <span className="text-muted-foreground">Absent</span>
                   </div>
                 </div>
               </div>
@@ -873,18 +873,18 @@ const BoardMemberDetailView = () => {
           {/* Individual Meetings */}
           <div className="space-y-4">
             {meetingData.map((meeting) => (
-              <div key={meeting.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div key={meeting.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-gray-200">
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center space-x-2">
-                    <div className="font-medium text-gray-900">{meeting.date}</div>
-                    <span className="text-gray-400">•</span>
-                    <div className="font-medium text-gray-900">{meeting.title}</div>
+                    <div className="font-medium text-foreground">{meeting.date}</div>
+                    <span className="text-muted-foreground">•</span>
+                    <div className="font-medium text-foreground">{meeting.title}</div>
                     <div className="flex items-center space-x-2">
                       {getMeetingStatusBadge(meeting.status)}
-                      <span className="text-sm text-gray-600">{meeting.quorumCount}</span>
+                      <span className="text-sm text-muted-foreground">{meeting.quorumCount}</span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-6 text-sm text-gray-600">
+                  <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">
                       <Clock className="h-4 w-4" />
                       <span>{meeting.time}</span>
@@ -917,8 +917,8 @@ const BoardMemberDetailView = () => {
           {/* My Governance Dashboard Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">My Governance Dashboard</h2>
-              <p className="text-sm text-gray-600">Personal compliance status and performance metrics</p>
+              <h2 className="text-lg font-semibold text-foreground">My Governance Dashboard</h2>
+              <p className="text-sm text-muted-foreground">Personal compliance status and performance metrics</p>
             </div>
             <Button variant="outline" className="flex items-center space-x-2">
               <Upload className="h-4 w-4" />
@@ -937,22 +937,22 @@ const BoardMemberDetailView = () => {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-gray-900">Board committee</div>
-                      <div className="text-sm text-gray-600">Chair</div>
+                      <div className="font-medium text-foreground">Board committee</div>
+                      <div className="text-sm text-muted-foreground">Chair</div>
                     </div>
                     <Badge className="bg-green-100 text-green-800">Active</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-gray-900">Finance committee</div>
-                      <div className="text-sm text-gray-600">Member</div>
+                      <div className="font-medium text-foreground">Finance committee</div>
+                      <div className="text-sm text-muted-foreground">Member</div>
                     </div>
                     <Badge className="bg-green-100 text-green-800">Active</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-gray-900">Audit committee</div>
-                      <div className="text-sm text-gray-600">Observer</div>
+                      <div className="font-medium text-foreground">Audit committee</div>
+                      <div className="text-sm text-muted-foreground">Observer</div>
                     </div>
                     <Badge className="bg-blue-100 text-blue-800">Invited</Badge>
                   </div>
@@ -968,27 +968,27 @@ const BoardMemberDetailView = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-900">Board committee</span>
+                    <span className="text-sm text-foreground">Board committee</span>
                     <Badge variant="outline" className="text-purple-600 border-purple-200">Expert</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-900">Strategic planning</span>
+                    <span className="text-sm text-foreground">Strategic planning</span>
                     <Badge variant="outline" className="text-purple-600 border-purple-200">Expert</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-900">Finance committee</span>
+                    <span className="text-sm text-foreground">Finance committee</span>
                     <Badge variant="outline" className="text-blue-600 border-blue-200">Basic</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-900">Risk management</span>
+                    <span className="text-sm text-foreground">Risk management</span>
                     <Badge variant="outline" className="text-green-600 border-green-200">Proficient</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-900">Technology</span>
+                    <span className="text-sm text-foreground">Technology</span>
                     <Badge variant="outline" className="text-blue-600 border-blue-200">Basic</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-900">Legal & compliance</span>
+                    <span className="text-sm text-foreground">Legal & compliance</span>
                     <Badge variant="outline" className="text-green-600 border-green-200">Proficient</Badge>
                   </div>
                 </div>
@@ -1004,8 +1004,8 @@ const BoardMemberDetailView = () => {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-900">Effective communication strategies</span>
-                      <span className="text-sm text-gray-600">85%</span>
+                      <span className="text-sm text-foreground">Effective communication strategies</span>
+                      <span className="text-sm text-muted-foreground">85%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '85%' }}></div>
@@ -1013,8 +1013,8 @@ const BoardMemberDetailView = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-900">Board leadership training</span>
-                      <span className="text-sm text-gray-600">75%</span>
+                      <span className="text-sm text-foreground">Board leadership training</span>
+                      <span className="text-sm text-muted-foreground">75%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '75%' }}></div>
@@ -1022,8 +1022,8 @@ const BoardMemberDetailView = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-900">Creative problem-solving session</span>
-                      <span className="text-sm text-gray-600">70%</span>
+                      <span className="text-sm text-foreground">Creative problem-solving session</span>
+                      <span className="text-sm text-muted-foreground">70%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '70%' }}></div>
@@ -1031,8 +1031,8 @@ const BoardMemberDetailView = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-900">Conflict resolution techniques</span>
-                      <span className="text-sm text-gray-600">60%</span>
+                      <span className="text-sm text-foreground">Conflict resolution techniques</span>
+                      <span className="text-sm text-muted-foreground">60%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '60%' }}></div>
@@ -1051,8 +1051,8 @@ const BoardMemberDetailView = () => {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-900">Directors & Officers Insurance</span>
-                      <span className="text-sm text-gray-600">100%</span>
+                      <span className="text-sm text-foreground">Directors & Officers Insurance</span>
+                      <span className="text-sm text-muted-foreground">100%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '100%' }}></div>
@@ -1060,8 +1060,8 @@ const BoardMemberDetailView = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-900">Conflict of interest</span>
-                      <span className="text-sm text-gray-600">100%</span>
+                      <span className="text-sm text-foreground">Conflict of interest</span>
+                      <span className="text-sm text-muted-foreground">100%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '100%' }}></div>
@@ -1069,8 +1069,8 @@ const BoardMemberDetailView = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-900">Code of conduct</span>
-                      <span className="text-sm text-gray-600">70%</span>
+                      <span className="text-sm text-foreground">Code of conduct</span>
+                      <span className="text-sm text-muted-foreground">70%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '70%' }}></div>
@@ -1078,8 +1078,8 @@ const BoardMemberDetailView = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-900">Declaration of interest</span>
-                      <span className="text-sm text-gray-600">60%</span>
+                      <span className="text-sm text-foreground">Declaration of interest</span>
+                      <span className="text-sm text-muted-foreground">60%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '60%' }}></div>

@@ -37,8 +37,8 @@ const SuccessorDevelopmentPlanDetailView: React.FC<Props> = ({
   return (
     <div className="space-y-6">
       {/* Breadcrumbs */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
-        <button onClick={onBack} className="flex items-center space-x-1 hover:text-gray-900">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <button onClick={onBack} className="flex items-center space-x-1 hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           <span>Succession planning</span>
         </button>
@@ -50,12 +50,12 @@ const SuccessorDevelopmentPlanDetailView: React.FC<Props> = ({
 
       {/* Employee Header */}
       <div className="flex items-center space-x-4">
-        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-lg font-medium text-gray-700">
+        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-lg font-medium text-muted-foreground">
           {initials}
         </div>
         <div>
-          <div className="text-xl font-semibold text-gray-900">{employeeName}</div>
-          <div className="text-sm text-gray-600">Development plan for {targetRole}</div>
+          <div className="text-xl font-semibold text-foreground">{employeeName}</div>
+          <div className="text-sm text-muted-foreground">Development plan for {targetRole}</div>
         </div>
       </div>
 
@@ -63,7 +63,7 @@ const SuccessorDevelopmentPlanDetailView: React.FC<Props> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600 mb-2">Current Readiness</div>
+            <div className="text-sm text-muted-foreground mb-2">Current Readiness</div>
             <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
               ≤12 months
             </Badge>
@@ -71,19 +71,19 @@ const SuccessorDevelopmentPlanDetailView: React.FC<Props> = ({
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600 mb-2">Plan Progress</div>
+            <div className="text-sm text-muted-foreground mb-2">Plan Progress</div>
             <div className="flex items-center space-x-3">
               <div className="flex-1 bg-gray-200 rounded-full h-2">
                 <div className="bg-gray-900 h-2 rounded-full" style={{ width: '60%' }} />
               </div>
-              <span className="text-sm text-gray-900">60%</span>
+              <span className="text-sm text-foreground">60%</span>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600 mb-2">Forecast Ready</div>
-            <div className="text-sm text-gray-900">2026-03-15</div>
+            <div className="text-sm text-muted-foreground mb-2">Forecast Ready</div>
+            <div className="text-sm text-foreground">2026-03-15</div>
           </CardContent>
         </Card>
       </div>
@@ -93,7 +93,7 @@ const SuccessorDevelopmentPlanDetailView: React.FC<Props> = ({
         <CardContent className="p-4">
           <div className="flex items-center space-x-2 mb-3">
             <AlertTriangle className="h-5 w-5 text-red-500" />
-            <span className="text-sm font-medium text-gray-900">Current Blockers</span>
+            <span className="text-sm font-medium text-foreground">Current Blockers</span>
           </div>
           <Input 
             value="Financial acumen certification pending"
@@ -125,18 +125,18 @@ const SuccessorDevelopmentPlanDetailView: React.FC<Props> = ({
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3">
                   <div className="mt-1">
-                    <GraduationCap className="h-5 w-5 text-gray-600" />
+                    <GraduationCap className="h-5 w-5 text-muted-foreground" />
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900 mb-1">Operations Finance</div>
+                    <div className="font-medium text-foreground mb-1">Operations Finance</div>
                     <div className="flex items-center space-x-2 mb-2">
                       <Badge variant="secondary" className="text-xs">Course</Badge>
                       <Badge variant="destructive" className="text-xs">Critical</Badge>
                     </div>
-                    <div className="text-sm text-gray-600 mb-2">
+                    <div className="text-sm text-muted-foreground mb-2">
                       Executive education program on operational finance
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted-foreground">
                       Owner: A. Bello • Due: 2025-08-15
                     </div>
                   </div>
@@ -172,8 +172,8 @@ const SuccessorDevelopmentPlanDetailView: React.FC<Props> = ({
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-gray-600" />
-            <span className="text-sm text-gray-900">Next review scheduled for 2025-07-15</span>
+            <Calendar className="h-5 w-5 text-muted-foreground" />
+            <span className="text-sm text-foreground">Next review scheduled for 2025-07-15</span>
           </div>
         </CardContent>
       </Card>

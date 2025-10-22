@@ -89,15 +89,15 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Blurred Background Overlay */}
-      <div className="fixed inset-0 backdrop-blur-md bg-white/30" />
+      <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
       
       {/* Modal Content */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 h-[600px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
+      <div className="relative bg-card rounded-lg shadow-xl w-full max-w-lg mx-4 h-[600px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-between p-6 border-b border-border flex-shrink-0">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Update progress: {goalTitle}</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-xl font-bold text-foreground">Update progress: {goalTitle}</h2>
+            <p className="text-sm text-muted-foreground mt-1">
               Quick progress update with key details to keep your goal on track.
             </p>
           </div>
@@ -105,7 +105,7 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
             variant="ghost"
             size="icon"
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-muted-foreground hover:text-muted-foreground"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -116,21 +116,21 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Current Progress Display */}
           <div className="space-y-3">
-            <Label className="text-sm font-semibold text-gray-900">Current Progress</Label>
+            <Label className="text-sm font-semibold text-foreground">Current Progress</Label>
             <div className="flex items-center space-x-3">
-              <div className="flex-1 bg-gray-200 rounded-full h-2">
+              <div className="flex-1 bg-muted rounded-full h-2">
                 <div
                   className="bg-purple-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${currentProgress}%` }}
                 />
               </div>
-              <span className="text-sm font-semibold text-gray-900 min-w-[3rem]">{currentProgress}%</span>
+              <span className="text-sm font-semibold text-foreground min-w-[3rem]">{currentProgress}%</span>
             </div>
           </div>
 
           {/* New Progress Input */}
           <div className="space-y-2">
-            <Label htmlFor="new-progress" className="text-sm font-semibold text-gray-900">
+            <Label htmlFor="new-progress" className="text-sm font-semibold text-foreground">
               New Progress (%) <span className="text-red-500">*</span>
             </Label>
             <div className="flex items-center space-x-2">
@@ -169,14 +169,14 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
 
           {/* Quick Options */}
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-900">Quick options</Label>
+            <Label className="text-sm font-semibold text-foreground">Quick options</Label>
             <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickOption('+10%')}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-muted-foreground hover:text-foreground"
               >
                 +10%
               </Button>
@@ -185,7 +185,7 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickOption('+25%')}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-muted-foreground hover:text-foreground"
               >
                 +25%
               </Button>
@@ -194,7 +194,7 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickOption('Complete')}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-muted-foreground hover:text-foreground"
               >
                 Complete
               </Button>
@@ -203,7 +203,7 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickOption('-5%')}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-muted-foreground hover:text-foreground"
               >
                 -5%
               </Button>
@@ -212,7 +212,7 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
 
           {/* Achievement Textarea */}
           <div className="space-y-2">
-            <Label htmlFor="achievement" className="text-sm font-semibold text-gray-900">
+            <Label htmlFor="achievement" className="text-sm font-semibold text-foreground">
               What did you achieve? <span className="text-red-500">*</span>
             </Label>
             <Textarea
@@ -230,7 +230,7 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
 
           {/* Next Steps Textarea */}
           <div className="space-y-2">
-            <Label htmlFor="next-steps" className="text-sm font-semibold text-gray-900">
+            <Label htmlFor="next-steps" className="text-sm font-semibold text-foreground">
               Next steps
             </Label>
             <Textarea
@@ -245,12 +245,12 @@ const ProgressUpdateModal: React.FC<ProgressUpdateModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-end space-x-3 p-6 border-t border-border flex-shrink-0">
           <Button
             type="button"
             variant="outline"
             onClick={handleClose}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-muted-foreground hover:text-foreground"
           >
             Cancel
           </Button>

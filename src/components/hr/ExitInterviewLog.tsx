@@ -132,8 +132,8 @@ const ExitInterviewLog = () => {
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
                   <MessageCircle className="w-6 h-6 text-green-600" />
                 </div>
-                <p className="text-sm text-gray-600 mb-1">Total interviews</p>
-                <p className="text-2xl font-bold text-gray-900">4</p>
+                <p className="text-sm text-muted-foreground mb-1">Total interviews</p>
+                <p className="text-2xl font-bold text-foreground">4</p>
               </div>
             </div>
           </CardContent>
@@ -147,8 +147,8 @@ const ExitInterviewLog = () => {
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
                   <Calendar className="w-6 h-6 text-blue-600" />
                 </div>
-                <p className="text-sm text-gray-600 mb-1">Scheduled interviews</p>
-                <p className="text-2xl font-bold text-gray-900">4</p>
+                <p className="text-sm text-muted-foreground mb-1">Scheduled interviews</p>
+                <p className="text-2xl font-bold text-foreground">4</p>
               </div>
             </div>
           </CardContent>
@@ -162,8 +162,8 @@ const ExitInterviewLog = () => {
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
                   <ClipboardCheck className="w-6 h-6 text-purple-600" />
                 </div>
-                <p className="text-sm text-gray-600 mb-1">Completion rate</p>
-                <p className="text-2xl font-bold text-gray-900">50%</p>
+                <p className="text-sm text-muted-foreground mb-1">Completion rate</p>
+                <p className="text-2xl font-bold text-foreground">50%</p>
               </div>
             </div>
           </CardContent>
@@ -173,12 +173,12 @@ const ExitInterviewLog = () => {
       {/* Interview Log Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Exit interview log</h2>
+              <h2 className="text-lg font-semibold text-foreground">Exit interview log</h2>
           
           {/* Search and Filter */}
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Search..."
                 className="pl-10 w-64"
@@ -205,24 +205,24 @@ const ExitInterviewLog = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">
                       <Checkbox
                         checked={selectedInterviews.length === interviewData.length}
                         onCheckedChange={handleSelectAll}
                       />
                     </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Interviewee</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Role / Org</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Exit case</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Date / Time</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Owner</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Action</th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Interviewee</th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Role / Org</th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Exit case</th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Date / Time</th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Owner</th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {interviewData.map((item, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-50">
+                        <tr key={index} className="border-b hover:bg-muted/50">
                       <td className="py-3 px-4">
                         <Checkbox
                           checked={selectedInterviews.includes(item.id)}
@@ -231,14 +231,14 @@ const ExitInterviewLog = () => {
                       </td>
                       <td className="py-3 px-4">
                         <div>
-                          <div className="font-medium text-gray-900">{item.interviewee}</div>
-                          <div className="text-sm text-gray-600">({item.id})</div>
+                          <div className="font-medium text-foreground">{item.interviewee}</div>
+                          <div className="text-sm text-muted-foreground">({item.id})</div>
                         </div>
                       </td>
                       <td className="py-3 px-4">
                         <div>
-                          <div className="font-medium text-gray-900">{item.role}</div>
-                          <div className="text-sm text-gray-600">{item.organization}</div>
+                          <div className="font-medium text-foreground">{item.role}</div>
+                          <div className="text-sm text-muted-foreground">{item.organization}</div>
                         </div>
                       </td>
                       <td className="py-3 px-4">
@@ -248,12 +248,12 @@ const ExitInterviewLog = () => {
                       </td>
                       <td className="py-3 px-4">
                         <div>
-                          <div className="text-gray-900">{item.date}</div>
-                          <div className="text-sm text-gray-600">{item.time}</div>
+                          <div className="text-foreground">{item.date}</div>
+                          <div className="text-sm text-muted-foreground">{item.time}</div>
                         </div>
                       </td>
                       <td className="py-3 px-4">
-                        <span className="text-gray-700">{item.owner}</span>
+                        <span className="text-foreground">{item.owner}</span>
                       </td>
                       <td className="py-3 px-4">
                         <Badge className={`${item.statusColor} text-xs`}>

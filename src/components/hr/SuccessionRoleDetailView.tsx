@@ -23,8 +23,8 @@ const SuccessionRoleDetailView: React.FC<SuccessionRoleDetailViewProps> = ({ onB
   return (
     <div className="space-y-6">
       {/* Breadcrumbs */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
-        <button onClick={onBack} className="flex items-center space-x-1 hover:text-gray-900">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <button onClick={onBack} className="flex items-center space-x-1 hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           <span>Succession planning</span>
         </button>
@@ -36,8 +36,8 @@ const SuccessionRoleDetailView: React.FC<SuccessionRoleDetailViewProps> = ({ onB
 
       {/* Role Header */}
       <div className="space-y-1">
-        <div className="text-2xl font-bold text-gray-900">{role}</div>
-        <div className="text-sm text-gray-600">View critical role details, successor candidates, and succession planning metrics.</div>
+        <div className="text-2xl font-bold text-foreground">{role}</div>
+        <div className="text-sm text-muted-foreground">View critical role details, successor candidates, and succession planning metrics.</div>
       </div>
 
       {/* Overview */}
@@ -48,14 +48,14 @@ const SuccessionRoleDetailView: React.FC<SuccessionRoleDetailViewProps> = ({ onB
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
             <div className="space-y-2">
-              <div><span className="text-gray-500">Role Profile</span></div>
-              <div><span className="text-gray-500">Incumbent:</span> L. Mensah</div>
-              <div><span className="text-gray-500">Department:</span> Operations</div>
-              <div><span className="text-gray-500">Location:</span> New York</div>
-              <div><span className="text-gray-500">Impact Level:</span> Critical</div>
+              <div><span className="text-muted-foreground">Role Profile</span></div>
+              <div><span className="text-muted-foreground">Incumbent:</span> L. Mensah</div>
+              <div><span className="text-muted-foreground">Department:</span> Operations</div>
+              <div><span className="text-muted-foreground">Location:</span> New York</div>
+              <div><span className="text-muted-foreground">Impact Level:</span> Critical</div>
             </div>
             <div className="space-y-2">
-              <div className="text-gray-500">Succession Metrics</div>
+              <div className="text-muted-foreground">Succession Metrics</div>
               <div className="flex items-center justify-between"><span>Ready Now</span><span>0</span></div>
               <div className="flex items-center justify-between"><span>≤12 months</span><span>1</span></div>
               <div className="flex items-center justify-between"><span>≤24 months</span><span>1</span></div>
@@ -91,21 +91,21 @@ const SuccessionRoleDetailView: React.FC<SuccessionRoleDetailViewProps> = ({ onB
           ].map((c, i) => (
             <div key={i} className="border border-gray-200 rounded-lg p-3 flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-700">{c.n.split(' ').map(p=>p[0]).join('').slice(0,2)}</div>
+                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs text-muted-foreground">{c.n.split(' ').map(p=>p[0]).join('').slice(0,2)}</div>
                 <div>
-                  <div className="text-sm font-medium text-gray-900">{c.n}</div>
-                  <div className="text-xs text-gray-600">{c.role}</div>
+                  <div className="text-sm font-medium text-foreground">{c.n}</div>
+                  <div className="text-xs text-muted-foreground">{c.role}</div>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded ${c.tag.includes('Ready') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{c.tag}</span>
               </div>
-              <div className="flex items-center space-x-6 text-sm text-gray-600">
+              <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                 <div>
-                  <div className="text-gray-500">Performance</div>
-                  <div className="text-gray-900">{c.perf}</div>
+                  <div className="text-muted-foreground">Performance</div>
+                  <div className="text-foreground">{c.perf}</div>
                 </div>
                 <div>
-                  <div className="text-gray-500">Potential</div>
-                  <div className="text-gray-900">{c.pot}</div>
+                  <div className="text-muted-foreground">Potential</div>
+                  <div className="text-foreground">{c.pot}</div>
                 </div>
                 <span className="text-xs px-2 py-1 rounded bg-emerald-100 text-emerald-800">{c.risk}</span>
                 <DropdownMenu>
@@ -132,19 +132,19 @@ const SuccessionRoleDetailView: React.FC<SuccessionRoleDetailViewProps> = ({ onB
           <CardTitle className="text-lg font-semibold">Performance × Potential matrix</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-sm font-medium text-gray-900 mb-3">Nine-Box Talent Matrix</div>
+          <div className="text-sm font-medium text-foreground mb-3">Nine-Box Talent Matrix</div>
           <div className="grid grid-cols-3 gap-3">
-            <div className="h-32 rounded-lg bg-gray-50 border" />
+            <div className="h-32 rounded-lg bg-muted/50 border" />
             <div className="h-32 rounded-lg bg-blue-50 border" />
             <div className="h-32 rounded-lg bg-blue-100 border" />
-            <div className="h-32 rounded-lg bg-gray-50 border" />
-            <div className="h-32 rounded-lg bg-gray-50 border" />
+            <div className="h-32 rounded-lg bg-muted/50 border" />
+            <div className="h-32 rounded-lg bg-muted/50 border" />
             <div className="h-32 rounded-lg bg-blue-50 border" />
-            <div className="h-32 rounded-lg bg-gray-50 border" />
-            <div className="h-32 rounded-lg bg-gray-50 border" />
+            <div className="h-32 rounded-lg bg-muted/50 border" />
+            <div className="h-32 rounded-lg bg-muted/50 border" />
             <div className="h-32 rounded-lg bg-blue-50 border" />
           </div>
-          <div className="mt-4 flex items-start space-x-2 text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-md p-3">
+          <div className="mt-4 flex items-start space-x-2 text-sm text-muted-foreground bg-muted/50 border border-gray-200 rounded-md p-3">
             <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
             <span>Matrix Legend: Star/Top Talent, High Potential/Performer, Core Player/Solid, Development Area.</span>
           </div>

@@ -95,18 +95,18 @@ const UploadMarketDataModal: React.FC<UploadMarketDataModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Blurred Background Overlay */}
-      <div className="fixed inset-0 backdrop-blur-md bg-white/30" />
+      <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
       
       {/* Modal Content */}
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 animate-in fade-in-0 zoom-in-95 duration-200">
+      <div className="relative bg-card rounded-lg shadow-xl max-w-md w-full mx-4 animate-in fade-in-0 zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Upload market data</h2>
+          <h2 className="text-xl font-semibold text-foreground">Upload market data</h2>
           <Button
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -114,7 +114,7 @@ const UploadMarketDataModal: React.FC<UploadMarketDataModalProps> = ({
 
         {/* Content */}
         <div className="p-6 space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Import benchmark data from vendors or custom sources
           </p>
 
@@ -125,7 +125,7 @@ const UploadMarketDataModal: React.FC<UploadMarketDataModalProps> = ({
                 ? 'border-purple-500 bg-purple-50'
                 : selectedFile
                 ? 'border-green-500 bg-green-50'
-                : 'border-gray-300 hover:border-gray-400'
+                : 'border-border hover:border-border'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -135,15 +135,15 @@ const UploadMarketDataModal: React.FC<UploadMarketDataModalProps> = ({
             <div className="space-y-4">
               <div className="flex justify-center">
                 <Upload className={`h-8 w-8 ${
-                  dragActive ? 'text-purple-500' : selectedFile ? 'text-green-500' : 'text-gray-400'
+                  dragActive ? 'text-purple-500' : selectedFile ? 'text-green-500' : 'text-muted-foreground'
                 }`} />
               </div>
               
               <div>
-                <p className="text-sm font-medium text-gray-900 mb-1">
+                <p className="text-sm font-medium text-foreground mb-1">
                   Upload CSV or Excel file with market data
                 </p>
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-muted-foreground mb-4">
                   Supported formats: .csv, .xlsx • Max 10MB
                 </p>
                 
@@ -152,7 +152,7 @@ const UploadMarketDataModal: React.FC<UploadMarketDataModalProps> = ({
                     <p className="text-sm text-green-600 font-medium">
                       ✓ {selectedFile.name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
@@ -179,9 +179,9 @@ const UploadMarketDataModal: React.FC<UploadMarketDataModalProps> = ({
           />
 
           {/* Information Box */}
-          <div className="bg-gray-50 rounded-lg p-4 flex items-start space-x-3">
-            <AlertCircle className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-gray-600">
+          <div className="bg-muted/50 rounded-lg p-4 flex items-start space-x-3">
+            <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-muted-foreground">
               Data will be normalized by role family, level, location, and currency. 
               Review mapped fields before importing.
             </p>
@@ -189,14 +189,14 @@ const UploadMarketDataModal: React.FC<UploadMarketDataModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end space-x-3 p-6 border-t bg-gray-50">
+        <div className="flex justify-end space-x-3 p-6 border-t bg-muted/50">
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
           <Button 
             onClick={handleImport}
             disabled={!selectedFile}
-            className="bg-gray-900 hover:bg-gray-800"
+            className="bg-foreground hover:bg-muted-foreground"
           >
             Import data
           </Button>

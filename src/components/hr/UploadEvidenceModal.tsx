@@ -78,18 +78,18 @@ const UploadEvidenceModal: React.FC<Props> = ({ isOpen, onClose, onUpload }) => 
         <div className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ top: 0, left: 0, right: 0, bottom: 0 }}>
           {/* Blurred Background Overlay */}
           <div 
-            className="absolute inset-0 bg-white/30 backdrop-blur-md"
+            className="absolute inset-0 bg-background/30 backdrop-blur-md"
             onClick={onClose}
             style={{ top: 0, left: 0, right: 0, bottom: 0 }}
           />
           
           {/* Modal Content */}
-          <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md mx-4 h-[600px] flex flex-col">
+          <div className="relative bg-card rounded-lg shadow-lg w-full max-w-md mx-4 h-[600px] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b flex-shrink-0">
               <div>
-                <h2 className="text-lg font-semibold">Upload evidence</h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <h2 className="text-lg font-semibold text-foreground">Upload evidence</h2>
+                <p className="text-sm text-muted-foreground mt-1">
                   Attach documents, certificates, or other evidence of completion.
                 </p>
               </div>
@@ -136,15 +136,15 @@ const UploadEvidenceModal: React.FC<Props> = ({ isOpen, onClose, onUpload }) => 
                   className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
                     dragActive 
                       ? 'border-purple-500 bg-purple-50' 
-                      : 'border-gray-300 hover:border-gray-400'
+                      : 'border-border hover:border-border'
                   }`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                 >
-                  <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600 mb-2">
+                  <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground mb-2">
                     Choose a file or drag & drop it here
                   </p>
                   <Button variant="outline" size="sm" asChild>
@@ -160,7 +160,7 @@ const UploadEvidenceModal: React.FC<Props> = ({ isOpen, onClose, onUpload }) => 
                     </label>
                   </Button>
                   {selectedFile && (
-                    <div className="mt-2 text-sm text-gray-700">
+                    <div className="mt-2 text-sm text-muted-foreground">
                       Selected: {selectedFile.name}
                     </div>
                   )}
@@ -176,7 +176,7 @@ const UploadEvidenceModal: React.FC<Props> = ({ isOpen, onClose, onUpload }) => 
               <Button 
                 onClick={handleUpload}
                 disabled={!selectedFile}
-                className="bg-gray-900 hover:bg-gray-800 text-white"
+                className="bg-foreground hover:bg-muted-foreground text-background"
               >
                 Upload evidence
               </Button>

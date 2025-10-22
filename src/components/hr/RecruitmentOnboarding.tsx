@@ -43,7 +43,7 @@ const RecruitmentOnboarding = () => {
       additionalCandidates: 4,
       nextEvent: 'N/a',
       currentStage: 'Applied',
-      stageColor: 'bg-gray-100 text-gray-800',
+      stageColor: 'bg-muted text-muted-foreground',
       priority: 'High',
       priorityColor: 'bg-red-500'
     },
@@ -128,7 +128,7 @@ const RecruitmentOnboarding = () => {
       additionalCandidates: 3,
       nextEvent: 'N/a',
       currentStage: 'Applied',
-      stageColor: 'bg-gray-100 text-gray-800',
+      stageColor: 'bg-muted text-muted-foreground',
       priority: 'Low',
       priorityColor: 'bg-blue-500'
     }
@@ -235,7 +235,7 @@ const RecruitmentOnboarding = () => {
       case 'Verified':
         return 'bg-green-100 text-green-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -243,7 +243,7 @@ const RecruitmentOnboarding = () => {
     return (
       <div className="flex items-center space-x-2">
         <div className={`w-3 h-3 rounded ${color}`}></div>
-        <span className="text-sm text-gray-700">{priority}</span>
+        <span className="text-sm text-muted-foreground">{priority}</span>
       </div>
     );
   };
@@ -256,11 +256,11 @@ const RecruitmentOnboarding = () => {
         <>
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Recruitment & onboarding</h1>
+        <h1 className="text-2xl font-bold text-foreground">Recruitment & onboarding</h1>
         
         {/* Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-100">
+          <TabsList className="grid w-full grid-cols-4 bg-muted">
             <TabsTrigger
               value="vacancy-tracker"
               className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
@@ -290,13 +290,13 @@ const RecruitmentOnboarding = () => {
           <TabsContent value="vacancy-tracker" className="space-y-6 mt-6">
             {/* Vacancy Tracker Section */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Vacancy tracker lists</h2>
+              <h2 className="text-lg font-semibold text-foreground">Vacancy tracker lists</h2>
               
               {/* Search and Actions Bar */}
               <div className="flex items-center justify-between">
                 <div className="flex-1 max-w-md">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search...."
                       className="pl-10"
@@ -309,7 +309,7 @@ const RecruitmentOnboarding = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => setViewMode('list')}
-                    className={viewMode === 'list' ? 'bg-gray-100' : ''}
+                    className={viewMode === 'list' ? 'bg-muted' : ''}
                   >
                     <List className="h-4 w-4" />
                   </Button>
@@ -317,7 +317,7 @@ const RecruitmentOnboarding = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => setViewMode('grid')}
-                    className={viewMode === 'grid' ? 'bg-gray-100' : ''}
+                    className={viewMode === 'grid' ? 'bg-muted' : ''}
                   >
                     <Grid className="h-4 w-4" />
                   </Button>
@@ -338,43 +338,43 @@ const RecruitmentOnboarding = () => {
                   <CardContent className="p-0">
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50 border-b border-gray-200">
+                        <thead className="bg-muted/50 border-b border-border">
                           <tr>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Requisition</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Manager</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Department</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Candidates</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Next event</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Current stage</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Priority</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Requisition</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Manager</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Department</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Candidates</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Next event</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Current stage</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Priority</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {vacancyData.map((vacancy) => (
-                            <tr key={vacancy.id} className="border-b border-gray-100 hover:bg-gray-50">
+                            <tr key={vacancy.id} className="border-b border-border hover:bg-muted/50">
                               <td className="py-3 px-4">
                                 <div>
-                                  <div className="font-medium text-gray-900">{vacancy.requisition}</div>
-                                  <div className="text-sm text-gray-600">{vacancy.location}</div>
+                                  <div className="font-medium text-foreground">{vacancy.requisition}</div>
+                                  <div className="text-sm text-muted-foreground">{vacancy.location}</div>
                                 </div>
                               </td>
-                              <td className="py-3 px-4 text-gray-700">{vacancy.manager}</td>
-                              <td className="py-3 px-4 text-gray-700">{vacancy.department}</td>
+                              <td className="py-3 px-4 text-muted-foreground">{vacancy.manager}</td>
+                              <td className="py-3 px-4 text-muted-foreground">{vacancy.department}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-2">
                                   {vacancy.candidates.map((candidate, index) => (
                                     <div
                                       key={index}
-                                      className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium text-gray-700"
+                                      className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-xs font-medium text-muted-foreground"
                                     >
                                       {candidate.initials}
                                     </div>
                                   ))}
-                                  <span className="text-sm text-gray-600">+{vacancy.additionalCandidates}</span>
+                                  <span className="text-sm text-muted-foreground">+{vacancy.additionalCandidates}</span>
                                 </div>
                               </td>
-                              <td className="py-3 px-4 text-gray-700">{vacancy.nextEvent}</td>
+                              <td className="py-3 px-4 text-muted-foreground">{vacancy.nextEvent}</td>
                               <td className="py-3 px-4">
                                 <Badge className={vacancy.stageColor}>
                                   {vacancy.currentStage}
@@ -407,45 +407,45 @@ const RecruitmentOnboarding = () => {
                     <Card key={vacancy.id} className="border-purple-200">
                       <CardContent className="p-4 space-y-3">
                         <div>
-                          <div className="font-medium text-gray-900">{vacancy.requisition}</div>
-                          <div className="text-sm text-gray-600">{vacancy.location}</div>
+                          <div className="font-medium text-foreground">{vacancy.requisition}</div>
+                          <div className="text-sm text-muted-foreground">{vacancy.location}</div>
                         </div>
                         
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600">Manager:</span>
-                            <span className="text-sm font-medium text-gray-900">{vacancy.manager}</span>
+                            <span className="text-sm text-muted-foreground">Manager:</span>
+                            <span className="text-sm font-medium text-foreground">{vacancy.manager}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600">Department:</span>
-                            <span className="text-sm font-medium text-gray-900">{vacancy.department}</span>
+                            <span className="text-sm text-muted-foreground">Department:</span>
+                            <span className="text-sm font-medium text-foreground">{vacancy.department}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600">Candidates:</span>
+                            <span className="text-sm text-muted-foreground">Candidates:</span>
                             <div className="flex items-center space-x-1">
                               {vacancy.candidates.map((candidate, index) => (
                                 <div
                                   key={index}
-                                  className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium text-gray-700"
+                                  className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs font-medium text-muted-foreground"
                                 >
                                   {candidate.initials}
                                 </div>
                               ))}
-                              <span className="text-sm text-gray-600">+{vacancy.additionalCandidates}</span>
+                              <span className="text-sm text-muted-foreground">+{vacancy.additionalCandidates}</span>
                             </div>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600">Next event:</span>
-                            <span className="text-sm font-medium text-gray-900">{vacancy.nextEvent}</span>
+                            <span className="text-sm text-muted-foreground">Next event:</span>
+                            <span className="text-sm font-medium text-foreground">{vacancy.nextEvent}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600">Current stage:</span>
+                            <span className="text-sm text-muted-foreground">Current stage:</span>
                             <Badge className={vacancy.stageColor}>
                               {vacancy.currentStage}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600">Priority:</span>
+                            <span className="text-sm text-muted-foreground">Priority:</span>
                             {getPriorityBadge(vacancy.priority, vacancy.priorityColor)}
                           </div>
                         </div>
@@ -469,7 +469,7 @@ const RecruitmentOnboarding = () => {
 
               {/* Pagination */}
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   Showing 1 to 86 of 120 recruitment & onboarding lists
                 </div>
                 <div className="flex items-center space-x-2">
@@ -489,13 +489,13 @@ const RecruitmentOnboarding = () => {
           <TabsContent value="reference-checks" className="space-y-6">
             {/* Reference Checks Section */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Reference checks lists</h2>
+              <h2 className="text-lg font-semibold text-foreground">Reference checks lists</h2>
               
               {/* Search and Actions Bar */}
               <div className="flex items-center justify-between">
                 <div className="flex-1 max-w-md">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search..."
                       className="pl-10"
@@ -516,37 +516,37 @@ const RecruitmentOnboarding = () => {
                 <CardContent className="p-0">
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50 border-b border-gray-200">
+                      <thead className="bg-muted/50 border-b border-border">
                         <tr>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Candidate</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Requisition</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Refs</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Received</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Flags</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Candidate</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Requisition</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Refs</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Received</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Flags</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {referenceChecksData.map((check, index) => (
-                          <tr key={check.id} className={`border-b border-gray-100 hover:bg-gray-50 ${index % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}>
+                          <tr key={check.id} className={`border-b border-border hover:bg-muted/50 ${index % 2 === 1 ? 'bg-muted/50' : 'bg-card'}`}>
                             <td className="py-3 px-4">
                               <div className="flex items-center space-x-3">
-                                <input type="checkbox" className="w-4 h-4 text-gray-600 border-gray-300 rounded" />
+                                <input type="checkbox" className="w-4 h-4 text-muted-foreground border-border rounded" />
                                 <div>
-                                  <div className="font-medium text-gray-900">{check.candidateName}</div>
-                                  <div className="text-sm text-gray-600">{check.candidateEmail}</div>
+                                  <div className="font-medium text-foreground">{check.candidateName}</div>
+                                  <div className="text-sm text-muted-foreground">{check.candidateEmail}</div>
                                 </div>
                               </div>
                             </td>
                             <td className="py-3 px-4">
                               <div>
-                                <div className="font-medium text-gray-900">{check.requisition}</div>
-                                <div className="text-sm text-gray-600">{check.department}</div>
+                                <div className="font-medium text-foreground">{check.requisition}</div>
+                                <div className="text-sm text-muted-foreground">{check.department}</div>
                               </div>
                             </td>
-                            <td className="py-3 px-4 text-gray-700">{check.refs}</td>
-                            <td className="py-3 px-4 text-gray-700">{check.received}</td>
+                            <td className="py-3 px-4 text-muted-foreground">{check.refs}</td>
+                            <td className="py-3 px-4 text-muted-foreground">{check.received}</td>
                             <td className="py-3 px-4">
                               {check.flags > 0 ? (
                                 <div className="flex items-center space-x-1">
@@ -555,7 +555,7 @@ const RecruitmentOnboarding = () => {
                                   </div>
                                 </div>
                               ) : (
-                                <span className="text-gray-700">{check.flags}</span>
+                                <span className="text-muted-foreground">{check.flags}</span>
                               )}
                             </td>
                             <td className="py-3 px-4">
@@ -584,7 +584,7 @@ const RecruitmentOnboarding = () => {
 
               {/* Pagination */}
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   Showing 1 to 8 of 120 reference checks lists
                 </div>
                 <div className="flex items-center space-x-2">
@@ -605,12 +605,12 @@ const RecruitmentOnboarding = () => {
             {/* Onboarding Checklist Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Onboarding checklist</h2>
+                <h2 className="text-lg font-semibold text-foreground">Onboarding checklist</h2>
                 
                 {/* Search and Filter */}
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input 
                       placeholder="Search..." 
                       className="pl-10 w-64"
@@ -629,39 +629,39 @@ const RecruitmentOnboarding = () => {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b bg-gray-50">
-                          <th className="text-left py-3 px-4 font-medium text-gray-700">Hire</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-700">Role</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-700">Start date</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-700">Manager</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-700">Progress</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-700">Blockers</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-700">Action</th>
+                        <tr className="border-b bg-muted/50">
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Hire</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Role</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Start date</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Manager</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Progress</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Blockers</th>
+                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {/* Sarah Chen */}
-                        <tr className="border-b hover:bg-gray-50">
+                        <tr className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <input type="checkbox" className="rounded" />
                               <div>
-                                <div className="font-medium text-gray-900">Sarah Chen</div>
-                                <div className="text-sm text-gray-500">sarah.chen@gmail.com</div>
+                                <div className="font-medium text-foreground">Sarah Chen</div>
+                                <div className="text-sm text-muted-foreground">sarah.chen@gmail.com</div>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Software engineer</div>
+                            <div className="text-muted-foreground">Software engineer</div>
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="text-gray-700">Aug 5, 2025</div>
-                              <div className="text-sm text-gray-500">Engineering onboarding</div>
+                              <div className="text-muted-foreground">Aug 5, 2025</div>
+                              <div className="text-sm text-muted-foreground">Engineering onboarding</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Alicia smith</div>
+                            <div className="text-muted-foreground">Alicia smith</div>
                           </td>
                           <td className="py-3 px-4">
                             <div className="text-yellow-600 font-medium">62%</div>
@@ -686,27 +686,27 @@ const RecruitmentOnboarding = () => {
                         </tr>
 
                         {/* Michael Johnson */}
-                        <tr className="border-b hover:bg-gray-50">
+                        <tr className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <input type="checkbox" className="rounded" />
                               <div>
-                                <div className="font-medium text-gray-900">Michael Johnson</div>
-                                <div className="text-sm text-gray-500">michael.johnson@gmail.com</div>
+                                <div className="font-medium text-foreground">Michael Johnson</div>
+                                <div className="text-sm text-muted-foreground">michael.johnson@gmail.com</div>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Product manager</div>
+                            <div className="text-muted-foreground">Product manager</div>
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="text-gray-700">Sep 12, 2025</div>
-                              <div className="text-sm text-gray-500">Product launch</div>
+                              <div className="text-muted-foreground">Sep 12, 2025</div>
+                              <div className="text-sm text-muted-foreground">Product launch</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">John Doe</div>
+                            <div className="text-muted-foreground">John Doe</div>
                           </td>
                           <td className="py-3 px-4">
                             <div className="text-yellow-600 font-medium">75%</div>
@@ -731,33 +731,33 @@ const RecruitmentOnboarding = () => {
                         </tr>
 
                         {/* Emily Davis */}
-                        <tr className="border-b hover:bg-gray-50">
+                        <tr className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <input type="checkbox" className="rounded" />
                               <div>
-                                <div className="font-medium text-gray-900">Emily Davis</div>
-                                <div className="text-sm text-gray-500">emily.davis@gmail.com</div>
+                                <div className="font-medium text-foreground">Emily Davis</div>
+                                <div className="text-sm text-muted-foreground">emily.davis@gmail.com</div>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Designer</div>
+                            <div className="text-muted-foreground">Designer</div>
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="text-gray-700">Oct 1, 2025</div>
-                              <div className="text-sm text-gray-500">Design sprint</div>
+                              <div className="text-muted-foreground">Oct 1, 2025</div>
+                              <div className="text-sm text-muted-foreground">Design sprint</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Alice Brown</div>
+                            <div className="text-muted-foreground">Alice Brown</div>
                           </td>
                           <td className="py-3 px-4">
                             <div className="text-green-600 font-medium">100%</div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-500">0</div>
+                            <div className="text-muted-foreground">0</div>
                           </td>
                           <td className="py-3 px-4">
                             <Button 
@@ -773,27 +773,27 @@ const RecruitmentOnboarding = () => {
                         </tr>
 
                         {/* David Kim */}
-                        <tr className="border-b hover:bg-gray-50">
+                        <tr className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <input type="checkbox" className="rounded" />
                               <div>
-                                <div className="font-medium text-gray-900">David Kim</div>
-                                <div className="text-sm text-gray-500">david.kim@gmail.com</div>
+                                <div className="font-medium text-foreground">David Kim</div>
+                                <div className="text-sm text-muted-foreground">david.kim@gmail.com</div>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Data analyst</div>
+                            <div className="text-muted-foreground">Data analyst</div>
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="text-gray-700">Nov 17, 2025</div>
-                              <div className="text-sm text-gray-500">Data review</div>
+                              <div className="text-muted-foreground">Nov 17, 2025</div>
+                              <div className="text-sm text-muted-foreground">Data review</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Carol Jones</div>
+                            <div className="text-muted-foreground">Carol Jones</div>
                           </td>
                           <td className="py-3 px-4">
                             <div className="text-yellow-600 font-medium">70%</div>
@@ -818,33 +818,33 @@ const RecruitmentOnboarding = () => {
                         </tr>
 
                         {/* Laura Wilson */}
-                        <tr className="border-b hover:bg-gray-50">
+                        <tr className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <input type="checkbox" className="rounded" />
                               <div>
-                                <div className="font-medium text-gray-900">Laura Wilson</div>
-                                <div className="text-sm text-gray-500">laura.wilson@gmail.com</div>
+                                <div className="font-medium text-foreground">Laura Wilson</div>
+                                <div className="text-sm text-muted-foreground">laura.wilson@gmail.com</div>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Marketing specialist</div>
+                            <div className="text-muted-foreground">Marketing specialist</div>
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="text-gray-700">Dec 9, 2025</div>
-                              <div className="text-sm text-gray-500">Campaign kickoff</div>
+                              <div className="text-muted-foreground">Dec 9, 2025</div>
+                              <div className="text-sm text-muted-foreground">Campaign kickoff</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Tom White</div>
+                            <div className="text-muted-foreground">Tom White</div>
                           </td>
                           <td className="py-3 px-4">
                             <div className="text-yellow-600 font-medium">85%</div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-500">0</div>
+                            <div className="text-muted-foreground">0</div>
                           </td>
                           <td className="py-3 px-4">
                             <Button 
@@ -860,27 +860,27 @@ const RecruitmentOnboarding = () => {
                         </tr>
 
                         {/* Chris Lee */}
-                        <tr className="border-b hover:bg-gray-50">
+                        <tr className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <input type="checkbox" className="rounded" />
                               <div>
-                                <div className="font-medium text-gray-900">Chris Lee</div>
-                                <div className="text-sm text-gray-500">chris.lee@gmail.com</div>
+                                <div className="font-medium text-foreground">Chris Lee</div>
+                                <div className="text-sm text-muted-foreground">chris.lee@gmail.com</div>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">UX researcher</div>
+                            <div className="text-muted-foreground">UX researcher</div>
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="text-gray-700">Jan 15, 2026</div>
-                              <div className="text-sm text-gray-500">User testing</div>
+                              <div className="text-muted-foreground">Jan 15, 2026</div>
+                              <div className="text-sm text-muted-foreground">User testing</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">James Green</div>
+                            <div className="text-muted-foreground">James Green</div>
                           </td>
                           <td className="py-3 px-4">
                             <div className="text-red-600 font-medium">30%</div>
@@ -905,33 +905,33 @@ const RecruitmentOnboarding = () => {
                         </tr>
 
                         {/* Anna Martinez */}
-                        <tr className="border-b hover:bg-gray-50">
+                        <tr className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <input type="checkbox" className="rounded" />
                               <div>
-                                <div className="font-medium text-gray-900">Anna Martinez</div>
-                                <div className="text-sm text-gray-500">anna.martinez@gmail.com</div>
+                                <div className="font-medium text-foreground">Anna Martinez</div>
+                                <div className="text-sm text-muted-foreground">anna.martinez@gmail.com</div>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Frontend developer</div>
+                            <div className="text-muted-foreground">Frontend developer</div>
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="text-gray-700">Feb 20, 2026</div>
-                              <div className="text-sm text-gray-500">Feature development</div>
+                              <div className="text-muted-foreground">Feb 20, 2026</div>
+                              <div className="text-sm text-muted-foreground">Feature development</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Rebecca Black</div>
+                            <div className="text-muted-foreground">Rebecca Black</div>
                           </td>
                           <td className="py-3 px-4">
                             <div className="text-green-600 font-medium">90%</div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-500">0</div>
+                            <div className="text-muted-foreground">0</div>
                           </td>
                           <td className="py-3 px-4">
                             <Button 
@@ -947,33 +947,33 @@ const RecruitmentOnboarding = () => {
                         </tr>
 
                         {/* Robert Taylor */}
-                        <tr className="border-b hover:bg-gray-50">
+                        <tr className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <input type="checkbox" className="rounded" />
                               <div>
-                                <div className="font-medium text-gray-900">Robert Taylor</div>
-                                <div className="text-sm text-gray-500">robert.taylor@gmail.com</div>
+                                <div className="font-medium text-foreground">Robert Taylor</div>
+                                <div className="text-sm text-muted-foreground">robert.taylor@gmail.com</div>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Backend developer</div>
+                            <div className="text-muted-foreground">Backend developer</div>
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="text-gray-700">Mar 25, 2026</div>
-                              <div className="text-sm text-gray-500">System architecture</div>
+                              <div className="text-muted-foreground">Mar 25, 2026</div>
+                              <div className="text-sm text-muted-foreground">System architecture</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-700">Megan White</div>
+                            <div className="text-muted-foreground">Megan White</div>
                           </td>
                           <td className="py-3 px-4">
                             <div className="text-green-600 font-medium">88%</div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="text-gray-500">0</div>
+                            <div className="text-muted-foreground">0</div>
                           </td>
                           <td className="py-3 px-4">
                             <Button 
@@ -992,8 +992,8 @@ const RecruitmentOnboarding = () => {
                   </div>
 
                   {/* Pagination */}
-                  <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
-                    <div className="text-sm text-gray-700">
+                  <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/50">
+                    <div className="text-sm text-muted-foreground">
                       Showing 1 to 8 of 120 onboarding checklists
                     </div>
                     <div className="flex items-center space-x-2">

@@ -54,7 +54,7 @@ const ExitDetailView = ({ onBack }: ExitDetailViewProps) => {
   return (
     <div className="space-y-6">
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
         <Button
           variant="ghost"
           size="sm"
@@ -63,12 +63,12 @@ const ExitDetailView = ({ onBack }: ExitDetailViewProps) => {
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
         </Button>
-        <span>Exit feedback / Detail view</span>
+        <span className="text-muted-foreground">Exit feedback / Detail view</span>
       </div>
 
       {/* Page Header */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-gray-900">Exits</h1>
+        <h1 className="text-2xl font-bold text-foreground">Exits</h1>
       </div>
 
       {/* Main Content Cards */}
@@ -76,30 +76,30 @@ const ExitDetailView = ({ onBack }: ExitDetailViewProps) => {
         {/* Basic Information Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-900">Basic information</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">Basic information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">Role</label>
-                <p className="text-gray-900">{exitData.role}</p>
+                <label className="text-sm font-medium text-muted-foreground">Role</label>
+                <p className="text-foreground">{exitData.role}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Organization</label>
-                <p className="text-gray-900">{exitData.organization}</p>
+                <label className="text-sm font-medium text-muted-foreground">Organization</label>
+                <p className="text-foreground">{exitData.organization}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Type</label>
-                <p className="text-gray-900">{exitData.type}</p>
+                <label className="text-sm font-medium text-muted-foreground">Type</label>
+                <p className="text-foreground">{exitData.type}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Effective date</label>
-                <p className="text-gray-900">{exitData.effectiveDate}</p>
+                <label className="text-sm font-medium text-muted-foreground">Effective date</label>
+                <p className="text-foreground">{exitData.effectiveDate}</p>
               </div>
             </div>
             
             <div>
-              <label className="text-sm font-medium text-gray-700">Reason</label>
+              <label className="text-sm font-medium text-muted-foreground">Reason</label>
               <div className="mt-2 space-y-2">
                 <div className="flex flex-wrap gap-2">
                   {exitData.reasons.map((reason, index) => (
@@ -108,13 +108,13 @@ const ExitDetailView = ({ onBack }: ExitDetailViewProps) => {
                     </Badge>
                   ))}
                 </div>
-                <p className="text-gray-700">{exitData.reasonDetails}</p>
+                <p className="text-foreground">{exitData.reasonDetails}</p>
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700">Notes</label>
-              <p className="text-gray-500 italic">{exitData.notes || 'No additional notes provided'}</p>
+              <label className="text-sm font-medium text-muted-foreground">Notes</label>
+              <p className="text-muted-foreground italic">{exitData.notes || 'No additional notes provided'}</p>
             </div>
           </CardContent>
         </Card>
@@ -122,32 +122,32 @@ const ExitDetailView = ({ onBack }: ExitDetailViewProps) => {
         {/* Exit Survey Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-900">Exit survey</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">Exit survey</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">Overall Rating</label>
-                <p className="text-lg font-semibold text-gray-900">{exitData.overallRating} /5</p>
+                <label className="text-sm font-medium text-muted-foreground">Overall Rating</label>
+                <p className="text-lg font-semibold text-foreground">{exitData.overallRating} /5</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">NPS Score</label>
-                <p className="text-lg font-semibold text-gray-900">{exitData.npsScore} /10</p>
+                <label className="text-sm font-medium text-muted-foreground">NPS Score</label>
+                <p className="text-lg font-semibold text-foreground">{exitData.npsScore} /10</p>
               </div>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">How satisfied were you with your role?</label>
-                <p className="text-gray-900">{exitData.surveyResponses.roleSatisfaction}</p>
+                <label className="text-sm font-medium text-muted-foreground">How satisfied were you with your role?</label>
+                <p className="text-foreground">{exitData.surveyResponses.roleSatisfaction}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Would you recommend us as an employer?</label>
-                <p className="text-gray-900">{exitData.surveyResponses.recommendEmployer}</p>
+                <label className="text-sm font-medium text-muted-foreground">Would you recommend us as an employer?</label>
+                <p className="text-foreground">{exitData.surveyResponses.recommendEmployer}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">What could we improve?</label>
-                <p className="text-gray-900">{exitData.surveyResponses.improvements}</p>
+                <label className="text-sm font-medium text-muted-foreground">What could we improve?</label>
+                <p className="text-foreground">{exitData.surveyResponses.improvements}</p>
               </div>
             </div>
           </CardContent>
@@ -156,7 +156,7 @@ const ExitDetailView = ({ onBack }: ExitDetailViewProps) => {
         {/* Close-out Checklist Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-900">Close-out Checklist</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">Close-out Checklist</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
@@ -195,7 +195,7 @@ const ExitDetailView = ({ onBack }: ExitDetailViewProps) => {
         {/* Rehire Eligibility Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-900">Rehire Eligibility</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">Rehire Eligibility</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`flex items-center space-x-3 p-3 rounded-lg ${

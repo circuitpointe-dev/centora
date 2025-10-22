@@ -70,17 +70,17 @@ const ScheduleExitInterviewModal = ({ isOpen, onClose }: ScheduleExitInterviewMo
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Blurred Background Overlay */}
       <div 
-        className="fixed inset-0 backdrop-blur-md bg-white/30"
+        className="fixed inset-0 backdrop-blur-md bg-background/30"
         onClick={onClose}
       />
 
       {/* Modal Content */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Schedule Exit Interview</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-xl font-semibold text-foreground">Schedule Exit Interview</h2>
+            <p className="text-sm text-muted-foreground mt-1">
               Plan an exit interview for a departing employee or volunteer
             </p>
           </div>
@@ -88,7 +88,7 @@ const ScheduleExitInterviewModal = ({ isOpen, onClose }: ScheduleExitInterviewMo
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -98,7 +98,7 @@ const ScheduleExitInterviewModal = ({ isOpen, onClose }: ScheduleExitInterviewMo
         <div className="p-6 space-y-4">
           {/* Exit Case Field */}
           <div className="space-y-2">
-            <Label htmlFor="exit-case" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="exit-case" className="text-sm font-medium text-muted-foreground">
               Exit case
             </Label>
             <Select
@@ -120,7 +120,7 @@ const ScheduleExitInterviewModal = ({ isOpen, onClose }: ScheduleExitInterviewMo
 
           {/* Date Field */}
           <div className="space-y-2">
-            <Label htmlFor="date" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="date" className="text-sm font-medium text-muted-foreground">
               Date
             </Label>
             <div className="relative">
@@ -131,13 +131,13 @@ const ScheduleExitInterviewModal = ({ isOpen, onClose }: ScheduleExitInterviewMo
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 className="pr-10"
               />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             </div>
           </div>
 
           {/* Time Field */}
           <div className="space-y-2">
-            <Label htmlFor="time" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="time" className="text-sm font-medium text-muted-foreground">
               Time
             </Label>
             <div className="relative">
@@ -148,13 +148,13 @@ const ScheduleExitInterviewModal = ({ isOpen, onClose }: ScheduleExitInterviewMo
                 onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                 className="pr-10"
               />
-              <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             </div>
           </div>
 
           {/* Interviewers Field */}
           <div className="space-y-2">
-            <Label htmlFor="interviewers" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="interviewers" className="text-sm font-medium text-muted-foreground">
               Interviewers
             </Label>
             <Input
@@ -167,7 +167,7 @@ const ScheduleExitInterviewModal = ({ isOpen, onClose }: ScheduleExitInterviewMo
 
           {/* Location Field */}
           <div className="space-y-2">
-            <Label htmlFor="location" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="location" className="text-sm font-medium text-muted-foreground">
               Location
             </Label>
             <Select
@@ -189,13 +189,13 @@ const ScheduleExitInterviewModal = ({ isOpen, onClose }: ScheduleExitInterviewMo
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end space-x-3 p-6 border-t bg-gray-50">
+        <div className="flex justify-end space-x-3 p-6 border-t bg-muted">
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
           <Button 
             onClick={handleSubmit}
-            className="bg-gray-900 hover:bg-gray-800"
+            className="bg-foreground hover:bg-muted-foreground"
           >
             Schedule interview
           </Button>

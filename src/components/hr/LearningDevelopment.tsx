@@ -1102,7 +1102,7 @@ const LearningDevelopment = () => {
       case 'Low':
         return 'bg-blue-500 text-white';
       default:
-        return 'bg-gray-500 text-white';
+        return 'bg-muted/500 text-white';
     }
   };
 
@@ -1127,7 +1127,7 @@ const LearningDevelopment = () => {
     if (type === 'gap') {
       return 'bg-red-500 text-white';
     }
-    return 'bg-gray-100 text-gray-700';
+    return 'bg-muted text-muted-foreground';
   };
 
   const getStatusBadgeColor = (status: string) => {
@@ -1136,7 +1136,7 @@ const LearningDevelopment = () => {
     } else if (status === 'Disconnected') {
       return 'bg-red-100 text-red-800';
     }
-    return 'bg-gray-100 text-gray-700';
+    return 'bg-muted text-muted-foreground';
   };
 
   const getCompletionStatusBadgeColor = (status: string) => {
@@ -1147,7 +1147,7 @@ const LearningDevelopment = () => {
     } else if (status === 'Enrolled') {
       return 'bg-blue-100 text-blue-800';
     }
-    return 'bg-gray-100 text-gray-700';
+    return 'bg-muted text-muted-foreground';
   };
 
   // Training Plan View Component
@@ -1155,16 +1155,16 @@ const LearningDevelopment = () => {
     return (
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <button 
             onClick={onBack}
-            className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
+            className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Course details</span>
           </button>
           <ChevronRight className="h-4 w-4" />
-          <span className="text-gray-900">Create training plan</span>
+          <span className="text-foreground">Create training plan</span>
         </div>
 
         {/* Course Overview Section */}
@@ -1174,24 +1174,24 @@ const LearningDevelopment = () => {
             <Badge className="bg-gray-900 text-white px-3 py-1 text-sm font-medium">
               Technical
             </Badge>
-            <Badge className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-medium">
+            <Badge className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium">
               Intermediate
             </Badge>
-            <Badge className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-medium">
+            <Badge className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium">
               Target: L3
             </Badge>
           </div>
 
           {/* Course Title */}
-          <h1 className="text-3xl font-bold text-gray-900">Course R-201: Advanced react development</h1>
+          <h1 className="text-3xl font-bold text-foreground">Course R-201: Advanced react development</h1>
 
           {/* Course Description */}
-          <p className="text-gray-600 text-lg leading-relaxed max-w-4xl">
+          <p className="text-muted-foreground text-lg leading-relaxed max-w-4xl">
             Master advanced React concepts including hooks, context, performance optimization, and modern patterns. This comprehensive course will take you from intermediate to advanced React proficiency.
           </p>
 
           {/* Course Stats */}
-          <div className="flex items-center space-x-6 text-sm text-gray-600">
+          <div className="flex items-center space-x-6 text-sm text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Clock className="h-4 w-4" />
               <span>8 weeks</span>
@@ -1218,13 +1218,13 @@ const LearningDevelopment = () => {
             {/* Basic Information */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
-                <p className="text-sm text-gray-600">General details about the training plan</p>
+                <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
+                <p className="text-sm text-muted-foreground">General details about the training plan</p>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="planName" className="text-sm font-medium text-gray-900">
+                  <Label htmlFor="planName" className="text-sm font-medium text-foreground">
                     Plan Name <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -1237,7 +1237,7 @@ const LearningDevelopment = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="description" className="text-sm font-medium text-gray-900">Description</Label>
+                  <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
                   <Textarea
                     id="description"
                     placeholder="Describe the purpose and goals of this training plan..."
@@ -1250,7 +1250,7 @@ const LearningDevelopment = () => {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="targetRole" className="text-sm font-medium text-gray-900">
+                    <Label htmlFor="targetRole" className="text-sm font-medium text-foreground">
                       Target Role <span className="text-red-500">*</span>
                     </Label>
                     <Select value={trainingPlanForm.targetRole} onValueChange={(value) => setTrainingPlanForm(prev => ({ ...prev, targetRole: value }))}>
@@ -1267,7 +1267,7 @@ const LearningDevelopment = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="priority" className="text-sm font-medium text-gray-900">Priority</Label>
+                    <Label htmlFor="priority" className="text-sm font-medium text-foreground">Priority</Label>
                     <Select value={trainingPlanForm.priority} onValueChange={(value) => setTrainingPlanForm(prev => ({ ...prev, priority: value }))}>
                       <SelectTrigger className="mt-1">
                         <SelectValue />
@@ -1286,10 +1286,10 @@ const LearningDevelopment = () => {
             {/* Skills to Address */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-foreground">
                   Skills to Address <span className="text-red-500">*</span>
                 </h3>
-                <p className="text-sm text-gray-600">Select the skill gaps this plan will address</p>
+                <p className="text-sm text-muted-foreground">Select the skill gaps this plan will address</p>
               </div>
               
               <div className="space-y-3">
@@ -1302,12 +1302,12 @@ const LearningDevelopment = () => {
                         onCheckedChange={() => handleSkillToggle(skill.id)}
                       />
                       <div>
-                        <Label htmlFor={skill.id} className="text-sm font-medium text-gray-900 cursor-pointer">
+                        <Label htmlFor={skill.id} className="text-sm font-medium text-foreground cursor-pointer">
                           {skill.name}
                         </Label>
                       </div>
                     </div>
-                    <Badge className="bg-gray-100 text-gray-700 px-2 py-1 text-xs font-medium">
+                    <Badge className="bg-muted text-muted-foreground px-2 py-1 text-xs font-medium">
                       {skill.category}
                     </Badge>
                   </div>
@@ -1318,10 +1318,10 @@ const LearningDevelopment = () => {
             {/* Courses & Activities */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-foreground">
                   Courses & Activities <span className="text-red-500">*</span>
                 </h3>
-                <p className="text-sm text-gray-600">Select courses and learning activities for this plan</p>
+                <p className="text-sm text-muted-foreground">Select courses and learning activities for this plan</p>
               </div>
               
               <div className="space-y-3">
@@ -1334,10 +1334,10 @@ const LearningDevelopment = () => {
                         onCheckedChange={() => handleCourseToggle(course.id)}
                       />
                       <div>
-                        <Label htmlFor={course.id} className="text-sm font-medium text-gray-900 cursor-pointer">
+                        <Label htmlFor={course.id} className="text-sm font-medium text-foreground cursor-pointer">
                           {course.name}
                         </Label>
-                        <p className="text-xs text-gray-500">{course.duration} · {course.format}</p>
+                        <p className="text-xs text-muted-foreground">{course.duration} · {course.format}</p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm" className="text-xs">
@@ -1351,11 +1351,11 @@ const LearningDevelopment = () => {
             {/* Additional Information */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Additional Information</h3>
+                <h3 className="text-lg font-semibold text-foreground">Additional Information</h3>
               </div>
               
               <div>
-                <Label htmlFor="notes" className="text-sm font-medium text-gray-900">Notes</Label>
+                <Label htmlFor="notes" className="text-sm font-medium text-foreground">Notes</Label>
                 <Textarea
                   id="notes"
                   placeholder="Add any additional notes or instructions..."
@@ -1376,7 +1376,7 @@ const LearningDevelopment = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label htmlFor="planOwner" className="text-sm font-medium text-gray-900">
+                  <Label htmlFor="planOwner" className="text-sm font-medium text-foreground">
                     Plan Owner <span className="text-red-500">*</span>
                   </Label>
                   <Select value={trainingPlanForm.planOwner} onValueChange={(value) => setTrainingPlanForm(prev => ({ ...prev, planOwner: value }))}>
@@ -1392,7 +1392,7 @@ const LearningDevelopment = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="startDate" className="text-sm font-medium text-gray-900">Start Date</Label>
+                  <Label htmlFor="startDate" className="text-sm font-medium text-foreground">Start Date</Label>
                   <Input
                     id="startDate"
                     type="date"
@@ -1403,7 +1403,7 @@ const LearningDevelopment = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="dueDate" className="text-sm font-medium text-gray-900">
+                  <Label htmlFor="dueDate" className="text-sm font-medium text-foreground">
                     Due Date <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -1418,16 +1418,16 @@ const LearningDevelopment = () => {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
-                    <span className="text-sm text-gray-900">Priority: {trainingPlanForm.priority}</span>
+                    <span className="text-sm text-foreground">Priority: {trainingPlanForm.priority}</span>
                   </div>
                   
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">Skills ({trainingPlanForm.selectedSkills.length})</h4>
+                    <h4 className="text-sm font-medium text-foreground">Skills ({trainingPlanForm.selectedSkills.length})</h4>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {trainingPlanForm.selectedSkills.map(skillId => {
                         const skill = availableSkills.find(s => s.id === skillId);
                         return skill ? (
-                          <Badge key={skillId} className="bg-gray-100 text-gray-700 px-2 py-1 text-xs">
+                          <Badge key={skillId} className="bg-muted text-muted-foreground px-2 py-1 text-xs">
                             {skill.name}
                           </Badge>
                         ) : null;
@@ -1436,12 +1436,12 @@ const LearningDevelopment = () => {
                   </div>
                   
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">Courses ({trainingPlanForm.selectedCourses.length})</h4>
+                    <h4 className="text-sm font-medium text-foreground">Courses ({trainingPlanForm.selectedCourses.length})</h4>
                     <div className="space-y-1 mt-2">
                       {trainingPlanForm.selectedCourses.map(courseId => {
                         const course = availableCourses.find(c => c.id === courseId);
                         return course ? (
-                          <div key={courseId} className="text-xs text-gray-600">
+                          <div key={courseId} className="text-xs text-muted-foreground">
                             <div className="font-medium">{course.name}</div>
                             <div>{course.duration}</div>
                           </div>
@@ -1483,15 +1483,15 @@ const LearningDevelopment = () => {
     return (
       <div className="space-y-6">
         {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <ArrowLeft className="h-4 w-4 cursor-pointer" onClick={onBack} />
           <span>Capacity scorecards / Domain details / Create action plan</span>
         </div>
 
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Create action plan</h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Create action plan</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {selectedDomainDetails.organization} • {selectedDomainDetails.domain} (Score: {selectedDomainDetails.score})
           </p>
         </div>
@@ -1502,7 +1502,7 @@ const LearningDevelopment = () => {
             <div className="space-y-6">
               {/* Plan Title */}
               <div>
-                <Label htmlFor="planTitle" className="text-sm font-medium text-gray-900">Plan title</Label>
+                <Label htmlFor="planTitle" className="text-sm font-medium text-foreground">Plan title</Label>
                 <Input
                   id="planTitle"
                   placeholder="Enter plan title"
@@ -1514,7 +1514,7 @@ const LearningDevelopment = () => {
 
               {/* Description & Objectives */}
               <div>
-                <Label htmlFor="description" className="text-sm font-medium text-gray-900">Description & Objectives</Label>
+                <Label htmlFor="description" className="text-sm font-medium text-foreground">Description & Objectives</Label>
                 <Textarea
                   id="description"
                   placeholder="Describe the objectives and expected outcomes of this action plan"
@@ -1528,7 +1528,7 @@ const LearningDevelopment = () => {
               {/* Priority and Target Date Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="priority" className="text-sm font-medium text-gray-900">Priority</Label>
+                  <Label htmlFor="priority" className="text-sm font-medium text-foreground">Priority</Label>
                   <Select value={actionPlanForm.priority} onValueChange={(value) => setActionPlanForm({...actionPlanForm, priority: value})}>
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select priority" />
@@ -1543,7 +1543,7 @@ const LearningDevelopment = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="targetDate" className="text-sm font-medium text-gray-900">Target Completion Date</Label>
+                  <Label htmlFor="targetDate" className="text-sm font-medium text-foreground">Target Completion Date</Label>
                   <Input
                     id="targetDate"
                     type="date"
@@ -1556,7 +1556,7 @@ const LearningDevelopment = () => {
 
               {/* Assigned To */}
               <div>
-                <Label htmlFor="assignedTo" className="text-sm font-medium text-gray-900">Assigned to</Label>
+                <Label htmlFor="assignedTo" className="text-sm font-medium text-foreground">Assigned to</Label>
                 <Select value={actionPlanForm.assignedTo} onValueChange={(value) => setActionPlanForm({...actionPlanForm, assignedTo: value})}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select assignee" />
@@ -1572,7 +1572,7 @@ const LearningDevelopment = () => {
 
               {/* Estimated Budget */}
               <div>
-                <Label htmlFor="budget" className="text-sm font-medium text-gray-900">Estimated Budget (Optional)</Label>
+                <Label htmlFor="budget" className="text-sm font-medium text-foreground">Estimated Budget (Optional)</Label>
                 <div className="flex mt-1">
                   <Select value={actionPlanForm.currency} onValueChange={(value) => setActionPlanForm({...actionPlanForm, currency: value})}>
                     <SelectTrigger className="w-20">
@@ -1597,7 +1597,7 @@ const LearningDevelopment = () => {
 
               {/* Key Actions & Steps */}
               <div>
-                <Label htmlFor="keyActions" className="text-sm font-medium text-gray-900">Key Actions & Steps</Label>
+                <Label htmlFor="keyActions" className="text-sm font-medium text-foreground">Key Actions & Steps</Label>
                 <Textarea
                   id="keyActions"
                   placeholder="List the specific actions and steps to be taken to achieve the objectives"
@@ -1611,12 +1611,12 @@ const LearningDevelopment = () => {
               {/* Linked Trainings */}
               <div>
                 <div className="flex items-center space-x-2 mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900">Linked Trainings</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Linked Trainings</h3>
                   <Badge className="bg-green-100 text-green-800 text-xs">Recommended</Badge>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="text-sm font-medium text-gray-900">{selectedDomainDetails.linkedTrainings[0]?.title}</h4>
-                  <p className="text-xs text-gray-500 mt-1">{selectedDomainDetails.linkedTrainings[0]?.subtitle}</p>
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <h4 className="text-sm font-medium text-foreground">{selectedDomainDetails.linkedTrainings[0]?.title}</h4>
+                  <p className="text-xs text-muted-foreground mt-1">{selectedDomainDetails.linkedTrainings[0]?.subtitle}</p>
                 </div>
               </div>
 
@@ -1662,15 +1662,15 @@ const LearningDevelopment = () => {
     return (
       <div className="space-y-6">
         {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <ArrowLeft className="h-4 w-4 cursor-pointer" onClick={onBack} />
           <span>Capacity scorecards / Domain details</span>
         </div>
 
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Domain details</h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Domain details</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {selectedDomainDetails.organization} • {selectedDomainDetails.domain}
           </p>
         </div>
@@ -1681,8 +1681,8 @@ const LearningDevelopment = () => {
           <div className="lg:col-span-1">
             <Card className={`${getScoreBackgroundColor(selectedDomainDetails.score)}`}>
               <CardContent className="p-6 text-center">
-                <div className="text-sm font-medium text-gray-600 mb-2">Score</div>
-                <div className="text-4xl font-bold text-gray-900">{selectedDomainDetails.score}</div>
+                <div className="text-sm font-medium text-muted-foreground mb-2">Score</div>
+                <div className="text-4xl font-bold text-foreground">{selectedDomainDetails.score}</div>
               </CardContent>
             </Card>
           </div>
@@ -1692,13 +1692,13 @@ const LearningDevelopment = () => {
             {/* Key Findings */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Key findings</CardTitle>
+                <CardTitle className="text-lg font-semibold text-foreground">Key findings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {selectedDomainDetails.keyFindings.map((finding: any, index: number) => (
-                  <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                    <h4 className="text-sm font-medium text-gray-900">{finding.title}</h4>
-                    <p className="text-xs text-gray-500 mt-1">{finding.subtitle}</p>
+                  <div key={index} className="p-4 bg-muted/50 rounded-lg">
+                    <h4 className="text-sm font-medium text-foreground">{finding.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-1">{finding.subtitle}</p>
                   </div>
                 ))}
               </CardContent>
@@ -1707,7 +1707,7 @@ const LearningDevelopment = () => {
             {/* Evidence */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Evidence</CardTitle>
+                <CardTitle className="text-lg font-semibold text-foreground">Evidence</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1716,8 +1716,8 @@ const LearningDevelopment = () => {
                       <div className="flex items-start space-x-3">
                         <FileText className="h-8 w-8 text-gray-400 mt-1" />
                         <div className="flex-1">
-                          <h4 className="text-sm font-medium text-gray-900">{file.filename}</h4>
-                          <div className="text-xs text-gray-500 mt-1">
+                          <h4 className="text-sm font-medium text-foreground">{file.filename}</h4>
+                          <div className="text-xs text-muted-foreground mt-1">
                             <div>{file.author}</div>
                             <div>{file.date}</div>
                             <div>{file.size}</div>
@@ -1737,14 +1737,14 @@ const LearningDevelopment = () => {
             {/* Linked Trainings */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Linked trainings</CardTitle>
+                <CardTitle className="text-lg font-semibold text-foreground">Linked trainings</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {selectedDomainDetails.linkedTrainings.map((training: any, index: number) => (
-                    <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                      <h4 className="text-sm font-medium text-gray-900">{training.title}</h4>
-                      <p className="text-xs text-gray-500 mt-1">{training.subtitle}</p>
+                    <div key={index} className="p-4 bg-muted/50 rounded-lg">
+                      <h4 className="text-sm font-medium text-foreground">{training.title}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{training.subtitle}</p>
                     </div>
                   ))}
                 </div>
@@ -1810,8 +1810,8 @@ const LearningDevelopment = () => {
         {/* Page Header */}
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Team Attendance Calendar</h1>
-            <p className="text-sm text-gray-600 mt-1">Plan training sessions and visualize team availability</p>
+            <h1 className="text-2xl font-bold text-foreground">Team Attendance Calendar</h1>
+            <p className="text-sm text-muted-foreground mt-1">Plan training sessions and visualize team availability</p>
           </div>
           
           {/* Action Buttons */}
@@ -1832,7 +1832,7 @@ const LearningDevelopment = () => {
 
         {/* Calendar Navigation */}
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-900">{monthName} {year}</h2>
+          <h2 className="text-lg font-semibold text-foreground">{monthName} {year}</h2>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" onClick={handlePreviousMonth}>
               <ChevronLeft className="h-4 w-4" />
@@ -1851,7 +1851,7 @@ const LearningDevelopment = () => {
             <div className="grid grid-cols-7 gap-px bg-gray-200">
               {/* Day Headers */}
               {dayNames.map((day) => (
-                <div key={day} className="bg-gray-50 p-3 text-center text-sm font-medium text-gray-700">
+                <div key={day} className="bg-muted/50 p-3 text-center text-sm font-medium text-muted-foreground">
                   {day}
                 </div>
               ))}
@@ -1863,11 +1863,11 @@ const LearningDevelopment = () => {
                 return (
                   <div 
                     key={index} 
-                    className="bg-white min-h-[120px] p-2 border-r border-b border-gray-200"
+                    className="bg-card min-h-[120px] p-2 border-r border-b border-gray-200"
                   >
                     {day && (
                       <>
-                        <div className="text-sm font-medium text-gray-900 mb-2">{day}</div>
+                        <div className="text-sm font-medium text-foreground mb-2">{day}</div>
                         
                         {/* Events */}
                         <div className="space-y-1">
@@ -1905,22 +1905,22 @@ const LearningDevelopment = () => {
     return (
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <button 
             onClick={onBack}
-            className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
+            className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Completion records</span>
           </button>
           <ChevronRight className="h-4 w-4" />
-          <span className="text-gray-900">Bulk enrollment</span>
+          <span className="text-foreground">Bulk enrollment</span>
         </div>
 
         {/* Page Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Bulk enrollment</h1>
-          <p className="text-sm text-gray-600 mt-1">Enroll multiple employees into a training session</p>
+          <h1 className="text-2xl font-bold text-foreground">Bulk enrollment</h1>
+          <p className="text-sm text-muted-foreground mt-1">Enroll multiple employees into a training session</p>
         </div>
 
         {/* Available Sessions Alert */}
@@ -1942,12 +1942,12 @@ const LearningDevelopment = () => {
             {/* Select Training Session */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Select Training Session</CardTitle>
-                <p className="text-sm text-gray-600">Choose the session to enroll employees into</p>
+                <CardTitle className="text-lg font-semibold text-foreground">Select Training Session</CardTitle>
+                <p className="text-sm text-muted-foreground">Choose the session to enroll employees into</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="session" className="text-sm font-medium text-gray-900">
+                  <Label htmlFor="session" className="text-sm font-medium text-foreground">
                     Session <span className="text-red-500">*</span>
                   </Label>
                   <Select value={bulkEnrollmentForm.selectedSession} onValueChange={(value) => setBulkEnrollmentForm(prev => ({ ...prev, selectedSession: value }))}>
@@ -1962,26 +1962,26 @@ const LearningDevelopment = () => {
                   </Select>
                 </div>
                 
-                <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Available Spots:</span>
-                    <span className="font-medium text-gray-900">0/5</span>
+                    <span className="text-muted-foreground">Available Spots:</span>
+                    <span className="font-medium text-foreground">0/5</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Instructor:</span>
-                    <span className="font-medium text-gray-900">Lisa Anderson</span>
+                    <span className="text-muted-foreground">Instructor:</span>
+                    <span className="font-medium text-foreground">Lisa Anderson</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Format:</span>
-                    <span className="font-medium text-gray-900">In-person</span>
+                    <span className="text-muted-foreground">Format:</span>
+                    <span className="font-medium text-foreground">In-person</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Start date - End date:</span>
-                    <span className="font-medium text-gray-900">October 4th, 2025 - October 6th, 2025</span>
+                    <span className="text-muted-foreground">Start date - End date:</span>
+                    <span className="font-medium text-foreground">October 4th, 2025 - October 6th, 2025</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Deadline:</span>
-                    <span className="font-medium text-gray-900">October 2th, 2025</span>
+                    <span className="text-muted-foreground">Deadline:</span>
+                    <span className="font-medium text-foreground">October 2th, 2025</span>
                   </div>
                 </div>
               </CardContent>
@@ -1992,8 +1992,8 @@ const LearningDevelopment = () => {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle className="text-lg font-semibold text-gray-900">Enrollment Method</CardTitle>
-                    <p className="text-sm text-gray-600">Choose how you want to select employees</p>
+                    <CardTitle className="text-lg font-semibold text-foreground">Enrollment Method</CardTitle>
+                    <p className="text-sm text-muted-foreground">Choose how you want to select employees</p>
                   </div>
                   <Button variant="outline" size="sm">
                     <Filter className="h-4 w-4 mr-2" />
@@ -2006,27 +2006,27 @@ const LearningDevelopment = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-gray-200">
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Employee</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Department</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Role</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900">Email</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Employee</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Department</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Role</th>
+                        <th className="text-left py-3 px-4 font-medium text-foreground">Email</th>
                       </tr>
                     </thead>
                     <tbody>
                       {employeeData.map((employee) => (
-                        <tr key={employee.id} className="border-b border-gray-200 hover:bg-gray-50">
+                        <tr key={employee.id} className="border-b border-gray-200 hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <Checkbox 
                                 checked={bulkEnrollmentForm.selectedEmployees.includes(employee.name)}
                                 onCheckedChange={(checked) => handleEmployeeSelection(employee.id, checked as boolean)}
                               />
-                              <span className="text-gray-900 font-medium">{employee.name}</span>
+                              <span className="text-foreground font-medium">{employee.name}</span>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-gray-900">{employee.department}</td>
-                          <td className="py-3 px-4 text-gray-900">{employee.role}</td>
-                          <td className="py-3 px-4 text-gray-900">{employee.email}</td>
+                          <td className="py-3 px-4 text-foreground">{employee.department}</td>
+                          <td className="py-3 px-4 text-foreground">{employee.role}</td>
+                          <td className="py-3 px-4 text-foreground">{employee.email}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -2035,7 +2035,7 @@ const LearningDevelopment = () => {
                 
                 {/* Pagination */}
                 <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     Showing 1 to 8 of 50 employees
                   </div>
                   <div className="flex space-x-2">
@@ -2053,7 +2053,7 @@ const LearningDevelopment = () => {
             {/* Enrollment Options */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Enrollment Options</CardTitle>
+                <CardTitle className="text-lg font-semibold text-foreground">Enrollment Options</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start space-x-3">
@@ -2064,10 +2064,10 @@ const LearningDevelopment = () => {
                     className="mt-1"
                   />
                   <div>
-                    <Label htmlFor="sendNotifications" className="text-sm font-medium text-gray-900">
+                    <Label htmlFor="sendNotifications" className="text-sm font-medium text-foreground">
                       Send enrollment notifications
                     </Label>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Employees will receive email notifications about their enrollment
                     </p>
                   </div>
@@ -2081,10 +2081,10 @@ const LearningDevelopment = () => {
                     className="mt-1"
                   />
                   <div>
-                    <Label htmlFor="requireManagerApproval" className="text-sm font-medium text-gray-900">
+                    <Label htmlFor="requireManagerApproval" className="text-sm font-medium text-foreground">
                       Require manager approval
                     </Label>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Enrollment will be pending until approved by each employee's manager
                     </p>
                   </div>
@@ -2108,29 +2108,29 @@ const LearningDevelopment = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Session</div>
-                  <div className="space-y-1 text-sm text-gray-900">
+                  <div className="text-xs text-muted-foreground mb-1">Session</div>
+                  <div className="space-y-1 text-sm text-foreground">
                     <div className="font-medium">{bulkEnrollmentForm.selectedSession}</div>
-                    <div className="text-gray-500">Leadership Fundamentals</div>
+                    <div className="text-muted-foreground">Leadership Fundamentals</div>
                   </div>
                 </div>
                 
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Capacity</div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-900">
+                  <div className="text-xs text-muted-foreground mb-1">Capacity</div>
+                  <div className="flex items-center space-x-2 text-sm text-foreground">
                     <Users className="h-4 w-4" />
                     <span>5 spots available</span>
                   </div>
                 </div>
                 
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Selected employees</div>
-                  <div className="text-sm font-medium text-gray-900">{bulkEnrollmentForm.selectedEmployees.length}</div>
+                  <div className="text-xs text-muted-foreground mb-1">Selected employees</div>
+                  <div className="text-sm font-medium text-foreground">{bulkEnrollmentForm.selectedEmployees.length}</div>
                 </div>
                 
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Options</div>
-                  <div className="space-y-2 text-sm text-gray-900">
+                  <div className="text-xs text-muted-foreground mb-1">Options</div>
+                  <div className="space-y-2 text-sm text-foreground">
                     {bulkEnrollmentForm.sendNotifications && (
                       <div className="flex items-center space-x-2">
                         <CheckCircle className="h-4 w-4 text-green-600" />
@@ -2152,7 +2152,7 @@ const LearningDevelopment = () => {
 
         {/* Bottom Action Bar */}
         <div className="flex justify-between items-center pt-6 border-t border-gray-200">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <span>Switch Module</span>
           </div>
           <Button onClick={handleCreateBulkEnrollment} className="bg-violet-600 hover:bg-violet-700 text-white">
@@ -2168,16 +2168,16 @@ const LearningDevelopment = () => {
     return (
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <button 
             onClick={onBack}
-            className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
+            className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Completion records</span>
           </button>
           <ChevronRight className="h-4 w-4" />
-          <span className="text-gray-900">Add training session</span>
+          <span className="text-foreground">Add training session</span>
         </div>
 
         {/* Main Content Grid */}
@@ -2186,20 +2186,20 @@ const LearningDevelopment = () => {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl font-bold text-gray-900">Add training session</CardTitle>
-                <p className="text-sm text-gray-600">Create a new session for an existing course</p>
+                <CardTitle className="text-xl font-bold text-foreground">Add training session</CardTitle>
+                <p className="text-sm text-muted-foreground">Create a new session for an existing course</p>
               </CardHeader>
               <CardContent className="space-y-8">
                 {/* Basic Information */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
-                    <p className="text-sm text-gray-600">General details about the training session</p>
+                    <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
+                    <p className="text-sm text-muted-foreground">General details about the training session</p>
                   </div>
                   
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="course" className="text-sm font-medium text-gray-900">
+                      <Label htmlFor="course" className="text-sm font-medium text-foreground">
                         Course <span className="text-red-500">*</span>
                       </Label>
                       <Select value={addSessionForm.course} onValueChange={(value) => setAddSessionForm(prev => ({ ...prev, course: value }))}>
@@ -2215,7 +2215,7 @@ const LearningDevelopment = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="sessionName" className="text-sm font-medium text-gray-900">
+                      <Label htmlFor="sessionName" className="text-sm font-medium text-foreground">
                         Session name <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -2227,7 +2227,7 @@ const LearningDevelopment = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="description" className="text-sm font-medium text-gray-900">Description</Label>
+                      <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
                       <Textarea
                         id="description"
                         placeholder="Describe what makes this session unique..."
@@ -2240,7 +2240,7 @@ const LearningDevelopment = () => {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="sessionFormat" className="text-sm font-medium text-gray-900">
+                        <Label htmlFor="sessionFormat" className="text-sm font-medium text-foreground">
                           Session Format <span className="text-red-500">*</span>
                         </Label>
                         <Select value={addSessionForm.sessionFormat} onValueChange={(value) => setAddSessionForm(prev => ({ ...prev, sessionFormat: value }))}>
@@ -2256,7 +2256,7 @@ const LearningDevelopment = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="duration" className="text-sm font-medium text-gray-900">Duration</Label>
+                        <Label htmlFor="duration" className="text-sm font-medium text-foreground">Duration</Label>
                         <Input
                           id="duration"
                           placeholder="e.g., 2 hours"
@@ -2268,7 +2268,7 @@ const LearningDevelopment = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="location" className="text-sm font-medium text-gray-900">
+                      <Label htmlFor="location" className="text-sm font-medium text-foreground">
                         Location <span className="text-red-500">*</span>
                       </Label>
                       <Select value={addSessionForm.location} onValueChange={(value) => setAddSessionForm(prev => ({ ...prev, location: value }))}>
@@ -2288,14 +2288,14 @@ const LearningDevelopment = () => {
                 {/* Schedule */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Schedule</h3>
-                    <p className="text-sm text-gray-600">Set dates and times for this session</p>
+                    <h3 className="text-lg font-semibold text-foreground">Schedule</h3>
+                    <p className="text-sm text-muted-foreground">Set dates and times for this session</p>
                   </div>
                   
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       <div>
-                        <Label htmlFor="startDate" className="text-sm font-medium text-gray-900">
+                        <Label htmlFor="startDate" className="text-sm font-medium text-foreground">
                           Start date <span className="text-red-500">*</span>
                         </Label>
                         <Input
@@ -2308,7 +2308,7 @@ const LearningDevelopment = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="endDate" className="text-sm font-medium text-gray-900">
+                        <Label htmlFor="endDate" className="text-sm font-medium text-foreground">
                           End date <span className="text-red-500">*</span>
                         </Label>
                         <Input
@@ -2321,7 +2321,7 @@ const LearningDevelopment = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="registrationDeadline" className="text-sm font-medium text-gray-900">
+                        <Label htmlFor="registrationDeadline" className="text-sm font-medium text-foreground">
                           Registration deadline <span className="text-red-500">*</span>
                         </Label>
                         <Input
@@ -2335,7 +2335,7 @@ const LearningDevelopment = () => {
                     </div>
                     
                     <div>
-                      <Label className="text-sm font-medium text-gray-900">Session Times (Optional)</Label>
+                      <Label className="text-sm font-medium text-foreground">Session Times (Optional)</Label>
                       <div className="space-y-3 mt-2">
                         {addSessionForm.sessionTimes.map((time, index) => (
                           <div key={index} className="flex items-center space-x-3">
@@ -2359,7 +2359,7 @@ const LearningDevelopment = () => {
                               }}
                               className="flex-1"
                             />
-                            <span className="text-gray-500">to</span>
+                            <span className="text-muted-foreground">to</span>
                             <Input
                               type="time"
                               value={time.endTime}
@@ -2383,12 +2383,12 @@ const LearningDevelopment = () => {
                 {/* Instructor & Capacity */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Instructor & Capacity</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Instructor & Capacity</h3>
                   </div>
                   
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="instructor" className="text-sm font-medium text-gray-900">
+                      <Label htmlFor="instructor" className="text-sm font-medium text-foreground">
                         Instructor <span className="text-red-500">*</span>
                       </Label>
                       <Select value={addSessionForm.instructor} onValueChange={(value) => setAddSessionForm(prev => ({ ...prev, instructor: value }))}>
@@ -2404,7 +2404,7 @@ const LearningDevelopment = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="maxCapacity" className="text-sm font-medium text-gray-900">Maximum capacity</Label>
+                      <Label htmlFor="maxCapacity" className="text-sm font-medium text-foreground">Maximum capacity</Label>
                       <Input
                         id="maxCapacity"
                         type="number"
@@ -2420,7 +2420,7 @@ const LearningDevelopment = () => {
                         checked={addSessionForm.allowWaitlist}
                         onCheckedChange={(checked) => setAddSessionForm(prev => ({ ...prev, allowWaitlist: checked as boolean }))}
                       />
-                      <Label htmlFor="allowWaitlist" className="text-sm font-medium text-gray-900">
+                      <Label htmlFor="allowWaitlist" className="text-sm font-medium text-foreground">
                         Allow waitlist
                       </Label>
                     </div>
@@ -2430,7 +2430,7 @@ const LearningDevelopment = () => {
                 {/* Session Settings */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Session settings</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Session settings</h3>
                   </div>
                   
                   <div className="space-y-4">
@@ -2442,10 +2442,10 @@ const LearningDevelopment = () => {
                         className="mt-1"
                       />
                       <div>
-                        <Label htmlFor="requireManagerApproval" className="text-sm font-medium text-gray-900">
+                        <Label htmlFor="requireManagerApproval" className="text-sm font-medium text-foreground">
                           Require manager approval for enrollment
                         </Label>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Enrollments will be pending until approved by participant's manager
                         </p>
                       </div>
@@ -2459,10 +2459,10 @@ const LearningDevelopment = () => {
                         className="mt-1"
                       />
                       <div>
-                        <Label htmlFor="markAsMandatory" className="text-sm font-medium text-gray-900">
+                        <Label htmlFor="markAsMandatory" className="text-sm font-medium text-foreground">
                           Mark as mandatory training
                         </Label>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           This session will be flagged as required compliance training
                         </p>
                       </div>
@@ -2476,10 +2476,10 @@ const LearningDevelopment = () => {
                         className="mt-1"
                       />
                       <div>
-                        <Label htmlFor="sendNotifications" className="text-sm font-medium text-gray-900">
+                        <Label htmlFor="sendNotifications" className="text-sm font-medium text-foreground">
                           Send enrollment notifications
                         </Label>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Participants will receive email confirmations and reminders
                         </p>
                       </div>
@@ -2490,7 +2490,7 @@ const LearningDevelopment = () => {
                 {/* Prerequisites */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Prerequisites</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Prerequisites</h3>
                   </div>
                   
                   <div>
@@ -2506,7 +2506,7 @@ const LearningDevelopment = () => {
                 {/* Internal Notes */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Internal Notes</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Internal Notes</h3>
                   </div>
                   
                   <div>
@@ -2537,20 +2537,20 @@ const LearningDevelopment = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Course</div>
-                  <div className="text-sm font-medium text-gray-900">{addSessionForm.course}</div>
+                  <div className="text-xs text-muted-foreground mb-1">Course</div>
+                  <div className="text-sm font-medium text-foreground">{addSessionForm.course}</div>
                 </div>
                 
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Format</div>
-                  <Badge className="bg-gray-100 text-gray-700 px-2 py-1 text-xs font-medium">
+                  <div className="text-xs text-muted-foreground mb-1">Format</div>
+                  <Badge className="bg-muted text-muted-foreground px-2 py-1 text-xs font-medium">
                     {addSessionForm.sessionFormat}
                   </Badge>
                 </div>
                 
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Schedule</div>
-                  <div className="space-y-1 text-sm text-gray-900">
+                  <div className="text-xs text-muted-foreground mb-1">Schedule</div>
+                  <div className="space-y-1 text-sm text-foreground">
                     <div>Start date: {new Date(addSessionForm.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                     <div>End date: {new Date(addSessionForm.endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                     <div>Registration closes: {new Date(addSessionForm.registrationDeadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
@@ -2558,21 +2558,21 @@ const LearningDevelopment = () => {
                 </div>
                 
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Instructor</div>
-                  <div className="space-y-1 text-sm text-gray-900">
+                  <div className="text-xs text-muted-foreground mb-1">Instructor</div>
+                  <div className="space-y-1 text-sm text-foreground">
                     <div>{addSessionForm.instructor.split(' - ')[0]}</div>
-                    <div className="text-gray-500">{addSessionForm.instructor.split(' - ')[1]}</div>
+                    <div className="text-muted-foreground">{addSessionForm.instructor.split(' - ')[1]}</div>
                   </div>
                 </div>
                 
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Capacity</div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-900">
+                  <div className="text-xs text-muted-foreground mb-1">Capacity</div>
+                  <div className="flex items-center space-x-2 text-sm text-foreground">
                     <Users className="h-4 w-4" />
                     <span>{addSessionForm.maxCapacity} participants</span>
                   </div>
                   {addSessionForm.allowWaitlist && (
-                    <div className="text-xs text-gray-500 mt-1">Waitlist enabled</div>
+                    <div className="text-xs text-muted-foreground mt-1">Waitlist enabled</div>
                   )}
                 </div>
               </CardContent>
@@ -2582,7 +2582,7 @@ const LearningDevelopment = () => {
 
         {/* Bottom Action Bar */}
         <div className="flex justify-between items-center pt-6 border-t border-gray-200">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <span>Switch Module</span>
           </div>
           <Button onClick={handleCreateSession} className="bg-violet-600 hover:bg-violet-700 text-white">
@@ -2600,16 +2600,16 @@ const LearningDevelopment = () => {
     return (
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <button 
             onClick={onBack}
-            className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
+            className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Training needs</span>
           </button>
           <ChevronRight className="h-4 w-4" />
-          <span className="text-gray-900">View course details</span>
+          <span className="text-foreground">View course details</span>
         </div>
 
         {/* Course Header */}
@@ -2619,24 +2619,24 @@ const LearningDevelopment = () => {
             <Badge className="bg-gray-900 text-white px-3 py-1 text-sm font-medium">
               {course.tags[0]}
             </Badge>
-            <Badge className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-medium">
+            <Badge className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium">
               {course.tags[1]}
             </Badge>
-            <Badge className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-medium">
+            <Badge className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium">
               {course.tags[2]}
             </Badge>
           </div>
 
           {/* Course Title */}
-          <h1 className="text-3xl font-bold text-gray-900">{course.title}</h1>
+          <h1 className="text-3xl font-bold text-foreground">{course.title}</h1>
 
           {/* Course Description */}
-          <p className="text-gray-600 text-lg leading-relaxed max-w-4xl">
+          <p className="text-muted-foreground text-lg leading-relaxed max-w-4xl">
             {course.description}
           </p>
 
           {/* Course Stats */}
-          <div className="flex items-center space-x-6 text-sm text-gray-600">
+          <div className="flex items-center space-x-6 text-sm text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Clock className="h-4 w-4" />
               <span>{course.duration}</span>
@@ -2657,7 +2657,7 @@ const LearningDevelopment = () => {
 
           {/* Course Tabs */}
           <Tabs value={activeDetailTab} onValueChange={setActiveDetailTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-gray-100 max-w-md">
+            <TabsList className="grid w-full grid-cols-3 bg-muted max-w-md">
               <TabsTrigger 
                 value="overview" 
                 className="data-[state=active]:bg-violet-600 data-[state=active]:text-white"
@@ -2693,14 +2693,14 @@ const LearningDevelopment = () => {
                       <Target className="h-5 w-5 text-violet-600" />
                       <span>Learning Objectives</span>
                     </CardTitle>
-                    <p className="text-sm text-gray-600">What you'll achieve by completing this course</p>
+                    <p className="text-sm text-muted-foreground">What you'll achieve by completing this course</p>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-3">
                       {course.learningObjectives.map((objective: string, index: number) => (
                         <li key={index} className="flex items-start space-x-3">
                           <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-700">{objective}</span>
+                          <span className="text-muted-foreground">{objective}</span>
                         </li>
                       ))}
                     </ul>
@@ -2711,14 +2711,14 @@ const LearningDevelopment = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Prerequisites</CardTitle>
-                    <p className="text-sm text-gray-600">Required knowledge and skills before starting</p>
+                    <p className="text-sm text-muted-foreground">Required knowledge and skills before starting</p>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
                       {course.prerequisites.map((prereq: string, index: number) => (
                         <li key={index} className="flex items-start space-x-3">
                           <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
-                          <span className="text-gray-700">{prereq}</span>
+                          <span className="text-muted-foreground">{prereq}</span>
                         </li>
                       ))}
                     </ul>
@@ -2729,14 +2729,14 @@ const LearningDevelopment = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Target Competencies</CardTitle>
-                    <p className="text-sm text-gray-600">Skills and competencies this course develops</p>
+                    <p className="text-sm text-muted-foreground">Skills and competencies this course develops</p>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
                       {course.competencies.map((competency: string, index: number) => (
                         <Badge 
                           key={index} 
-                          className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-medium"
+                          className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium"
                         >
                           {competency}
                         </Badge>
@@ -2749,8 +2749,8 @@ const LearningDevelopment = () => {
               <TabsContent value="curriculum" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl font-bold text-gray-900">Course Modules</CardTitle>
-                    <p className="text-sm text-gray-600">
+                    <CardTitle className="text-xl font-bold text-foreground">Course Modules</CardTitle>
+                    <p className="text-sm text-muted-foreground">
                       {course.curriculum.totalModules} modules · {course.curriculum.totalWeeks} weeks total
                     </p>
                   </CardHeader>
@@ -2758,16 +2758,16 @@ const LearningDevelopment = () => {
                     {course.curriculum.modules.map((module: any) => (
                       <div 
                         key={module.id}
-                        className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-card border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
                       >
                         <div className="flex items-center justify-between">
                           <div className="space-y-1">
-                            <p className="text-sm text-gray-500 font-medium">Module {module.id}</p>
-                            <h3 className="text-lg font-semibold text-gray-900">{module.title}</h3>
-                            <p className="text-sm text-gray-600">{module.duration}</p>
+                            <p className="text-sm text-muted-foreground font-medium">Module {module.id}</p>
+                            <h3 className="text-lg font-semibold text-foreground">{module.title}</h3>
+                            <p className="text-sm text-muted-foreground">{module.duration}</p>
                           </div>
                           <Badge 
-                            className="bg-gray-100 text-gray-700 px-3 py-1 text-xs font-medium rounded-md"
+                            className="bg-muted text-muted-foreground px-3 py-1 text-xs font-medium rounded-md"
                           >
                             {module.status}
                           </Badge>
@@ -2781,17 +2781,17 @@ const LearningDevelopment = () => {
               <TabsContent value="instructor" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl font-bold text-gray-900">About the Instructor</CardTitle>
+                    <CardTitle className="text-xl font-bold text-foreground">About the Instructor</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
                       <div>
-                        <h2 className="text-2xl font-bold text-gray-900">{course.instructor.name}</h2>
-                        <p className="text-lg text-gray-600 mt-1">{course.instructor.title}</p>
+                        <h2 className="text-2xl font-bold text-foreground">{course.instructor.name}</h2>
+                        <p className="text-lg text-muted-foreground mt-1">{course.instructor.title}</p>
                       </div>
                       
                       <div>
-                        <p className="text-gray-700 leading-relaxed">
+                        <p className="text-muted-foreground leading-relaxed">
                           {course.instructor.experience}
                         </p>
                       </div>
@@ -2799,7 +2799,7 @@ const LearningDevelopment = () => {
                       <div className="pt-4">
                         <Button 
                           variant="outline" 
-                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                          className="border-gray-300 text-muted-foreground hover:bg-muted/50"
                         >
                           Contact Instructor
                         </Button>
@@ -2821,38 +2821,38 @@ const LearningDevelopment = () => {
                 {/* Course Dates */}
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">Start Date</span>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Start Date</span>
                   </div>
-                  <p className="text-gray-900 font-medium">{course.startDate}</p>
+                  <p className="text-foreground font-medium">{course.startDate}</p>
                   
                   <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">End Date</span>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">End Date</span>
                   </div>
-                  <p className="text-gray-900 font-medium">{course.endDate}</p>
+                  <p className="text-foreground font-medium">{course.endDate}</p>
                 </div>
 
                 {/* Time Commitment */}
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">Time Commitment</span>
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Time Commitment</span>
                   </div>
-                  <p className="text-gray-900 font-medium">{course.timeCommitment}</p>
+                  <p className="text-foreground font-medium">{course.timeCommitment}</p>
                 </div>
 
                 {/* Availability */}
                 <div className="space-y-2">
-                  <span className="text-sm text-gray-600">Availability</span>
-                  <p className="text-gray-900 font-medium">{course.availability}</p>
+                  <span className="text-sm text-muted-foreground">Availability</span>
+                  <p className="text-foreground font-medium">{course.availability}</p>
                 </div>
 
                 {/* Enrollment Progress */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Enrollment</span>
-                    <span className="text-sm text-gray-900 font-medium">{course.enrolled}</span>
+                    <span className="text-sm text-muted-foreground">Enrollment</span>
+                    <span className="text-sm text-foreground font-medium">{course.enrolled}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
@@ -2886,7 +2886,7 @@ const LearningDevelopment = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Learning & development</h1>
+        <h1 className="text-2xl font-bold text-foreground">Learning & development</h1>
       </div>
 
       {/* Conditional Rendering */}
@@ -2906,7 +2906,7 @@ const LearningDevelopment = () => {
         <>
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-100">
+        <TabsList className="grid w-full grid-cols-5 bg-muted">
           <TabsTrigger 
             value="training-needs" 
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
@@ -2980,20 +2980,20 @@ const LearningDevelopment = () => {
                           onCheckedChange={handleSelectAll}
                         />
                       </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Role / Teams</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Skill</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Owner</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Required</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Current</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Due</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Gap</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Plan</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Role / Teams</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Skill</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Owner</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Required</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Current</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Due</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Gap</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Plan</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredData.map((item) => (
-                      <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <tr key={item.id} className="border-b border-gray-200 hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <Checkbox
                             checked={selectedRows.includes(item.id)}
@@ -3002,12 +3002,12 @@ const LearningDevelopment = () => {
                         </td>
                         <td className="py-3 px-4">
                           <div>
-                            <div className="font-medium text-gray-900">{item.role}</div>
-                            <div className="text-sm text-gray-500">({item.team})</div>
+                            <div className="font-medium text-foreground">{item.role}</div>
+                            <div className="text-sm text-muted-foreground">({item.team})</div>
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-gray-900">{item.skill}</td>
-                        <td className="py-3 px-4 text-gray-900">{item.owner}</td>
+                        <td className="py-3 px-4 text-foreground">{item.skill}</td>
+                        <td className="py-3 px-4 text-foreground">{item.owner}</td>
                         <td className="py-3 px-4">
                           <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getLevelBadgeColor(item.required, 'required')}`}>
                             {item.required}
@@ -3018,13 +3018,13 @@ const LearningDevelopment = () => {
                             {item.current}
                           </Badge>
                         </td>
-                        <td className="py-3 px-4 text-gray-900">{item.due}</td>
+                        <td className="py-3 px-4 text-foreground">{item.due}</td>
                         <td className="py-3 px-4">
                           <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getLevelBadgeColor(item.gap, 'gap')}`}>
                             {item.gap}
                           </Badge>
                         </td>
-                        <td className="py-3 px-4 text-gray-900">{item.plan}</td>
+                        <td className="py-3 px-4 text-foreground">{item.plan}</td>
                         <td className="py-3 px-4">
                           <Button 
                             variant="ghost" 
@@ -3053,7 +3053,7 @@ const LearningDevelopment = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-lg font-semibold">Training Needs Matrix</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">Connect to external learning management systems</p>
+                  <p className="text-sm text-muted-foreground mt-1">Connect to external learning management systems</p>
                 </div>
                 <div className="flex items-center space-x-4">
                   <Button variant="outline" className="flex items-center space-x-2">
@@ -3076,30 +3076,30 @@ const LearningDevelopment = () => {
                       <th className="text-left py-3 px-4">
                         <Checkbox />
                       </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Conector</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Last sync</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Enrollments</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Completions</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Conector</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Last sync</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Enrollments</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Completions</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {lmsConnectorsData.map((connector) => (
-                      <tr key={connector.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <tr key={connector.id} className="border-b border-gray-200 hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <Checkbox />
                         </td>
-                        <td className="py-3 px-4 text-gray-900 font-medium">{connector.name}</td>
-                        <td className="py-3 px-4 text-gray-900">{connector.lastSync}</td>
+                        <td className="py-3 px-4 text-foreground font-medium">{connector.name}</td>
+                        <td className="py-3 px-4 text-foreground">{connector.lastSync}</td>
                         <td className="py-3 px-4">
-                          <div className="flex items-center space-x-1 text-gray-900">
+                          <div className="flex items-center space-x-1 text-foreground">
                             <ArrowRight className="h-4 w-4" />
                             <span>{connector.enrollments}</span>
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="flex items-center space-x-1 text-gray-900">
+                          <div className="flex items-center space-x-1 text-foreground">
                             <ArrowRight className="h-4 w-4" />
                             <span>{connector.completions}</span>
                           </div>
@@ -3132,7 +3132,7 @@ const LearningDevelopment = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-lg font-semibold">Completed records</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">Track enrollments and completions for all training</p>
+                  <p className="text-sm text-muted-foreground mt-1">Track enrollments and completions for all training</p>
                 </div>
                 <div className="flex items-center space-x-4">
                   <Button variant="outline" className="flex items-center space-x-2">
@@ -3166,38 +3166,38 @@ const LearningDevelopment = () => {
                       <th className="text-left py-3 px-4">
                         <Checkbox />
                       </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Learner</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Course</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Due</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Completed</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Score</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Source</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Learner</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Course</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Due</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Completed</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Score</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Source</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {completionRecordsData.map((record) => (
-                      <tr key={record.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <tr key={record.id} className="border-b border-gray-200 hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <Checkbox />
                         </td>
-                        <td className="py-3 px-4 text-gray-900 font-medium">{record.learner}</td>
+                        <td className="py-3 px-4 text-foreground font-medium">{record.learner}</td>
                         <td className="py-3 px-4">
                           <div className="flex items-center space-x-2">
                             {record.hasRedDot && (
                               <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                             )}
-                            <span className="text-gray-900">{record.course}</span>
+                            <span className="text-foreground">{record.course}</span>
                           </div>
                         </td>
-                        <td className={`py-3 px-4 ${record.dueOverdue ? 'text-red-600' : 'text-gray-900'}`}>
+                        <td className={`py-3 px-4 ${record.dueOverdue ? 'text-red-600' : 'text-foreground'}`}>
                           {record.due}
                         </td>
-                        <td className="py-3 px-4 text-gray-900">{record.completed}</td>
-                        <td className="py-3 px-4 text-gray-900">{record.score}</td>
+                        <td className="py-3 px-4 text-foreground">{record.completed}</td>
+                        <td className="py-3 px-4 text-foreground">{record.score}</td>
                         <td className="py-3 px-4">
-                          <Badge className="bg-gray-100 text-gray-700 px-2 py-1 text-xs font-medium">
+                          <Badge className="bg-muted text-muted-foreground px-2 py-1 text-xs font-medium">
                             {record.source}
                           </Badge>
                         </td>
@@ -3236,19 +3236,19 @@ const LearningDevelopment = () => {
             <TabsList className="flex w-fit bg-transparent space-x-8">
               <TabsTrigger 
                 value="self-assessment" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-gray-700 data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-gray-500 data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
               >
                 Self-assessment surveys
               </TabsTrigger>
               <TabsTrigger 
                 value="capacity-scorecards" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-gray-700 data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-gray-500 data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
               >
                 Capacity Scorecards
               </TabsTrigger>
               <TabsTrigger 
                 value="recommendations" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-gray-700 data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-gray-500 data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
               >
                 Recommendations
               </TabsTrigger>
@@ -3260,8 +3260,8 @@ const LearningDevelopment = () => {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Self-Assessment Surveys</h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <h2 className="text-xl font-bold text-foreground">Self-Assessment Surveys</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
                         Collect structured capacity responses from teams and partners
                       </p>
                     </div>
@@ -3282,35 +3282,35 @@ const LearningDevelopment = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">
+                          <th className="text-left py-3 px-4 font-medium text-foreground">
                             <Checkbox />
                           </th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Org/Team</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Template</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Due</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Program</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Responses</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Org/Team</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Template</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Due</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Program</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Responses</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {ocaSurveysData.map((survey) => (
-                          <tr key={survey.id} className="border-b hover:bg-gray-50">
+                          <tr key={survey.id} className="border-b hover:bg-muted/50">
                             <td className="py-3 px-4">
                               <Checkbox />
                             </td>
                             <td className="py-3 px-4">
                               <div>
-                                <div className="text-sm font-semibold text-gray-900">{survey.program}</div>
-                                <div className="text-xs text-gray-500">{survey.orgTeam}</div>
+                                <div className="text-sm font-semibold text-foreground">{survey.program}</div>
+                                <div className="text-xs text-muted-foreground">{survey.orgTeam}</div>
                               </div>
                             </td>
                             <td className="py-3 px-4">
-                              <Badge variant="secondary" className="bg-gray-100 text-gray-700 text-xs">
+                              <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
                                 {survey.template}
                               </Badge>
                             </td>
-                            <td className="py-3 px-4 text-sm text-gray-600">
+                            <td className="py-3 px-4 text-sm text-muted-foreground">
                               {survey.due}
                             </td>
                             <td className="py-3 px-4">
@@ -3321,12 +3321,12 @@ const LearningDevelopment = () => {
                                     style={{ width: `${survey.progress}%` }}
                                   ></div>
                                 </div>
-                                <span className="text-sm font-medium text-gray-900">
+                                <span className="text-sm font-medium text-foreground">
                                   {survey.progress}%
                                 </span>
                               </div>
                             </td>
-                            <td className="py-3 px-4 text-sm text-gray-600">
+                            <td className="py-3 px-4 text-sm text-muted-foreground">
                               {survey.responses.completed}/{survey.responses.total}
                             </td>
                             <td className="py-3 px-4">
@@ -3350,8 +3350,8 @@ const LearningDevelopment = () => {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Capacity Scorecards</h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <h2 className="text-xl font-bold text-foreground">Capacity Scorecards</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
                         Visualize capacity strengths and gaps by domain
                       </p>
                     </div>
@@ -3364,21 +3364,21 @@ const LearningDevelopment = () => {
                 <CardContent>
                   {/* Capacity Heatmap Section */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Capacity Heatmap</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Capacity Heatmap</h3>
                     
                     {/* Legend */}
                     <div className="flex items-center space-x-6 text-sm">
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span className="text-gray-600">Below 2.5</span>
+                        <span className="text-muted-foreground">Below 2.5</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <span className="text-gray-600">2.5 - 3.5</span>
+                        <span className="text-muted-foreground">2.5 - 3.5</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-gray-600">Above 3.5</span>
+                        <span className="text-muted-foreground">Above 3.5</span>
                       </div>
                     </div>
 
@@ -3387,19 +3387,19 @@ const LearningDevelopment = () => {
                       <table className="w-full">
                         <thead>
                           <tr className="border-b">
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Organization</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Governance</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">HR</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Finance</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">Programs</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">M&E</th>
-                            <th className="text-left py-3 px-4 font-medium text-gray-900">IT</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Organization</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Governance</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">HR</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Finance</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">Programs</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">M&E</th>
+                            <th className="text-left py-3 px-4 font-medium text-foreground">IT</th>
                           </tr>
                         </thead>
                         <tbody>
                           {capacityScorecardsData.map((org) => (
-                            <tr key={org.id} className="border-b hover:bg-gray-50">
-                              <td className="py-3 px-4 text-sm font-medium text-gray-900">
+                            <tr key={org.id} className="border-b hover:bg-muted/50">
+                              <td className="py-3 px-4 text-sm font-medium text-foreground">
                                 {org.organization}
                               </td>
                               <td className="py-3 px-4">
@@ -3463,8 +3463,8 @@ const LearningDevelopment = () => {
                     <Card>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-gray-900">Average Score</h4>
-                          <div className="text-2xl font-bold text-gray-900">3.2</div>
+                          <h4 className="text-sm font-medium text-foreground">Average Score</h4>
+                          <div className="text-2xl font-bold text-foreground">3.2</div>
                           <div className="text-sm text-green-600 font-medium">+0.3 vs Q1</div>
                         </div>
                       </CardContent>
@@ -3474,8 +3474,8 @@ const LearningDevelopment = () => {
                     <Card>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-gray-900">Organizations Below Target</h4>
-                          <div className="text-2xl font-bold text-gray-900">2 of 4</div>
+                          <h4 className="text-sm font-medium text-foreground">Organizations Below Target</h4>
+                          <div className="text-2xl font-bold text-foreground">2 of 4</div>
                           <Badge className="bg-red-500 text-white text-xs">Needs attention</Badge>
                         </div>
                       </CardContent>
@@ -3485,8 +3485,8 @@ const LearningDevelopment = () => {
                     <Card>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-gray-900">Lowest Domain</h4>
-                          <div className="text-2xl font-bold text-gray-900">M&E (2.7)</div>
+                          <h4 className="text-sm font-medium text-foreground">Lowest Domain</h4>
+                          <div className="text-2xl font-bold text-foreground">M&E (2.7)</div>
                           <Badge className="bg-red-500 text-white text-xs">Critical</Badge>
                         </div>
                       </CardContent>
@@ -3502,8 +3502,8 @@ const LearningDevelopment = () => {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Recommendations Engine</h2>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <h2 className="text-xl font-bold text-foreground">Recommendations Engine</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
                         Turn capacity findings into targeted training plans
                       </p>
                     </div>
@@ -3537,8 +3537,8 @@ const LearningDevelopment = () => {
                             <ThumbsUp className="h-5 w-5 text-violet-600" />
                           </div>
                           <div>
-                            <div className="text-2xl font-bold text-gray-900">4</div>
-                            <div className="text-sm text-gray-600">Total recommendations</div>
+                            <div className="text-2xl font-bold text-foreground">4</div>
+                            <div className="text-sm text-muted-foreground">Total recommendations</div>
                           </div>
                         </div>
                       </CardContent>
@@ -3552,8 +3552,8 @@ const LearningDevelopment = () => {
                             <ShoppingBag className="h-5 w-5 text-red-600" />
                           </div>
                           <div>
-                            <div className="text-2xl font-bold text-gray-900">2</div>
-                            <div className="text-sm text-gray-600">High impact</div>
+                            <div className="text-2xl font-bold text-foreground">2</div>
+                            <div className="text-sm text-muted-foreground">High impact</div>
                           </div>
                         </div>
                       </CardContent>
@@ -3567,8 +3567,8 @@ const LearningDevelopment = () => {
                             <CheckCircleIcon className="h-5 w-5 text-green-600" />
                           </div>
                           <div>
-                            <div className="text-2xl font-bold text-gray-900">78%</div>
-                            <div className="text-sm text-gray-600">Acceptance rate</div>
+                            <div className="text-2xl font-bold text-foreground">78%</div>
+                            <div className="text-sm text-muted-foreground">Acceptance rate</div>
                           </div>
                         </div>
                       </CardContent>
@@ -3580,31 +3580,31 @@ const LearningDevelopment = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">
+                          <th className="text-left py-3 px-4 font-medium text-foreground">
                             <Checkbox />
                           </th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Finding</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Domain</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Suggestion</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Impact</th>
-                          <th className="text-left py-3 px-4 font-medium text-gray-900">Action</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Finding</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Domain</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Suggestion</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Impact</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {recommendationsData.map((recommendation) => (
-                          <tr key={recommendation.id} className="border-b hover:bg-gray-50">
+                          <tr key={recommendation.id} className="border-b hover:bg-muted/50">
                             <td className="py-3 px-4">
                               <Checkbox />
                             </td>
-                            <td className="py-3 px-4 text-sm font-medium text-gray-900">
+                            <td className="py-3 px-4 text-sm font-medium text-foreground">
                               {recommendation.finding}
                             </td>
                             <td className="py-3 px-4">
-                              <Badge variant="secondary" className="bg-gray-100 text-gray-700 text-xs">
+                              <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
                                 {recommendation.domain}
                               </Badge>
                             </td>
-                            <td className="py-3 px-4 text-sm text-gray-600">
+                            <td className="py-3 px-4 text-sm text-muted-foreground">
                               {recommendation.suggestion}
                             </td>
                             <td className="py-3 px-4">
@@ -3624,7 +3624,7 @@ const LearningDevelopment = () => {
                                 </Button>
                                 {bundleRecommendationIds.has(recommendation.id) ? (
                                   <div 
-                                    className="flex items-center px-3 py-2 text-sm text-gray-500 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 hover:text-gray-600 transition-colors"
+                                    className="flex items-center px-3 py-2 text-sm text-muted-foreground bg-muted rounded-md cursor-pointer hover:bg-gray-200 hover:text-muted-foreground transition-colors"
                                     onClick={() => handleRemoveFromBundleByRecommendationId(recommendation.id)}
                                     title="Click to remove from bundle"
                                   >
@@ -3784,7 +3784,7 @@ const LearningDevelopment = () => {
           />
           <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-gray-900">
+            <DialogTitle className="text-lg font-semibold text-foreground">
               Skill gap details
             </DialogTitle>
           </DialogHeader>
@@ -3793,22 +3793,22 @@ const LearningDevelopment = () => {
             {/* Skill Information */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-base font-medium text-gray-900">
+                <h3 className="text-base font-medium text-foreground">
                   React proficiency for SE II
                 </h3>
               </div>
               
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Current level</span>
-                  <Badge className="px-2 py-1 text-xs rounded-full font-medium bg-gray-100 text-gray-700">
+                  <span className="text-sm text-muted-foreground">Current level</span>
+                  <Badge className="px-2 py-1 text-xs rounded-full font-medium bg-muted text-muted-foreground">
                     L2
                   </Badge>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Required level</span>
-                  <Badge className="px-2 py-1 text-xs rounded-full font-medium bg-gray-100 text-gray-700">
+                  <span className="text-sm text-muted-foreground">Required level</span>
+                  <Badge className="px-2 py-1 text-xs rounded-full font-medium bg-muted text-muted-foreground">
                     L3
                   </Badge>
                 </div>
@@ -3817,30 +3817,30 @@ const LearningDevelopment = () => {
 
             {/* Suggested Courses */}
             <div className="space-y-3">
-              <h4 className="text-sm font-medium text-gray-900">Suggested courses</h4>
+              <h4 className="text-sm font-medium text-foreground">Suggested courses</h4>
               
               <div className="space-y-3">
-              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
                 <div className="space-y-2">
-                    <div className="font-medium text-gray-900">Course R-201: Advanced React Development</div>
-                  <div className="text-sm text-gray-600">8 weeks · Self-paced</div>
-                    <div className="text-xs text-gray-500">Master advanced React concepts including hooks, context, performance optimization</div>
+                    <div className="font-medium text-foreground">Course R-201: Advanced React Development</div>
+                  <div className="text-sm text-muted-foreground">8 weeks · Self-paced</div>
+                    <div className="text-xs text-muted-foreground">Master advanced React concepts including hooks, context, performance optimization</div>
                   </div>
                 </div>
                 
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
                   <div className="space-y-2">
-                    <div className="font-medium text-gray-900">Course R-102: React Fundamentals</div>
-                    <div className="text-sm text-gray-600">6 weeks · Self-paced</div>
-                    <div className="text-xs text-gray-500">Build a solid foundation in React development</div>
+                    <div className="font-medium text-foreground">Course R-102: React Fundamentals</div>
+                    <div className="text-sm text-muted-foreground">6 weeks · Self-paced</div>
+                    <div className="text-xs text-muted-foreground">Build a solid foundation in React development</div>
                   </div>
                 </div>
                 
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
                   <div className="space-y-2">
-                    <div className="font-medium text-gray-900">Workshop W-15: React Best Practices</div>
-                    <div className="text-sm text-gray-600">2 days · In-person</div>
-                    <div className="text-xs text-gray-500">Hands-on workshop covering React best practices</div>
+                    <div className="font-medium text-foreground">Workshop W-15: React Best Practices</div>
+                    <div className="text-sm text-muted-foreground">2 days · In-person</div>
+                    <div className="text-xs text-muted-foreground">Hands-on workshop covering React best practices</div>
                   </div>
                 </div>
               </div>
@@ -3855,7 +3855,7 @@ const LearningDevelopment = () => {
               <Button 
                 variant="outline" 
                 onClick={handleViewCourseDetails}
-                className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="bg-card border-gray-300 text-muted-foreground hover:bg-muted/50"
               >
                 View course details
               </Button>
@@ -3883,10 +3883,10 @@ const LearningDevelopment = () => {
           />
           <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900">
+            <DialogTitle className="text-xl font-bold text-foreground">
               {selectedSession?.title}
             </DialogTitle>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {selectedSession?.details?.date}
             </p>
           </DialogHeader>
@@ -3902,8 +3902,8 @@ const LearningDevelopment = () => {
                         <Users className="h-4 w-4 text-blue-600" />
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">Capacity</div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm font-medium text-foreground">Capacity</div>
+                        <div className="text-sm text-muted-foreground">
                           {selectedSession.details.capacity.enrolled} enrolled • {selectedSession.details.capacity.max} max
                         </div>
                       </div>
@@ -3918,8 +3918,8 @@ const LearningDevelopment = () => {
                         <CalendarIcon className="h-4 w-4 text-orange-600" />
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">Waitlist</div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm font-medium text-foreground">Waitlist</div>
+                        <div className="text-sm text-muted-foreground">
                           {selectedSession.details.waitlist} people waiting
                         </div>
                       </div>
@@ -3930,30 +3930,30 @@ const LearningDevelopment = () => {
 
               {/* Details Section */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Details</h3>
+                <h3 className="text-lg font-semibold text-foreground">Details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Session format</div>
-                    <div className="text-sm font-medium text-gray-900">{selectedSession.details.format}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Session format</div>
+                    <div className="text-sm font-medium text-foreground">{selectedSession.details.format}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Location</div>
-                    <div className="text-sm font-medium text-gray-900">{selectedSession.details.location}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Location</div>
+                    <div className="text-sm font-medium text-foreground">{selectedSession.details.location}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Instructor</div>
-                    <div className="text-sm font-medium text-gray-900">{selectedSession.details.instructor}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Instructor</div>
+                    <div className="text-sm font-medium text-foreground">{selectedSession.details.instructor}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Course</div>
-                    <div className="text-sm font-medium text-gray-900">{selectedSession.details.course}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Course</div>
+                    <div className="text-sm font-medium text-foreground">{selectedSession.details.course}</div>
                   </div>
                 </div>
               </div>
 
               {/* Attendees Section */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-foreground">
                   Attendees ({selectedSession.details.attendees.length})
                 </h3>
                 <div className="space-y-3">
@@ -3961,7 +3961,7 @@ const LearningDevelopment = () => {
                     <div key={index} className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <Checkbox />
-                        <span className="text-sm font-medium text-gray-900">{attendee.name}</span>
+                        <span className="text-sm font-medium text-foreground">{attendee.name}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         {attendee.status === 'accepted' ? (
@@ -3977,7 +3977,7 @@ const LearningDevelopment = () => {
                         ) : (
                           <>
                             <Clock className="h-4 w-4 text-gray-400" />
-                            <span className="text-sm text-gray-500">Pending</span>
+                            <span className="text-sm text-muted-foreground">Pending</span>
                           </>
                         )}
                       </div>
@@ -4015,10 +4015,10 @@ const LearningDevelopment = () => {
           />
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-900">
+              <DialogTitle className="text-xl font-bold text-foreground">
                 Assign Training Bundle
               </DialogTitle>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Configure and assign {bundleItems.length} training recommendation{bundleItems.length !== 1 ? 's' : ''} as a package
               </p>
             </DialogHeader>
@@ -4026,7 +4026,7 @@ const LearningDevelopment = () => {
             <div className="space-y-6">
               {/* Plan Title */}
               <div>
-                <Label htmlFor="bundlePlanTitle" className="text-sm font-medium text-gray-900">Plan title</Label>
+                <Label htmlFor="bundlePlanTitle" className="text-sm font-medium text-foreground">Plan title</Label>
                 <Input
                   id="bundlePlanTitle"
                   placeholder="Enter plan title"
@@ -4038,7 +4038,7 @@ const LearningDevelopment = () => {
 
               {/* Description */}
               <div>
-                <Label htmlFor="bundleDescription" className="text-sm font-medium text-gray-900">Description (optional)</Label>
+                <Label htmlFor="bundleDescription" className="text-sm font-medium text-foreground">Description (optional)</Label>
                 <Textarea
                   id="bundleDescription"
                   placeholder="Enter description"
@@ -4051,7 +4051,7 @@ const LearningDevelopment = () => {
 
               {/* Bundle Contents */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-foreground mb-3">
                   Bundle Contents ({bundleItems.length} training{bundleItems.length !== 1 ? 's' : ''})
                 </h3>
                 <div className="space-y-3">
@@ -4060,15 +4060,15 @@ const LearningDevelopment = () => {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
-                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 text-xs">
+                            <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
                               {item.domain}
                             </Badge>
                             <Badge className={`${getImpactBadgeColor(item.impact)} text-xs px-2 py-1`}>
                               {item.impact.toLowerCase()} impact
                             </Badge>
                           </div>
-                          <h4 className="text-sm font-medium text-gray-900">{item.suggestion.split(' (')[0]}</h4>
-                          <p className="text-xs text-gray-500 mt-1">{item.finding}</p>
+                          <h4 className="text-sm font-medium text-foreground">{item.suggestion.split(' (')[0]}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{item.finding}</p>
                         </div>
                         <Button
                           variant="ghost"
@@ -4086,7 +4086,7 @@ const LearningDevelopment = () => {
 
               {/* Target Audience */}
               <div>
-                <Label htmlFor="targetAudience" className="text-sm font-medium text-gray-900">Target Audience</Label>
+                <Label htmlFor="targetAudience" className="text-sm font-medium text-foreground">Target Audience</Label>
                 <Select 
                   value={bundleForm.targetAudience} 
                   onValueChange={(value) => setBundleForm({...bundleForm, targetAudience: value})}
@@ -4106,7 +4106,7 @@ const LearningDevelopment = () => {
 
               {/* Completion Due Date */}
               <div>
-                <Label htmlFor="completionDueDate" className="text-sm font-medium text-gray-900">Completion Due Date</Label>
+                <Label htmlFor="completionDueDate" className="text-sm font-medium text-foreground">Completion Due Date</Label>
                 <Input
                   id="completionDueDate"
                   type="date"
@@ -4118,7 +4118,7 @@ const LearningDevelopment = () => {
 
               {/* Require Approval From */}
               <div>
-                <Label htmlFor="requireApprovalFrom" className="text-sm font-medium text-gray-900">Require Approval From</Label>
+                <Label htmlFor="requireApprovalFrom" className="text-sm font-medium text-foreground">Require Approval From</Label>
                 <Select 
                   value={bundleForm.requireApprovalFrom} 
                   onValueChange={(value) => setBundleForm({...bundleForm, requireApprovalFrom: value})}
@@ -4139,8 +4139,8 @@ const LearningDevelopment = () => {
               {/* Push to LMS Integration */}
               <div className="flex justify-between items-center">
                 <div>
-                  <Label className="text-sm font-medium text-gray-900">Push to LMS Integration</Label>
-                  <p className="text-xs text-gray-500 mt-1">Automatically create enrollments in connected learning management system.</p>
+                  <Label className="text-sm font-medium text-foreground">Push to LMS Integration</Label>
+                  <p className="text-xs text-muted-foreground mt-1">Automatically create enrollments in connected learning management system.</p>
                 </div>
                 <Switch
                   checked={bundleForm.pushToLMS}
@@ -4176,11 +4176,11 @@ const LearningDevelopment = () => {
           />
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-900">
+              <DialogTitle className="text-xl font-bold text-foreground">
                 Assign Recommendation
               </DialogTitle>
               {selectedRecommendation && (
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {selectedRecommendation.suggestion.split(' (')[0]}
                 </p>
               )}
@@ -4190,16 +4190,16 @@ const LearningDevelopment = () => {
               <div className="space-y-6">
                 {/* Finding */}
                 <div className="flex justify-between items-center">
-                  <Label className="text-sm font-medium text-gray-900">Finding</Label>
-                  <span className="text-sm text-gray-600">{selectedRecommendation.finding}</span>
+                  <Label className="text-sm font-medium text-foreground">Finding</Label>
+                  <span className="text-sm text-muted-foreground">{selectedRecommendation.finding}</span>
                 </div>
 
                 {/* Suggested Training */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900">Suggested training</Label>
-                  <div className="text-sm text-gray-600">
+                  <Label className="text-sm font-medium text-foreground">Suggested training</Label>
+                  <div className="text-sm text-muted-foreground">
                     <div>{selectedRecommendation.suggestion.split(' (')[0]}</div>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-muted-foreground mt-1">
                       {selectedRecommendation.suggestion.match(/\(([^)]+)\)/)?.[1]}
                     </div>
                   </div>
@@ -4207,21 +4207,21 @@ const LearningDevelopment = () => {
 
                 {/* Audience */}
                 <div className="flex justify-between items-center">
-                  <Label className="text-sm font-medium text-gray-900">Audience</Label>
-                  <span className="text-sm text-gray-600">
+                  <Label className="text-sm font-medium text-foreground">Audience</Label>
+                  <span className="text-sm text-muted-foreground">
                     {selectedRecommendation.finding.split(' ').pop()}
                   </span>
                 </div>
 
                 {/* Due Date */}
                 <div className="flex justify-between items-center">
-                  <Label className="text-sm font-medium text-gray-900">Due date</Label>
-                  <span className="text-sm text-gray-600">12/02/2026</span>
+                  <Label className="text-sm font-medium text-foreground">Due date</Label>
+                  <span className="text-sm text-muted-foreground">12/02/2026</span>
                 </div>
 
                 {/* Approver */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900">Approver (optional)</Label>
+                  <Label className="text-sm font-medium text-foreground">Approver (optional)</Label>
                   <Select 
                     value={assignRecommendationForm.approver} 
                     onValueChange={(value) => setAssignRecommendationForm({...assignRecommendationForm, approver: value})}
@@ -4240,7 +4240,7 @@ const LearningDevelopment = () => {
 
                 {/* Push to LMS */}
                 <div className="flex justify-between items-center">
-                  <Label className="text-sm font-medium text-gray-900">Push to LMS</Label>
+                  <Label className="text-sm font-medium text-foreground">Push to LMS</Label>
                   <Switch
                     checked={assignRecommendationForm.pushToLMS}
                     onCheckedChange={(checked) => setAssignRecommendationForm({...assignRecommendationForm, pushToLMS: checked})}
@@ -4283,11 +4283,11 @@ const LearningDevelopment = () => {
           />
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-900">
+              <DialogTitle className="text-xl font-bold text-foreground">
                 Survey details
               </DialogTitle>
               {selectedSurvey && (
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {selectedSurvey.program} • {selectedSurvey.template}
                 </p>
               )}
@@ -4297,7 +4297,7 @@ const LearningDevelopment = () => {
               <div className="space-y-6">
                 {/* Progress Section */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Progress</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Progress</h3>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-3">
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -4306,11 +4306,11 @@ const LearningDevelopment = () => {
                           style={{ width: `${selectedSurvey.progress}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-foreground">
                         {selectedSurvey.progress}%
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {selectedSurvey.responses.completed}/{selectedSurvey.responses.total} responses submitted
                     </p>
                   </div>
@@ -4318,13 +4318,13 @@ const LearningDevelopment = () => {
 
                 {/* Domain Scores Section */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Domain scores</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Domain scores</h3>
                   <div className="space-y-3">
                     {selectedSurvey.domainScores.map((domain: any, index: number) => (
                       <div key={index} className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-900">{domain.domain}</span>
-                          <span className="text-sm text-gray-600">{domain.score}</span>
+                          <span className="text-sm font-medium text-foreground">{domain.domain}</span>
+                          <span className="text-sm text-muted-foreground">{domain.score}</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div 
@@ -4340,13 +4340,13 @@ const LearningDevelopment = () => {
                 {/* Missing Evidence Section */}
                 {selectedSurvey.missingEvidence.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Missing evidence</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Missing evidence</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {selectedSurvey.missingEvidence.map((evidence: any, index: number) => (
-                        <Card key={index} className="bg-gray-50">
+                        <Card key={index} className="bg-muted/50">
                           <CardContent className="p-4">
-                            <h4 className="text-sm font-medium text-gray-900">{evidence.title}</h4>
-                            <p className="text-xs text-gray-500 mt-1">{evidence.subtitle}</p>
+                            <h4 className="text-sm font-medium text-foreground">{evidence.title}</h4>
+                            <p className="text-xs text-muted-foreground mt-1">{evidence.subtitle}</p>
                           </CardContent>
                         </Card>
                       ))}
@@ -4384,7 +4384,7 @@ const LearningDevelopment = () => {
       <Dialog open={isEnrollmentDetailsModalOpen} onOpenChange={setIsEnrollmentDetailsModalOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-gray-900">
+            <DialogTitle className="text-lg font-semibold text-foreground">
               Enrollment details
             </DialogTitle>
           </DialogHeader>
@@ -4393,7 +4393,7 @@ const LearningDevelopment = () => {
             <div className="space-y-6">
               {/* Learning Timeline */}
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-gray-900">Learning timeline</h3>
+                <h3 className="text-sm font-medium text-foreground">Learning timeline</h3>
                 <div className="flex flex-col items-center space-y-4">
                   {/* Timeline Container */}
                   <div className="flex items-center w-full">
@@ -4437,16 +4437,16 @@ const LearningDevelopment = () => {
                   {/* Labels Container */}
                   <div className="flex w-full justify-between">
                     <div className="text-center">
-                      <div className="text-sm font-medium text-gray-900">Enrolled</div>
-                      <div className="text-xs text-gray-500">{selectedEnrollment.timeline?.enrolled?.date || '18 May, 2025'}</div>
+                      <div className="text-sm font-medium text-foreground">Enrolled</div>
+                      <div className="text-xs text-muted-foreground">{selectedEnrollment.timeline?.enrolled?.date || '18 May, 2025'}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm font-medium text-gray-900">Started</div>
-                      <div className="text-xs text-gray-500">{selectedEnrollment.timeline?.started?.date || '20 May, 2025'}</div>
+                      <div className="text-sm font-medium text-foreground">Started</div>
+                      <div className="text-xs text-muted-foreground">{selectedEnrollment.timeline?.started?.date || '20 May, 2025'}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm font-medium text-gray-900">Completed</div>
-                      <div className="text-xs text-gray-500">{selectedEnrollment.timeline?.completed?.date || '27 May, 2025'}</div>
+                      <div className="text-sm font-medium text-foreground">Completed</div>
+                      <div className="text-xs text-muted-foreground">{selectedEnrollment.timeline?.completed?.date || '27 May, 2025'}</div>
                     </div>
                   </div>
                 </div>
@@ -4454,16 +4454,16 @@ const LearningDevelopment = () => {
 
               {/* Enrollment Details */}
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-gray-900">Enrollment details</h3>
+                <h3 className="text-sm font-medium text-foreground">Enrollment details</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Learner</div>
-                    <div className="text-sm font-medium text-gray-900">{selectedEnrollment.learner}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Learner</div>
+                    <div className="text-sm font-medium text-foreground">{selectedEnrollment.learner}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Course</div>
+                    <div className="text-xs text-muted-foreground mb-1">Course</div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-gray-900">{selectedEnrollment.course}</span>
+                      <span className="text-sm font-medium text-foreground">{selectedEnrollment.course}</span>
                       {selectedEnrollment.hasRedDot && (
                         <Badge className="bg-red-100 text-red-800 px-2 py-1 text-xs font-medium border border-red-200">
                           Mandatory
@@ -4472,26 +4472,26 @@ const LearningDevelopment = () => {
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Due</div>
-                    <div className={`text-sm font-medium ${selectedEnrollment.dueOverdue ? 'text-red-600' : 'text-gray-900'}`}>
+                    <div className="text-xs text-muted-foreground mb-1">Due</div>
+                    <div className={`text-sm font-medium ${selectedEnrollment.dueOverdue ? 'text-red-600' : 'text-foreground'}`}>
                       {selectedEnrollment.due}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Completed</div>
-                    <div className="text-sm font-medium text-gray-900">{selectedEnrollment.completed}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Completed</div>
+                    <div className="text-sm font-medium text-foreground">{selectedEnrollment.completed}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Source</div>
-                    <div className="text-sm font-medium text-gray-900">{selectedEnrollment.source}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Source</div>
+                    <div className="text-sm font-medium text-foreground">{selectedEnrollment.source}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Score</div>
-                    <div className="text-sm font-medium text-gray-900">{selectedEnrollment.score}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Score</div>
+                    <div className="text-sm font-medium text-foreground">{selectedEnrollment.score}</div>
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Status</div>
+                  <div className="text-xs text-muted-foreground mb-1">Status</div>
                   <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getCompletionStatusBadgeColor(selectedEnrollment.status)}`}>
                     {selectedEnrollment.status}
                   </Badge>

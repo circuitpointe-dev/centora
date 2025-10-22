@@ -81,8 +81,8 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
   return (
     <div className="space-y-6">
       {/* Breadcrumbs */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
-        <button onClick={onBack} className="flex items-center space-x-1 hover:text-gray-900">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <button onClick={onBack} className="flex items-center space-x-1 hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           <span>Succession planning</span>
         </button>
@@ -97,8 +97,8 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-xl font-semibold text-gray-900">{candidateName}</div>
-          <div className="text-sm text-gray-600">{candidateRole}</div>
+          <div className="text-xl font-semibold text-foreground">{candidateName}</div>
+          <div className="text-sm text-muted-foreground">{candidateRole}</div>
         </div>
       </div>
 
@@ -106,33 +106,33 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600">Overall Rating</div>
-            <div className="mt-2 text-2xl font-bold text-gray-900">4.2</div>
-            <div className="text-xs text-gray-500">vs. previous review +0.2</div>
+            <div className="text-sm text-muted-foreground">Overall Rating</div>
+            <div className="mt-2 text-2xl font-bold text-foreground">4.2</div>
+            <div className="text-xs text-muted-foreground">vs. previous review +0.2</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600">Potential</div>
-            <div className="mt-2 text-2xl font-bold text-gray-900">4.2</div>
-            <div className="text-xs text-gray-500">High potential</div>
+            <div className="text-sm text-muted-foreground">Potential</div>
+            <div className="mt-2 text-2xl font-bold text-foreground">4.2</div>
+            <div className="text-xs text-muted-foreground">High potential</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-gray-600">Goal Achievement</div>
-            <div className="mt-2 text-2xl font-bold text-gray-900">3/5</div>
-            <div className="text-xs text-gray-500">60% completed</div>
+            <div className="text-sm text-muted-foreground">Goal Achievement</div>
+            <div className="mt-2 text-2xl font-bold text-foreground">3/5</div>
+            <div className="text-xs text-muted-foreground">60% completed</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs header */}
       <div className="flex items-center space-x-6 text-sm">
-        <button onClick={()=>setActiveTab('overview')} className={`pb-2 font-medium ${activeTab==='overview'?'border-b-2 border-purple-600 text-purple-600':'text-gray-600 hover:text-gray-900'}`}>Overview</button>
-        <button onClick={()=>setActiveTab('competencies')} className={`pb-2 font-medium ${activeTab==='competencies'?'border-b-2 border-purple-600 text-purple-600':'text-gray-600 hover:text-gray-900'}`}>Competencies</button>
-        <button onClick={()=>setActiveTab('goals')} className={`pb-2 font-medium ${activeTab==='goals'?'border-b-2 border-purple-600 text-purple-600':'text-gray-600 hover:text-gray-900'}`}>Goals</button>
-        <button onClick={()=>setActiveTab('feedback')} className={`pb-2 font-medium ${activeTab==='feedback'?'border-b-2 border-purple-600 text-purple-600':'text-gray-600 hover:text-gray-900'}`}>Feedback</button>
+        <button onClick={()=>setActiveTab('overview')} className={`pb-2 font-medium ${activeTab==='overview'?'border-b-2 border-purple-600 text-purple-600':'text-muted-foreground hover:text-foreground'}`}>Overview</button>
+        <button onClick={()=>setActiveTab('competencies')} className={`pb-2 font-medium ${activeTab==='competencies'?'border-b-2 border-purple-600 text-purple-600':'text-muted-foreground hover:text-foreground'}`}>Competencies</button>
+        <button onClick={()=>setActiveTab('goals')} className={`pb-2 font-medium ${activeTab==='goals'?'border-b-2 border-purple-600 text-purple-600':'text-muted-foreground hover:text-foreground'}`}>Goals</button>
+        <button onClick={()=>setActiveTab('feedback')} className={`pb-2 font-medium ${activeTab==='feedback'?'border-b-2 border-purple-600 text-purple-600':'text-muted-foreground hover:text-foreground'}`}>Feedback</button>
       </div>
 
       {activeTab === 'overview' && (
@@ -171,9 +171,9 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
             <div key={i} className="flex items-center justify-between border rounded-md p-3">
               <div>
                 <div className="font-medium">{x.p}</div>
-                <div className="text-gray-600">Reviewed by {x.by} • {x.d}</div>
+                <div className="text-muted-foreground">Reviewed by {x.by} • {x.d}</div>
               </div>
-              <div className="text-gray-900 font-semibold">{x.r}</div>
+              <div className="text-foreground font-semibold">{x.r}</div>
             </div>
           ))}
         </CardContent>
@@ -187,7 +187,7 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
             <CardTitle className="text-sm font-semibold">Key Strengths</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 text-sm text-gray-700 list-disc pl-5">
+            <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
               <li>Exceptional technical skills and ability to solve complex problems quickly</li>
               <li>Great communicator and collaborator across teams</li>
               <li>Takes initiative and drives projects to completion</li>
@@ -199,7 +199,7 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
             <CardTitle className="text-sm font-semibold">Development Areas</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 text-sm text-gray-700 list-disc pl-5">
+            <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
               <li>Could benefit from more strategic thinking and long-term planning</li>
               <li>Sometimes needs to delegate more effectively</li>
             </ul>
@@ -214,20 +214,20 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
             <CardTitle className="text-sm font-semibold">Competency Ratings</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-600 mb-4">Average: {avg} / 5.0</div>
+            <div className="text-sm text-muted-foreground mb-4">Average: {avg} / 5.0</div>
             <div className="space-y-6">
               {competencies.map((group, gi) => (
                 <div key={gi} className="space-y-3">
-                  <div className="font-medium text-gray-900">{group.group}</div>
+                  <div className="font-medium text-foreground">{group.group}</div>
                   {group.items.map((it, ii) => (
                     <div key={ii} className="space-y-1">
-                      <div className="text-sm text-gray-700">{it.label}</div>
+                      <div className="text-sm text-muted-foreground">{it.label}</div>
                       <div className="flex items-center space-x-3">
                         <div className="flex-1 bg-gray-200 rounded-full h-2">
                           <div className="bg-gray-900 h-2 rounded-full" style={{ width: `${(it.value/5)*100}%` }} />
                         </div>
                         <span className={`w-2 h-2 rounded-full ${getDot(it.value)}`} />
-                        <span className="text-sm text-gray-900" style={{ minWidth: 28 }}>{it.value.toFixed(1)}</span>
+                        <span className="text-sm text-foreground" style={{ minWidth: 28 }}>{it.value.toFixed(1)}</span>
                       </div>
                     </div>
                   ))}
@@ -236,9 +236,9 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
             </div>
 
             {/* Legend */}
-            <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-              <div className="text-sm font-medium text-gray-900 mb-3">Rating Scale</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700">
+            <div className="mt-6 p-4 bg-muted/50 border border-gray-200 rounded-lg">
+              <div className="text-sm font-medium text-foreground mb-3">Rating Scale</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
                 <div className="flex items-center space-x-2"><span className="w-2 h-2 rounded-full bg-emerald-500" /> <span>4.5-5.0: Exceptional</span></div>
                 <div className="flex items-center space-x-2"><span className="w-2 h-2 rounded-full bg-blue-500" /> <span>4.0-4.4: Exceeds</span></div>
                 <div className="flex items-center space-x-2"><span className="w-2 h-2 rounded-full bg-amber-500" /> <span>3.5-3.9: Meets</span></div>
@@ -255,20 +255,20 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
             <CardTitle className="text-sm font-semibold">Current Year Goals</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-600 mb-4">2025 Performance Goals • {goals.filter(g=>g.progress===100).length} of {goals.length} achieved</div>
+            <div className="text-sm text-muted-foreground mb-4">2025 Performance Goals • {goals.filter(g=>g.progress===100).length} of {goals.length} achieved</div>
             <div className="space-y-4">
               {goals.map((g, i) => (
                 <div key={i} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between">
-                    <div className="font-medium text-gray-900">{g.title}</div>
+                    <div className="font-medium text-foreground">{g.title}</div>
                     <span className={`text-xs px-2 py-1 rounded ${g.status==='Achieved' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'}`}>{g.status}</span>
                   </div>
-                  <div className="mt-3 text-xs text-gray-500">Progress</div>
+                  <div className="mt-3 text-xs text-muted-foreground">Progress</div>
                   <div className="flex items-center space-x-3 mt-1">
                     <div className="flex-1 bg-gray-200 rounded-full h-2">
                       <div className="bg-gray-900 h-2 rounded-full" style={{ width: `${g.progress}%` }} />
                     </div>
-                    <span className="text-xs text-gray-600" style={{ minWidth: 32 }}>{g.progress}%</span>
+                    <span className="text-xs text-muted-foreground" style={{ minWidth: 32 }}>{g.progress}%</span>
                   </div>
                 </div>
               ))}
@@ -283,7 +283,7 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
             <CardTitle className="text-sm font-semibold">Recent Feedback</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-600 mb-4">Feedback from managers, peers, and direct reports</div>
+            <div className="text-sm text-muted-foreground mb-4">Feedback from managers, peers, and direct reports</div>
             <div className="space-y-4">
               {feedback.map((f, i) => (
                 <div key={i} className="border rounded-lg p-4 flex items-start space-x-3">
@@ -291,8 +291,8 @@ const SuccessionCandidatePerformanceView: React.FC<Props> = ({ onBack, candidate
                     {f.positive ? <CheckCircle className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm text-gray-900">{f.text}</div>
-                    <div className="mt-2 flex items-center space-x-3 text-xs text-gray-600">
+                    <div className="text-sm text-foreground">{f.text}</div>
+                    <div className="mt-2 flex items-center space-x-3 text-xs text-muted-foreground">
                       <span className={`px-2 py-0.5 rounded border ${f.positive ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-amber-50 border-amber-200 text-amber-700'}`}>{f.from}</span>
                       <span>{f.date}</span>
                     </div>

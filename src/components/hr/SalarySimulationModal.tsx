@@ -67,15 +67,15 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Blurred Background Overlay */}
-      <div className="fixed inset-0 backdrop-blur-md bg-white/30" />
+      <div className="fixed inset-0 backdrop-blur-md bg-background/30" />
 
       {/* Modal Content */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-card rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Salary Simulation</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-xl font-semibold text-foreground">Salary Simulation</h2>
+            <p className="text-sm text-muted-foreground mt-1">
               Compare current and proposed compensation against market and internal bands
             </p>
           </div>
@@ -83,7 +83,7 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -94,21 +94,21 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
           {/* Employee Information */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Employee</label>
-              <Input value="John Doe" readOnly className="bg-gray-50" />
+              <label className="text-sm font-medium text-muted-foreground">Employee</label>
+              <Input value="John Doe" readOnly className="bg-muted/50" />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Role & Level</label>
-              <Input value="SE II (L5)" readOnly className="bg-gray-50" />
+              <label className="text-sm font-medium text-muted-foreground">Role & Level</label>
+              <Input value="SE II (L5)" readOnly className="bg-muted/50" />
             </div>
           </div>
 
           {/* Current Compensation */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Current compensation</h3>
+            <h3 className="text-lg font-semibold text-foreground">Current compensation</h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Current salary</label>
+                <label className="text-sm font-medium text-muted-foreground">Current salary</label>
                 <div className="relative">
                   <Input
                     type="number"
@@ -119,13 +119,13 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
                   <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col">
                     <button
                       onClick={() => handleSalaryChange('current', currentSalary + 100000)}
-                      className="h-3 w-3 flex items-center justify-center hover:bg-gray-200 rounded"
+                      className="h-3 w-3 flex items-center justify-center hover:bg-muted rounded"
                     >
                       <ChevronUp className="h-2 w-2" />
                     </button>
                     <button
                       onClick={() => handleSalaryChange('current', Math.max(0, currentSalary - 100000))}
-                      className="h-3 w-3 flex items-center justify-center hover:bg-gray-200 rounded"
+                      className="h-3 w-3 flex items-center justify-center hover:bg-muted rounded"
                     >
                       <ChevronDown className="h-2 w-2" />
                     </button>
@@ -133,29 +133,29 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Compa-Ratio</label>
-                <Input value={calculateCompaRatio(currentSalary)} readOnly className="bg-gray-50" />
+                <label className="text-sm font-medium text-muted-foreground">Compa-Ratio</label>
+                <Input value={calculateCompaRatio(currentSalary)} readOnly className="bg-muted/50" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Market percentile</label>
-                <Input value={calculateMarketPercentile(currentSalary)} readOnly className="bg-gray-50" />
+                <label className="text-sm font-medium text-muted-foreground">Market percentile</label>
+                <Input value={calculateMarketPercentile(currentSalary)} readOnly className="bg-muted/50" />
               </div>
             </div>
 
             {/* Current Position Bar */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Current Position</label>
+              <label className="text-sm font-medium text-muted-foreground">Current Position</label>
               <div className="relative">
                 <div className="h-4 bg-gradient-to-r from-orange-200 via-green-200 to-blue-200 rounded-full">
                   <div
-                    className="absolute top-1/2 transform -translate-y-1/2 w-3 h-3 bg-black rounded-full"
+                    className="absolute top-1/2 transform -translate-y-1/2 w-3 h-3 bg-foreground rounded-full"
                     style={{
                       left: `${getPositionInBand(currentSalary)}%`,
                       transform: 'translate(-50%, -50%)'
                     }}
                   />
                 </div>
-                <div className="flex justify-between text-xs text-gray-600 mt-1">
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>7.0m</span>
                   <span>9.5m</span>
                 </div>
@@ -165,10 +165,10 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
 
           {/* Proposed Compensation */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Proposed compensation</h3>
+            <h3 className="text-lg font-semibold text-foreground">Proposed compensation</h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Proposed salary</label>
+                <label className="text-sm font-medium text-muted-foreground">Proposed salary</label>
                 <div className="relative">
                   <Input
                     type="number"
@@ -179,13 +179,13 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
                   <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col">
                     <button
                       onClick={() => handleSalaryChange('proposed', proposedSalary + 100000)}
-                      className="h-3 w-3 flex items-center justify-center hover:bg-gray-200 rounded"
+                      className="h-3 w-3 flex items-center justify-center hover:bg-muted rounded"
                     >
                       <ChevronUp className="h-2 w-2" />
                     </button>
                     <button
                       onClick={() => handleSalaryChange('proposed', Math.max(0, proposedSalary - 100000))}
-                      className="h-3 w-3 flex items-center justify-center hover:bg-gray-200 rounded"
+                      className="h-3 w-3 flex items-center justify-center hover:bg-muted rounded"
                     >
                       <ChevronDown className="h-2 w-2" />
                     </button>
@@ -193,34 +193,34 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Compa-Ratio</label>
-                <Input value={calculateCompaRatio(proposedSalary)} readOnly className="bg-gray-50" />
+                <label className="text-sm font-medium text-muted-foreground">Compa-Ratio</label>
+                <Input value={calculateCompaRatio(proposedSalary)} readOnly className="bg-muted/50" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Market percentile</label>
-                <Input value={calculateMarketPercentile(proposedSalary)} readOnly className="bg-gray-50" />
+                <label className="text-sm font-medium text-muted-foreground">Market percentile</label>
+                <Input value={calculateMarketPercentile(proposedSalary)} readOnly className="bg-muted/50" />
               </div>
             </div>
 
             {/* Proposed Position Bar */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Proposed Position</label>
+              <label className="text-sm font-medium text-muted-foreground">Proposed Position</label>
               <div className="relative">
                 <div className="h-4 bg-gradient-to-r from-orange-200 via-green-200 to-blue-200 rounded-full">
                   <div
-                    className="absolute top-1/2 transform -translate-y-1/2 w-3 h-3 bg-black rounded-full"
+                    className="absolute top-1/2 transform -translate-y-1/2 w-3 h-3 bg-foreground rounded-full"
                     style={{
                       left: `${getPositionInBand(proposedSalary)}%`,
                       transform: 'translate(-50%, -50%)'
                     }}
                   />
                 </div>
-                <div className="flex justify-between text-xs text-gray-600 mt-1">
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>7.0m</span>
                   <span>9.5m</span>
                 </div>
                 <div className="flex justify-center mt-2">
-                  <Badge className="bg-gray-900 text-white text-xs">
+                  <Badge className="bg-foreground text-background text-xs">
                     At Band
                   </Badge>
                 </div>
@@ -231,26 +231,26 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
           {/* Impact Analysis */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5 text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Impact Analysis</h3>
+              <TrendingUp className="w-5 h-5 text-muted-foreground" />
+              <h3 className="text-lg font-semibold text-foreground">Impact Analysis</h3>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-muted/50 rounded-lg p-4">
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  <span className="text-gray-700">
+                  <span className="text-muted-foreground">
                     <strong>Increase:</strong> {increase.amount.toLocaleString()} NGN ({increase.percentage}%)
                   </span>
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  <span className="text-gray-700">
+                  <span className="text-muted-foreground">
                     <strong>Position in band:</strong> {getPositionInBand(proposedSalary)}%
                   </span>
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-orange-600 rounded-full mr-3"></span>
-                  <span className="text-gray-700">
+                  <span className="text-muted-foreground">
                     <strong>Competitive positioning:</strong> {getCompetitivePositioning(proposedSalary)}
                   </span>
                 </li>
@@ -260,7 +260,7 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+        <div className="flex justify-between items-center p-6 border-t bg-muted/50">
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>

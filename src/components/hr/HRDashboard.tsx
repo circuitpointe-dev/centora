@@ -64,13 +64,13 @@ const HRDashboard = () => {
         <Card className="hover:shadow-lg transition-shadow">
           <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
             <div className="flex items-center space-x-2 mb-2">
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                <BarChart3 className="h-4 w-4 text-gray-600" />
+              <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">256</div>
+            <div className="text-2xl font-bold text-foreground">256</div>
             <div className="text-sm text-violet-600">(+4%)</div>
-            <div className="text-sm text-gray-600">Headcount</div>
+            <div className="text-sm text-muted-foreground">Headcount</div>
           </CardContent>
         </Card>
 
@@ -82,8 +82,8 @@ const HRDashboard = () => {
                 <Users className="h-4 w-4 text-orange-600" />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">12</div>
-            <div className="text-sm text-gray-600">New hires</div>
+            <div className="text-2xl font-bold text-foreground">12</div>
+            <div className="text-sm text-muted-foreground">New hires</div>
           </CardContent>
         </Card>
 
@@ -95,9 +95,9 @@ const HRDashboard = () => {
                 <ArrowDown className="h-4 w-4 text-blue-600" />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">9.4%</div>
+            <div className="text-2xl font-bold text-foreground">9.4%</div>
             <div className="text-sm text-violet-600">(-0.2%)</div>
-            <div className="text-sm text-gray-600">Attrition (TTM)</div>
+            <div className="text-sm text-muted-foreground">Attrition (TTM)</div>
           </CardContent>
         </Card>
 
@@ -109,8 +109,8 @@ const HRDashboard = () => {
                 <UserPlus className="h-4 w-4 text-green-600" />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">18</div>
-            <div className="text-sm text-gray-600">Open reqs</div>
+            <div className="text-2xl font-bold text-foreground">18</div>
+            <div className="text-sm text-muted-foreground">Open reqs</div>
           </CardContent>
         </Card>
 
@@ -122,8 +122,8 @@ const HRDashboard = () => {
                 <CheckCircle className="h-4 w-4 text-blue-600" />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">88%</div>
-            <div className="text-sm text-gray-600">Policy Ack rate</div>
+            <div className="text-2xl font-bold text-foreground">88%</div>
+            <div className="text-sm text-muted-foreground">Policy Ack rate</div>
           </CardContent>
         </Card>
 
@@ -135,8 +135,8 @@ const HRDashboard = () => {
                 <AlertTriangle className="h-4 w-4 text-red-600" />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">14</div>
-            <div className="text-sm text-gray-600">Expiring docs</div>
+            <div className="text-2xl font-bold text-foreground">14</div>
+            <div className="text-sm text-muted-foreground">Expiring docs</div>
           </CardContent>
         </Card>
       </div>
@@ -191,7 +191,7 @@ const HRDashboard = () => {
             <div className="space-y-4">
               {recruitingFunnelData.map((item, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">{item.stage}</span>
+                  <span className="text-sm font-medium text-muted-foreground">{item.stage}</span>
                   <div className="flex items-center space-x-3">
                     <div className="w-32 bg-gray-200 rounded-full h-2">
                       <div 
@@ -199,7 +199,7 @@ const HRDashboard = () => {
                         style={{ width: `${(item.value / 80) * 100}%` }}
                       ></div>
                     </div>
-                    <span className="text-sm font-medium text-gray-900 w-8">{item.value}</span>
+                    <span className="text-sm font-medium text-foreground w-8">{item.value}</span>
                   </div>
                 </div>
               ))}
@@ -236,11 +236,11 @@ const HRDashboard = () => {
             <div className="flex justify-center space-x-4 mt-4">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">Acknowledged</span>
+                <span className="text-sm text-muted-foreground">Acknowledged</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">Pending</span>
+                <span className="text-sm text-muted-foreground">Pending</span>
               </div>
             </div>
           </CardContent>
@@ -262,19 +262,19 @@ const HRDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Approvals */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Approvals</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Approvals</h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Leave requests</p>
+                    <p className="text-sm font-medium text-foreground">Leave requests</p>
                   </div>
                   <Button size="sm" className="bg-violet-600 hover:bg-violet-700">
                     Approve
                   </Button>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Offers</p>
+                    <p className="text-sm font-medium text-foreground">Offers</p>
                   </div>
                   <Button size="sm" className="bg-violet-600 hover:bg-violet-700">
                     Approve
@@ -285,19 +285,19 @@ const HRDashboard = () => {
 
             {/* Compliance */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Compliance</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Compliance</h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Expiring documents</p>
+                    <p className="text-sm font-medium text-foreground">Expiring documents</p>
                   </div>
                   <Button size="sm" variant="outline">
                     Notify
                   </Button>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Overdue policies</p>
+                    <p className="text-sm font-medium text-foreground">Overdue policies</p>
                   </div>
                   <Button size="sm" variant="outline">
                     Escalate
@@ -308,19 +308,19 @@ const HRDashboard = () => {
 
             {/* Upcoming */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Upcoming</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Upcoming</h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Quarter hiring review</p>
+                    <p className="text-sm font-medium text-foreground">Quarter hiring review</p>
                   </div>
                   <Button size="sm" variant="outline">
                     Plan
                   </Button>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Training refresh for sales</p>
+                    <p className="text-sm font-medium text-foreground">Training refresh for sales</p>
                   </div>
                   <Button size="sm" variant="outline">
                     Assign

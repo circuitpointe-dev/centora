@@ -126,11 +126,11 @@ const ExitInterviewForm = ({ onBack, onSave }: ExitInterviewFormProps) => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-gray-900">Exits</h1>
+        <h1 className="text-2xl font-bold text-foreground">Exits</h1>
       </div>
 
       {/* Breadcrumb Navigation */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
         <Button
           variant="ghost"
           size="sm"
@@ -139,18 +139,18 @@ const ExitInterviewForm = ({ onBack, onSave }: ExitInterviewFormProps) => {
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
         </Button>
-        <span>Exit interview log / Detail view</span>
+        <span className="text-muted-foreground">Exit interview log / Detail view</span>
       </div>
 
       {/* Exit Interview Header Card */}
-      <Card className="bg-gray-50">
+      <Card className="bg-muted/50">
         <CardContent className="p-6">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-foreground">
                 Exit Interview - {formData.interviewee}
               </h2>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <span>{formData.role}</span>
                 <span>•</span>
                 <span>{formData.organization}</span>
@@ -173,30 +173,30 @@ const ExitInterviewForm = ({ onBack, onSave }: ExitInterviewFormProps) => {
       {/* Rating Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Rating</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">Rating</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Manager Support</span>
+              <span className="text-sm font-medium text-muted-foreground">Manager Support</span>
               <div className="flex items-center space-x-1">
                 {renderStars('managerSupport', formData.ratings.managerSupport)}
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Workload</span>
+              <span className="text-sm font-medium text-muted-foreground">Workload</span>
               <div className="flex items-center space-x-1">
                 {renderStars('workload', formData.ratings.workload)}
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Growth Opportunities</span>
+              <span className="text-sm font-medium text-muted-foreground">Growth Opportunities</span>
               <div className="flex items-center space-x-1">
                 {renderStars('growthOpportunities', formData.ratings.growthOpportunities)}
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Compensation</span>
+              <span className="text-sm font-medium text-muted-foreground">Compensation</span>
               <div className="flex items-center space-x-1">
                 {renderStars('compensation', formData.ratings.compensation)}
               </div>
@@ -208,7 +208,7 @@ const ExitInterviewForm = ({ onBack, onSave }: ExitInterviewFormProps) => {
           {/* Interview Notes Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900">Interview notes</CardTitle>
+              <CardTitle className="text-lg font-semibold text-foreground">Interview notes</CardTitle>
             </CardHeader>
             <CardContent>
               <Textarea
@@ -223,7 +223,7 @@ const ExitInterviewForm = ({ onBack, onSave }: ExitInterviewFormProps) => {
           {/* Themes Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900">Themes</CardTitle>
+              <CardTitle className="text-lg font-semibold text-foreground">Themes</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2 mb-4">
@@ -263,17 +263,17 @@ const ExitInterviewForm = ({ onBack, onSave }: ExitInterviewFormProps) => {
       {/* Action Items Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Action items</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">Action items</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {formData.actionItems.map((item) => (
             <div
               key={item.id}
-              className="bg-gray-50 rounded-lg p-4 border border-gray-200 flex items-start justify-between"
+              className="bg-muted/50 rounded-lg p-4 border border-gray-200 flex items-start justify-between"
             >
               <div className="flex-1">
-                <p className="text-gray-900 font-medium mb-2">{item.description}</p>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <p className="text-foreground font-medium mb-2">{item.description}</p>
+                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                   <span>Owner: {item.owner}</span>
                 </div>
               </div>

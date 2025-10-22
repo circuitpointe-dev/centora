@@ -68,10 +68,10 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
   return (
     <div className="space-y-6">
       {/* Header with Breadcrumbs */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
         <button 
           onClick={onBack}
-          className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
+          className="flex items-center space-x-1 hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Performance management</span>
@@ -79,7 +79,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
         <span>/</span>
         <span>KPIs & Objectives</span>
         <span>/</span>
-        <span className="text-gray-900 font-medium">detailed view</span>
+        <span className="text-foreground font-medium">detailed view</span>
       </div>
 
       {/* Goal Overview Card */}
@@ -88,12 +88,12 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <div className="flex items-center space-x-3">
-                <h1 className="text-2xl font-bold text-gray-900">{goalData.title}</h1>
-                <Badge variant="outline" className="text-gray-600">
+                <h1 className="text-2xl font-bold text-foreground">{goalData.title}</h1>
+                <Badge variant="outline" className="text-muted-foreground">
                   {goalData.type}
                 </Badge>
               </div>
-              <p className="text-gray-600">{goalData.description}</p>
+              <p className="text-muted-foreground">{goalData.description}</p>
             </div>
           </div>
         </CardHeader>
@@ -102,7 +102,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
           <div className="space-y-4">
             <button
               onClick={() => toggleSection('details')}
-              className="flex items-center space-x-2 text-lg font-semibold text-gray-900 hover:text-purple-600 transition-colors"
+              className="flex items-center space-x-2 text-lg font-semibold text-foreground hover:text-purple-600 transition-colors"
             >
               {expandedSections.details ? (
                 <ChevronUp className="h-5 w-5" />
@@ -115,13 +115,13 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
             {expandedSections.details && (
               <div className="space-y-4 pl-7">
                 <div>
-                  <p className="text-gray-700 mb-4">{goalData.detailedDescription}</p>
+                  <p className="text-muted-foreground mb-4">{goalData.detailedDescription}</p>
                 </div>
                 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-600">Progress</span>
-                    <span className="text-sm font-semibold text-gray-900">{goalData.progress}%</span>
+                    <span className="text-sm font-medium text-muted-foreground">Progress</span>
+                    <span className="text-sm font-semibold text-foreground">{goalData.progress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -136,16 +136,16 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
                     <Badge className={goalData.statusColor}>{goalData.status}</Badge>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">{goalData.owner}</span>
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{goalData.owner}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Target className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">{goalData.weight}</span>
+                    <Target className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{goalData.weight}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">{goalData.nextCheckIn}</span>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{goalData.nextCheckIn}</span>
                   </div>
                 </div>
               </div>
@@ -156,7 +156,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
           <div className="space-y-4">
             <button
               onClick={() => toggleSection('alignment')}
-              className="flex items-center space-x-2 text-lg font-semibold text-gray-900 hover:text-purple-600 transition-colors"
+              className="flex items-center space-x-2 text-lg font-semibold text-foreground hover:text-purple-600 transition-colors"
             >
               {expandedSections.alignment ? (
                 <ChevronUp className="h-5 w-5" />
@@ -171,12 +171,12 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <BarChart3 className="h-4 w-4 text-purple-600" />
-                    <span className="text-sm font-medium text-gray-900">Company OKR: {goalData.companyOkr}</span>
+                    <span className="text-sm font-medium text-foreground">Company OKR: {goalData.companyOkr}</span>
                   </div>
                   <div className="flex items-center space-x-2 ml-6">
                     <div className="w-px h-6 bg-gray-300 ml-2"></div>
                     <div className="w-2 h-px bg-gray-300"></div>
-                    <span className="text-sm text-gray-600">{goalData.title}</span>
+                    <span className="text-sm text-muted-foreground">{goalData.title}</span>
                   </div>
                 </div>
               </div>
@@ -187,7 +187,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
           <div className="space-y-4">
             <button
               onClick={() => toggleSection('progress')}
-              className="flex items-center space-x-2 text-lg font-semibold text-gray-900 hover:text-purple-600 transition-colors"
+              className="flex items-center space-x-2 text-lg font-semibold text-foreground hover:text-purple-600 transition-colors"
             >
               {expandedSections.progress ? (
                 <ChevronUp className="h-5 w-5" />
@@ -201,12 +201,12 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
               <div className="pl-7 space-y-6">
                 {/* Quick Progress Update Buttons */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Progress Update</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-3">Quick Progress Update</h4>
                   <div className="flex flex-wrap gap-2">
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-muted-foreground hover:text-foreground"
                       onClick={() => setIsProgressModalOpen(true)}
                     >
                       +10% Good Progress
@@ -214,7 +214,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-muted-foreground hover:text-foreground"
                       onClick={() => setIsProgressModalOpen(true)}
                     >
                       +25% Major Progress
@@ -222,7 +222,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-muted-foreground hover:text-foreground"
                       onClick={() => setIsProgressModalOpen(true)}
                     >
                       Mark Complete
@@ -230,7 +230,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-muted-foreground hover:text-foreground"
                       onClick={() => setIsProgressModalOpen(true)}
                     >
                       Detailed Update
@@ -240,7 +240,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
 
                 {/* Goal Milestones */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Goal milestones</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-3">Goal milestones</h4>
                   <div className="space-y-2">
                     {goalData.milestones.map((milestone) => (
                       <div key={milestone.id} className="flex items-center space-x-3">
@@ -249,7 +249,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
                         ) : (
                           <Circle className="h-5 w-5 text-gray-300" />
                         )}
-                        <span className={`text-sm ${milestone.completed ? 'text-gray-900' : 'text-gray-500'}`}>
+                        <span className={`text-sm ${milestone.completed ? 'text-foreground' : 'text-muted-foreground'}`}>
                           {milestone.label}
                         </span>
                       </div>
@@ -264,7 +264,7 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
           <div className="space-y-4">
             <button
               onClick={() => toggleSection('activity')}
-              className="flex items-center space-x-2 text-lg font-semibold text-gray-900 hover:text-purple-600 transition-colors"
+              className="flex items-center space-x-2 text-lg font-semibold text-foreground hover:text-purple-600 transition-colors"
             >
               {expandedSections.activity ? (
                 <ChevronUp className="h-5 w-5" />
@@ -280,11 +280,11 @@ const GoalDetailView: React.FC<GoalDetailViewProps> = ({ onBack }) => {
                   {goalData.activities.map((activity) => (
                     <div key={activity.id} className="flex items-center justify-between py-2">
                       <div className="flex items-center space-x-3">
-                        <Clock className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">{activity.action}</span>
-                        <span className="text-sm text-gray-500">by {activity.user}</span>
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">{activity.action}</span>
+                        <span className="text-sm text-muted-foreground">by {activity.user}</span>
                       </div>
-                      <span className="text-sm text-gray-500">{activity.date}</span>
+                      <span className="text-sm text-muted-foreground">{activity.date}</span>
                     </div>
                   ))}
                 </div>

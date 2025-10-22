@@ -84,7 +84,7 @@ const Exits = () => {
       effectiveDate: 'Dec 30, 2023',
       reasons: ['Better offer'],
       status: 'Draft',
-      statusColor: 'bg-gray-100 text-gray-800'
+      statusColor: 'bg-muted text-gray-800'
     }
   ];
 
@@ -108,14 +108,14 @@ const Exits = () => {
         <ExitDetailView onBack={handleBackToList} />
       ) : (
         <>
-          {/* Page Header */}
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Exits</h1>
-          </div>
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Exits</h1>
+      </div>
 
       {/* Tab Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+        <TabsList className="grid w-full grid-cols-2 bg-muted">
           <TabsTrigger value="exit-feedback">Exit feedback</TabsTrigger>
           <TabsTrigger value="exit-interview-log">Exit interview log</TabsTrigger>
         </TabsList>
@@ -131,8 +131,8 @@ const Exits = () => {
                     <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-3">
                       <MoreHorizontal className="w-6 h-6 text-yellow-600" />
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">In progress</p>
-                    <p className="text-2xl font-bold text-gray-900">4</p>
+                    <p className="text-sm text-muted-foreground mb-1">In progress</p>
+                    <p className="text-2xl font-bold text-foreground">4</p>
                   </div>
                 </div>
               </CardContent>
@@ -146,8 +146,8 @@ const Exits = () => {
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
                       <CheckCircle className="w-6 h-6 text-green-600" />
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">Completed</p>
-                    <p className="text-2xl font-bold text-gray-900">2</p>
+                    <p className="text-sm text-muted-foreground mb-1">Completed</p>
+                    <p className="text-2xl font-bold text-foreground">2</p>
                   </div>
                 </div>
               </CardContent>
@@ -161,8 +161,8 @@ const Exits = () => {
                     <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
                       <RotateCcw className="w-6 h-6 text-purple-600" />
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">Rehire-eligible</p>
-                    <p className="text-2xl font-bold text-gray-900">80%</p>
+                    <p className="text-sm text-muted-foreground mb-1">Rehire-eligible</p>
+                    <p className="text-2xl font-bold text-foreground">80%</p>
                   </div>
                 </div>
               </CardContent>
@@ -172,12 +172,12 @@ const Exits = () => {
           {/* Exit Feedback Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Exit feedback</h2>
+              <h2 className="text-lg font-semibold text-foreground">Exit feedback</h2>
               
               {/* Search and Filter */}
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     placeholder="Search...."
                     className="pl-10 w-64"
@@ -204,28 +204,28 @@ const Exits = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Person</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Type</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Effective date</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Reason(s)</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Action</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Person</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Type</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Effective date</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Reason(s)</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {exitFeedbackData.map((item) => (
-                        <tr key={item.id} className="border-b hover:bg-gray-50">
+                        <tr key={item.id} className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div>
-                              <div className="font-medium text-gray-900">{item.person}</div>
-                              <div className="text-sm text-gray-600">{item.employeeId}</div>
+                              <div className="font-medium text-foreground">{item.person}</div>
+                              <div className="text-sm text-muted-foreground">{item.employeeId}</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <span className="text-gray-700">{item.type}</span>
+                            <span className="text-foreground">{item.type}</span>
                           </td>
                           <td className="py-3 px-4">
-                            <span className="text-gray-700">{item.effectiveDate}</span>
+                            <span className="text-foreground">{item.effectiveDate}</span>
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex flex-wrap gap-1">

@@ -87,18 +87,18 @@ const AddDevelopmentActionModal: React.FC<Props> = ({ isOpen, onClose, onAddActi
         <div className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ top: 0, left: 0, right: 0, bottom: 0 }}>
           {/* Blurred Background Overlay */}
           <div 
-            className="absolute inset-0 bg-white/30 backdrop-blur-md"
+            className="absolute inset-0 bg-background/30 backdrop-blur-md"
             onClick={onClose}
             style={{ top: 0, left: 0, right: 0, bottom: 0 }}
           />
           
           {/* Modal Content */}
-          <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md mx-4 h-[600px] flex flex-col">
+          <div className="relative bg-card rounded-lg shadow-lg w-full max-w-md mx-4 h-[600px] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b flex-shrink-0">
               <div>
-                <h2 className="text-lg font-semibold">Add development action</h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <h2 className="text-lg font-semibold text-foreground">Add development action</h2>
+                <p className="text-sm text-muted-foreground mt-1">
                   Select a template to quickly add a development action to the plan.
                 </p>
               </div>
@@ -119,25 +119,25 @@ const AddDevelopmentActionModal: React.FC<Props> = ({ isOpen, onClose, onAddActi
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${
                       isSelected 
                         ? 'border-green-500 bg-green-50' 
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        : 'border-border hover:border-border hover:bg-muted/50'
                     }`}
                     onClick={() => setSelectedAction(action.id)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className={`p-2 rounded-lg ${
-                          isSelected ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
+                          isSelected ? 'bg-green-100 text-green-600' : 'bg-muted text-muted-foreground'
                         }`}>
                           <IconComponent className="h-5 w-5" />
                         </div>
                         <div>
                           <div className={`font-medium ${
-                            isSelected ? 'text-green-900' : 'text-gray-900'
+                            isSelected ? 'text-green-900' : 'text-foreground'
                           }`}>
                             {action.title}
                           </div>
                           <div className={`text-sm ${
-                            isSelected ? 'text-green-700' : 'text-gray-600'
+                            isSelected ? 'text-green-700' : 'text-muted-foreground'
                           }`}>
                             {action.type} • {action.duration}
                           </div>
@@ -160,7 +160,7 @@ const AddDevelopmentActionModal: React.FC<Props> = ({ isOpen, onClose, onAddActi
               <Button 
                 onClick={handleAddAction}
                 disabled={!selectedAction}
-                className="bg-gray-900 hover:bg-gray-800 text-white"
+                className="bg-foreground hover:bg-muted-foreground text-background"
               >
                 Add action
               </Button>

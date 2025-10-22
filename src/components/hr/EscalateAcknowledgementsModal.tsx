@@ -55,15 +55,15 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Blurred Background Overlay */}
-      <div className="fixed inset-0 backdrop-blur-md bg-white/30" />
+      <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
 
       {/* Modal Content */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-card rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Escalate Acknowledgements</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-xl font-semibold text-foreground">Escalate Acknowledgements</h2>
+            <p className="text-sm text-muted-foreground mt-1">
               {policy.policy} • {policy.org}
             </p>
           </div>
@@ -71,7 +71,7 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -81,16 +81,16 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
         <div className="p-6 space-y-6">
           {/* People with Overdue Acknowledgements */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               People with Overdue Acknowledgements ({policy.overdue})
             </h3>
             <div className="space-y-3">
               {overduePeople.map((person) => (
-                <div key={person.id} className="bg-white border border-gray-200 rounded-lg p-4">
+                <div key={person.id} className="bg-card border border-border rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium text-gray-900">{person.name}</h4>
-                      <p className="text-sm text-gray-600">{person.email}</p>
+                      <h4 className="font-medium text-foreground">{person.name}</h4>
+                      <p className="text-sm text-muted-foreground">{person.email}</p>
                     </div>
                     <Badge variant="destructive" className="bg-red-600 text-white">
                       {person.daysOverdue}d
@@ -103,7 +103,7 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
 
           {/* Escalation Note */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Escalation Note</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-3">Escalation Note</h3>
             <Textarea
               placeholder="Add context for the escalation..."
               value={escalationNote}
@@ -119,14 +119,14 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
               checked={ccManager}
               onCheckedChange={(checked) => setCcManager(checked as boolean)}
             />
-            <label htmlFor="cc-manager" className="text-sm font-medium text-gray-700">
+            <label htmlFor="cc-manager" className="text-sm font-medium text-muted-foreground">
               CC Manager (Sarah Johnson)
             </label>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end items-center p-6 border-t bg-gray-50 space-x-3">
+        <div className="flex justify-end items-center p-6 border-t bg-muted/50 space-x-3">
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
@@ -138,7 +138,7 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
           </Button>
           <Button 
             onClick={onSendEscalation}
-            className="bg-gray-900 hover:bg-gray-800"
+            className="bg-foreground hover:bg-muted-foreground"
           >
             Send escalation
           </Button>

@@ -45,7 +45,7 @@ const JobDescriptionLibrary = () => {
       grade: 'IC5',
       location: 'San Francisco, CA / Remote',
       status: 'Published',
-      statusColor: 'bg-purple-100 text-purple-800',
+      statusColor: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
       updated: 'Mar 12, 2025',
       requisitions: 3,
       skills: ['Full-stack', 'React', 'Node.js'],
@@ -62,7 +62,7 @@ const JobDescriptionLibrary = () => {
       grade: 'IC3',
       location: 'New York, NY',
       status: 'Draft',
-      statusColor: 'bg-gray-100 text-gray-800',
+      statusColor: 'bg-muted text-muted-foreground',
       updated: 'Feb 28, 2025',
       requisitions: 0,
       skills: ['HR', 'Generalist', 'Employee-relations'],
@@ -79,7 +79,7 @@ const JobDescriptionLibrary = () => {
       grade: 'IC4',
       location: 'Austin, TX / Remote',
       status: 'Published',
-      statusColor: 'bg-purple-100 text-purple-800',
+      statusColor: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
       updated: 'Jan 15, 2025',
       requisitions: 2,
       skills: ['Product-management', 'analytics', 'roadmap'],
@@ -96,7 +96,7 @@ const JobDescriptionLibrary = () => {
       grade: 'Remote',
       location: 'Remote',
       status: 'Approved',
-      statusColor: 'bg-green-100 text-green-800',
+      statusColor: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
       updated: 'Mar 1, 2025',
       requisitions: 1,
       skills: ['ux', 'ui', 'design-systems'],
@@ -113,7 +113,7 @@ const JobDescriptionLibrary = () => {
       grade: 'IC6',
       location: 'Seattle, WA / Remote',
       status: 'Published',
-      statusColor: 'bg-purple-100 text-purple-800',
+      statusColor: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
       updated: 'Mar 10, 2025',
       requisitions: 2,
       skills: ['machine-learning', 'python', 'statistics'],
@@ -130,8 +130,8 @@ const JobDescriptionLibrary = () => {
     <Card 
       className={`cursor-pointer transition-all duration-200 ${
         job.isSelected 
-          ? 'border-purple-500 bg-purple-50' 
-          : 'hover:shadow-md hover:border-gray-300'
+          ? 'border-purple-500 bg-purple-50 dark:bg-purple-950' 
+          : 'hover:shadow-md hover:border-border'
       }`}
       onClick={() => setSelectedJob(job.id)}
     >
@@ -139,8 +139,8 @@ const JobDescriptionLibrary = () => {
         <div className="space-y-3">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="font-semibold text-gray-900">{job.title}</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-foreground">{job.title}</h3>
+              <p className="text-sm text-muted-foreground">
                 {job.department} • {job.level} • {job.grade}
               </p>
             </div>
@@ -149,13 +149,13 @@ const JobDescriptionLibrary = () => {
             </Badge>
           </div>
           
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             <p>{job.location}</p>
             <p>Updated {job.updated}</p>
           </div>
           
           {job.requisitions > 0 && (
-            <div className="text-sm text-blue-600 font-medium">
+            <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
               {job.requisitions} active req{job.requisitions > 1 ? 's' : ''}
             </div>
           )}
@@ -174,9 +174,9 @@ const JobDescriptionLibrary = () => {
           </div>
           
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">{job.salary}</span>
+            <span className="text-muted-foreground">{job.salary}</span>
             {job.hires > 0 && (
-              <span className="text-gray-600">{job.hires} hires</span>
+              <span className="text-muted-foreground">{job.hires} hires</span>
             )}
           </div>
         </div>
@@ -189,8 +189,8 @@ const JobDescriptionLibrary = () => {
       {/* Left Column - Job Descriptions Library */}
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Job Descriptions Library</h2>
-          <p className="text-sm text-gray-600">Central repository for all role descriptions</p>
+          <h2 className="text-lg font-semibold text-foreground">Job Descriptions Library</h2>
+          <p className="text-sm text-muted-foreground">Central repository for all role descriptions</p>
         </div>
 
         <div className="flex items-center justify-between">
@@ -204,7 +204,7 @@ const JobDescriptionLibrary = () => {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input 
                 placeholder="Search title, family, skills, or tags..."
                 value={searchQuery}
@@ -276,8 +276,8 @@ const JobDescriptionLibrary = () => {
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">{selectedJobData.title}</h2>
-                  <p className="text-sm text-gray-600">
+                  <h2 className="text-xl font-semibold text-foreground">{selectedJobData.title}</h2>
+                  <p className="text-sm text-muted-foreground">
                     {selectedJobData.department} • {selectedJobData.level} • {selectedJobData.grade}
                   </p>
                 </div>
@@ -286,10 +286,10 @@ const JobDescriptionLibrary = () => {
                 </Badge>
               </div>
               
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 <p>Created by Sarah Chen • Version v1.3 (Current)</p>
                 {selectedJobData.requisitions > 0 && (
-                  <p className="text-blue-600 cursor-pointer hover:underline">
+                  <p className="text-blue-600 dark:text-blue-400 cursor-pointer hover:underline">
                     {selectedJobData.requisitions} active requisitions
                   </p>
                 )}
@@ -322,7 +322,7 @@ const JobDescriptionLibrary = () => {
                     <Edit className="w-4 h-4" />
                     Edit
                   </Button>
-                  <Button variant="outline" className="flex items-center gap-2 text-red-600 hover:text-red-700">
+                  <Button variant="outline" className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
                     <Trash2 className="w-4 h-4" />
                     Delete
                   </Button>
@@ -333,27 +333,27 @@ const JobDescriptionLibrary = () => {
                   <CardContent className="p-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex items-center space-x-2">
-                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">{selectedJobData.location}</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <User className="w-4 h-4 text-gray-400" />
+                        <User className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">Engineering Manager</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <DollarSign className="w-4 h-4 text-gray-400" />
+                        <DollarSign className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">{selectedJobData.salary}</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Building className="w-4 h-4 text-gray-400" />
+                        <Building className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">{selectedJobData.department}</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
+                        <Clock className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">3-5 years</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Award className="w-4 h-4 text-gray-400" />
+                        <Award className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">{selectedJobData.grade}</span>
                       </div>
                     </div>
@@ -362,16 +362,16 @@ const JobDescriptionLibrary = () => {
 
                 {/* Summary */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Summary</h3>
-                  <p className="text-gray-700">
+                  <h3 className="font-semibold text-foreground mb-2">Summary</h3>
+                  <p className="text-muted-foreground">
                     We are seeking a mid-level Software Engineer to join our platform team. You will be responsible for building and maintaining scalable web applications that serve millions of users.
                   </p>
                 </div>
 
                 {/* Key Responsibilities */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Key Responsibilities</h3>
-                  <ul className="list-disc list-inside space-y-1 text-gray-700">
+                  <h3 className="font-semibold text-foreground mb-2">Key Responsibilities</h3>
+                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                     <li>Design and implement scalable web applications using modern technologies</li>
                     <li>Collaborate with cross-functional teams to deliver high-quality features</li>
                     <li>Participate in code reviews and maintain coding standards</li>
@@ -382,8 +382,8 @@ const JobDescriptionLibrary = () => {
 
                 {/* Requirements */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Requirements</h3>
-                  <ul className="list-disc list-inside space-y-1 text-gray-700">
+                  <h3 className="font-semibold text-foreground mb-2">Requirements</h3>
+                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                     <li>3+ years of experience in software development</li>
                     <li>Proficiency in JavaScript, TypeScript, and React</li>
                     <li>Experience with Node.js and cloud platforms (AWS/GCP)</li>
@@ -394,7 +394,7 @@ const JobDescriptionLibrary = () => {
 
                 {/* Required Skills */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Required Skills</h3>
+                  <h3 className="font-semibold text-foreground mb-2">Required Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {['JavaScript', 'TypeScript', 'React', 'Node.js', 'AWS', 'System Design'].map((skill) => (
                       <Badge key={skill} variant="secondary">
@@ -406,7 +406,7 @@ const JobDescriptionLibrary = () => {
 
                 {/* Key Competencies */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Key Competencies</h3>
+                  <h3 className="font-semibold text-foreground mb-2">Key Competencies</h3>
                   <div className="flex flex-wrap gap-2">
                     {['Problem Solving', 'Technical Communication', 'Code Quality', 'Collaboration', 'Continuous Learning'].map((competency) => (
                       <Badge key={competency} variant="outline">
@@ -419,19 +419,19 @@ const JobDescriptionLibrary = () => {
                 {/* Education & Experience */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-1">Education</h4>
-                    <p className="text-sm text-gray-600">Bachelor's degree in Computer Science or equivalent</p>
+                    <h4 className="font-medium text-foreground mb-1">Education</h4>
+                    <p className="text-sm text-muted-foreground">Bachelor's degree in Computer Science or equivalent</p>
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-1">Experience</h4>
-                    <p className="text-sm text-gray-600">3-5 years</p>
+                    <h4 className="font-medium text-foreground mb-1">Experience</h4>
+                    <p className="text-sm text-muted-foreground">3-5 years</p>
                   </div>
                 </div>
 
                 {/* Linked Resources */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Interview Kits</h3>
+                    <h3 className="font-semibold text-foreground mb-2">Interview Kits</h3>
                     <div className="flex flex-wrap gap-2">
                       {['Technical Screening', 'System Design', 'Behavioral'].map((kit) => (
                         <Button key={kit} variant="outline" size="sm" className="flex items-center gap-1">
@@ -443,7 +443,7 @@ const JobDescriptionLibrary = () => {
                   </div>
                   
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Salary Benchmarks</h3>
+                    <h3 className="font-semibold text-foreground mb-2">Salary Benchmarks</h3>
                     <div className="flex flex-wrap gap-2">
                       {['Market Data 2025', 'Tech Industry Survey'].map((benchmark) => (
                         <Button key={benchmark} variant="outline" size="sm" className="flex items-center gap-1">
@@ -457,7 +457,7 @@ const JobDescriptionLibrary = () => {
 
                 {/* Tags */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Tags</h3>
+                  <h3 className="font-semibold text-foreground mb-2">Tags</h3>
                   <div className="flex flex-wrap gap-2">
                     {['#full-stack', '#react', '#node.js', '#cloud', '#mentoring'].map((tag) => (
                       <Badge key={tag} variant="secondary" className="text-xs">
@@ -470,7 +470,7 @@ const JobDescriptionLibrary = () => {
 
               <TabsContent value="versions">
                 <div className="text-center py-8">
-                  <p className="text-gray-500">Version history will be displayed here.</p>
+                  <p className="text-muted-foreground">Version history will be displayed here.</p>
                 </div>
               </TabsContent>
             </Tabs>

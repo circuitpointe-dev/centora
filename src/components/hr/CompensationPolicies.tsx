@@ -336,7 +336,7 @@ const CompensationPolicies = () => {
         <>
           {/* Tab Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 bg-gray-100">
+        <TabsList className="grid w-full grid-cols-4 bg-muted">
           <TabsTrigger value="salary-benchmarks">Salary benchmarks</TabsTrigger>
           <TabsTrigger value="policy-portal">Policy portal</TabsTrigger>
           <TabsTrigger value="acknowledgements">Acknowledgements</TabsTrigger>
@@ -355,11 +355,11 @@ const CompensationPolicies = () => {
                     <div className={`w-8 h-8 mx-auto mb-2 ${item.bgColor} rounded-lg flex items-center justify-center`}>
                       <IconComponent className={`w-4 h-4 ${item.color}`} />
                     </div>
-                    <div className="text-2xl font-bold text-gray-900 mb-1">{item.number}</div>
+                    <div className="text-2xl font-bold text-foreground mb-1">{item.number}</div>
                     {item.subtitle && (
                       <div className={`text-xs ${item.color} mb-1`}>{item.subtitle}</div>
                     )}
-                    <div className="text-sm text-gray-600">{item.label}</div>
+                    <div className="text-sm text-muted-foreground">{item.label}</div>
                   </CardContent>
                 </Card>
               );
@@ -376,7 +376,7 @@ const CompensationPolicies = () => {
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div className="flex flex-col sm:flex-row gap-2 flex-1">
                   <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input 
                       placeholder="Search..." 
                       className="pl-10"
@@ -411,35 +411,35 @@ const CompensationPolicies = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Role / Level</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Location</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Market data (P25 / P50 / P75)</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Internal band</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Role / Level</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Location</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Market data (P25 / P50 / P75)</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Internal band</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {salaryBenchmarkData.map((item) => (
-                      <tr key={item.id} className="border-b hover:bg-gray-50">
+                      <tr key={item.id} className="border-b hover:bg-muted/50">
                         <td className="py-3 px-4">
-                          <div className="font-medium text-gray-900">{item.role}</div>
+                          <div className="font-medium text-foreground">{item.role}</div>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="text-gray-700">{item.location}</div>
+                          <div className="text-muted-foreground">{item.location}</div>
                         </td>
                         <td className="py-3 px-4">
                           <div className="space-y-1">
                             <div className="flex gap-4 text-sm">
-                              <span className="text-gray-600">P25: {item.marketData.p25}</span>
-                              <span className="text-gray-600">P50: {item.marketData.p50}</span>
-                              <span className="text-gray-600">P75: {item.marketData.p75}</span>
+                              <span className="text-muted-foreground">P25: {item.marketData.p25}</span>
+                              <span className="text-muted-foreground">P50: {item.marketData.p50}</span>
+                              <span className="text-muted-foreground">P75: {item.marketData.p75}</span>
                             </div>
                             {/* Visual range bar */}
                             <div className="w-full h-2 bg-gradient-to-r from-orange-300 via-yellow-300 to-green-300 rounded-full"></div>
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="text-gray-700">{item.internalBand}</div>
+                          <div className="text-muted-foreground">{item.internalBand}</div>
                         </td>
                         <td className="py-3 px-4">
                           <Button 
@@ -465,12 +465,12 @@ const CompensationPolicies = () => {
         <TabsContent value="policy-portal" className="space-y-6 mt-6">
           {/* HR Policy Portal Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">HR Policy Portal</h2>
+            <h2 className="text-xl font-semibold text-foreground">HR Policy Portal</h2>
             
             {/* Search and Filter */}
             <div className="flex items-center gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   placeholder="Search...."
                   className="pl-10 w-64"
@@ -490,18 +490,18 @@ const CompensationPolicies = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-medium text-gray-700 w-12"></th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Title</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Category</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Updated</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Version</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Ack rate</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground w-12"></th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Title</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Category</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Updated</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Version</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Ack rate</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {policyData.map((policy) => (
-                      <tr key={policy.id} className="border-b hover:bg-gray-50">
+                      <tr key={policy.id} className="border-b hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <input 
                             type="checkbox" 
@@ -510,8 +510,8 @@ const CompensationPolicies = () => {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center space-x-2">
-                            <FileText className="w-4 h-4 text-gray-400" />
-                            <span className="font-medium text-gray-900">{policy.title}</span>
+                            <FileText className="w-4 h-4 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{policy.title}</span>
                           </div>
                         </td>
                         <td className="py-3 px-4">
@@ -520,7 +520,7 @@ const CompensationPolicies = () => {
                           </Badge>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-gray-700">{policy.updated}</span>
+                          <span className="text-muted-foreground">{policy.updated}</span>
                         </td>
                         <td className="py-3 px-4">
                           <Badge variant="secondary" className="text-xs">
@@ -529,7 +529,7 @@ const CompensationPolicies = () => {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center space-x-2">
-                            <span className="text-gray-700">{policy.ackRate}%</span>
+                            <span className="text-muted-foreground">{policy.ackRate}%</span>
                             {policy.hasLowAck && (
                               <Badge variant="destructive" className="text-xs bg-red-600 text-white">
                                 Low
@@ -569,8 +569,8 @@ const CompensationPolicies = () => {
                     <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
                       <RotateCcw className="w-6 h-6 text-purple-600" />
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">Total assigned</p>
-                    <p className="text-2xl font-bold text-gray-900">281</p>
+                    <p className="text-sm text-muted-foreground mb-1">Total assigned</p>
+                    <p className="text-2xl font-bold text-foreground">281</p>
                   </div>
                 </div>
               </CardContent>
@@ -584,9 +584,9 @@ const CompensationPolicies = () => {
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
                       <CheckCircle className="w-6 h-6 text-green-600" />
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">Acknowledged</p>
+                    <p className="text-sm text-muted-foreground mb-1">Acknowledged</p>
                     <div className="flex items-baseline space-x-2">
-                      <p className="text-2xl font-bold text-gray-900">256</p>
+                      <p className="text-2xl font-bold text-foreground">256</p>
                       <p className="text-sm text-green-600 font-medium">(91%)</p>
                     </div>
                   </div>
@@ -602,8 +602,8 @@ const CompensationPolicies = () => {
                     <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-3">
                       <AlertTriangle className="w-6 h-6 text-red-600" />
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">Overdue</p>
-                    <p className="text-2xl font-bold text-gray-900">25</p>
+                    <p className="text-sm text-muted-foreground mb-1">Overdue</p>
+                    <p className="text-2xl font-bold text-foreground">25</p>
                   </div>
                 </div>
               </CardContent>
@@ -613,12 +613,12 @@ const CompensationPolicies = () => {
           {/* Policy Acknowledgements Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Policy Acknowledgements</h2>
+              <h2 className="text-xl font-semibold text-foreground">Policy Acknowledgements</h2>
               
               {/* Search and Filter */}
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     placeholder="Search...."
                     className="pl-10 w-64"
@@ -638,18 +638,18 @@ const CompensationPolicies = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 w-12"></th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Policy / Org</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Assigned</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Acknowledge</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Overdue</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Last remind</th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700">Action</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground w-12"></th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Policy / Org</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Assigned</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Acknowledge</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Overdue</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Last remind</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {acknowledgementsData.map((item) => (
-                        <tr key={item.id} className="border-b hover:bg-gray-50">
+                        <tr key={item.id} className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <input 
                               type="checkbox" 
@@ -658,17 +658,17 @@ const CompensationPolicies = () => {
                           </td>
                           <td className="py-3 px-4">
                             <div>
-                              <div className="font-medium text-gray-900">{item.policy}</div>
-                              <div className="text-sm text-gray-600">{item.org}</div>
+                              <div className="font-medium text-foreground">{item.policy}</div>
+                              <div className="text-sm text-muted-foreground">{item.org}</div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <span className="text-gray-700">{item.assigned}</span>
+                            <span className="text-muted-foreground">{item.assigned}</span>
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-1">
-                              <span className="text-gray-700">{item.acknowledged}</span>
-                              <span className="text-sm text-gray-500">
+                              <span className="text-muted-foreground">{item.acknowledged}</span>
+                              <span className="text-sm text-muted-foreground">
                                 ({Math.round((item.acknowledged / item.assigned) * 100)}%)
                               </span>
                             </div>
@@ -680,11 +680,11 @@ const CompensationPolicies = () => {
                                 <span className="text-red-600">{item.overdue}</span>
                               </div>
                             ) : (
-                              <span className="text-gray-500">--</span>
+                              <span className="text-muted-foreground">--</span>
                             )}
                           </td>
                           <td className="py-3 px-4">
-                            <span className="text-gray-700">{item.lastRemind}</span>
+                            <span className="text-muted-foreground">{item.lastRemind}</span>
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-2">
@@ -721,12 +721,12 @@ const CompensationPolicies = () => {
         <TabsContent value="document-expiry" className="space-y-6 mt-6">
           {/* Document Expiry Monitor Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Document Expiry Monitor</h2>
+            <h2 className="text-xl font-semibold text-foreground">Document Expiry Monitor</h2>
             
             {/* Search and Filter */}
             <div className="flex items-center gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   placeholder="Search...."
                   className="pl-10 w-64"
@@ -746,19 +746,19 @@ const CompensationPolicies = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-medium text-gray-700 w-12"></th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Owner</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Type</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Country</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Number</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Expiry</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Action</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground w-12"></th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Owner</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Type</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Country</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Number</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Expiry</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
+                      <th className="text-left py-3 px-4 font-medium text-muted-foreground">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {documentExpiryData.map((item) => (
-                      <tr key={item.id} className="border-b hover:bg-gray-50">
+                      <tr key={item.id} className="border-b hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <input 
                             type="checkbox" 
@@ -767,21 +767,21 @@ const CompensationPolicies = () => {
                         </td>
                         <td className="py-3 px-4">
                           <div>
-                            <div className="font-medium text-gray-900">{item.owner}</div>
-                            <div className="text-sm text-gray-600">{item.department}</div>
+                            <div className="font-medium text-foreground">{item.owner}</div>
+                            <div className="text-sm text-muted-foreground">{item.department}</div>
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-gray-700">{item.type}</span>
+                          <span className="text-muted-foreground">{item.type}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-gray-700">{item.country}</span>
+                          <span className="text-muted-foreground">{item.country}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-gray-700">{item.number}</span>
+                          <span className="text-muted-foreground">{item.number}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-gray-700">{item.expiry}</span>
+                          <span className="text-muted-foreground">{item.expiry}</span>
                         </td>
                         <td className="py-3 px-4">
                           {item.status === 'expiring' && (

@@ -56,15 +56,15 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Blurred Background Overlay */}
-      <div className="fixed inset-0 backdrop-blur-md bg-white/30" />
+      <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
 
       {/* Modal Content */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-card rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">{policy.title}</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-xl font-semibold text-foreground">{policy.title}</h2>
+            <p className="text-sm text-muted-foreground mt-1">
               {policy.category} • {policy.version} • Updated {formatDate(policy.updated)}
             </p>
           </div>
@@ -72,7 +72,7 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -81,23 +81,23 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
         {/* Content */}
         <div className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <div className="border-b border-gray-200">
+            <div className="border-b border-border">
               <TabsList className="h-auto p-0 bg-transparent flex space-x-8 justify-start">
                 <TabsTrigger 
                   value="summary" 
-                  className="relative px-0 py-3 text-sm font-medium text-gray-500 data-[state=active]:text-gray-900 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
+                  className="relative px-0 py-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
                 >
                   Summary
                 </TabsTrigger>
                 <TabsTrigger 
                   value="document" 
-                  className="relative px-0 py-3 text-sm font-medium text-gray-500 data-[state=active]:text-gray-900 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
+                  className="relative px-0 py-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
                 >
                   Documents
                 </TabsTrigger>
                 <TabsTrigger 
                   value="assignments" 
-                  className="relative px-0 py-3 text-sm font-medium text-gray-500 data-[state=active]:text-gray-900 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
+                  className="relative px-0 py-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
                 >
                   Assignments
                 </TabsTrigger>
@@ -106,19 +106,19 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
 
             <TabsContent value="summary" className="space-y-6">
               <div>
-                <p className="text-gray-700 mb-6">
+                <p className="text-muted-foreground mb-6">
                   Defines expected behaviors and ethical standards for all employees and contractors.
                 </p>
                 
                 <div>
-                  <h4 className="text-md font-semibold text-gray-900 mb-3">Key changes in {policy.version}</h4>
-                  <ul className="space-y-2 text-gray-700">
+                  <h4 className="text-md font-semibold text-foreground mb-3">Key changes in {policy.version}</h4>
+                  <ul className="space-y-2 text-muted-foreground">
                     <li className="flex items-start">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                      <span className="w-2 h-2 bg-muted rounded-full mr-3 mt-2 flex-shrink-0"></span>
                       <span>Updated social media guidelines</span>
                     </li>
                     <li className="flex items-start">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full mr-3 mt-2 flex-shrink-0"></span>
+                      <span className="w-2 h-2 bg-muted rounded-full mr-3 mt-2 flex-shrink-0"></span>
                       <span>Added remote work conduct section</span>
                     </li>
                   </ul>
@@ -128,10 +128,10 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
 
             <TabsContent value="document" className="space-y-6">
               <div>
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+                <div className="bg-card border border-border rounded-lg overflow-hidden">
+                  <div className="bg-muted/50 px-4 py-2 border-b border-border">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-medium text-gray-700">Policy Document</h4>
+                      <h4 className="text-sm font-medium text-muted-foreground">Policy Document</h4>
                       <div className="flex items-center space-x-2">
                         <Button 
                           variant="outline" 
@@ -165,41 +165,41 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
 
             <TabsContent value="assignments" className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Acknowledgement Status</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Acknowledgement Status</h3>
                 
                 <div className="space-y-4">
                   {/* Total Assigned Card */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <div className="bg-card border border-border rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-sm font-medium text-gray-900">Total Assigned</h4>
-                        <p className="text-sm text-gray-600 mt-1">124 people</p>
+                        <h4 className="text-sm font-medium text-foreground">Total Assigned</h4>
+                        <p className="text-sm text-muted-foreground mt-1">124 people</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-lg font-semibold text-gray-900">100%</span>
+                        <span className="text-lg font-semibold text-foreground">100%</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Acknowledged Card */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <div className="bg-card border border-border rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-sm font-medium text-gray-900">Acknowledged</h4>
-                        <p className="text-sm text-gray-600 mt-1">119 people</p>
+                        <h4 className="text-sm font-medium text-foreground">Acknowledged</h4>
+                        <p className="text-sm text-muted-foreground mt-1">119 people</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-lg font-semibold text-gray-900">96%</span>
+                        <span className="text-lg font-semibold text-foreground">96%</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Pending Card */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <div className="bg-card border border-border rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-sm font-medium text-gray-900">Pending</h4>
-                        <p className="text-sm text-gray-600 mt-1">5 people</p>
+                        <h4 className="text-sm font-medium text-foreground">Pending</h4>
+                        <p className="text-sm text-muted-foreground mt-1">5 people</p>
                       </div>
                       <div className="text-right">
                         <span className="text-lg font-semibold text-white bg-red-600 px-2 py-1 rounded">4%</span>
@@ -213,14 +213,14 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+        <div className="flex justify-between items-center p-6 border-t bg-muted/50">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <div className="flex space-x-3">
             <Button 
               onClick={onAcknowledge}
-              className="bg-gray-900 hover:bg-gray-800"
+              className="bg-foreground hover:bg-muted-foreground"
             >
               I acknowledge
             </Button>
