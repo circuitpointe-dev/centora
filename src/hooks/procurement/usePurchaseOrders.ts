@@ -66,7 +66,7 @@ export function usePurchaseOrders(page = 1, limit = 10, searchTerm = '') {
                 .from('purchase_orders')
                 .select(`
                     *,
-                    vendor:profiles!vendor_id(full_name)
+                    vendor:profiles!purchase_orders_vendor_id_fkey(full_name)
                 `, { count: 'exact' })
                 .eq('org_id', orgId)
                 .order('created_at', { ascending: false });
@@ -101,7 +101,7 @@ export function usePurchaseOrderDetail(poId: string) {
                 .from('purchase_orders')
                 .select(`
                     *,
-                    vendor:profiles!vendor_id(full_name)
+                    vendor:profiles!purchase_orders_vendor_id_fkey(full_name)
                 `)
                 .eq('id', poId)
                 .maybeSingle();
