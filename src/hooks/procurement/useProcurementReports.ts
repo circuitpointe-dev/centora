@@ -5,27 +5,22 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface ProcurementDocument {
     id: string;
     org_id: string;
-    document_type: 'PO' | 'Invoice' | 'GRN' | 'Tender' | 'Contract' | 'Quote' | 'Receipt' | 'Other';
-    document_number: string;
     title: string;
-    description?: string;
-    vendor_name?: string;
-    amount?: number;
-    currency?: string;
-    status: 'active' | 'archived' | 'expired' | 'draft';
-    file_path?: string;
+    file_name: string;
+    file_path: string;
     file_size?: number;
-    file_type?: string;
-    uploaded_by: string;
-    uploaded_by_name?: string;
-    uploaded_at: string;
+    mime_type?: string;
+    category: 'compliance' | 'contracts' | 'finance' | 'm-e' | 'policies' | 'templates' | 'uncategorized';
+    status: 'draft' | 'active' | 'archived' | 'expired' | 'pending_approval';
+    version?: string;
+    description?: string;
+    is_template?: boolean;
+    template_category?: string;
+    cover_image?: string;
+    created_by?: string;
     created_at: string;
+    updated_by?: string;
     updated_at: string;
-    tags?: string[];
-    category?: string;
-    department?: string;
-    fiscal_year?: string;
-    retention_date?: string;
 }
 
 export interface ProcurementReport {
@@ -85,9 +80,9 @@ export const useProcurementArchiveStats = () => {
         queryFn: async (): Promise<ProcurementArchiveStats> => {
             if (!user?.org_id) throw new Error('No organization');
 
-            const { data: documents, error } = await (supabase as any)
-                .from('procurement_documents')
-                .select('document_type, status, file_size, uploaded_at')
+            const { data: documents, error } = await supabase
+                .from('documents')
+                .select('category, status, file_size, created_at')
                 .eq('org_id', user.org_id);
 
             if (error) throw error;
@@ -137,52 +132,32 @@ export const useProcurementDocuments = (page = 1, limit = 10, search = '', filte
         queryFn: async (): Promise<DocumentListResponse> => {
             if (!user?.org_id) throw new Error('No organization');
 
-            let query = (supabase as any)
-                .from('procurement_documents')
+            let query = supabase
+                .from('documents')
                 .select('*')
                 .eq('org_id', user.org_id)
-                .order('uploaded_at', { ascending: false });
+                .order('created_at', { ascending: false });
 
             // Apply search filter
             if (search) {
-                query = query.or(`title.ilike.%${search}%,document_number.ilike.%${search}%,vendor_name.ilike.%${search}%,description.ilike.%${search}%`);
+                query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
             }
 
-            // Apply document type filter
-            if (filters?.document_type) {
-                query = query.eq('document_type', filters.document_type);
-            }
-
-            // Apply status filter
+            // Apply status filter  
             if (filters?.status) {
-                query = query.eq('status', filters.status);
-            }
-
-            // Apply vendor filter
-            if (filters?.vendor) {
-                query = query.eq('vendor_name', filters.vendor);
+                query = query.eq('status', filters.status as any);
             }
 
             // Apply category filter
             if (filters?.category) {
-                query = query.eq('category', filters.category);
-            }
-
-            // Apply department filter
-            if (filters?.department) {
-                query = query.eq('department', filters.department);
-            }
-
-            // Apply fiscal year filter
-            if (filters?.fiscal_year) {
-                query = query.eq('fiscal_year', filters.fiscal_year);
+                query = query.eq('category', filters.category as any);
             }
 
             // Apply date range filter
             if (filters?.dateRange) {
                 query = query
-                    .gte('uploaded_at', filters.dateRange.start)
-                    .lte('uploaded_at', filters.dateRange.end);
+                    .gte('created_at', filters.dateRange.start)
+                    .lte('created_at', filters.dateRange.end);
             }
 
             // Apply pagination
@@ -193,34 +168,9 @@ export const useProcurementDocuments = (page = 1, limit = 10, search = '', filte
             if (error) throw error;
 
             const documentsData = data as any[] || [];
-            const documents = documentsData.map((doc: any): ProcurementDocument => ({
-                id: doc.id,
-                org_id: doc.org_id,
-                document_type: doc.document_type,
-                document_number: doc.document_number,
-                title: doc.title,
-                description: doc.description,
-                vendor_name: doc.vendor_name,
-                amount: doc.amount,
-                currency: doc.currency,
-                status: doc.status,
-                file_path: doc.file_path,
-                file_size: doc.file_size,
-                file_type: doc.file_type,
-                uploaded_by: doc.uploaded_by,
-                uploaded_by_name: doc.uploaded_by_name,
-                uploaded_at: doc.uploaded_at,
-                created_at: doc.created_at,
-                updated_at: doc.updated_at,
-                tags: doc.tags,
-                category: doc.category,
-                department: doc.department,
-                fiscal_year: doc.fiscal_year,
-                retention_date: doc.retention_date
-            }));
 
             return {
-                data: documents,
+                data: documentsData as ProcurementDocument[],
                 total: count || 0,
                 page,
                 limit,
@@ -276,9 +226,9 @@ export const useUploadDocument = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (documentData: Partial<ProcurementDocument>) => {
-            const { data, error } = await (supabase as any)
-                .from('procurement_documents')
+        mutationFn: async (documentData: { title: string; file_name: string; file_path: string; category: string; org_id: string; created_by: string; [key: string]: any }) => {
+            const { data, error } = await supabase
+                .from('documents')
                 .insert([documentData])
                 .select()
                 .single();
@@ -299,8 +249,8 @@ export const useArchiveDocument = () => {
 
     return useMutation({
         mutationFn: async (id: string) => {
-            const { data, error } = await (supabase as any)
-                .from('procurement_documents')
+            const { data, error } = await supabase
+                .from('documents')
                 .update({
                     status: 'archived',
                     updated_at: new Date().toISOString()
@@ -325,10 +275,10 @@ export const useRestoreDocument = () => {
 
     return useMutation({
         mutationFn: async (id: string) => {
-            const { data, error } = await (supabase as any)
-                .from('procurement_documents')
+            const { data, error } = await supabase
+                .from('documents')
                 .update({
-                    status: 'active',
+                    status: 'draft',
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
@@ -351,8 +301,8 @@ export const useDeleteDocument = () => {
 
     return useMutation({
         mutationFn: async (id: string) => {
-            const { error } = await (supabase as any)
-                .from('procurement_documents')
+            const { error } = await supabase
+                .from('documents')
                 .delete()
                 .eq('id', id);
 

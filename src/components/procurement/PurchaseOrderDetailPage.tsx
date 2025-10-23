@@ -160,8 +160,7 @@ const PurchaseOrderDetailPage: React.FC = () => {
                                     { type: 'finance_approval', label: 'Finance approval', icon: 'carbon-cost-total0.svg' },
                                     { type: 'procurement_head', label: 'Procurement head', icon: 'material-symbols-light-pending0.svg' }
                                 ].map((step, index) => {
-                                    const approval = po.approvals.find(a => a.approval_type === step.type);
-                                    const isCompleted = approval?.status === 'approved';
+                                    const isCompleted = false; // Simplified - approval tracking removed
 
                                     return (
                                         <div key={step.type} className="flex flex-col items-center">
@@ -169,12 +168,7 @@ const PurchaseOrderDetailPage: React.FC = () => {
                                                 }`}>
                                                 <img src={`/${step.icon}`} alt={step.label} className="w-6 h-6" />
                                             </div>
-                                            <span className="text-sm font-medium text-gray-900">{step.label}</span>
-                                            {approval?.approved_at && (
-                                                <span className="text-xs text-gray-500 mt-1">
-                                                    {formatDateTime(approval.approved_at)}
-                                                </span>
-                                            )}
+                                             <span className="text-sm font-medium text-gray-900">{step.label}</span>
                                         </div>
                                     );
                                 })}
