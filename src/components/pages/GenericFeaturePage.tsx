@@ -38,6 +38,8 @@ import ProcurementApprovalsPage from '@/components/procurement/ProcurementApprov
 import ProcurementDeliveriesPage from '@/components/procurement/ProcurementDeliveriesPage';
 import ProcurementPlanningPage from '@/components/procurement/ProcurementPlanningPage';
 import RequisitionDetailPage from '@/components/procurement/RequisitionDetailPage';
+import InvoicesPaymentTrackersPage from '@/components/procurement/InvoicesPaymentTrackersPage';
+import InvoiceDetailPage from '@/components/procurement/InvoiceDetailPage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -182,6 +184,15 @@ const GenericFeaturePage = () => {
   // Procurement requisition detail dynamic route: requisition-detail-<id>
   if (module === 'procurement' && feature?.startsWith('requisition-detail-')) {
     return <RequisitionDetailPage />;
+  }
+
+  // Procurement invoice routes
+  if (module === 'procurement' && feature === 'invoices') {
+    return <InvoicesPaymentTrackersPage />;
+  }
+
+  if (module === 'procurement' && feature?.startsWith('invoice-detail-')) {
+    return <InvoiceDetailPage />;
   }
 
   if (module === 'procurement') {
@@ -596,17 +607,17 @@ const GenericFeaturePage = () => {
     return <LearningDevelopment />;
   }
 
-      if (module === 'hr' && feature === 'compensation-policies') {
-        return <CompensationPolicies />;
-      }
+  if (module === 'hr' && feature === 'compensation-policies') {
+    return <CompensationPolicies />;
+  }
 
-      if (module === 'hr' && feature === 'exits') {
-        return <Exits />;
-      }
+  if (module === 'hr' && feature === 'exits') {
+    return <Exits />;
+  }
 
-      if (module === 'hr' && feature === 'start-exit') {
-        return <StartExit />;
-      }
+  if (module === 'hr' && feature === 'start-exit') {
+    return <StartExit />;
+  }
 
   // Fallback for unmatched routes
   console.log('No route matched for:', module, feature);

@@ -31,6 +31,8 @@ import { useProcurementExecutionStats, useTenders, useAwardTender, useRejectTend
 import { usePurchaseOrders, usePurchaseOrderStats } from '@/hooks/procurement/usePurchaseOrders';
 import { useGRNStats, useGRNs, useCreateGRN, useUpdateGRN, useApproveGRN, useRejectGRN, useDeleteGRN, type GRN } from '@/hooks/procurement/useGoodsReceivedNotes';
 import CreateGRNDialog from './CreateGRNDialog';
+import InvoicesPaymentTrackersPage from './InvoicesPaymentTrackersPage';
+import MobileApprovalsPage from './MobileApprovalsPage';
 
 const ProcurementExecutionPage: React.FC = () => {
     const navigate = useNavigate();
@@ -715,21 +717,14 @@ const ProcurementExecutionPage: React.FC = () => {
                     </Card>
                 )}
 
-                {/* Other tabs content */}
-                {activeTab !== 'quotations' && activeTab !== 'purchase-orders' && activeTab !== 'goods-received' && (
-                    <Card className="bg-white border-0 shadow-sm">
-                        <CardContent className="p-6">
-                            <div className="text-center py-12">
-                                <div className="text-lg font-medium text-gray-900 mb-2">
-                                    {activeTab === 'invoices' && 'Invoices & Payment Trackers'}
-                                    {activeTab === 'mobile-approvals' && 'Mobile Approvals'}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    This section is coming soon
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                {/* Invoices tab content */}
+                {activeTab === 'invoices' && (
+                    <InvoicesPaymentTrackersPage />
+                )}
+
+                {/* Mobile Approvals tab content */}
+                {activeTab === 'mobile-approvals' && (
+                    <MobileApprovalsPage />
                 )}
 
                 {/* Create GRN Dialog */}
