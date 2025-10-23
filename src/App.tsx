@@ -24,6 +24,7 @@ import VendorClassificationPage from "./components/vendor/VendorClassificationPa
 import ApprovalDetailPage from "./components/procurement/ApprovalDetailPage";
 import ProcurementExecutionPage from "./components/procurement/ProcurementExecutionPage";
 import PurchaseOrderDetailPage from "./components/procurement/PurchaseOrderDetailPage";
+import PurchaseOrderView from "./components/procurement/PurchaseOrderView";
 import ManualProposalCreationPage from "./components/pages/ManualProposalCreationPage";
 import GrantViewPage from "./components/grants/view/GrantViewPage";
 import CloseGrantPage from "./components/grants/view/CloseGrantPage";
@@ -194,6 +195,7 @@ const AppRoutes = () => {
           {/* Procurement → Execution routes */}
           <Route path="procurement-execution" element={<ProcurementExecutionPage />} />
           <Route path="purchase-orders/:id" element={<PurchaseOrderDetailPage />} />
+          <Route path="purchase-orders/:id/view" element={<PurchaseOrderView />} />
 
           {/* Other features */}
           <Route path=":feature" element={<GenericFeaturePage />} />
