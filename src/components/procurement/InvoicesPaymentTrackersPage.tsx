@@ -271,7 +271,7 @@ const InvoicesPaymentTrackersPage: React.FC = () => {
                                         </TableCell>
                                         <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
                                         <TableCell>{invoice.vendor_name}</TableCell>
-                                        <TableCell>{formatCurrency(invoice.amount, invoice.currency)}</TableCell>
+                                        <TableCell>{formatCurrency(invoice.total_amount, invoice.currency)}</TableCell>
                                         <TableCell>{invoice.linked_po_number || '—'}</TableCell>
                                         <TableCell>{invoice.linked_grn_number || '—'}</TableCell>
                                         <TableCell>

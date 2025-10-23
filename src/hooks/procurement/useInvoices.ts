@@ -8,7 +8,7 @@ export interface Invoice {
     invoice_number: string;
     vendor_id: string;
     vendor_name: string;
-    amount: number;
+    total_amount: number;
     currency: string;
     linked_po_number?: string;
     linked_grn_number?: string;
@@ -61,7 +61,7 @@ export const useInvoiceStats = () => {
 
             const { data: invoices, error } = await (supabase as any)
                 .from('invoices')
-                .select('status, amount, due_date, invoice_date')
+                .select('status, total_amount, due_date, invoice_date')
                 .eq('org_id', user.org_id);
 
             if (error) throw error;
@@ -71,7 +71,7 @@ export const useInvoiceStats = () => {
             const matchedInvoices = invoicesData.filter(i => i.status === 'matched').length;
             const approvedInvoices = invoicesData.filter(i => i.status === 'approved').length;
             const paidInvoices = invoicesData.filter(i => i.status === 'paid').length;
-            const totalAmount = invoicesData.reduce((sum, invoice) => sum + Number(invoice.amount || 0), 0);
+            const totalAmount = invoicesData.reduce((sum, invoice) => sum + Number(invoice.total_amount || 0), 0);
 
             const today = new Date();
             const overdueInvoices = invoicesData.filter(i =>
@@ -147,7 +147,7 @@ export const useInvoices = (page = 1, limit = 10, search = '', filters?: Invoice
                 invoice_number: invoice.invoice_number,
                 vendor_id: invoice.vendor_id,
                 vendor_name: invoice.vendor?.name || invoice.vendor_name,
-                amount: invoice.amount,
+                total_amount: invoice.total_amount,
                 currency: invoice.currency,
                 linked_po_number: invoice.linked_po_number,
                 linked_grn_number: invoice.linked_grn_number,
@@ -198,7 +198,7 @@ export const useInvoiceDetail = (id: string) => {
                 invoice_number: invoiceData.invoice_number,
                 vendor_id: invoiceData.vendor_id,
                 vendor_name: invoiceData.vendor?.name || invoiceData.vendor_name,
-                amount: invoiceData.amount,
+                total_amount: invoiceData.total_amount,
                 currency: invoiceData.currency,
                 linked_po_number: invoiceData.linked_po_number,
                 linked_grn_number: invoiceData.linked_grn_number,

@@ -207,7 +207,7 @@ const InvoiceDetailPage: React.FC = () => {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Amount:</span>
-                                        <span className="font-medium text-lg">{formatCurrency(invoice.amount, invoice.currency)}</span>
+                                        <span className="font-medium text-lg">{formatCurrency(invoice.total_amount, invoice.currency)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Status:</span>

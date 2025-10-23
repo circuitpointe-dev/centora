@@ -5,16 +5,16 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface MobileApproval {
     id: string;
     org_id: string;
-    type: 'PO' | 'Payment' | 'Invoice' | 'Requisition';
-    reference_id: string;
-    vendor_name: string;
+    type: 'requisition' | 'purchase_order' | 'payment';
+    display_id: string;
+    vendor_name?: string;
     amount: number;
     currency: string;
-    status: 'pending' | 'approved' | 'rejected' | 'disputed';
-    priority: 'low' | 'medium' | 'high' | 'urgent';
+    status: 'pending' | 'approved' | 'rejected';
+    priority: 'low' | 'medium' | 'high';
     description?: string;
-    submitted_by: string;
-    submitted_at: string;
+    requestor_name: string;
+    date_submitted: string;
     due_date?: string;
     created_at: string;
     updated_at: string;
@@ -56,8 +56,8 @@ export const useMobileApprovalStats = () => {
         queryFn: async (): Promise<MobileApprovalStats> => {
             if (!user?.org_id) throw new Error('No organization');
 
-            const { data: approvals, error } = await (supabase as any)
-                .from('mobile_approvals')
+            const { data: approvals, error } = await supabase
+                .from('procurement_approvals')
                 .select('type, status, priority, amount')
                 .eq('org_id', user.org_id);
 
@@ -65,8 +65,8 @@ export const useMobileApprovalStats = () => {
 
             const approvalsData = approvals as any[] || [];
             const pendingApprovals = approvalsData.filter(a => a.status === 'pending').length;
-            const poPending = approvalsData.filter(a => a.type === 'PO' && a.status === 'pending').length;
-            const paymentPending = approvalsData.filter(a => a.type === 'Payment' && a.status === 'pending').length;
+            const poPending = approvalsData.filter(a => a.type === 'purchase_order' && a.status === 'pending').length;
+            const paymentPending = approvalsData.filter(a => a.type === 'payment' && a.status === 'pending').length;
             const urgentApprovals = approvalsData.filter(a => a.priority === 'urgent' && a.status === 'pending').length;
             const totalAmount = approvalsData.reduce((sum, approval) => sum + Number(approval.amount || 0), 0);
 
@@ -91,15 +91,15 @@ export const useMobileApprovals = (page = 1, limit = 10, search = '', filters?: 
         queryFn: async (): Promise<MobileApprovalListResponse> => {
             if (!user?.org_id) throw new Error('No organization');
 
-            let query = (supabase as any)
-                .from('mobile_approvals')
+            let query = supabase
+                .from('procurement_approvals')
                 .select('*')
                 .eq('org_id', user.org_id)
                 .order('created_at', { ascending: false });
 
             // Apply search filter
             if (search) {
-                query = query.or(`reference_id.ilike.%${search}%,vendor_name.ilike.%${search}%,description.ilike.%${search}%`);
+                query = query.or(`display_id.ilike.%${search}%,vendor_name.ilike.%${search}%,description.ilike.%${search}%`);
             }
 
             // Apply type filter
@@ -141,15 +141,15 @@ export const useMobileApprovals = (page = 1, limit = 10, search = '', filters?: 
                 id: approval.id,
                 org_id: approval.org_id,
                 type: approval.type,
-                reference_id: approval.reference_id,
+                display_id: approval.display_id || approval.id.slice(0, 8),
                 vendor_name: approval.vendor_name,
                 amount: approval.amount,
                 currency: approval.currency,
                 status: approval.status,
                 priority: approval.priority,
                 description: approval.description,
-                submitted_by: approval.submitted_by,
-                submitted_at: approval.submitted_at,
+                requestor_name: approval.requestor_name,
+                date_submitted: approval.date_submitted,
                 due_date: approval.due_date,
                 created_at: approval.created_at,
                 updated_at: approval.updated_at
@@ -173,8 +173,8 @@ export const useApproveMobileApproval = () => {
 
     return useMutation({
         mutationFn: async (id: string) => {
-            const { data, error } = await (supabase as any)
-                .from('mobile_approvals')
+            const { data, error } = await supabase
+                .from('procurement_approvals')
                 .update({
                     status: 'approved',
                     updated_at: new Date().toISOString()
@@ -199,11 +199,11 @@ export const useRejectMobileApproval = () => {
 
     return useMutation({
         mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-            const { data, error } = await (supabase as any)
-                .from('mobile_approvals')
+            const { data, error } = await supabase
+                .from('procurement_approvals')
                 .update({
                     status: 'rejected',
-                    description: reason,
+                    rejection_reason: reason,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
@@ -226,11 +226,11 @@ export const useDisputeMobileApproval = () => {
 
     return useMutation({
         mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-            const { data, error } = await (supabase as any)
-                .from('mobile_approvals')
+            const { data, error } = await supabase
+                .from('procurement_approvals')
                 .update({
-                    status: 'disputed',
-                    description: reason,
+                    status: 'rejected',
+                    rejection_reason: reason,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
@@ -253,8 +253,8 @@ export const useDeleteMobileApproval = () => {
 
     return useMutation({
         mutationFn: async (id: string) => {
-            const { error } = await (supabase as any)
-                .from('mobile_approvals')
+            const { error } = await supabase
+                .from('procurement_approvals')
                 .delete()
                 .eq('id', id);
 

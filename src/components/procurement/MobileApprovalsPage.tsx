@@ -288,17 +288,17 @@ const MobileApprovalsPage: React.FC = () => {
                                             />
                                         </TableCell>
                                         <TableCell className="font-medium">{approval.type}</TableCell>
-                                        <TableCell>{approval.reference_id}</TableCell>
-                                        <TableCell>{approval.vendor_name}</TableCell>
+                                        <TableCell>{approval.display_id}</TableCell>
+                                        <TableCell>{approval.vendor_name || '-'}</TableCell>
                                         <TableCell>{formatCurrency(approval.amount, approval.currency)}</TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
                                                 <Badge className={`${getStatusColor(approval.status)} border`}>
                                                     {approval.status.charAt(0).toUpperCase() + approval.status.slice(1)}
                                                 </Badge>
-                                                {approval.priority === 'urgent' && (
+                                                {approval.priority === 'high' && (
                                                     <Badge className={`${getPriorityColor(approval.priority)} border text-xs`}>
-                                                        Urgent
+                                                        High Priority
                                                     </Badge>
                                                 )}
                                             </div>
