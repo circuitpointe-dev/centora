@@ -40,6 +40,7 @@ import ProcurementPlanningPage from '@/components/procurement/ProcurementPlannin
 import RequisitionDetailPage from '@/components/procurement/RequisitionDetailPage';
 import InvoicesPaymentTrackersPage from '@/components/procurement/InvoicesPaymentTrackersPage';
 import InvoiceDetailPage from '@/components/procurement/InvoiceDetailPage';
+import ProcurementReportsPage from '@/components/procurement/ProcurementReportsPage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -193,6 +194,10 @@ const GenericFeaturePage = () => {
 
   if (module === 'procurement' && feature?.startsWith('invoice-detail-')) {
     return <InvoiceDetailPage />;
+  }
+
+  if (module === 'procurement' && feature === 'procurement-reports') {
+    return <ProcurementReportsPage />;
   }
 
   if (module === 'procurement') {

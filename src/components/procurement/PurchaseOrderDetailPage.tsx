@@ -113,25 +113,25 @@ const PurchaseOrderDetailPage: React.FC = () => {
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span className="text-sm font-medium text-gray-600">Linked Requisition:</span>
-                                    <span className="text-sm font-semibold text-gray-900">{po.linked_requisition || 'N/A'}</span>
+                                    <span className="text-sm font-semibold text-gray-900">{po.requisition_id || 'N/A'}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span className="text-sm font-medium text-gray-600">Vendor:</span>
-                                    <span className="text-sm font-semibold text-gray-900">{po.vendor_name}</span>
+                                    <span className="text-sm font-semibold text-gray-900">{po.vendor?.full_name || 'N/A'}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span className="text-sm font-medium text-gray-600">PO Date:</span>
                                     <span className="text-sm font-semibold text-gray-900">{formatDate(po.po_date)}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span className="text-sm font-medium text-gray-600">Delivery Date:</span>
-                                    <span className="text-sm font-semibold text-gray-900">{po.delivery_date ? formatDate(po.delivery_date) : 'N/A'}</span>
+                                    <span className="text-sm font-medium text-gray-600">Expected Delivery:</span>
+                                    <span className="text-sm font-semibold text-gray-900">{po.expected_delivery_date ? formatDate(po.expected_delivery_date) : 'N/A'}</span>
                                 </div>
                             </div>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span className="text-sm font-medium text-gray-600">Payment Terms:</span>
-                                    <span className="text-sm font-semibold text-gray-900">{po.payment_terms || 'N/A'}</span>
+                                    <span className="text-sm font-medium text-gray-600">Terms & Conditions:</span>
+                                    <span className="text-sm font-semibold text-gray-900">{po.terms_and_conditions || 'N/A'}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span className="text-sm font-medium text-gray-600">Currency:</span>
@@ -140,23 +140,12 @@ const PurchaseOrderDetailPage: React.FC = () => {
                                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span className="text-sm font-medium text-gray-600">Status:</span>
                                     <Badge className={`${getStatusColor(po.status)} px-2 py-1 rounded-full text-xs font-medium`}>
-                                        {po.status.charAt(0).toUpperCase() + po.status.slice(1)}
+                                        {po.status.charAt(0).toUpperCase() + po.status.slice(1).replace('_', ' ')}
                                     </Badge>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span className="text-sm font-medium text-gray-600">Attachments:</span>
-                                    <div className="flex items-center gap-2">
-                                        {po.attachments.length > 0 ? (
-                                            po.attachments.map((attachment) => (
-                                                <div key={attachment.id} className="flex items-center gap-1">
-                                                    <span className="text-sm text-blue-600 underline">{attachment.file_name}</span>
-                                                    <img src="/material-symbols-download0.svg" alt="download" className="w-4 h-4" />
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <span className="text-sm text-gray-500">No attachments</span>
-                                        )}
-                                    </div>
+                                    <span className="text-sm font-medium text-gray-600">Notes:</span>
+                                    <span className="text-sm text-gray-500">{po.notes || 'No notes'}</span>
                                 </div>
                             </div>
                         </div>
@@ -211,12 +200,12 @@ const PurchaseOrderDetailPage: React.FC = () => {
                                     <tbody>
                                         {po.items.map((item) => (
                                             <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                                <td className="py-4 px-6 text-sm font-medium text-gray-900">{item.item_name}</td>
-                                                <td className="py-4 px-6 text-sm text-gray-700">{item.description || 'N/A'}</td>
+                                                <td className="py-4 px-6 text-sm font-medium text-gray-900">{item.item_description}</td>
+                                                <td className="py-4 px-6 text-sm text-gray-700">{item.specifications || 'N/A'}</td>
                                                 <td className="py-4 px-6 text-sm text-gray-700">{item.quantity.toLocaleString()}</td>
                                                 <td className="py-4 px-6 text-sm text-gray-700">{formatCurrency(item.unit_price, po.currency)}</td>
-                                                <td className="py-4 px-6 text-sm font-medium text-gray-900">{formatCurrency(item.total, po.currency)}</td>
-                                                <td className="py-4 px-6 text-sm text-gray-700">{item.budget_source || 'N/A'}</td>
+                                                <td className="py-4 px-6 text-sm font-medium text-gray-900">{formatCurrency(item.total_price, po.currency)}</td>
+                                                <td className="py-4 px-6 text-sm text-gray-700">{item.unit_of_measure || 'N/A'}</td>
                                                 <td className="py-4 px-6">
                                                     <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
                                                         <img src="/material-symbols-delete-outline-rounded0.svg" alt="delete" className="w-4 h-4 mr-1" />
@@ -235,22 +224,10 @@ const PurchaseOrderDetailPage: React.FC = () => {
                             <h3 className="text-lg font-semibold text-gray-900 mb-6">Cost Summary</h3>
                             <div className="bg-gray-50 rounded-lg p-6">
                                 <div className="space-y-3">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm font-medium text-gray-600">Subtotal:</span>
-                                        <span className="text-sm font-semibold text-gray-900">{formatCurrency(po.subtotal, po.currency)}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm font-medium text-gray-600">Tax:</span>
-                                        <span className="text-sm font-semibold text-gray-900">{formatCurrency(po.tax, po.currency)}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm font-medium text-gray-600">Discounts:</span>
-                                        <span className="text-sm font-semibold text-gray-900">-{formatCurrency(po.discounts, po.currency)}</span>
-                                    </div>
                                     <div className="border-t border-gray-300 pt-3">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-lg font-semibold text-gray-900">Grand total:</span>
-                                            <span className="text-lg font-bold text-gray-900">{formatCurrency(po.grand_total, po.currency)}</span>
+                                            <span className="text-lg font-semibold text-gray-900">Total Amount:</span>
+                                            <span className="text-lg font-bold text-gray-900">{formatCurrency(po.total_amount, po.currency)}</span>
                                         </div>
                                     </div>
                                 </div>

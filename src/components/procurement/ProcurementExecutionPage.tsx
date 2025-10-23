@@ -27,7 +27,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { useProcurementExecutionStats, useTenders, useAwardTender, useRejectTender, useCreateTender } from '@/hooks/procurement/useProcurementExecution';
+// Removed tenders imports - tenders table doesn't exist
 import { usePurchaseOrders, usePurchaseOrderStats } from '@/hooks/procurement/usePurchaseOrders';
 import { useGRNStats, useGRNs, useCreateGRN, useUpdateGRN, useApproveGRN, useRejectGRN, useDeleteGRN, type GRN } from '@/hooks/procurement/useGoodsReceivedNotes';
 import CreateGRNDialog from './CreateGRNDialog';
@@ -38,20 +38,15 @@ const ProcurementExecutionPage: React.FC = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTenders, setSelectedTenders] = useState<string[]>([]);
-    const [activeTab, setActiveTab] = useState('goods-received');
+    const [activeTab, setActiveTab] = useState('purchase-orders');
     const [isLoading, setIsLoading] = useState(false);
     const [grnSearchTerm, setGrnSearchTerm] = useState('');
     const [selectedGRNs, setSelectedGRNs] = useState<string[]>([]);
     const [showCreateGRN, setShowCreateGRN] = useState(false);
 
     // Backend data hooks
-    const { data: stats, isLoading: statsLoading, error: statsError } = useProcurementExecutionStats();
-    const { data: tendersData, isLoading: tendersLoading, error: tendersError } = useTenders(1, 10, searchTerm);
     const { data: purchaseOrdersData, isLoading: purchaseOrdersLoading, error: purchaseOrdersError } = usePurchaseOrders(1, 10, searchTerm);
     const { data: poStats, isLoading: poStatsLoading, error: poStatsError } = usePurchaseOrderStats();
-    const awardTender = useAwardTender();
-    const rejectTender = useRejectTender();
-    const createTender = useCreateTender();
 
     // GRN hooks
     const { data: grnStats, isLoading: grnStatsLoading, error: grnStatsError } = useGRNStats();
@@ -62,7 +57,7 @@ const ProcurementExecutionPage: React.FC = () => {
     const rejectGRN = useRejectGRN();
     const deleteGRN = useDeleteGRN();
 
-    const tenders = tendersData?.data || [];
+    // Removed tenders reference
     const purchaseOrders = purchaseOrdersData?.data || [];
     const grns = grnsData?.data || [];
 
@@ -76,17 +71,9 @@ const ProcurementExecutionPage: React.FC = () => {
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedTenders(tenders.map((tender, index) => (tender as any).id || `tender-${index}`));
+            setSelectedTenders([]);
         } else {
             setSelectedTenders([]);
-        }
-    };
-
-    const handleAwardTender = async (tenderId: string) => {
-        try {
-            await awardTender.mutateAsync({ tenderId, comment: 'Awarded based on best score' });
-        } catch (error) {
-            console.error('Error awarding tender:', error);
         }
     };
 
@@ -212,7 +199,6 @@ const ProcurementExecutionPage: React.FC = () => {
                 {/* Tabs */}
                 <div className="flex gap-1 bg-white rounded-lg p-1 mb-8 w-fit">
                     {[
-                        { id: 'quotations', label: 'Quotations & tendering' },
                         { id: 'purchase-orders', label: 'Purchase orders' },
                         { id: 'goods-received', label: 'Goods received notes' },
                         { id: 'invoices', label: 'Invoices & payment trackers' },
@@ -296,9 +282,9 @@ const ProcurementExecutionPage: React.FC = () => {
                                 <CardContent className="p-6">
                                     <div className="flex flex-col items-center text-center">
                                         <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-yellow-600">{poStats?.pendingApprovals || 0}</span>
+                                            <span className="text-3xl font-bold text-yellow-600">{poStats?.draftPOs || 0}</span>
                                         </div>
-                                        <div className="text-sm text-gray-600">Pending approvals</div>
+                                        <div className="text-sm text-gray-600">Draft POs</div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -307,9 +293,9 @@ const ProcurementExecutionPage: React.FC = () => {
                                 <CardContent className="p-6">
                                     <div className="flex flex-col items-center text-center">
                                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-green-600">{poStats?.approvedPOs || 0}</span>
+                                            <span className="text-3xl font-bold text-green-600">{poStats?.sentPOs || 0}</span>
                                         </div>
-                                        <div className="text-sm text-gray-600">Approved POs</div>
+                                        <div className="text-sm text-gray-600">Sent POs</div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -329,130 +315,6 @@ const ProcurementExecutionPage: React.FC = () => {
                         </>
                     )}
                 </div>
-
-                {/* Quotation & Tendering Section */}
-                {activeTab === 'quotations' && (
-                    <Card className="bg-white border-0 shadow-sm">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-semibold text-gray-900">Quotation & tendering</h3>
-                                <div className="flex items-center gap-4">
-                                    <div className="relative">
-                                        <Input
-                                            placeholder="Search..."
-                                            className="w-64 pl-10 pr-4 py-2 border-gray-300 rounded-lg"
-                                        />
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                    </div>
-                                    <Button
-                                        variant="outline"
-                                        onClick={handleUploadBid}
-                                        className="flex items-center gap-2"
-                                    >
-                                        <Upload className="w-4 h-4" />
-                                        Upload bid
-                                    </Button>
-                                    <Button
-                                        onClick={handleAddTender}
-                                        className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white flex items-center gap-2"
-                                    >
-                                        <Plus className="w-4 h-4" />
-                                        + Add new tender
-                                    </Button>
-                                </div>
-                            </div>
-
-                            {/* Tenders Table */}
-                            <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className="bg-gray-50">
-                                            <TableHead className="w-12">
-                                                <Checkbox
-                                                    checked={selectedTenders.length === tenders.length && tenders.length > 0}
-                                                    onCheckedChange={handleSelectAll}
-                                                />
-                                            </TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Vendor name</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Items</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Price</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Delivery terms</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Score</TableHead>
-                                            <TableHead className="font-semibold text-gray-900">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {tendersLoading ? (
-                                            <TableRow>
-                                                <TableCell colSpan={7} className="py-8 text-center text-gray-500">
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                                        Loading tenders...
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ) : tenders.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={7} className="py-8 text-center text-gray-500">
-                                                    No tenders found
-                                                </TableCell>
-                                            </TableRow>
-                                        ) : (
-                                            tenders.map((tender, index) => (
-                                                <TableRow key={tender.id || tender.vendor_id || index} className="hover:bg-gray-50">
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            checked={selectedTenders.includes(tenderId)}
-                                                            onCheckedChange={(checked) => handleSelectTender(tenderId, checked as boolean)}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {tender.vendor_name}
-                                                    </TableCell>
-                                                    <TableCell className="text-gray-700">
-                                                        {tender.items}
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        ${tender.price.toLocaleString()}
-                                                    </TableCell>
-                                                    <TableCell className="text-gray-700">
-                                                        {tender.delivery_terms}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge className={`${getScoreColor(tender.score)} px-2 py-1 rounded-full text-xs font-medium`}>
-                                                            {tender.score}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Button
-                                                            onClick={() => handleAwardTender(tender.id || tender.vendor_id || '')}
-                                                            disabled={awardTender.isPending || tender.status === 'awarded'}
-                                                            className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
-                                                            size="sm"
-                                                        >
-                                                            {awardTender.isPending ? (
-                                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                                            ) : (
-                                                                <img src="/mdi-award1.svg" alt="award" className="w-4 h-4" />
-                                                            )}
-                                                            {tender.status === 'awarded' ? 'Awarded' : 'Award'}
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-
-                            {/* Summary */}
-                            <div className="flex items-center gap-2 mt-6 text-sm text-gray-600">
-                                <img src="/nrk-check-active0.svg" alt="completed" className="w-4 h-4" />
-                                <span>{tenders.length} bid completed</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
 
                 {/* Purchase Orders Section */}
                 {activeTab === 'purchase-orders' && (
@@ -520,12 +382,12 @@ const ProcurementExecutionPage: React.FC = () => {
                                             purchaseOrders.map((po, index) => (
                                                 <TableRow key={po.id} className="hover:bg-gray-50">
                                                     <TableCell className="font-medium text-gray-900">{po.po_number}</TableCell>
-                                                    <TableCell className="text-gray-700">{po.vendor_name}</TableCell>
+                                                    <TableCell className="text-gray-700">{(po as any).vendor?.full_name || 'Unknown'}</TableCell>
                                                     <TableCell className="font-medium text-gray-900">
                                                         {new Intl.NumberFormat('en-US', {
                                                             style: 'currency',
                                                             currency: po.currency
-                                                        }).format(po.grand_total)}
+                                                        }).format(po.total_amount)}
                                                     </TableCell>
                                                     <TableCell className="text-gray-700">
                                                         {new Date(po.po_date).toLocaleDateString('en-US', {
@@ -535,12 +397,12 @@ const ProcurementExecutionPage: React.FC = () => {
                                                         })}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${po.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                                            po.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                                po.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${po.status === 'sent' ? 'bg-green-100 text-green-800' :
+                                                            po.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                                                                po.status === 'cancelled' ? 'bg-red-100 text-red-800' :
                                                                     'bg-gray-100 text-gray-800'
                                                             }`}>
-                                                            {po.status.charAt(0).toUpperCase() + po.status.slice(1)}
+                                                            {po.status.charAt(0).toUpperCase() + po.status.slice(1).replace('_', ' ')}
                                                         </span>
                                                     </TableCell>
                                                     <TableCell>
