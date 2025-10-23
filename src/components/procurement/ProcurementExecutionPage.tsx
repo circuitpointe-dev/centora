@@ -29,13 +29,18 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { useProcurementExecutionStats, useTenders, useAwardTender, useRejectTender, useCreateTender } from '@/hooks/procurement/useProcurementExecution';
 import { usePurchaseOrders, usePurchaseOrderStats } from '@/hooks/procurement/usePurchaseOrders';
+import { useGRNStats, useGRNs, useCreateGRN, useUpdateGRN, useApproveGRN, useRejectGRN, useDeleteGRN, type GRN } from '@/hooks/procurement/useGoodsReceivedNotes';
+import CreateGRNDialog from './CreateGRNDialog';
 
 const ProcurementExecutionPage: React.FC = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTenders, setSelectedTenders] = useState<string[]>([]);
-    const [activeTab, setActiveTab] = useState('purchase-orders');
+    const [activeTab, setActiveTab] = useState('goods-received');
     const [isLoading, setIsLoading] = useState(false);
+    const [grnSearchTerm, setGrnSearchTerm] = useState('');
+    const [selectedGRNs, setSelectedGRNs] = useState<string[]>([]);
+    const [showCreateGRN, setShowCreateGRN] = useState(false);
 
     // Backend data hooks
     const { data: stats, isLoading: statsLoading, error: statsError } = useProcurementExecutionStats();
@@ -46,8 +51,18 @@ const ProcurementExecutionPage: React.FC = () => {
     const rejectTender = useRejectTender();
     const createTender = useCreateTender();
 
+    // GRN hooks
+    const { data: grnStats, isLoading: grnStatsLoading, error: grnStatsError } = useGRNStats();
+    const { data: grnsData, isLoading: grnsLoading, error: grnsError } = useGRNs(1, 10, grnSearchTerm);
+    const createGRN = useCreateGRN();
+    const updateGRN = useUpdateGRN();
+    const approveGRN = useApproveGRN();
+    const rejectGRN = useRejectGRN();
+    const deleteGRN = useDeleteGRN();
+
     const tenders = tendersData?.data || [];
     const purchaseOrders = purchaseOrdersData?.data || [];
+    const grns = grnsData?.data || [];
 
     const handleSelectTender = (tenderId: string, checked: boolean) => {
         if (checked) {
@@ -83,6 +98,61 @@ const ProcurementExecutionPage: React.FC = () => {
         toast.info('Add tender functionality coming soon');
     };
 
+    // GRN handlers
+    const handleSelectGRN = (grnId: string, checked: boolean) => {
+        if (checked) {
+            setSelectedGRNs(prev => [...prev, grnId]);
+        } else {
+            setSelectedGRNs(prev => prev.filter(id => id !== grnId));
+        }
+    };
+
+    const handleSelectAllGRNs = (checked: boolean) => {
+        if (checked) {
+            setSelectedGRNs(grns.map((grn, index) => grn.id || `grn-${index}`));
+        } else {
+            setSelectedGRNs([]);
+        }
+    };
+
+    const handleCreateGRN = async (grnData: any) => {
+        try {
+            await createGRN.mutateAsync(grnData);
+            setShowCreateGRN(false);
+        } catch (error) {
+            console.error('Error creating GRN:', error);
+        }
+    };
+
+    const handleApproveGRN = async (grnId: string) => {
+        try {
+            await approveGRN.mutateAsync(grnId);
+        } catch (error) {
+            console.error('Error approving GRN:', error);
+        }
+    };
+
+    const handleRejectGRN = async (grnId: string, reason: string) => {
+        try {
+            await rejectGRN.mutateAsync({ id: grnId, reason });
+        } catch (error) {
+            console.error('Error rejecting GRN:', error);
+        }
+    };
+
+    const handleDeleteGRN = async (grnId: string) => {
+        try {
+            await deleteGRN.mutateAsync(grnId);
+        } catch (error) {
+            console.error('Error deleting GRN:', error);
+        }
+    };
+
+    const handleExportGRNs = () => {
+        // TODO: Implement GRN export functionality
+        toast.info('Export GRNs functionality coming soon');
+    };
+
     const getScoreColor = (score: number) => {
         if (score >= 80) return 'bg-green-100 text-green-800';
         if (score >= 60) return 'bg-yellow-100 text-yellow-800';
@@ -97,6 +167,38 @@ const ProcurementExecutionPage: React.FC = () => {
                 return { color: 'bg-yellow-100 text-yellow-800', text: 'Pending' };
             case 'non-compliant':
                 return { color: 'bg-red-100 text-red-800', text: 'Non-compliant' };
+            default:
+                return { color: 'bg-gray-100 text-gray-800', text: 'Unknown' };
+        }
+    };
+
+    const getGRNStatus = (status: string) => {
+        switch (status) {
+            case 'approved':
+                return { color: 'bg-green-100 text-green-800', text: 'Approved' };
+            case 'pending':
+                return { color: 'bg-yellow-100 text-yellow-800', text: 'Pending' };
+            case 'partial':
+                return { color: 'bg-orange-100 text-orange-800', text: 'Partial' };
+            case 'completed':
+                return { color: 'bg-blue-100 text-blue-800', text: 'Completed' };
+            case 'rejected':
+                return { color: 'bg-red-100 text-red-800', text: 'Rejected' };
+            default:
+                return { color: 'bg-gray-100 text-gray-800', text: 'Unknown' };
+        }
+    };
+
+    const getDeliveryStatus = (status: string) => {
+        switch (status) {
+            case 'completed':
+                return { color: 'bg-green-100 text-green-800', text: 'Completed' };
+            case 'partial':
+                return { color: 'bg-yellow-100 text-yellow-800', text: 'Partial' };
+            case 'pending':
+                return { color: 'bg-blue-100 text-blue-800', text: 'Pending' };
+            case 'overdue':
+                return { color: 'bg-red-100 text-red-800', text: 'Overdue' };
             default:
                 return { color: 'bg-gray-100 text-gray-800', text: 'Unknown' };
         }
@@ -129,51 +231,101 @@ const ProcurementExecutionPage: React.FC = () => {
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <Card className="bg-white border-0 shadow-sm">
-                        <CardContent className="p-6">
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-                                    <span className="text-3xl font-bold text-purple-600">{poStats?.activePOs || 0}</span>
-                                </div>
-                                <div className="text-sm text-gray-600">Active POs</div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {activeTab === 'goods-received' ? (
+                        <>
+                            <Card className="bg-white border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                                            <span className="text-3xl font-bold text-yellow-600">{grnStats?.pendingGRNs || 0}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Pending GRNs</div>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                    <Card className="bg-white border-0 shadow-sm">
-                        <CardContent className="p-6">
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-                                    <span className="text-3xl font-bold text-yellow-600">{poStats?.pendingApprovals || 0}</span>
-                                </div>
-                                <div className="text-sm text-gray-600">Pending approvals</div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            <Card className="bg-white border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                            <span className="text-3xl font-bold text-blue-600">{grnStats?.partialDeliveries || 0}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Partial deliveries</div>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                    <Card className="bg-white border-0 shadow-sm">
-                        <CardContent className="p-6">
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                    <span className="text-3xl font-bold text-green-600">{poStats?.approvedPOs || 0}</span>
-                                </div>
-                                <div className="text-sm text-gray-600">Approved POs</div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            <Card className="bg-white border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                            <span className="text-3xl font-bold text-green-600">{grnStats?.completedDeliveries || 0}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Completed deliveries</div>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                    <Card className="bg-white border-0 shadow-sm">
-                        <CardContent className="p-6">
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                                    <span className="text-3xl font-bold text-blue-600">
-                                        ${poStats?.totalValue ? (poStats.totalValue / 1000000).toFixed(1) + 'M' : '0M'}
-                                    </span>
-                                </div>
-                                <div className="text-sm text-gray-600">Total value of POs</div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            <Card className="bg-white border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-3">
+                                            <span className="text-3xl font-bold text-red-600">{grnStats?.overdueDeliveries || 0}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Overdue deliveries</div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </>
+                    ) : (
+                        <>
+                            <Card className="bg-white border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                                            <span className="text-3xl font-bold text-purple-600">{poStats?.activePOs || 0}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Active POs</div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-white border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                                            <span className="text-3xl font-bold text-yellow-600">{poStats?.pendingApprovals || 0}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Pending approvals</div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-white border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                            <span className="text-3xl font-bold text-green-600">{poStats?.approvedPOs || 0}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Approved POs</div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-white border-0 shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                            <span className="text-3xl font-bold text-blue-600">
+                                                ${poStats?.totalValue ? (poStats.totalValue / 1000000).toFixed(1) + 'M' : '0M'}
+                                            </span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Total value of POs</div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
                 </div>
 
                 {/* Quotation & Tendering Section */}
@@ -425,13 +577,150 @@ const ProcurementExecutionPage: React.FC = () => {
                     </Card>
                 )}
 
+                {/* Goods Received Notes Section */}
+                {activeTab === 'goods-received' && (
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-lg font-semibold text-gray-900">GRNs list</h3>
+                                <div className="flex items-center gap-4">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search..."
+                                            value={grnSearchTerm}
+                                            onChange={(e) => setGrnSearchTerm(e.target.value)}
+                                            className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        />
+                                        <img src="/search0.svg" alt="search" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleExportGRNs}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <img src="/uil-export0.svg" alt="export" className="w-4 h-4" />
+                                        Export GRNs
+                                    </Button>
+                                    <Button
+                                        onClick={() => setShowCreateGRN(true)}
+                                        className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white flex items-center gap-2"
+                                    >
+                                        <img src="/material-symbols-add-rounded0.svg" alt="add" className="w-4 h-4" />
+                                        + Add New GRNs
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* GRN Table */}
+                            <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-50">
+                                            <TableHead className="font-semibold text-gray-900">GRN#</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">PO#</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Vendor</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Item</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Delivery date</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Qty received / Qty ordered</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                                            <TableHead className="font-semibold text-gray-900">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {grnsLoading ? (
+                                            <TableRow>
+                                                <TableCell colSpan={8} className="py-8 text-center text-gray-500">
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                        Loading GRNs...
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : grns.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={8} className="py-8 text-center text-gray-500">
+                                                    No GRNs found
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            grns.map((grn, index) => (
+                                                <TableRow key={grn.id} className="hover:bg-gray-50">
+                                                    <TableCell className="font-medium text-gray-900">{grn.grn_number}</TableCell>
+                                                    <TableCell className="text-gray-700">{grn.po_number}</TableCell>
+                                                    <TableCell className="text-gray-700">{grn.vendor_name}</TableCell>
+                                                    <TableCell className="text-gray-700">{grn.item_name}</TableCell>
+                                                    <TableCell className="text-gray-700">
+                                                        {new Date(grn.delivery_date).toLocaleDateString('en-US', {
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            year: 'numeric'
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell className="text-gray-700">
+                                                        {grn.quantity_received} / {grn.quantity_ordered}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getGRNStatus(grn.status).color}`}>
+                                                            {getGRNStatus(grn.status).text}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="flex items-center gap-1"
+                                                            onClick={() => navigate(`/dashboard/procurement/grns/${grn.id}`)}
+                                                        >
+                                                            <img src="/eye0.svg" alt="view" className="w-4 h-4" />
+                                                            View
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+
+                            {/* Pagination */}
+                            {grnsData && grnsData.totalPages > 1 && (
+                                <div className="flex items-center justify-between mt-6">
+                                    <div className="text-sm text-gray-700">
+                                        Showing 1 to {grnsData.limit} of {grnsData.total} GRNs lists.
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            disabled={grnsData.page === 1}
+                                            className="flex items-center gap-1"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                            Previous
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            disabled={grnsData.page === grnsData.totalPages}
+                                            className="flex items-center gap-1"
+                                        >
+                                            Next
+                                            <ChevronRight className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
+
                 {/* Other tabs content */}
-                {activeTab !== 'quotations' && activeTab !== 'purchase-orders' && (
+                {activeTab !== 'quotations' && activeTab !== 'purchase-orders' && activeTab !== 'goods-received' && (
                     <Card className="bg-white border-0 shadow-sm">
                         <CardContent className="p-6">
                             <div className="text-center py-12">
                                 <div className="text-lg font-medium text-gray-900 mb-2">
-                                    {activeTab === 'goods-received' && 'Goods Received Notes'}
                                     {activeTab === 'invoices' && 'Invoices & Payment Trackers'}
                                     {activeTab === 'mobile-approvals' && 'Mobile Approvals'}
                                 </div>
@@ -442,6 +731,13 @@ const ProcurementExecutionPage: React.FC = () => {
                         </CardContent>
                     </Card>
                 )}
+
+                {/* Create GRN Dialog */}
+                <CreateGRNDialog
+                    open={showCreateGRN}
+                    onOpenChange={setShowCreateGRN}
+                    onSubmit={handleCreateGRN}
+                />
             </div>
         </div>
     );
