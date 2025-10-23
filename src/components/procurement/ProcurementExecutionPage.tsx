@@ -280,9 +280,9 @@ const ProcurementExecutionPage: React.FC = () => {
                                 <CardContent className="p-6">
                                     <div className="flex flex-col items-center text-center">
                                         <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-yellow-600">{poStats?.pendingApprovals || 0}</span>
+                                            <span className="text-3xl font-bold text-yellow-600">{poStats?.draftPOs || 0}</span>
                                         </div>
-                                        <div className="text-sm text-gray-600">Pending approvals</div>
+                                        <div className="text-sm text-gray-600">Draft POs</div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -291,9 +291,9 @@ const ProcurementExecutionPage: React.FC = () => {
                                 <CardContent className="p-6">
                                     <div className="flex flex-col items-center text-center">
                                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-green-600">{poStats?.approvedPOs || 0}</span>
+                                            <span className="text-3xl font-bold text-green-600">{poStats?.sentPOs || 0}</span>
                                         </div>
-                                        <div className="text-sm text-gray-600">Approved POs</div>
+                                        <div className="text-sm text-gray-600">Sent POs</div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -380,12 +380,12 @@ const ProcurementExecutionPage: React.FC = () => {
                                             purchaseOrders.map((po, index) => (
                                                 <TableRow key={po.id} className="hover:bg-gray-50">
                                                     <TableCell className="font-medium text-gray-900">{po.po_number}</TableCell>
-                                                    <TableCell className="text-gray-700">{po.vendor_name}</TableCell>
+                                                    <TableCell className="text-gray-700">{(po as any).vendor?.full_name || 'Unknown'}</TableCell>
                                                     <TableCell className="font-medium text-gray-900">
                                                         {new Intl.NumberFormat('en-US', {
                                                             style: 'currency',
                                                             currency: po.currency
-                                                        }).format(po.grand_total)}
+                                                        }).format(po.total_amount)}
                                                     </TableCell>
                                                     <TableCell className="text-gray-700">
                                                         {new Date(po.po_date).toLocaleDateString('en-US', {
@@ -395,12 +395,12 @@ const ProcurementExecutionPage: React.FC = () => {
                                                         })}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${po.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                                            po.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                                po.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${po.status === 'sent' ? 'bg-green-100 text-green-800' :
+                                                            po.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                                                                po.status === 'cancelled' ? 'bg-red-100 text-red-800' :
                                                                     'bg-gray-100 text-gray-800'
                                                             }`}>
-                                                            {po.status.charAt(0).toUpperCase() + po.status.slice(1)}
+                                                            {po.status.charAt(0).toUpperCase() + po.status.slice(1).replace('_', ' ')}
                                                         </span>
                                                     </TableCell>
                                                     <TableCell>

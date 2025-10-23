@@ -62,7 +62,7 @@ const GRNDetailPage: React.FC = () => {
     const handleReject = async () => {
         if (!id) return;
         try {
-            await rejectGRN.mutateAsync(id);
+            await rejectGRN.mutateAsync({ id, reason: 'Rejected from detail page' });
         } catch (error) {
             console.error('Error rejecting GRN:', error);
         }

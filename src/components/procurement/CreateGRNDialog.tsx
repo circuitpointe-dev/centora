@@ -28,8 +28,8 @@ const CreateGRNDialog: React.FC<CreateGRNDialogProps> = ({ open, onOpenChange, o
         notes: ''
     });
 
-    const { data: purchaseOrdersData } = usePurchaseOrders(1, 100, '');
-    const { data: vendorsData } = useVendors(1, 100, '');
+    const { data: purchaseOrdersData } = usePurchaseOrders();
+    const { data: vendorsData } = useVendors({ page: 1, limit: 100 });
 
     const purchaseOrders = purchaseOrdersData?.data || [];
     const vendors = vendorsData?.data || [];
@@ -64,7 +64,7 @@ const CreateGRNDialog: React.FC<CreateGRNDialogProps> = ({ open, onOpenChange, o
                                 <SelectContent>
                                     {purchaseOrders.map((po) => (
                                         <SelectItem key={po.id} value={po.id}>
-                                            {po.po_number} - {po.vendor_name}
+                                            {po.po_number} - {(po as any).vendor?.full_name || 'Unknown Vendor'}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
