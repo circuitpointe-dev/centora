@@ -229,7 +229,7 @@ export const useUploadDocument = () => {
         mutationFn: async (documentData: { title: string; file_name: string; file_path: string; category: string; org_id: string; created_by: string; [key: string]: any }) => {
             const { data, error } = await supabase
                 .from('documents')
-                .insert([documentData])
+                .insert([{ ...documentData, category: documentData.category as any }])
                 .select()
                 .single();
 

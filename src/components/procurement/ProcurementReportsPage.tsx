@@ -61,7 +61,7 @@ const ProcurementReportsPage: React.FC = () => {
         searchTerm,
         filters
     );
-    const { data: reports, isLoading: reportsLoading } = useGenerateReport();
+    const generateReportMutation = useGenerateReport();
     const archiveDocument = useArchiveDocument();
     const restoreDocument = useRestoreDocument();
     const deleteDocument = useDeleteDocument();
@@ -120,7 +120,7 @@ const ProcurementReportsPage: React.FC = () => {
     const handleGenerateReport = async (reportType: string) => {
         try {
             await generateReport.mutateAsync({
-                report_type: reportType,
+                report_type: reportType as 'summary' | 'detailed' | 'analytics' | 'compliance' | 'audit',
                 title: `${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report`,
                 parameters: { dateRange: 'last_30_days' },
                 status: 'generating'
@@ -380,22 +380,22 @@ const ProcurementReportsPage: React.FC = () => {
                                         <TableCell>
                                             <div className="flex items-center gap-2">
                                                 <img
-                                                    src={getDocumentTypeIcon(document.document_type)}
-                                                    alt={document.document_type}
+                                                    src={getDocumentTypeIcon(document.category)}
+                                                    alt={document.category}
                                                     className="w-5 h-5"
                                                 />
-                                                <span className="font-medium">{document.document_type}</span>
+                                                <span className="font-medium">{document.category}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell>
                                             <div>
                                                 <p className="font-medium text-gray-900">{document.title}</p>
-                                                <p className="text-sm text-gray-500">{document.document_number}</p>
+                                                <p className="text-sm text-gray-500">{document.file_name}</p>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{document.vendor_name || '-'}</TableCell>
+                                        <TableCell>{document.description || '-'}</TableCell>
                                         <TableCell>
-                                            {document.amount ? formatCurrency(document.amount, document.currency) : '-'}
+                                            {document.file_size ? `${(document.file_size / 1024).toFixed(2)} KB` : '-'}
                                         </TableCell>
                                         <TableCell>
                                             <Badge className={`${getStatusColor(document.status)} border`}>
@@ -404,7 +404,7 @@ const ProcurementReportsPage: React.FC = () => {
                                         </TableCell>
                                         <TableCell>
                                             <div className="text-sm text-gray-600">
-                                                {format(new Date(document.uploaded_at), 'MMM dd, yyyy')}
+                                                {format(new Date(document.created_at), 'MMM dd, yyyy')}
                                             </div>
                                         </TableCell>
                                         <TableCell>
