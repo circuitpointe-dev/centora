@@ -47,8 +47,8 @@ export const useProcurementStats = () => {
             // Fetch real data from database
             const [requisitionsResult, purchaseOrdersResult, invoicesResult] = await Promise.all([
                 supabase
-                    .from('procurement_requisitions')
-                    .select('id, status, estimated_cost')
+                    .from('requisitions')
+                    .select('id, status, total_amount')
                     .eq('org_id', user.org_id),
 
                 supabase
@@ -73,7 +73,7 @@ export const useProcurementStats = () => {
 
             // Count pending requisitions
             const pendingRequisitions = requisitionsResult.data
-                ?.filter((req: any) => req.status === 'pending')
+                ?.filter(req => req.status === 'submitted' || req.status === 'draft')
                 .length || 0;
 
             // Count open purchase orders
@@ -106,26 +106,29 @@ export const usePendingApprovals = () => {
         queryFn: async (): Promise<PendingApproval[]> => {
             if (!user?.org_id) throw new Error('No organization');
 
-            // Fetch pending approvals from database (aligned with current schema)
+            // Fetch pending approvals from database - using actual schema columns
             const { data: approvals, error } = await supabase
                 .from('procurement_approvals')
-                .select('id, type, status, created_at, amount, currency, priority, requestor_name')
+                .select('id, type, requestor_name, amount, currency, description, priority, created_at, date_submitted')
                 .eq('org_id', user.org_id)
                 .eq('status', 'pending')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
 
-            return (approvals || []).map((a: any) => ({
-                id: a.id,
-                type: (a.type as 'requisition' | 'purchase_order' | 'payment') || 'requisition',
-                title: a.requestor_name || 'Approval',
-                amount: Number(a.amount || 0),
-                currency: a.currency || 'USD',
-                submittedBy: a.requestor_name || 'Unknown',
-                submittedAt: a.created_at,
-                priority: (a.priority || 'medium') as 'low' | 'medium' | 'high',
+            // Map to PendingApproval format
+            const approvalsWithDetails: PendingApproval[] = (approvals || []).map((approval) => ({
+                id: approval.id,
+                type: approval.type as 'requisition' | 'purchase_order' | 'payment',
+                title: approval.description || `${approval.type} #${approval.id.slice(0, 8)}`,
+                amount: Number(approval.amount || 0),
+                currency: approval.currency || 'USD',
+                submittedBy: approval.requestor_name || 'Unknown',
+                submittedAt: approval.date_submitted || approval.created_at,
+                priority: (approval.priority || 'medium') as 'low' | 'medium' | 'high'
             }));
+
+            return approvalsWithDetails;
         },
         staleTime: 2 * 60 * 1000, // 2 minutes
         gcTime: 5 * 60 * 1000, // 5 minutes

@@ -37,9 +37,11 @@ import { format } from 'date-fns';
 import { useApprovalStats, useApprovals, useApproveItem, useRejectItem, useBulkApprove, ApprovalFilters as FilterType } from '@/hooks/procurement/useProcurementApprovals';
 import ApprovalActionDialog from './ApprovalActionDialog';
 import ApprovalFilters from './ApprovalFilters';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const ProcurementApprovalsPage = () => {
     const navigate = useNavigate();
+    const isMobile = useIsMobile();
     const [searchTerm, setSearchTerm] = useState('');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const [currentPage, setCurrentPage] = useState(1);
@@ -109,7 +111,7 @@ const ProcurementApprovalsPage = () => {
         if (!searchTerm) return approvals;
 
         return approvals.filter(approval =>
-            approval.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            approval.display_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
             approval.requestor_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             approval.description.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -132,7 +134,8 @@ const ProcurementApprovalsPage = () => {
     };
 
     const handleView = (id: string) => {
-        navigate(`/dashboard/procurement/approvals/${id}`);
+        console.log('Viewing:', id);
+        // TODO: Implement view logic
     };
 
     const handleBulkApprove = () => {
@@ -204,21 +207,24 @@ const ProcurementApprovalsPage = () => {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => navigate('/dashboard/procurement/dashboard')}
-                        className="gap-2 hover:bg-gray-100"
+                        className="gap-2 hover:bg-gray-100 w-fit"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Dashboard
+                        <span className="hidden sm:inline">Back to Dashboard</span>
+                        <span className="sm:hidden">Back</span>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Dashboard / Pending approvals</h1>
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                            <span className="hidden sm:inline">Dashboard / </span>Pending approvals
+                        </h1>
                     </div>
                 </div>
             </div>
@@ -271,19 +277,19 @@ const ProcurementApprovalsPage = () => {
             {/* My approval lists */}
             <Card>
                 <CardHeader>
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center justify-between">
                         <CardTitle className="text-lg font-semibold">My approval lists</CardTitle>
-                        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 md:gap-4">
-                            <div className="relative w-full sm:w-64">
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                                 <Input
                                     placeholder="Search..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 w-full"
+                                    className="pl-10 w-64"
                                 />
                             </div>
-                            <div className="flex items-center gap-2 self-start sm:self-auto">
+                            <div className="flex items-center gap-2">
                                 <Button
                                     variant={viewMode === 'grid' ? 'default' : 'outline'}
                                     size="sm"
@@ -313,10 +319,12 @@ const ProcurementApprovalsPage = () => {
                                 onFiltersChange={handleFiltersChange}
                                 onClearFilters={handleClearFilters}
                             />
+
                             <Button
-                                className="gap-2 bg-green-600 hover:bg-green-700"
+                                className="gap-2 bg-green-600 hover:bg-green-700 flex-1 sm:flex-none"
                                 onClick={handleBulkApprove}
                                 disabled={selectedItems.length === 0 || bulkApprove.isPending}
+                                size={isMobile ? "default" : "sm"}
                             >
                                 {bulkApprove.isPending ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -342,171 +350,110 @@ const ProcurementApprovalsPage = () => {
                         </div>
                     ) : (
                         <>
-                            {/* Desktop / large screens table */}
-                            <div className="hidden lg:block">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="w-12">
-                                                    <Checkbox
-                                                        checked={selectedItems.length === filteredApprovals.length && filteredApprovals.length > 0}
-                                                        onCheckedChange={handleSelectAll}
-                                                    />
-                                                </TableHead>
-                                                <TableHead>ID</TableHead>
-                                                <TableHead>Type</TableHead>
-                                                <TableHead className="hidden xl:table-cell">Requestor</TableHead>
-                                                <TableHead className="hidden xl:table-cell">Date submitted</TableHead>
-                                                <TableHead>Amount</TableHead>
-                                                <TableHead className="hidden xl:table-cell">Risk</TableHead>
-                                                <TableHead>Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {filteredApprovals.map((approval) => (
-                                                <TableRow key={approval.id} className="hover:bg-gray-50">
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            checked={selectedItems.includes(approval.id)}
-                                                            onCheckedChange={(checked) => handleSelectItem(approval.id, checked as boolean)}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className="max-w-[220px]">
-                                                        <Button
-                                                            variant="link"
-                                                            className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800 truncate max-w-full"
-                                                            onClick={() => handleView(approval.id)}
-                                                        >
-                                                            <span className="truncate inline-block max-w-full align-bottom break-all">{approval.friendly_id}</span>
-                                                        </Button>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex items-center gap-2">
-                                                            {getTypeIcon(approval.type)}
-                                                            <Badge className={getTypeColor(approval.type)}>
-                                                                {approval.type.replace('_', ' ').toUpperCase()}
-                                                            </Badge>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell className="font-medium hidden xl:table-cell">{approval.requestor_name}</TableCell>
-                                                    <TableCell className="hidden xl:table-cell">{format(new Date(approval.date_submitted), 'MMM dd, yyyy')}</TableCell>
-                                                    <TableCell className="font-medium">
-                                                        {approval.currency} {approval.amount.toLocaleString()}
-                                                    </TableCell>
-                                                    <TableCell className="hidden xl:table-cell">
-                                                        <Badge className={getRiskColor(approval.risk_level)}>
-                                                            {approval.risk_level.toUpperCase()}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex items-center gap-2">
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => handleView(approval.id)}
-                                                                className="gap-1 hover:bg-blue-50"
-                                                            >
-                                                                <Eye className="h-3 w-3" />
-                                                                View
-                                                            </Button>
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => handleApprove(approval)}
-                                                                className="gap-1 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                                                disabled={approveItem.isPending}
-                                                            >
-                                                                {approveItem.isPending ? (
-                                                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                                                ) : (
-                                                                    <Check className="h-3 w-3" />
-                                                                )}
-                                                                Approve
-                                                            </Button>
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => handleReject(approval)}
-                                                                className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                                disabled={rejectItem.isPending}
-                                                            >
-                                                                {rejectItem.isPending ? (
-                                                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                                                ) : (
-                                                                    <X className="h-3 w-3" />
-                                                                )}
-                                                                Reject
-                                                            </Button>
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </div>
-
-                            {/* Mobile / tablet cards */}
-                            <div className="grid gap-3 lg:hidden">
-                                {filteredApprovals.map((approval) => (
-                                    <div key={approval.id} className="border rounded-lg p-4 bg-white">
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="min-w-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-12">
+                                            <Checkbox
+                                                checked={selectedItems.length === filteredApprovals.length && filteredApprovals.length > 0}
+                                                onCheckedChange={handleSelectAll}
+                                            />
+                                        </TableHead>
+                                        <TableHead>ID</TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Requestor</TableHead>
+                                        <TableHead>Date submitted</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead>Risk</TableHead>
+                                        <TableHead>Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredApprovals.map((approval) => (
+                                        <TableRow key={approval.id} className="hover:bg-gray-50">
+                                            <TableCell>
+                                                <Checkbox
+                                                    checked={selectedItems.includes(approval.id)}
+                                                    onCheckedChange={(checked) => handleSelectItem(approval.id, checked as boolean)}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
                                                 <Button
                                                     variant="link"
-                                                    className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800 break-all"
+                                                    className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800"
                                                     onClick={() => handleView(approval.id)}
                                                 >
                                                     {approval.id}
                                                 </Button>
-                                                <div className="mt-1 flex items-center gap-2">
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
                                                     {getTypeIcon(approval.type)}
                                                     <Badge className={getTypeColor(approval.type)}>
                                                         {approval.type.replace('_', ' ').toUpperCase()}
                                                     </Badge>
                                                 </div>
-                                            </div>
-                                            <Badge className={getRiskColor(approval.risk_level)}>
-                                                {approval.risk_level.toUpperCase()}
-                                            </Badge>
-                                        </div>
-                                        <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                                            <div className="text-gray-500">Requestor</div>
-                                            <div className="text-gray-900 text-right font-medium truncate">{approval.requestor_name}</div>
-                                            <div className="text-gray-500">Date</div>
-                                            <div className="text-gray-900 text-right">{format(new Date(approval.date_submitted), 'MMM dd, yyyy')}</div>
-                                            <div className="text-gray-500">Amount</div>
-                                            <div className="text-gray-900 text-right font-medium">{approval.currency} {approval.amount.toLocaleString()}</div>
-                                        </div>
-                                        <div className="mt-3 flex items-center justify-end gap-2">
-                                            <Button variant="outline" size="sm" onClick={() => handleView(approval.id)} className="gap-1">
-                                                <Eye className="h-3 w-3" />
-                                                View
-                                            </Button>
-                                            <Button variant="outline" size="sm" onClick={() => handleApprove(approval)} disabled={approveItem.isPending} className="gap-1 text-green-600">
-                                                {approveItem.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
-                                                Approve
-                                            </Button>
-                                            <Button variant="outline" size="sm" onClick={() => handleReject(approval)} disabled={rejectItem.isPending} className="gap-1 text-red-600">
-                                                {rejectItem.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <X className="h-3 w-3" />}
-                                                Reject
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                                            </TableCell>
+                                            <TableCell className="font-medium">{approval.requestor_name}</TableCell>
+                                            <TableCell>{format(new Date(approval.date_submitted), 'MMM dd, yyyy')}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {approval.currency} {approval.amount.toLocaleString()}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge className={getRiskColor(approval.risk_level)}>
+                                                    {approval.risk_level.toUpperCase()}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleView(approval.id)}
+                                                        className="gap-1 hover:bg-blue-50"
+                                                    >
+                                                        <Eye className="h-3 w-3" />
+                                                        View
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleApprove(approval)}
+                                                        className="gap-1 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                        disabled={approveItem.isPending}
+                                                    >
+                                                        {approveItem.isPending ? (
+                                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                                        ) : (
+                                                            <Check className="h-3 w-3" />
+                                                        )}
+                                                        Approve
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleReject(approval)}
+                                                        className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        disabled={rejectItem.isPending}
+                                                    >
+                                                        {rejectItem.isPending ? (
+                                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                                        ) : (
+                                                            <X className="h-3 w-3" />
+                                                        )}
+                                                        Reject
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
 
                             {/* Pagination */}
-                            <div className="flex items-center justify-between mt-6 flex-col gap-3 sm:flex-row">
+                            <div className="flex items-center justify-between mt-6">
                                 <div className="text-sm text-gray-600">
-                                    {(() => {
-                                        const total = approvalsData?.total || 0;
-                                        const limit = approvalsData?.limit || 10;
-                                        const start = total === 0 ? 0 : ((currentPage - 1) * limit) + 1;
-                                        const end = total === 0 ? 0 : Math.min(currentPage * limit, total);
-                                        return `Showing ${start} to ${end} of ${total} approval lists`;
-                                    })()}
+                                    Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, approvalsData?.total || 0)} of {approvalsData?.total || 0} approval lists
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Button
@@ -515,11 +462,11 @@ const ProcurementApprovalsPage = () => {
                                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                         disabled={currentPage === 1}
                                     >
-                                        <ChevronLeft className="h-4 w-4 mr-1" />
-                                        Previous
+                                        <ChevronLeft className="h-4 w-4" />
+                                        {!isMobile && <span className="ml-1">Previous</span>}
                                     </Button>
                                     <div className="flex items-center gap-1">
-                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                        {Array.from({ length: Math.min(isMobile ? 3 : 5, totalPages) }, (_, i) => {
                                             const page = i + 1;
                                             return (
                                                 <Button
@@ -540,8 +487,8 @@ const ProcurementApprovalsPage = () => {
                                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                         disabled={currentPage === totalPages}
                                     >
-                                        Next
-                                        <ChevronRight className="h-4 w-4 ml-1" />
+                                        {!isMobile && <span className="mr-1">Next</span>}
+                                        <ChevronRight className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>

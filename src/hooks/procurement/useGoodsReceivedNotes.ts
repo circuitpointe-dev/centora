@@ -64,17 +64,18 @@ export const useGRNStats = () => {
 
             if (!profile) throw new Error('User profile not found');
 
-            const { data: grns, error } = await supabase
+            const { data: grns, error } = await (supabase as any)
                 .from('goods_received_notes')
                 .select('status, delivery_status')
                 .eq('org_id', profile.org_id);
 
             if (error) throw error;
 
-            const pendingGRNs = grns?.filter(g => g.status === 'pending').length || 0;
-            const partialDeliveries = grns?.filter(g => g.delivery_status === 'partial').length || 0;
-            const completedDeliveries = grns?.filter(g => g.delivery_status === 'completed').length || 0;
-            const overdueDeliveries = grns?.filter(g => g.delivery_status === 'overdue').length || 0;
+            const grnsData = grns as any[] || [];
+            const pendingGRNs = grnsData.filter(g => g.status === 'pending').length;
+            const partialDeliveries = grnsData.filter(g => g.delivery_status === 'partial').length;
+            const completedDeliveries = grnsData.filter(g => g.delivery_status === 'completed').length;
+            const overdueDeliveries = grnsData.filter(g => g.delivery_status === 'overdue').length;
 
             return {
                 pendingGRNs,
@@ -103,7 +104,7 @@ export const useGRNs = (page = 1, limit = 10, search = '') => {
 
             if (!profile) throw new Error('User profile not found');
 
-            let query = supabase
+            let query = (supabase as any)
                 .from('goods_received_notes')
                 .select(`
                     *,
@@ -128,7 +129,8 @@ export const useGRNs = (page = 1, limit = 10, search = '') => {
 
             if (error) throw error;
 
-            const grns = (data || []).map((grn: any): GRN => ({
+            const grnsData = data as any[] || [];
+            const grns = grnsData.map((grn: any): GRN => ({
                 id: grn.id,
                 org_id: grn.org_id,
                 grn_number: grn.grn_number,
@@ -176,7 +178,7 @@ export const useGRNDetail = (id: string) => {
     return useQuery({
         queryKey: ['grn-detail', id],
         queryFn: async (): Promise<GRN> => {
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('goods_received_notes')
                 .select(`
                     *,
@@ -191,35 +193,36 @@ export const useGRNDetail = (id: string) => {
 
             if (error) throw error;
 
+            const grnData = data as any;
             return {
-                id: data.id,
-                org_id: data.org_id,
-                grn_number: data.grn_number,
-                po_id: data.po_id,
-                po_number: data.po?.po_number,
-                vendor_id: data.vendor_id,
-                vendor_name: data.vendor?.name,
-                item_name: data.item_name,
-                item_description: data.item_description,
-                quantity_ordered: data.quantity_ordered,
-                quantity_received: data.quantity_received,
-                unit_price: data.unit_price,
-                total_amount: data.total_amount,
-                currency: data.currency,
-                delivery_date: data.delivery_date,
-                received_date: data.received_date,
-                status: data.status,
-                delivery_status: data.delivery_status,
-                notes: data.notes,
-                received_by: data.received_by,
-                received_by_name: data.received_by_user?.full_name,
-                approved_by: data.approved_by,
-                approved_by_name: data.approved_by_user?.full_name,
-                approved_at: data.approved_at,
-                created_by: data.created_by,
-                created_by_name: data.created_by_user?.full_name,
-                created_at: data.created_at,
-                updated_at: data.updated_at
+                id: grnData.id,
+                org_id: grnData.org_id,
+                grn_number: grnData.grn_number,
+                po_id: grnData.po_id,
+                po_number: grnData.po?.po_number,
+                vendor_id: grnData.vendor_id,
+                vendor_name: grnData.vendor?.name,
+                item_name: grnData.item_name,
+                item_description: grnData.item_description,
+                quantity_ordered: grnData.quantity_ordered,
+                quantity_received: grnData.quantity_received,
+                unit_price: grnData.unit_price,
+                total_amount: grnData.total_amount,
+                currency: grnData.currency,
+                delivery_date: grnData.delivery_date,
+                received_date: grnData.received_date,
+                status: grnData.status,
+                delivery_status: grnData.delivery_status,
+                notes: grnData.notes,
+                received_by: grnData.received_by,
+                received_by_name: grnData.received_by_user?.full_name,
+                approved_by: grnData.approved_by,
+                approved_by_name: grnData.approved_by_user?.full_name,
+                approved_at: grnData.approved_at,
+                created_by: grnData.created_by,
+                created_by_name: grnData.created_by_user?.full_name,
+                created_at: grnData.created_at,
+                updated_at: grnData.updated_at
             };
         },
         enabled: !!id,
@@ -255,7 +258,7 @@ export const useCreateGRN = () => {
 
             if (!profile) throw new Error('User profile not found');
 
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('goods_received_notes')
                 .insert({
                     ...payload,
@@ -297,7 +300,7 @@ export const useUpdateGRN = () => {
 
     return useMutation({
         mutationFn: async ({ id, updates }: { id: string; updates: Partial<GRN> }) => {
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('goods_received_notes')
                 .update({
                     ...updates,
@@ -339,7 +342,7 @@ export const useApproveGRN = () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('User not authenticated');
 
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('goods_received_notes')
                 .update({
                     status: 'approved',
@@ -380,7 +383,7 @@ export const useRejectGRN = () => {
 
     return useMutation({
         mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('goods_received_notes')
                 .update({
                     status: 'rejected',
@@ -420,7 +423,7 @@ export const useDeleteGRN = () => {
 
     return useMutation({
         mutationFn: async (id: string) => {
-            const { error } = await supabase
+            const { error } = await (supabase as any)
                 .from('goods_received_notes')
                 .delete()
                 .eq('id', id);
