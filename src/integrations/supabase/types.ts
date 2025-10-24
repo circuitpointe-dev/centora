@@ -66,7 +66,7 @@ export type Database = {
           actor_name: string | null
           created_at: string | null
           id: string
-          ip_address: unknown
+          ip_address: unknown | null
           metadata: Json | null
           target_user_email: string | null
           target_user_id: string | null
@@ -79,7 +79,7 @@ export type Database = {
           actor_name?: string | null
           created_at?: string | null
           id?: string
-          ip_address?: unknown
+          ip_address?: unknown | null
           metadata?: Json | null
           target_user_email?: string | null
           target_user_id?: string | null
@@ -92,7 +92,7 @@ export type Database = {
           actor_name?: string | null
           created_at?: string | null
           id?: string
-          ip_address?: unknown
+          ip_address?: unknown | null
           metadata?: Json | null
           target_user_email?: string | null
           target_user_id?: string | null
@@ -2608,96 +2608,6 @@ export type Database = {
           },
         ]
       }
-      procurement_documents: {
-        Row: {
-          amount: number | null
-          currency: string | null
-          description: string | null
-          document_date: string
-          document_number: string
-          document_type: Database["public"]["Enums"]["procurement_document_type"]
-          expiry_date: string | null
-          file_name: string
-          file_path: string
-          file_size: number
-          id: string
-          mime_type: string
-          org_id: string
-          project_name: string | null
-          status: Database["public"]["Enums"]["procurement_document_status"]
-          title: string
-          updated_at: string
-          uploaded_at: string
-          uploaded_by: string
-          uploaded_by_name: string | null
-          vendor_id: string | null
-          vendor_name: string | null
-        }
-        Insert: {
-          amount?: number | null
-          currency?: string | null
-          description?: string | null
-          document_date: string
-          document_number: string
-          document_type?: Database["public"]["Enums"]["procurement_document_type"]
-          expiry_date?: string | null
-          file_name: string
-          file_path: string
-          file_size: number
-          id?: string
-          mime_type: string
-          org_id: string
-          project_name?: string | null
-          status?: Database["public"]["Enums"]["procurement_document_status"]
-          title: string
-          updated_at?: string
-          uploaded_at?: string
-          uploaded_by: string
-          uploaded_by_name?: string | null
-          vendor_id?: string | null
-          vendor_name?: string | null
-        }
-        Update: {
-          amount?: number | null
-          currency?: string | null
-          description?: string | null
-          document_date?: string
-          document_number?: string
-          document_type?: Database["public"]["Enums"]["procurement_document_type"]
-          expiry_date?: string | null
-          file_name?: string
-          file_path?: string
-          file_size?: number
-          id?: string
-          mime_type?: string
-          org_id?: string
-          project_name?: string | null
-          status?: Database["public"]["Enums"]["procurement_document_status"]
-          title?: string
-          updated_at?: string
-          uploaded_at?: string
-          uploaded_by?: string
-          uploaded_by_name?: string | null
-          vendor_id?: string | null
-          vendor_name?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "procurement_documents_org_id_fkey"
-            columns: ["org_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "procurement_documents_vendor_id_fkey"
-            columns: ["vendor_id"]
-            isOneToOne: false
-            referencedRelation: "vendors"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       procurement_plan_items: {
         Row: {
           budget_source: string | null
@@ -4235,35 +4145,23 @@ export type Database = {
         Args: { file_path: string }
         Returns: boolean
       }
-      cleanup_expired_verifications: { Args: never; Returns: undefined }
-      count_org_users:
-        | { Args: { _search?: string }; Returns: number }
-        | {
-            Args: { _department?: string; _search?: string; _status?: string }
-            Returns: number
-          }
+      cleanup_expired_verifications: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      count_org_users: {
+        Args:
+          | { _department?: string; _search?: string; _status?: string }
+          | { _search?: string }
+        Returns: number
+      }
       create_department: {
         Args: { _description?: string; _name: string }
         Returns: string
       }
-      create_donor_with_details:
-        | {
-            Args: {
-              _affiliation?: string
-              _contacts?: string
-              _created_by: string
-              _focus_area_ids?: string[]
-              _funding_end_date?: string
-              _funding_start_date?: string
-              _name: string
-              _notes?: string
-              _org_id: string
-              _organization_url?: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
+      create_donor_with_details: {
+        Args:
+          | {
               _affiliation?: string
               _contacts?: string
               _created_by: string
@@ -4276,10 +4174,19 @@ export type Database = {
               _organization_url?: string
               _status?: Database["public"]["Enums"]["donor_status"]
             }
-            Returns: string
-          }
-        | {
-            Args: {
+          | {
+              _affiliation?: string
+              _contacts?: string
+              _created_by: string
+              _focus_area_ids?: string[]
+              _funding_end_date?: string
+              _funding_start_date?: string
+              _name: string
+              _notes?: string
+              _org_id: string
+              _organization_url?: string
+            }
+          | {
               _affiliation?: string
               _contacts?: string
               _created_by: string
@@ -4291,8 +4198,8 @@ export type Database = {
               _organization_url?: string
               _status?: Database["public"]["Enums"]["donor_status"]
             }
-            Returns: string
-          }
+        Returns: string
+      }
       create_role: {
         Args: { _description?: string; _name: string }
         Returns: string
@@ -4310,10 +4217,16 @@ export type Database = {
           token: string
         }[]
       }
-      current_org_id: { Args: never; Returns: string }
-      generate_procurement_display_id: { Args: never; Returns: string }
+      current_org_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_procurement_display_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_departments: {
-        Args: never
+        Args: Record<PropertyKey, never>
         Returns: {
           created_at: string
           description: string
@@ -4333,7 +4246,10 @@ export type Database = {
           donation_date: string
         }[]
       }
-      get_org_member_count: { Args: { _org_id: string }; Returns: number }
+      get_org_member_count: {
+        Args: { _org_id: string }
+        Returns: number
+      }
       get_org_member_list: {
         Args: { _org_id: string }
         Returns: {
@@ -4344,7 +4260,7 @@ export type Database = {
         }[]
       }
       get_org_modules_with_features: {
-        Args: never
+        Args: Record<PropertyKey, never>
         Returns: {
           features: Json
           module: string
@@ -4352,7 +4268,7 @@ export type Database = {
         }[]
       }
       get_roles: {
-        Args: never
+        Args: Record<PropertyKey, never>
         Returns: {
           created_at: string
           description: string
@@ -4360,9 +4276,12 @@ export type Database = {
           name: string
         }[]
       }
-      get_user_org_id: { Args: { _user_id: string }; Returns: string }
+      get_user_org_id: {
+        Args: { _user_id: string }
+        Returns: string
+      }
       get_user_stats: {
-        Args: never
+        Args: Record<PropertyKey, never>
         Returns: {
           active_users: number
           deactivated_users: number
@@ -4370,46 +4289,50 @@ export type Database = {
           pending_invitations: number
         }[]
       }
-      is_org_admin: { Args: { _org_id: string }; Returns: boolean }
-      is_org_member: { Args: { _org_id: string }; Returns: boolean }
-      is_super_admin: { Args: never; Returns: boolean }
+      is_org_admin: {
+        Args: { _org_id: string }
+        Returns: boolean
+      }
+      is_org_member: {
+        Args: { _org_id: string }
+        Returns: boolean
+      }
+      is_super_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_user_org_admin: {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
-      is_user_super_admin: { Args: { _user_id: string }; Returns: boolean }
-      list_org_users:
-        | {
-            Args: { _page?: number; _page_size?: number; _search?: string }
-            Returns: {
-              department: string
-              email: string
-              full_name: string
-              id: string
-              modules: string[]
-              roles: string[]
-              status: string
-            }[]
-          }
-        | {
-            Args: {
+      is_user_super_admin: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
+      list_org_users: {
+        Args:
+          | {
               _department?: string
               _page?: number
               _page_size?: number
               _search?: string
               _status?: string
             }
-            Returns: {
-              department: string
-              email: string
-              full_name: string
-              id: string
-              modules: string[]
-              roles: string[]
-              status: string
-            }[]
-          }
-      org_match: { Args: { check_org_id: string }; Returns: boolean }
+          | { _page?: number; _page_size?: number; _search?: string }
+        Returns: {
+          department: string
+          email: string
+          full_name: string
+          id: string
+          modules: string[]
+          roles: string[]
+          status: string
+        }[]
+      }
+      org_match: {
+        Args: { check_org_id: string }
+        Returns: boolean
+      }
       set_user_access_map: {
         Args: { _access_map: Json; _profile_id: string }
         Returns: boolean
@@ -4487,15 +4410,6 @@ export type Database = {
         | "received"
         | "cancelled"
       priority_level: "low" | "medium" | "high" | "urgent"
-      procurement_document_status: "active" | "archived" | "expired" | "draft"
-      procurement_document_type:
-        | "contract"
-        | "invoice"
-        | "grn"
-        | "po"
-        | "policy"
-        | "report"
-        | "other"
       procurement_status:
         | "draft"
         | "pending_approval"
@@ -4713,16 +4627,6 @@ export const Constants = {
         "cancelled",
       ],
       priority_level: ["low", "medium", "high", "urgent"],
-      procurement_document_status: ["active", "archived", "expired", "draft"],
-      procurement_document_type: [
-        "contract",
-        "invoice",
-        "grn",
-        "po",
-        "policy",
-        "report",
-        "other",
-      ],
       procurement_status: [
         "draft",
         "pending_approval",
