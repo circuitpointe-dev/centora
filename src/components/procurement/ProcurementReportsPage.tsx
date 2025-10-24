@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import { useDocumentArchive, useDocumentArchiveStats } from '@/hooks/procurement/useProcurementDocumentArchive';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Eye, Download } from 'lucide-react';
 
 const ProcurementReportsPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDocumentType, setSelectedDocumentType] = useState('contract');
     const [currentPage, setCurrentPage] = useState(1);
-    const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState('document-archive');
 
     const pageSize = 8;
@@ -30,23 +25,6 @@ const ProcurementReportsPage: React.FC = () => {
 
     const isLoading = statsLoading || documentsLoading;
     const error = statsError || documentsError;
-
-    // Handle checkbox selection
-    const handleSelectAll = (checked: boolean) => {
-        if (checked && documentsData?.data) {
-            setSelectedDocuments(documentsData.data.map(doc => doc.id));
-        } else {
-            setSelectedDocuments([]);
-        }
-    };
-
-    const handleSelectDocument = (documentId: string, checked: boolean) => {
-        if (checked) {
-            setSelectedDocuments(prev => [...prev, documentId]);
-        } else {
-            setSelectedDocuments(prev => prev.filter(id => id !== documentId));
-        }
-    };
 
     // Handle document type filter
     const handleTypeFilter = (type: string) => {
@@ -462,79 +440,102 @@ const ProcurementReportsPage: React.FC = () => {
                 </div>
 
                 {/* Documents Table */}
-                <div className="bg-white rounded-lg border border-gray-200 w-full">
+                <div className="bg-white rounded-[5px] border-solid border-[#f5f7fa] border w-full">
                     {/* Table Header */}
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                        <div className="flex items-center gap-2">
-                            <Checkbox
-                                checked={selectedDocuments.length === documentsData?.data.length && documentsData?.data.length > 0}
-                                onCheckedChange={handleSelectAll}
-                            />
-                            <span className="text-sm font-medium text-gray-900">Document</span>
+                    <div className="bg-[#f5f7fa] flex items-center px-[21px] py-[15px] border-b border-[#e1e1e1]">
+                        <div className="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium flex-[2]">
+                            Document
                         </div>
-                        <div className="text-sm font-medium text-gray-900 w-32">Type</div>
-                        <div className="text-sm font-medium text-gray-900 w-32">Vendor</div>
-                        <div className="text-sm font-medium text-gray-900 w-32">Project</div>
-                        <div className="text-sm font-medium text-gray-900 w-24">Date</div>
-                        <div className="text-sm font-medium text-gray-900 w-24">Actions</div>
+                        <div className="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium flex-1">
+                            Type
+                        </div>
+                        <div className="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium flex-1">
+                            Vendor
+                        </div>
+                        <div className="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium flex-1">
+                            Project
+                        </div>
+                        <div className="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium flex-1">
+                            Date
+                        </div>
+                        <div className="text-[#383839] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium flex-1">
+                            Actions
+                        </div>
                     </div>
 
                     {/* Table Body */}
-                    <div className="divide-y divide-gray-200">
-                        {documentsData?.data.map((document, index) => (
-                            <div key={document.id} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50">
-                                <div className="flex items-center gap-2 w-48">
-                                    <Checkbox
-                                        checked={selectedDocuments.includes(document.id)}
-                                        onCheckedChange={(checked) => handleSelectDocument(document.id, checked as boolean)}
-                                    />
-                                    <div>
-                                        <div className="text-sm font-medium text-gray-900">{document.title}</div>
-                                        <div className="text-xs text-gray-500">{document.file_name}</div>
+                    <div className="divide-y divide-[#f5f7fa]">
+                        {documentsData?.data && documentsData.data.length > 0 ? (
+                            documentsData.data.map((document) => (
+                                <div key={document.id} className="flex items-center px-[21px] py-[18px] hover:bg-[#f5f7fa]/50 transition-colors">
+                                    <div className="text-[#383839] text-left font-['Inter-Regular',_sans-serif] text-sm leading-tight font-normal flex-[2]">
+                                        {document.document_number}
+                                    </div>
+                                    <div className="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Regular',_sans-serif] text-sm leading-tight font-normal flex-1 capitalize">
+                                        {document.document_type}
+                                    </div>
+                                    <div className="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Regular',_sans-serif] text-sm leading-tight font-normal flex-1 truncate">
+                                        {document.vendor_name || '-'}
+                                    </div>
+                                    <div className="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Regular',_sans-serif] text-sm leading-tight font-normal flex-1 truncate">
+                                        {document.project_name || '-'}
+                                    </div>
+                                    <div className="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Regular',_sans-serif] text-sm leading-tight font-normal flex-1">
+                                        {new Date(document.document_date).toLocaleDateString('en-US', { 
+                                            month: 'short', 
+                                            day: 'numeric', 
+                                            year: 'numeric' 
+                                        })}
+                                    </div>
+                                    <div className="flex items-center gap-3 flex-1">
+                                        <button
+                                            onClick={() => handleViewDocument(document.id)}
+                                            className="rounded-[5px] border-solid border-[#e1e1e1] border px-3 py-1.5 flex items-center gap-2 hover:bg-gray-50 transition-colors"
+                                        >
+                                            <Eye className="w-4 h-4 text-[rgba(56,56,56,0.60)]" />
+                                            <span className="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium">
+                                                View
+                                            </span>
+                                        </button>
+                                        <button
+                                            onClick={() => handleDownloadDocument(document.id)}
+                                            className="rounded-[5px] border-solid border-[#e1e1e1] border px-3 py-1.5 flex items-center gap-2 hover:bg-gray-50 transition-colors"
+                                        >
+                                            <Download className="w-4 h-4 text-[rgba(56,56,56,0.60)]" />
+                                            <span className="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium">
+                                                Download
+                                            </span>
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="text-sm text-gray-600 w-32 capitalize">{document.document_type}</div>
-                                <div className="text-sm text-gray-600 w-32 truncate">{document.vendor_name || '-'}</div>
-                                <div className="text-sm text-gray-600 w-32 truncate">{document.project_name || '-'}</div>
-                                <div className="text-sm text-gray-600 w-24">
-                                    {new Date(document.uploaded_at).toLocaleDateString()}
-                                </div>
-                                <div className="flex items-center gap-2 w-24">
-                                    <button
-                                        onClick={() => handleViewDocument(document.id)}
-                                        className="p-1 hover:bg-gray-100 rounded"
-                                    >
-                                        <img src={`/mdi-eye-outline${index % 12}.svg`} alt="View" className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDownloadDocument(document.id)}
-                                        className="p-1 hover:bg-gray-100 rounded"
-                                    >
-                                        <img src={`/material-symbols-download${index % 12}.svg`} alt="Download" className="w-4 h-4" />
-                                    </button>
-                                </div>
+                            ))
+                        ) : (
+                            <div className="flex items-center justify-center py-12">
+                                <p className="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Regular',_sans-serif] text-sm">
+                                    No documents found
+                                </p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
 
                 {/* Pagination */}
                 <div className="flex items-center justify-between w-full">
-                    <div className="text-sm text-gray-700">
+                    <div className="text-[rgba(56,56,56,0.60)] text-left font-['Inter-Regular',_sans-serif] text-sm leading-tight font-normal">
                         Showing {startItem} to {endItem} of {documentsData?.total || 0} {selectedDocumentType} folder lists
                     </div>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
-                            className="px-4 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="rounded-[5px] border-solid border-[#e1e1e1] border px-5 py-2 text-[rgba(56,56,56,0.60)] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             Previous
                         </button>
                         <button
                             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
-                            className="px-4 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="rounded-[5px] border-solid border-[#e1e1e1] border px-5 py-2 text-[rgba(56,56,56,0.60)] text-left font-['Inter-Medium',_sans-serif] text-sm leading-tight font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             Next
                         </button>
