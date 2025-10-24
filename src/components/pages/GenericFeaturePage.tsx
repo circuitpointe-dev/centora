@@ -41,6 +41,8 @@ import RequisitionDetailPage from '@/components/procurement/RequisitionDetailPag
 import InvoicesPaymentTrackersPage from '@/components/procurement/InvoicesPaymentTrackersPage';
 import InvoiceDetailPage from '@/components/procurement/InvoiceDetailPage';
 import ProcurementReportsPage from '@/components/procurement/ProcurementReportsPage';
+import ComplianceAuditTrialReportPage from '@/components/procurement/ComplianceAuditTrialReportPage';
+import ProcurementDocumentArchivePage from '@/components/procurement/ProcurementDocumentArchivePage';
 import { RoleRequestPage } from "../users/requests/RoleRequestsPage";
 import { SubscriptionAndBillingsPage } from "../users/subscriptions/SubscriptionsAndBillingsPage";
 import SuperAdminUserPage from "../users/super-admin/SuperAdminUserPage";
@@ -198,6 +200,14 @@ const GenericFeaturePage = () => {
 
   if (module === 'procurement' && feature === 'procurement-reports') {
     return <ProcurementReportsPage />;
+  }
+
+  if (module === 'procurement' && feature === 'compliance-audit-trial') {
+    return <ComplianceAuditTrialReportPage />;
+  }
+
+  if (module === 'procurement' && feature === 'document-archive') {
+    return <ProcurementDocumentArchivePage />;
   }
 
   if (module === 'procurement') {

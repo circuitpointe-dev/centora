@@ -33,6 +33,8 @@ import { useGRNStats, useGRNs, useCreateGRN, useUpdateGRN, useApproveGRN, useRej
 import CreateGRNDialog from './CreateGRNDialog';
 import InvoicesPaymentTrackersPage from './InvoicesPaymentTrackersPage';
 import MobileApprovalsPage from './MobileApprovalsPage';
+import ComplianceAuditTrialReportPage from './ComplianceAuditTrialReportPage';
+import ProcurementDocumentArchivePage from './ProcurementDocumentArchivePage';
 
 const ProcurementExecutionPage: React.FC = () => {
     const navigate = useNavigate();
@@ -202,7 +204,9 @@ const ProcurementExecutionPage: React.FC = () => {
                         { id: 'purchase-orders', label: 'Purchase orders' },
                         { id: 'goods-received', label: 'Goods received notes' },
                         { id: 'invoices', label: 'Invoices & payment trackers' },
-                        { id: 'mobile-approvals', label: 'Mobile approvals' }
+                        { id: 'mobile-approvals', label: 'Mobile approvals' },
+                        { id: 'document-archive', label: 'Document archive' },
+                        { id: 'compliance-audit-trial', label: 'Compliance & audit trial report' }
                     ].map(tab => (
                         <button
                             key={tab.id}
@@ -587,6 +591,16 @@ const ProcurementExecutionPage: React.FC = () => {
                 {/* Mobile Approvals tab content */}
                 {activeTab === 'mobile-approvals' && (
                     <MobileApprovalsPage />
+                )}
+
+                {/* Document Archive tab content */}
+                {activeTab === 'document-archive' && (
+                    <ProcurementDocumentArchivePage />
+                )}
+
+                {/* Compliance & Audit Trial Report tab content */}
+                {activeTab === 'compliance-audit-trial' && (
+                    <ComplianceAuditTrialReportPage />
                 )}
 
                 {/* Create GRN Dialog */}
