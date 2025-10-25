@@ -304,19 +304,22 @@ export const useCreateMobileApproval = () => {
 
             const { data, error } = await supabase
                 .from('procurement_approvals')
-                .insert({
+                .insert([{
                     org_id: user.org_id,
                     type: approvalData.type,
                     requestor_id: user.id,
-                    requestor_name: user.name,
+                    requestor_name: user.name || 'Unknown',
                     amount: approvalData.amount,
                     currency: approvalData.currency,
                     description: approvalData.description,
                     vendor_name: approvalData.vendor_name,
                     priority: approvalData.priority || 'medium',
                     due_date: approvalData.due_date,
-                    status: 'pending'
-                })
+                    status: 'pending',
+                    display_id: `PA-${Date.now()}`,
+                    risk_level: 'low',
+                    date_submitted: new Date().toISOString()
+                }])
                 .select()
                 .single();
 

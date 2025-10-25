@@ -1,20 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import type { Json } from '@/integrations/supabase/types';
 
 export interface ComplianceAuditLog {
     id: string;
     org_id: string;
     user_id: string;
     user_name: string;
-    document_id: string;
+    document_id: string | null;
     document_type: string;
-    action: 'create' | 'update' | 'delete' | 'approve' | 'reject' | 'view' | 'download' | 'export';
-    status: 'approved' | 'pending' | 'rejected' | 'completed' | 'failed';
-    description?: string;
-    ip_address?: string;
-    user_agent?: string;
-    metadata: Record<string, any>;
+    action: string;
+    status: string;
+    description?: string | null;
+    ip_address?: unknown;
+    user_agent?: string | null;
+    metadata: Json | null;
     created_at: string;
     updated_at: string;
 }
@@ -244,22 +245,31 @@ export const useGenerateComplianceReport = () => {
         }) => {
             if (!user?.org_id) throw new Error('No organization');
 
-            const { data, error } = await supabase
-                .from('compliance_reports')
+            // Temporarily disabled: compliance_reports table doesn't exist
+            // TODO: Create compliance_reports table or use alternative approach
+            throw new Error('Compliance report generation not yet implemented');
+            
+            /* const { data, error } = await supabase
+                .from('compliance_audit_logs')
                 .insert({
                     org_id: user.org_id,
-                    report_type: reportData.report_type,
-                    title: reportData.title,
-                    description: reportData.description,
-                    parameters: reportData.parameters || {},
+                    user_id: user.id,
+                    user_name: user.name || 'Unknown',
+                    document_type: 'compliance_report',
+                    action: 'create',
                     status: 'pending_review',
-                    generated_by: user.id
+                    description: `${reportData.title}: ${reportData.description || ''}`,
+                    metadata: {
+                        report_type: reportData.report_type,
+                        title: reportData.title,
+                        parameters: reportData.parameters || {}
+                    }
                 })
                 .select()
                 .single();
 
             if (error) throw error;
-            return data;
+            return data; */
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['compliance-reports'] });

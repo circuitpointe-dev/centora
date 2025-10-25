@@ -223,8 +223,11 @@ export const useVendorSpendData = () => {
                 .from('donor_vendor_spend')
                 .select(`
                     *,
-                    donor_projects!inner(project_name, grant_id),
-                    donor_grants!inner(grant_name)
+                    donor_projects!inner(
+                        project_name,
+                        grant_id,
+                        donor_grants(grant_name)
+                    )
                 `)
                 .eq('org_id', user.org_id)
                 .order('amount_spent', { ascending: false })
