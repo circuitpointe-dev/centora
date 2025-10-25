@@ -918,6 +918,53 @@ export type Database = {
           },
         ]
       }
+      donor_compliance_notes: {
+        Row: {
+          audit_status: string
+          compliance_date: string
+          created_at: string
+          document_id: string
+          grant_id: string
+          id: string
+          notes: string
+          org_id: string
+          responsible_officer: string
+          updated_at: string
+        }
+        Insert: {
+          audit_status?: string
+          compliance_date: string
+          created_at?: string
+          document_id: string
+          grant_id: string
+          id?: string
+          notes: string
+          org_id: string
+          responsible_officer: string
+          updated_at?: string
+        }
+        Update: {
+          audit_status?: string
+          compliance_date?: string
+          created_at?: string
+          document_id?: string
+          grant_id?: string
+          id?: string
+          notes?: string
+          org_id?: string
+          responsible_officer?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donor_compliance_notes_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "donor_grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       donor_contacts: {
         Row: {
           created_at: string
