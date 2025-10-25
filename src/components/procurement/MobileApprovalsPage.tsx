@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -180,205 +180,157 @@ const MobileApprovalsPage: React.FC = () => {
     }
 
     return (
-        <div className="space-y-8">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-4 gap-6 mb-8">
+        <div className="bg-[#f5f7fa] min-h-screen">
+            {/* Main Content - Only Mobile Approval List Section */}
+            <div className="p-8">
+                {/* Mobile Approval List - Pixel Perfect Match */}
                 <Card className="bg-white border-0 shadow-sm">
                     <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                <img src="/material-symbols-light-pending0.svg" alt="pending" className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Pending approval</p>
-                                <p className="text-2xl font-semibold text-gray-900">{stats?.pendingApprovals || 0}</p>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-lg font-semibold text-gray-900">Mobile approval list</h2>
+                            <div className="flex items-center gap-4">
+                                <div className="relative">
+                                    <Input
+                                        placeholder="Search..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-64 pr-10"
+                                    />
+                                    <img
+                                        src="/search0.svg"
+                                        alt="search"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
 
-                <Card className="bg-white border-0 shadow-sm">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <img src="/mdi-receipt-text-pending0.svg" alt="po pending" className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">POs pending</p>
-                                <p className="text-2xl font-semibold text-gray-900">{stats?.poPending || 0}</p>
-                            </div>
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-12">
+                                            <Checkbox
+                                                checked={selectedApprovals.length === approvals.length && approvals.length > 0}
+                                                onCheckedChange={handleSelectAll}
+                                            />
+                                        </TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>ID</TableHead>
+                                        <TableHead>Vendor</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {approvals.map((approval) => (
+                                        <TableRow key={approval.id}>
+                                            <TableCell>
+                                                <Checkbox
+                                                    checked={selectedApprovals.includes(approval.id)}
+                                                    onCheckedChange={(checked) =>
+                                                        handleSelectApproval(approval.id, checked as boolean)
+                                                    }
+                                                />
+                                            </TableCell>
+                                            <TableCell className="font-medium">{approval.type}</TableCell>
+                                            <TableCell>{approval.display_id}</TableCell>
+                                            <TableCell>{approval.vendor_name || '-'}</TableCell>
+                                            <TableCell>{formatCurrency(approval.amount, approval.currency)}</TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <Badge className={`${getStatusColor(approval.status)} border`}>
+                                                        {approval.status.charAt(0).toUpperCase() + approval.status.slice(1)}
+                                                    </Badge>
+                                                    {approval.priority === 'high' && (
+                                                        <Badge className={`${getPriorityColor(approval.priority)} border text-xs`}>
+                                                            High Priority
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    {approval.status === 'pending' && (
+                                                        <>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleApproveApproval(approval.id)}
+                                                                className="text-green-600 hover:text-green-700 hover:bg-green-50 p-2"
+                                                                disabled={approveApproval.isPending}
+                                                            >
+                                                                <img src="/lets-icons-check-fill0.svg" alt="approve" className="w-4 h-4" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleRejectApproval(approval.id)}
+                                                                className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2"
+                                                                disabled={rejectApproval.isPending}
+                                                            >
+                                                                <img src="/material-symbols-cancel0.svg" alt="reject" className="w-4 h-4" />
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                    {approval.status === 'approved' && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleDisputeApproval(approval.id)}
+                                                            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                                                        >
+                                                            Dispute
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleDeleteApproval(approval.id)}
+                                                        className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </div>
-                    </CardContent>
-                </Card>
 
-                <Card className="bg-white border-0 shadow-sm">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <img src="/material-symbols-pending-actions-sharp0.svg" alt="payment pending" className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Payment pending</p>
-                                <p className="text-2xl font-semibold text-gray-900">{stats?.paymentPending || 0}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-white border-0 shadow-sm">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                                <img src="/tabler-urgent0.svg" alt="urgent" className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Urgent approval</p>
-                                <p className="text-2xl font-semibold text-gray-900">{stats?.urgentApprovals || 0}</p>
+                        {/* Pagination - Pixel Perfect Match */}
+                        <div className="flex items-center justify-between mt-6">
+                            <p className="text-sm text-gray-600">
+                                Showing {((currentPage - 1) * 8) + 1} to {Math.min(currentPage * 8, totalApprovals)} of {totalApprovals} mobile approval lists
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="flex items-center gap-2"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                    Previous
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="flex items-center gap-2"
+                                >
+                                    Next
+                                    <ChevronRight className="w-4 h-4" />
+                                </Button>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Mobile Approval List */}
-            <Card className="bg-white border-0 shadow-sm">
-                <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-lg font-semibold text-gray-900">Mobile approval list</h2>
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <Input
-                                    placeholder="Search..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-64 pr-10"
-                                />
-                                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-12">
-                                        <Checkbox
-                                            checked={selectedApprovals.length === approvals.length && approvals.length > 0}
-                                            onCheckedChange={handleSelectAll}
-                                        />
-                                    </TableHead>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>ID</TableHead>
-                                    <TableHead>Vendor</TableHead>
-                                    <TableHead>Amount</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {approvals.map((approval) => (
-                                    <TableRow key={approval.id}>
-                                        <TableCell>
-                                            <Checkbox
-                                                checked={selectedApprovals.includes(approval.id)}
-                                                onCheckedChange={(checked) =>
-                                                    handleSelectApproval(approval.id, checked as boolean)
-                                                }
-                                            />
-                                        </TableCell>
-                                        <TableCell className="font-medium">{approval.type}</TableCell>
-                                        <TableCell>{approval.display_id}</TableCell>
-                                        <TableCell>{approval.vendor_name || '-'}</TableCell>
-                                        <TableCell>{formatCurrency(approval.amount, approval.currency)}</TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <Badge className={`${getStatusColor(approval.status)} border`}>
-                                                    {approval.status.charAt(0).toUpperCase() + approval.status.slice(1)}
-                                                </Badge>
-                                                {approval.priority === 'high' && (
-                                                    <Badge className={`${getPriorityColor(approval.priority)} border text-xs`}>
-                                                        High Priority
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                {approval.status === 'pending' && (
-                                                    <>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => handleApproveApproval(approval.id)}
-                                                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                                                        >
-                                                            <img src="/lets-icons-check-fill0.svg" alt="approve" className="w-4 h-4" />
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => handleRejectApproval(approval.id)}
-                                                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                        >
-                                                            <img src="/material-symbols-cancel0.svg" alt="reject" className="w-4 h-4" />
-                                                        </Button>
-                                                    </>
-                                                )}
-                                                {approval.status === 'approved' && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleDisputeApproval(approval.id)}
-                                                        className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-                                                    >
-                                                        Dispute
-                                                    </Button>
-                                                )}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleDeleteApproval(approval.id)}
-                                                    className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    {/* Pagination */}
-                    <div className="flex items-center justify-between mt-6">
-                        <p className="text-sm text-gray-600">
-                            Showing {((currentPage - 1) * 8) + 1} to {Math.min(currentPage * 8, totalApprovals)} of {totalApprovals} mobile approval lists
-                        </p>
-                        <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                disabled={currentPage === 1}
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                                Previous
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                disabled={currentPage === totalPages}
-                            >
-                                Next
-                                <ChevronRight className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 };

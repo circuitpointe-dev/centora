@@ -38,7 +38,7 @@ const ProcurementExecutionPage: React.FC = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTenders, setSelectedTenders] = useState<string[]>([]);
-    const [activeTab, setActiveTab] = useState('purchase-orders');
+    const [activeTab, setActiveTab] = useState('mobile-approvals');
     const [isLoading, setIsLoading] = useState(false);
     const [grnSearchTerm, setGrnSearchTerm] = useState('');
     const [selectedGRNs, setSelectedGRNs] = useState<string[]>([]);
@@ -217,104 +217,106 @@ const ProcurementExecutionPage: React.FC = () => {
                     ))}
                 </div>
 
-                {/* KPI Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    {activeTab === 'goods-received' ? (
-                        <>
-                            <Card className="bg-white border-0 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-yellow-600">{grnStats?.pendingGRNs || 0}</span>
+                {/* KPI Cards - Hide for mobile approvals */}
+                {activeTab !== 'mobile-approvals' && (
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        {activeTab === 'goods-received' ? (
+                            <>
+                                <Card className="bg-white border-0 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                                                <span className="text-3xl font-bold text-yellow-600">{grnStats?.pendingGRNs || 0}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">Pending GRNs</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Pending GRNs</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
 
-                            <Card className="bg-white border-0 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-blue-600">{grnStats?.partialDeliveries || 0}</span>
+                                <Card className="bg-white border-0 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                                <span className="text-3xl font-bold text-blue-600">{grnStats?.partialDeliveries || 0}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">Partial deliveries</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Partial deliveries</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
 
-                            <Card className="bg-white border-0 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-green-600">{grnStats?.completedDeliveries || 0}</span>
+                                <Card className="bg-white border-0 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                                <span className="text-3xl font-bold text-green-600">{grnStats?.completedDeliveries || 0}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">Completed deliveries</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Completed deliveries</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
 
-                            <Card className="bg-white border-0 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-red-600">{grnStats?.overdueDeliveries || 0}</span>
+                                <Card className="bg-white border-0 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-3">
+                                                <span className="text-3xl font-bold text-red-600">{grnStats?.overdueDeliveries || 0}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">Overdue deliveries</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Overdue deliveries</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </>
-                    ) : (
-                        <>
-                            <Card className="bg-white border-0 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-purple-600">{poStats?.activePOs || 0}</span>
+                                    </CardContent>
+                                </Card>
+                            </>
+                        ) : (
+                            <>
+                                <Card className="bg-white border-0 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                                                <span className="text-3xl font-bold text-purple-600">{poStats?.activePOs || 0}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">Active POs</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Active POs</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
 
-                            <Card className="bg-white border-0 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-yellow-600">{poStats?.draftPOs || 0}</span>
+                                <Card className="bg-white border-0 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
+                                                <span className="text-3xl font-bold text-yellow-600">{poStats?.draftPOs || 0}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">Draft POs</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Draft POs</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
 
-                            <Card className="bg-white border-0 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-green-600">{poStats?.sentPOs || 0}</span>
+                                <Card className="bg-white border-0 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                                <span className="text-3xl font-bold text-green-600">{poStats?.sentPOs || 0}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">Sent POs</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Sent POs</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
 
-                            <Card className="bg-white border-0 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                                            <span className="text-3xl font-bold text-blue-600">
-                                                ${poStats?.totalValue ? (poStats.totalValue / 1000000).toFixed(1) + 'M' : '0M'}
-                                            </span>
+                                <Card className="bg-white border-0 shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col items-center text-center">
+                                            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                                                <span className="text-3xl font-bold text-blue-600">
+                                                    ${poStats?.totalValue ? (poStats.totalValue / 1000000).toFixed(1) + 'M' : '0M'}
+                                                </span>
+                                            </div>
+                                            <div className="text-sm text-gray-600">Total value of POs</div>
                                         </div>
-                                        <div className="text-sm text-gray-600">Total value of POs</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </>
-                    )}
-                </div>
+                                    </CardContent>
+                                </Card>
+                            </>
+                        )}
+                    </div>
+                )}
 
                 {/* Purchase Orders Section */}
                 {activeTab === 'purchase-orders' && (

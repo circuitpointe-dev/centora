@@ -10,14 +10,18 @@ export interface MobileApproval {
     vendor_name?: string;
     amount: number;
     currency: string;
-    status: 'pending' | 'approved' | 'rejected';
-    priority: 'low' | 'medium' | 'high';
+    status: 'pending' | 'approved' | 'rejected' | 'disputed';
+    priority: 'low' | 'medium' | 'high' | 'urgent';
     description?: string;
     requestor_name: string;
     date_submitted: string;
     due_date?: string;
     created_at: string;
     updated_at: string;
+    approved_by?: string;
+    approved_at?: string;
+    rejection_reason?: string;
+    dispute_reason?: string;
 }
 
 export interface MobileApprovalStats {
@@ -93,7 +97,7 @@ export const useMobileApprovals = (page = 1, limit = 10, search = '', filters?: 
 
             let query = supabase
                 .from('procurement_approvals')
-                .select('*')
+                .select('*', { count: 'exact' })
                 .eq('org_id', user.org_id)
                 .order('created_at', { ascending: false });
 
@@ -125,8 +129,8 @@ export const useMobileApprovals = (page = 1, limit = 10, search = '', filters?: 
             // Apply date range filter
             if (filters?.dateRange) {
                 query = query
-                    .gte('submitted_at', filters.dateRange.start)
-                    .lte('submitted_at', filters.dateRange.end);
+                    .gte('date_submitted', filters.dateRange.start)
+                    .lte('date_submitted', filters.dateRange.end);
             }
 
             // Apply pagination
@@ -152,7 +156,11 @@ export const useMobileApprovals = (page = 1, limit = 10, search = '', filters?: 
                 date_submitted: approval.date_submitted,
                 due_date: approval.due_date,
                 created_at: approval.created_at,
-                updated_at: approval.updated_at
+                updated_at: approval.updated_at,
+                approved_by: approval.approved_by,
+                approved_at: approval.approved_at,
+                rejection_reason: approval.rejection_reason,
+                dispute_reason: approval.dispute_reason
             }));
 
             return {
@@ -170,6 +178,7 @@ export const useMobileApprovals = (page = 1, limit = 10, search = '', filters?: 
 // Hook to approve mobile approval
 export const useApproveMobileApproval = () => {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
 
     return useMutation({
         mutationFn: async (id: string) => {
@@ -177,6 +186,8 @@ export const useApproveMobileApproval = () => {
                 .from('procurement_approvals')
                 .update({
                     status: 'approved',
+                    approved_by: user?.id,
+                    approved_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
@@ -196,6 +207,7 @@ export const useApproveMobileApproval = () => {
 // Hook to reject mobile approval
 export const useRejectMobileApproval = () => {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
 
     return useMutation({
         mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
@@ -204,6 +216,8 @@ export const useRejectMobileApproval = () => {
                 .update({
                     status: 'rejected',
                     rejection_reason: reason,
+                    approved_by: user?.id,
+                    approved_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
@@ -223,14 +237,17 @@ export const useRejectMobileApproval = () => {
 // Hook to dispute mobile approval
 export const useDisputeMobileApproval = () => {
     const queryClient = useQueryClient();
+    const { user } = useAuth();
 
     return useMutation({
         mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
             const { data, error } = await supabase
                 .from('procurement_approvals')
                 .update({
-                    status: 'rejected',
-                    rejection_reason: reason,
+                    status: 'disputed',
+                    dispute_reason: reason,
+                    approved_by: user?.id,
+                    approved_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
@@ -260,6 +277,51 @@ export const useDeleteMobileApproval = () => {
 
             if (error) throw error;
             return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['mobile-approvals'] });
+            queryClient.invalidateQueries({ queryKey: ['mobile-approval-stats'] });
+        }
+    });
+};
+
+// Hook to create a new mobile approval
+export const useCreateMobileApproval = () => {
+    const queryClient = useQueryClient();
+    const { user } = useAuth();
+
+    return useMutation({
+        mutationFn: async (approvalData: {
+            type: 'requisition' | 'purchase_order' | 'payment';
+            amount: number;
+            currency: string;
+            description: string;
+            vendor_name?: string;
+            priority?: 'low' | 'medium' | 'high' | 'urgent';
+            due_date?: string;
+        }) => {
+            if (!user?.org_id) throw new Error('No organization');
+
+            const { data, error } = await supabase
+                .from('procurement_approvals')
+                .insert({
+                    org_id: user.org_id,
+                    type: approvalData.type,
+                    requestor_id: user.id,
+                    requestor_name: user.name,
+                    amount: approvalData.amount,
+                    currency: approvalData.currency,
+                    description: approvalData.description,
+                    vendor_name: approvalData.vendor_name,
+                    priority: approvalData.priority || 'medium',
+                    due_date: approvalData.due_date,
+                    status: 'pending'
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['mobile-approvals'] });

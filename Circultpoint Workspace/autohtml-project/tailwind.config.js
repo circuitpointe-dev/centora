@@ -25,8 +25,11 @@ tailwind.config =
               
           },
           colors: {
-            
-            
+            'colors-blue': '#007aff',
+            'grey-color': 'rgba(56, 56, 56, 0.60)',
+'primary-color': 'transparent',
+'white-color': '#ffffff',
+'colors-blue': '#007aff',
           },
           spacing: {
               
