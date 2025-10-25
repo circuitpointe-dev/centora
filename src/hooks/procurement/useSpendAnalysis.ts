@@ -104,7 +104,7 @@ export const useSpendAnalysisStats = () => {
                 .eq('org_id', user.org_id)
                 .order('period_end', { ascending: false })
                 .limit(1)
-                .single();
+                .maybeSingle();
 
             if (topSpendError) throw topSpendError;
 
@@ -115,7 +115,7 @@ export const useSpendAnalysisStats = () => {
                 .eq('org_id', user.org_id)
                 .order('total_spend', { ascending: false })
                 .limit(1)
-                .single();
+                .maybeSingle();
 
             if (topVendorError) throw topVendorError;
 
@@ -126,7 +126,7 @@ export const useSpendAnalysisStats = () => {
                 .eq('org_id', user.org_id)
                 .order('spent_amount', { ascending: false })
                 .limit(1)
-                .single();
+                .maybeSingle();
 
             if (topCategoryError) throw topCategoryError;
 
@@ -137,7 +137,7 @@ export const useSpendAnalysisStats = () => {
                 .eq('org_id', user.org_id)
                 .order('period_end', { ascending: false })
                 .limit(1)
-                .single();
+                .maybeSingle();
 
             if (periodError) throw periodError;
 
