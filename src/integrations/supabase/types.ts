@@ -66,7 +66,7 @@ export type Database = {
           actor_name: string | null
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           metadata: Json | null
           target_user_email: string | null
           target_user_id: string | null
@@ -79,7 +79,7 @@ export type Database = {
           actor_name?: string | null
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           target_user_email?: string | null
           target_user_id?: string | null
@@ -92,7 +92,7 @@ export type Database = {
           actor_name?: string | null
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           target_user_email?: string | null
           target_user_id?: string | null
@@ -278,6 +278,72 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          description: string | null
+          document_id: string | null
+          document_type: string
+          id: string
+          ip_address: unknown
+          metadata: Json | null
+          org_id: string
+          status: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          description?: string | null
+          document_id?: string | null
+          document_type: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          org_id: string
+          status: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          description?: string | null
+          document_id?: string | null
+          document_type?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          org_id?: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_audit_logs_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -782,6 +848,76 @@ export type Database = {
           },
         ]
       }
+      donor_compliance_issues: {
+        Row: {
+          created_at: string
+          description: string
+          due_date: string | null
+          grant_id: string
+          id: string
+          issue_type: string
+          org_id: string
+          project_id: string | null
+          resolution_notes: string | null
+          responsible_officer: string | null
+          severity: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          due_date?: string | null
+          grant_id: string
+          id?: string
+          issue_type: string
+          org_id: string
+          project_id?: string | null
+          resolution_notes?: string | null
+          responsible_officer?: string | null
+          severity: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          grant_id?: string
+          id?: string
+          issue_type?: string
+          org_id?: string
+          project_id?: string | null
+          resolution_notes?: string | null
+          responsible_officer?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donor_compliance_issues_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "donor_grants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donor_compliance_issues_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donor_compliance_issues_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "donor_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       donor_contacts: {
         Row: {
           created_at: string
@@ -1055,6 +1191,75 @@ export type Database = {
         }
         Relationships: []
       }
+      donor_grants: {
+        Row: {
+          compliance_requirements: Json | null
+          created_at: string
+          currency: string
+          description: string | null
+          donor_id: string | null
+          donor_name: string
+          end_date: string
+          grant_amount: number
+          grant_name: string
+          grant_number: string
+          id: string
+          org_id: string
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          compliance_requirements?: Json | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          donor_id?: string | null
+          donor_name: string
+          end_date: string
+          grant_amount?: number
+          grant_name: string
+          grant_number: string
+          id?: string
+          org_id: string
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          compliance_requirements?: Json | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          donor_id?: string | null
+          donor_name?: string
+          end_date?: string
+          grant_amount?: number
+          grant_name?: string
+          grant_number?: string
+          id?: string
+          org_id?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donor_grants_donor_id_fkey"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "donors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donor_grants_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       donor_notes: {
         Row: {
           content: string
@@ -1081,6 +1286,139 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      donor_projects: {
+        Row: {
+          budget_amount: number
+          created_at: string
+          description: string | null
+          end_date: string
+          grant_id: string
+          id: string
+          org_id: string
+          project_code: string
+          project_manager: string | null
+          project_name: string
+          spent_amount: number
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget_amount?: number
+          created_at?: string
+          description?: string | null
+          end_date: string
+          grant_id: string
+          id?: string
+          org_id: string
+          project_code: string
+          project_manager?: string | null
+          project_name: string
+          spent_amount?: number
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget_amount?: number
+          created_at?: string
+          description?: string | null
+          end_date?: string
+          grant_id?: string
+          id?: string
+          org_id?: string
+          project_code?: string
+          project_manager?: string | null
+          project_name?: string
+          spent_amount?: number
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donor_projects_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "donor_grants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donor_projects_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      donor_vendor_spend: {
+        Row: {
+          amount_spent: number
+          compliance_status: string
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          org_id: string
+          project_id: string
+          spend_date: string
+          updated_at: string
+          vendor_id: string | null
+          vendor_name: string
+        }
+        Insert: {
+          amount_spent?: number
+          compliance_status?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          org_id: string
+          project_id: string
+          spend_date: string
+          updated_at?: string
+          vendor_id?: string | null
+          vendor_name: string
+        }
+        Update: {
+          amount_spent?: number
+          compliance_status?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          org_id?: string
+          project_id?: string
+          spend_date?: string
+          updated_at?: string
+          vendor_id?: string | null
+          vendor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donor_vendor_spend_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donor_vendor_spend_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "donor_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donor_vendor_spend_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       donors: {
         Row: {
@@ -2608,6 +2946,96 @@ export type Database = {
           },
         ]
       }
+      procurement_documents: {
+        Row: {
+          amount: number | null
+          currency: string | null
+          description: string | null
+          document_date: string
+          document_number: string
+          document_type: Database["public"]["Enums"]["procurement_document_type"]
+          expiry_date: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          mime_type: string
+          org_id: string
+          project_name: string | null
+          status: Database["public"]["Enums"]["procurement_document_status"]
+          title: string
+          updated_at: string
+          uploaded_at: string
+          uploaded_by: string
+          uploaded_by_name: string | null
+          vendor_id: string | null
+          vendor_name: string | null
+        }
+        Insert: {
+          amount?: number | null
+          currency?: string | null
+          description?: string | null
+          document_date: string
+          document_number: string
+          document_type?: Database["public"]["Enums"]["procurement_document_type"]
+          expiry_date?: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id?: string
+          mime_type: string
+          org_id: string
+          project_name?: string | null
+          status?: Database["public"]["Enums"]["procurement_document_status"]
+          title: string
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by: string
+          uploaded_by_name?: string | null
+          vendor_id?: string | null
+          vendor_name?: string | null
+        }
+        Update: {
+          amount?: number | null
+          currency?: string | null
+          description?: string | null
+          document_date?: string
+          document_number?: string
+          document_type?: Database["public"]["Enums"]["procurement_document_type"]
+          expiry_date?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          mime_type?: string
+          org_id?: string
+          project_name?: string | null
+          status?: Database["public"]["Enums"]["procurement_document_status"]
+          title?: string
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string
+          uploaded_by_name?: string | null
+          vendor_id?: string | null
+          vendor_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procurement_documents_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procurement_documents_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       procurement_plan_items: {
         Row: {
           budget_source: string | null
@@ -3626,6 +4054,216 @@ export type Database = {
           },
         ]
       }
+      spend_analysis_categories: {
+        Row: {
+          budget_amount: number
+          category_name: string
+          created_at: string
+          id: string
+          org_id: string
+          period_end: string
+          period_start: string
+          spent_amount: number
+          updated_at: string
+        }
+        Insert: {
+          budget_amount?: number
+          category_name: string
+          created_at?: string
+          id?: string
+          org_id: string
+          period_end: string
+          period_start: string
+          spent_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          budget_amount?: number
+          category_name?: string
+          created_at?: string
+          id?: string
+          org_id?: string
+          period_end?: string
+          period_start?: string
+          spent_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spend_analysis_categories_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spend_analysis_periods: {
+        Row: {
+          created_at: string
+          growth_percentage: number
+          id: string
+          org_id: string
+          period_end: string
+          period_name: string
+          period_start: string
+          previous_period_spend: number
+          total_spend: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          growth_percentage?: number
+          id?: string
+          org_id: string
+          period_end: string
+          period_name: string
+          period_start: string
+          previous_period_spend?: number
+          total_spend?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          growth_percentage?: number
+          id?: string
+          org_id?: string
+          period_end?: string
+          period_name?: string
+          period_start?: string
+          previous_period_spend?: number
+          total_spend?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spend_analysis_periods_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spend_analysis_transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          currency: string
+          department: string | null
+          description: string | null
+          id: string
+          org_id: string
+          project_id: string | null
+          status: string
+          transaction_date: string
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          amount?: number
+          category: string
+          created_at?: string
+          currency?: string
+          department?: string | null
+          description?: string | null
+          id?: string
+          org_id: string
+          project_id?: string | null
+          status?: string
+          transaction_date: string
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          currency?: string
+          department?: string | null
+          description?: string | null
+          id?: string
+          org_id?: string
+          project_id?: string | null
+          status?: string
+          transaction_date?: string
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spend_analysis_transactions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spend_analysis_transactions_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "spend_analysis_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spend_analysis_vendors: {
+        Row: {
+          address: string | null
+          contact_person: string | null
+          created_at: string
+          email: string | null
+          id: string
+          last_transaction_date: string | null
+          org_id: string
+          phone: string | null
+          status: string
+          total_spend: number
+          updated_at: string
+          vendor_code: string
+          vendor_name: string
+        }
+        Insert: {
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_transaction_date?: string | null
+          org_id: string
+          phone?: string | null
+          status?: string
+          total_spend?: number
+          updated_at?: string
+          vendor_code: string
+          vendor_name: string
+        }
+        Update: {
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_transaction_date?: string | null
+          org_id?: string
+          phone?: string | null
+          status?: string
+          total_spend?: number
+          updated_at?: string
+          vendor_code?: string
+          vendor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spend_analysis_vendors_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submission_tracker: {
         Row: {
           completed_date: string | null
@@ -4145,23 +4783,35 @@ export type Database = {
         Args: { file_path: string }
         Returns: boolean
       }
-      cleanup_expired_verifications: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      count_org_users: {
-        Args:
-          | { _department?: string; _search?: string; _status?: string }
-          | { _search?: string }
-        Returns: number
-      }
+      cleanup_expired_verifications: { Args: never; Returns: undefined }
+      count_org_users:
+        | { Args: { _search?: string }; Returns: number }
+        | {
+            Args: { _department?: string; _search?: string; _status?: string }
+            Returns: number
+          }
       create_department: {
         Args: { _description?: string; _name: string }
         Returns: string
       }
-      create_donor_with_details: {
-        Args:
-          | {
+      create_donor_with_details:
+        | {
+            Args: {
+              _affiliation?: string
+              _contacts?: string
+              _created_by: string
+              _focus_area_ids?: string[]
+              _funding_end_date?: string
+              _funding_start_date?: string
+              _name: string
+              _notes?: string
+              _org_id: string
+              _organization_url?: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
               _affiliation?: string
               _contacts?: string
               _created_by: string
@@ -4174,19 +4824,10 @@ export type Database = {
               _organization_url?: string
               _status?: Database["public"]["Enums"]["donor_status"]
             }
-          | {
-              _affiliation?: string
-              _contacts?: string
-              _created_by: string
-              _focus_area_ids?: string[]
-              _funding_end_date?: string
-              _funding_start_date?: string
-              _name: string
-              _notes?: string
-              _org_id: string
-              _organization_url?: string
-            }
-          | {
+            Returns: string
+          }
+        | {
+            Args: {
               _affiliation?: string
               _contacts?: string
               _created_by: string
@@ -4198,8 +4839,8 @@ export type Database = {
               _organization_url?: string
               _status?: Database["public"]["Enums"]["donor_status"]
             }
-        Returns: string
-      }
+            Returns: string
+          }
       create_role: {
         Args: { _description?: string; _name: string }
         Returns: string
@@ -4217,16 +4858,10 @@ export type Database = {
           token: string
         }[]
       }
-      current_org_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_procurement_display_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      current_org_id: { Args: never; Returns: string }
+      generate_procurement_display_id: { Args: never; Returns: string }
       get_departments: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           created_at: string
           description: string
@@ -4246,10 +4881,7 @@ export type Database = {
           donation_date: string
         }[]
       }
-      get_org_member_count: {
-        Args: { _org_id: string }
-        Returns: number
-      }
+      get_org_member_count: { Args: { _org_id: string }; Returns: number }
       get_org_member_list: {
         Args: { _org_id: string }
         Returns: {
@@ -4260,7 +4892,7 @@ export type Database = {
         }[]
       }
       get_org_modules_with_features: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           features: Json
           module: string
@@ -4268,7 +4900,7 @@ export type Database = {
         }[]
       }
       get_roles: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           created_at: string
           description: string
@@ -4276,12 +4908,9 @@ export type Database = {
           name: string
         }[]
       }
-      get_user_org_id: {
-        Args: { _user_id: string }
-        Returns: string
-      }
+      get_user_org_id: { Args: { _user_id: string }; Returns: string }
       get_user_stats: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           active_users: number
           deactivated_users: number
@@ -4289,50 +4918,46 @@ export type Database = {
           pending_invitations: number
         }[]
       }
-      is_org_admin: {
-        Args: { _org_id: string }
-        Returns: boolean
-      }
-      is_org_member: {
-        Args: { _org_id: string }
-        Returns: boolean
-      }
-      is_super_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_org_admin: { Args: { _org_id: string }; Returns: boolean }
+      is_org_member: { Args: { _org_id: string }; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
       is_user_org_admin: {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
-      is_user_super_admin: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
-      list_org_users: {
-        Args:
-          | {
+      is_user_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      list_org_users:
+        | {
+            Args: { _page?: number; _page_size?: number; _search?: string }
+            Returns: {
+              department: string
+              email: string
+              full_name: string
+              id: string
+              modules: string[]
+              roles: string[]
+              status: string
+            }[]
+          }
+        | {
+            Args: {
               _department?: string
               _page?: number
               _page_size?: number
               _search?: string
               _status?: string
             }
-          | { _page?: number; _page_size?: number; _search?: string }
-        Returns: {
-          department: string
-          email: string
-          full_name: string
-          id: string
-          modules: string[]
-          roles: string[]
-          status: string
-        }[]
-      }
-      org_match: {
-        Args: { check_org_id: string }
-        Returns: boolean
-      }
+            Returns: {
+              department: string
+              email: string
+              full_name: string
+              id: string
+              modules: string[]
+              roles: string[]
+              status: string
+            }[]
+          }
+      org_match: { Args: { check_org_id: string }; Returns: boolean }
       set_user_access_map: {
         Args: { _access_map: Json; _profile_id: string }
         Returns: boolean
@@ -4410,6 +5035,15 @@ export type Database = {
         | "received"
         | "cancelled"
       priority_level: "low" | "medium" | "high" | "urgent"
+      procurement_document_status: "active" | "archived" | "expired" | "draft"
+      procurement_document_type:
+        | "contract"
+        | "invoice"
+        | "grn"
+        | "po"
+        | "policy"
+        | "report"
+        | "other"
       procurement_status:
         | "draft"
         | "pending_approval"
@@ -4627,6 +5261,16 @@ export const Constants = {
         "cancelled",
       ],
       priority_level: ["low", "medium", "high", "urgent"],
+      procurement_document_status: ["active", "archived", "expired", "draft"],
+      procurement_document_type: [
+        "contract",
+        "invoice",
+        "grn",
+        "po",
+        "policy",
+        "report",
+        "other",
+      ],
       procurement_status: [
         "draft",
         "pending_approval",
