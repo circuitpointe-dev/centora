@@ -225,8 +225,7 @@ export const useVendorSpendData = () => {
                     *,
                     donor_projects!inner(
                         project_name,
-                        grant_id,
-                        donor_grants(grant_name)
+                        grant_id
                     )
                 `)
                 .eq('org_id', user.org_id)
