@@ -208,7 +208,7 @@ const ProcurementApprovalsPage = () => {
 
     return (
         <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-            {/* Header */}
+            {/* Header - Fully Responsive */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
                     <Button
@@ -229,8 +229,8 @@ const ProcurementApprovalsPage = () => {
                 </div>
             </div>
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Summary Cards - Fully Responsive */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                 <Card className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
                         <div className="flex items-center gap-4">
@@ -277,19 +277,22 @@ const ProcurementApprovalsPage = () => {
             {/* My approval lists */}
             <Card>
                 <CardHeader>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4">
                         <CardTitle className="text-lg font-semibold">My approval lists</CardTitle>
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                            {/* Search - Full width on mobile */}
+                            <div className="relative flex-1 sm:flex-initial sm:w-64">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                                 <Input
                                     placeholder="Search..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 w-64"
+                                    className="pl-10 w-full"
                                 />
                             </div>
-                            <div className="flex items-center gap-2">
+                            
+                            {/* View Toggle - Hidden on small mobile */}
+                            <div className="hidden sm:flex items-center gap-2">
                                 <Button
                                     variant={viewMode === 'grid' ? 'default' : 'outline'}
                                     size="sm"
@@ -314,14 +317,17 @@ const ProcurementApprovalsPage = () => {
                                     </div>
                                 </Button>
                             </div>
+                            
+                            {/* Filter Button - Responsive */}
                             <ApprovalFilters
                                 filters={filters}
                                 onFiltersChange={handleFiltersChange}
                                 onClearFilters={handleClearFilters}
                             />
 
+                            {/* Bulk Approve - Responsive */}
                             <Button
-                                className="gap-2 bg-green-600 hover:bg-green-700 flex-1 sm:flex-none"
+                                className="gap-2 bg-green-600 hover:bg-green-700 w-full sm:w-auto"
                                 onClick={handleBulkApprove}
                                 disabled={selectedItems.length === 0 || bulkApprove.isPending}
                                 size={isMobile ? "default" : "sm"}
@@ -350,24 +356,25 @@ const ProcurementApprovalsPage = () => {
                         </div>
                     ) : (
                         <>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-12">
-                                            <Checkbox
-                                                checked={selectedItems.length === filteredApprovals.length && filteredApprovals.length > 0}
-                                                onCheckedChange={handleSelectAll}
-                                            />
-                                        </TableHead>
-                                        <TableHead>ID</TableHead>
-                                        <TableHead>Type</TableHead>
-                                        <TableHead>Requestor</TableHead>
-                                        <TableHead>Date submitted</TableHead>
-                                        <TableHead>Amount</TableHead>
-                                        <TableHead>Risk</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
+                            <div className="overflow-x-auto -mx-4 sm:mx-0">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-12">
+                                                <Checkbox
+                                                    checked={selectedItems.length === filteredApprovals.length && filteredApprovals.length > 0}
+                                                    onCheckedChange={handleSelectAll}
+                                                />
+                                            </TableHead>
+                                            <TableHead className="min-w-[100px]">ID</TableHead>
+                                            <TableHead className="min-w-[120px]">Type</TableHead>
+                                            <TableHead className="min-w-[150px] hidden md:table-cell">Requestor</TableHead>
+                                            <TableHead className="min-w-[120px] hidden lg:table-cell">Date submitted</TableHead>
+                                            <TableHead className="min-w-[100px]">Amount</TableHead>
+                                            <TableHead className="min-w-[80px] hidden sm:table-cell">Risk</TableHead>
+                                            <TableHead className="min-w-[150px]">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
                                 <TableBody>
                                     {filteredApprovals.map((approval) => (
                                         <TableRow key={approval.id} className="hover:bg-gray-50">
@@ -394,32 +401,32 @@ const ProcurementApprovalsPage = () => {
                                                     </Badge>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-medium">{approval.requestor_name}</TableCell>
-                                            <TableCell>{format(new Date(approval.date_submitted), 'MMM dd, yyyy')}</TableCell>
+                                            <TableCell className="font-medium hidden md:table-cell">{approval.requestor_name}</TableCell>
+                                            <TableCell className="hidden lg:table-cell">{format(new Date(approval.date_submitted), 'MMM dd, yyyy')}</TableCell>
                                             <TableCell className="font-medium">
                                                 {approval.currency} {approval.amount.toLocaleString()}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="hidden sm:table-cell">
                                                 <Badge className={getRiskColor(approval.risk_level)}>
                                                     {approval.risk_level.toUpperCase()}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() => handleView(approval.id)}
-                                                        className="gap-1 hover:bg-blue-50"
+                                                        className="gap-1 hover:bg-blue-50 text-xs sm:text-sm"
                                                     >
                                                         <Eye className="h-3 w-3" />
-                                                        View
+                                                        <span className="hidden sm:inline">View</span>
                                                     </Button>
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() => handleApprove(approval)}
-                                                        className="gap-1 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                        className="gap-1 text-green-600 hover:text-green-700 hover:bg-green-50 text-xs sm:text-sm"
                                                         disabled={approveItem.isPending}
                                                     >
                                                         {approveItem.isPending ? (
@@ -427,13 +434,13 @@ const ProcurementApprovalsPage = () => {
                                                         ) : (
                                                             <Check className="h-3 w-3" />
                                                         )}
-                                                        Approve
+                                                        <span className="hidden sm:inline">Approve</span>
                                                     </Button>
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() => handleReject(approval)}
-                                                        className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 text-xs sm:text-sm"
                                                         disabled={rejectItem.isPending}
                                                     >
                                                         {rejectItem.isPending ? (
@@ -441,7 +448,7 @@ const ProcurementApprovalsPage = () => {
                                                         ) : (
                                                             <X className="h-3 w-3" />
                                                         )}
-                                                        Reject
+                                                        <span className="hidden sm:inline">Reject</span>
                                                     </Button>
                                                 </div>
                                             </TableCell>
@@ -449,6 +456,7 @@ const ProcurementApprovalsPage = () => {
                                     ))}
                                 </TableBody>
                             </Table>
+                        </div>
 
                             {/* Pagination */}
                             <div className="flex items-center justify-between mt-6">
