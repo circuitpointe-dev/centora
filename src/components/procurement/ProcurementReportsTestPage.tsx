@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 const ProcurementReportsTestPage: React.FC = () => {
     const [formData, setFormData] = useState({
-        document_type: 'Contract' as 'Contract' | 'Invoice' | 'GRN' | 'PO' | 'Tender' | 'Quote' | 'Compliance',
+        document_type: 'Contract' as 'Contract' | 'Invoice' | 'GRN' | 'PO' | 'Tender' | 'Quote' | 'Compliance' | 'Receipt' | 'Other',
         title: '',
         file_name: '',
         vendor_name: '',
@@ -92,6 +92,8 @@ const ProcurementReportsTestPage: React.FC = () => {
                                         <SelectItem value="Tender">Tender</SelectItem>
                                         <SelectItem value="Quote">Quote</SelectItem>
                                         <SelectItem value="Compliance">Compliance</SelectItem>
+                                        <SelectItem value="Receipt">Receipt</SelectItem>
+                                        <SelectItem value="Other">Other</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

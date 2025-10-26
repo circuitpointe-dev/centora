@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface ProcurementDocument {
     id: string;
     org_id: string;
-    document_type: 'Contract' | 'Invoice' | 'GRN' | 'PO' | 'Tender' | 'Quote' | 'Compliance';
+    document_type: 'Contract' | 'Invoice' | 'GRN' | 'PO' | 'Tender' | 'Quote' | 'Compliance' | 'Receipt' | 'Other';
     title: string;
     file_name: string;
     file_path: string;
@@ -294,7 +294,7 @@ export const useUploadDocument = () => {
 
     return useMutation({
         mutationFn: async (documentData: {
-            document_type: 'Contract' | 'Invoice' | 'GRN' | 'PO' | 'Tender' | 'Quote' | 'Compliance';
+            document_type: 'Contract' | 'Invoice' | 'GRN' | 'PO' | 'Tender' | 'Quote' | 'Compliance' | 'Receipt' | 'Other';
             title: string;
             file_name: string;
             file_path: string;

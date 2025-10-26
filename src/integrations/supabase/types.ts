@@ -2996,77 +2996,87 @@ export type Database = {
       procurement_documents: {
         Row: {
           amount: number | null
+          archived_at: string | null
+          archived_by: string | null
+          created_at: string
           currency: string | null
           description: string | null
-          document_date: string
-          document_number: string
-          document_type: Database["public"]["Enums"]["procurement_document_type"]
-          expiry_date: string | null
+          document_date: string | null
+          document_number: string | null
+          document_type: Database["public"]["Enums"]["document_type"]
           file_name: string
           file_path: string
           file_size: number
+          fiscal_year: string | null
           id: string
           mime_type: string
           org_id: string
           project_name: string | null
-          status: Database["public"]["Enums"]["procurement_document_status"]
+          status: Database["public"]["Enums"]["document_status"]
           title: string
           updated_at: string
           uploaded_at: string
           uploaded_by: string
-          uploaded_by_name: string | null
-          vendor_id: string | null
           vendor_name: string | null
         }
         Insert: {
           amount?: number | null
+          archived_at?: string | null
+          archived_by?: string | null
+          created_at?: string
           currency?: string | null
           description?: string | null
-          document_date: string
-          document_number: string
-          document_type?: Database["public"]["Enums"]["procurement_document_type"]
-          expiry_date?: string | null
+          document_date?: string | null
+          document_number?: string | null
+          document_type: Database["public"]["Enums"]["document_type"]
           file_name: string
           file_path: string
           file_size: number
+          fiscal_year?: string | null
           id?: string
           mime_type: string
           org_id: string
           project_name?: string | null
-          status?: Database["public"]["Enums"]["procurement_document_status"]
+          status?: Database["public"]["Enums"]["document_status"]
           title: string
           updated_at?: string
           uploaded_at?: string
           uploaded_by: string
-          uploaded_by_name?: string | null
-          vendor_id?: string | null
           vendor_name?: string | null
         }
         Update: {
           amount?: number | null
+          archived_at?: string | null
+          archived_by?: string | null
+          created_at?: string
           currency?: string | null
           description?: string | null
-          document_date?: string
-          document_number?: string
-          document_type?: Database["public"]["Enums"]["procurement_document_type"]
-          expiry_date?: string | null
+          document_date?: string | null
+          document_number?: string | null
+          document_type?: Database["public"]["Enums"]["document_type"]
           file_name?: string
           file_path?: string
           file_size?: number
+          fiscal_year?: string | null
           id?: string
           mime_type?: string
           org_id?: string
           project_name?: string | null
-          status?: Database["public"]["Enums"]["procurement_document_status"]
+          status?: Database["public"]["Enums"]["document_status"]
           title?: string
           updated_at?: string
           uploaded_at?: string
           uploaded_by?: string
-          uploaded_by_name?: string | null
-          vendor_id?: string | null
           vendor_name?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "procurement_documents_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "procurement_documents_org_id_fkey"
             columns: ["org_id"]
@@ -3075,10 +3085,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "procurement_documents_vendor_id_fkey"
-            columns: ["vendor_id"]
+            foreignKeyName: "procurement_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
             isOneToOne: false
-            referencedRelation: "vendors"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -5043,6 +5053,16 @@ export type Database = {
         | "archived"
         | "expired"
         | "pending_approval"
+      document_type:
+        | "Contract"
+        | "Invoice"
+        | "GRN"
+        | "PO"
+        | "Tender"
+        | "Quote"
+        | "Compliance"
+        | "Receipt"
+        | "Other"
       donor_status: "active" | "inactive" | "potential"
       feature_permission: "read" | "write" | "admin"
       funding_cycle_status: "ongoing" | "upcoming" | "closed"
@@ -5083,14 +5103,6 @@ export type Database = {
         | "cancelled"
       priority_level: "low" | "medium" | "high" | "urgent"
       procurement_document_status: "active" | "archived" | "expired" | "draft"
-      procurement_document_type:
-        | "contract"
-        | "invoice"
-        | "grn"
-        | "po"
-        | "policy"
-        | "report"
-        | "other"
       procurement_status:
         | "draft"
         | "pending_approval"
@@ -5265,6 +5277,17 @@ export const Constants = {
         "expired",
         "pending_approval",
       ],
+      document_type: [
+        "Contract",
+        "Invoice",
+        "GRN",
+        "PO",
+        "Tender",
+        "Quote",
+        "Compliance",
+        "Receipt",
+        "Other",
+      ],
       donor_status: ["active", "inactive", "potential"],
       feature_permission: ["read", "write", "admin"],
       funding_cycle_status: ["ongoing", "upcoming", "closed"],
@@ -5309,15 +5332,6 @@ export const Constants = {
       ],
       priority_level: ["low", "medium", "high", "urgent"],
       procurement_document_status: ["active", "archived", "expired", "draft"],
-      procurement_document_type: [
-        "contract",
-        "invoice",
-        "grn",
-        "po",
-        "policy",
-        "report",
-        "other",
-      ],
       procurement_status: [
         "draft",
         "pending_approval",
