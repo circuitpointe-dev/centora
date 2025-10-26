@@ -106,7 +106,7 @@ export const useInvoices = (page = 1, limit = 10, search = '', filters?: Invoice
                 .from('invoices')
                 .select(`
                     *,
-                    vendor:vendors(name)
+                    vendor:vendors(vendor_name)
                 `)
                 .eq('org_id', user.org_id)
                 .order('created_at', { ascending: false });
@@ -146,7 +146,7 @@ export const useInvoices = (page = 1, limit = 10, search = '', filters?: Invoice
                 org_id: invoice.org_id,
                 invoice_number: invoice.invoice_number,
                 vendor_id: invoice.vendor_id,
-                vendor_name: invoice.vendor?.name || invoice.vendor_name,
+                vendor_name: invoice.vendor?.vendor_name || invoice.vendor_name,
                 total_amount: invoice.total_amount,
                 currency: invoice.currency,
                 linked_po_number: invoice.linked_po_number,
@@ -184,7 +184,7 @@ export const useInvoiceDetail = (id: string) => {
                 .from('invoices')
                 .select(`
                     *,
-                    vendor:vendors(name)
+                    vendor:vendors(vendor_name)
                 `)
                 .eq('id', id)
                 .single();
@@ -197,7 +197,7 @@ export const useInvoiceDetail = (id: string) => {
                 org_id: invoiceData.org_id,
                 invoice_number: invoiceData.invoice_number,
                 vendor_id: invoiceData.vendor_id,
-                vendor_name: invoiceData.vendor?.name || invoiceData.vendor_name,
+                vendor_name: invoiceData.vendor?.vendor_name || invoiceData.vendor_name,
                 total_amount: invoiceData.total_amount,
                 currency: invoiceData.currency,
                 linked_po_number: invoiceData.linked_po_number,

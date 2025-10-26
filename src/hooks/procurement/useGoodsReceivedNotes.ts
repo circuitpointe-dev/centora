@@ -109,7 +109,7 @@ export const useGRNs = (page = 1, limit = 10, search = '') => {
                 .select(`
                     *,
                     po:purchase_orders(po_number),
-                    vendor:vendors(name),
+                    vendor:vendors(vendor_name),
                     received_by_user:profiles!received_by(full_name),
                     approved_by_user:profiles!approved_by(full_name),
                     created_by_user:profiles!created_by(full_name)
@@ -137,7 +137,7 @@ export const useGRNs = (page = 1, limit = 10, search = '') => {
                 po_id: grn.po_id,
                 po_number: grn.po?.po_number,
                 vendor_id: grn.vendor_id,
-                vendor_name: grn.vendor?.name,
+                vendor_name: grn.vendor?.vendor_name,
                 item_name: grn.item_name,
                 item_description: grn.item_description,
                 quantity_ordered: grn.quantity_ordered,
@@ -183,7 +183,7 @@ export const useGRNDetail = (id: string) => {
                 .select(`
                     *,
                     po:purchase_orders(po_number),
-                    vendor:vendors(name),
+                    vendor:vendors(vendor_name),
                     received_by_user:profiles!received_by(full_name),
                     approved_by_user:profiles!approved_by(full_name),
                     created_by_user:profiles!created_by(full_name)
@@ -201,7 +201,7 @@ export const useGRNDetail = (id: string) => {
                 po_id: grnData.po_id,
                 po_number: grnData.po?.po_number,
                 vendor_id: grnData.vendor_id,
-                vendor_name: grnData.vendor?.name,
+                vendor_name: grnData.vendor?.vendor_name,
                 item_name: grnData.item_name,
                 item_description: grnData.item_description,
                 quantity_ordered: grnData.quantity_ordered,
