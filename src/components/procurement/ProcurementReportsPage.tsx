@@ -434,224 +434,226 @@ const ProcurementReportsPage: React.FC = () => {
                 )}
 
                 {/* Document List Section - Pixel Perfect Match */}
-                <Card className="bg-white border-0 shadow-sm">
-                    <CardContent className="p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-lg font-semibold text-gray-900">Procurement document archive</h2>
-                            <div className="flex items-center gap-4">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setShowFilters(!showFilters)}
-                                    className="flex items-center gap-2"
-                                >
-                                    <img src="/ion-filter0.svg" alt="filter" className="w-4 h-4" />
-                                    Filter
-                                </Button>
-                                <div className="relative">
-                                    <Input
-                                        placeholder="Search..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-64 pr-10"
-                                    />
-                                    <img
-                                        src="/search0.svg"
-                                        alt="search"
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
-                                    />
+                {activeTab === 'procurement-document-archive' && (
+                    <Card className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-lg font-semibold text-gray-900">Procurement document archive</h2>
+                                <div className="flex items-center gap-4">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <img src="/ion-filter0.svg" alt="filter" className="w-4 h-4" />
+                                        Filter
+                                    </Button>
+                                    <div className="relative">
+                                        <Input
+                                            placeholder="Search..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-64 pr-10"
+                                        />
+                                        <img
+                                            src="/search0.svg"
+                                            alt="search"
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Filters */}
-                        {showFilters && (
-                            <div className="grid grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-                                <Select
-                                    value={filters.document_type || ''}
-                                    onValueChange={(value) => setFilters(prev => ({ ...prev, document_type: value || undefined }))}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Document Type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Contract">Contract</SelectItem>
-                                        <SelectItem value="Invoice">Invoice</SelectItem>
-                                        <SelectItem value="GRN">Goods Received Note</SelectItem>
-                                        <SelectItem value="PO">Purchase Order</SelectItem>
-                                        <SelectItem value="Tender">Tender</SelectItem>
-                                        <SelectItem value="Quote">Quote</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                            {/* Filters */}
+                            {showFilters && (
+                                <div className="grid grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+                                    <Select
+                                        value={filters.document_type || ''}
+                                        onValueChange={(value) => setFilters(prev => ({ ...prev, document_type: value || undefined }))}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Document Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Contract">Contract</SelectItem>
+                                            <SelectItem value="Invoice">Invoice</SelectItem>
+                                            <SelectItem value="GRN">Goods Received Note</SelectItem>
+                                            <SelectItem value="PO">Purchase Order</SelectItem>
+                                            <SelectItem value="Tender">Tender</SelectItem>
+                                            <SelectItem value="Quote">Quote</SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
-                                <Select
-                                    value={filters.status || ''}
-                                    onValueChange={(value) => setFilters(prev => ({ ...prev, status: value || undefined }))}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="active">Active</SelectItem>
-                                        <SelectItem value="archived">Archived</SelectItem>
-                                        <SelectItem value="expired">Expired</SelectItem>
-                                        <SelectItem value="draft">Draft</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                    <Select
+                                        value={filters.status || ''}
+                                        onValueChange={(value) => setFilters(prev => ({ ...prev, status: value || undefined }))}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="active">Active</SelectItem>
+                                            <SelectItem value="archived">Archived</SelectItem>
+                                            <SelectItem value="expired">Expired</SelectItem>
+                                            <SelectItem value="draft">Draft</SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
-                                <Input
-                                    placeholder="Vendor Name"
-                                    value={filters.vendor || ''}
-                                    onChange={(e) => setFilters(prev => ({ ...prev, vendor: e.target.value || undefined }))}
-                                />
+                                    <Input
+                                        placeholder="Vendor Name"
+                                        value={filters.vendor || ''}
+                                        onChange={(e) => setFilters(prev => ({ ...prev, vendor: e.target.value || undefined }))}
+                                    />
 
-                                <Input
-                                    placeholder="Fiscal Year"
-                                    value={filters.fiscal_year || ''}
-                                    onChange={(e) => setFilters(prev => ({ ...prev, fiscal_year: e.target.value || undefined }))}
-                                />
-                            </div>
-                        )}
+                                    <Input
+                                        placeholder="Fiscal Year"
+                                        value={filters.fiscal_year || ''}
+                                        onChange={(e) => setFilters(prev => ({ ...prev, fiscal_year: e.target.value || undefined }))}
+                                    />
+                                </div>
+                            )}
 
-                        <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-12">
-                                            <Checkbox
-                                                checked={selectedDocuments.length === documents.length && documents.length > 0}
-                                                onCheckedChange={handleSelectAll}
-                                            />
-                                        </TableHead>
-                                        <TableHead>Document</TableHead>
-                                        <TableHead>Type</TableHead>
-                                        <TableHead>Vendor</TableHead>
-                                        <TableHead>Project</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {documents.map((document) => (
-                                        <TableRow key={document.id}>
-                                            <TableCell>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-12">
                                                 <Checkbox
-                                                    checked={selectedDocuments.includes(document.id)}
-                                                    onCheckedChange={(checked) =>
-                                                        handleSelectDocument(document.id, checked as boolean)
-                                                    }
+                                                    checked={selectedDocuments.length === documents.length && documents.length > 0}
+                                                    onCheckedChange={handleSelectAll}
                                                 />
-                                            </TableCell>
-                                            <TableCell>
-                                                <div>
-                                                    <p className="font-medium text-gray-900">{document.title}</p>
-                                                    <p className="text-sm text-gray-500">{document.file_name}</p>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <img
-                                                        src={getDocumentTypeIcon(document.document_type)}
-                                                        alt={document.document_type}
-                                                        className="w-5 h-5"
-                                                    />
-                                                    <span className="font-medium">{document.document_type}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>{document.vendor_name || '-'}</TableCell>
-                                            <TableCell>{document.project_name || '-'}</TableCell>
-                                            <TableCell>
-                                                <div className="text-sm text-gray-600">
-                                                    {format(new Date(document.uploaded_at), 'MMM dd, yyyy')}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleViewDocument(document.id)}
-                                                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-2"
-                                                        disabled={viewDocument.isPending}
-                                                        title="View document"
-                                                    >
-                                                        <img src="/mdi-eye-outline0.svg" alt="view" className="w-4 h-4" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleDownloadDocument(document.id)}
-                                                        className="text-green-600 hover:text-green-700 hover:bg-green-50 p-2"
-                                                        disabled={downloadDocument.isPending}
-                                                        title="Download document"
-                                                    >
-                                                        <img src="/material-symbols-download0.svg" alt="download" className="w-4 h-4" />
-                                                    </Button>
-                                                    {document.status === 'active' ? (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => handleArchiveDocument(document.id)}
-                                                            className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-                                                        >
-                                                            <Archive className="w-4 h-4" />
-                                                        </Button>
-                                                    ) : (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => handleRestoreDocument(document.id)}
-                                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                                        >
-                                                            Restore
-                                                        </Button>
-                                                    )}
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleDeleteDocument(document.id)}
-                                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
+                                            </TableHead>
+                                            <TableHead>Document</TableHead>
+                                            <TableHead>Type</TableHead>
+                                            <TableHead>Vendor</TableHead>
+                                            <TableHead>Project</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
-
-                        {/* Pagination - Pixel Perfect Match */}
-                        <div className="flex items-center justify-between mt-6">
-                            <p className="text-sm text-gray-600">
-                                Showing {((currentPage - 1) * 8) + 1} to {Math.min(currentPage * 8, totalDocuments)} of {totalDocuments} contract folder lists
-                            </p>
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className="flex items-center gap-2"
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                    Previous
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="flex items-center gap-2"
-                                >
-                                    Next
-                                    <ChevronRight className="w-4 h-4" />
-                                </Button>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {documents.map((document) => (
+                                            <TableRow key={document.id}>
+                                                <TableCell>
+                                                    <Checkbox
+                                                        checked={selectedDocuments.includes(document.id)}
+                                                        onCheckedChange={(checked) =>
+                                                            handleSelectDocument(document.id, checked as boolean)
+                                                        }
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">{document.title}</p>
+                                                        <p className="text-sm text-gray-500">{document.file_name}</p>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <img
+                                                            src={getDocumentTypeIcon(document.document_type)}
+                                                            alt={document.document_type}
+                                                            className="w-5 h-5"
+                                                        />
+                                                        <span className="font-medium">{document.document_type}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{document.vendor_name || '-'}</TableCell>
+                                                <TableCell>{document.project_name || '-'}</TableCell>
+                                                <TableCell>
+                                                    <div className="text-sm text-gray-600">
+                                                        {format(new Date(document.uploaded_at), 'MMM dd, yyyy')}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleViewDocument(document.id)}
+                                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-2"
+                                                            disabled={viewDocument.isPending}
+                                                            title="View document"
+                                                        >
+                                                            <img src="/mdi-eye-outline0.svg" alt="view" className="w-4 h-4" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleDownloadDocument(document.id)}
+                                                            className="text-green-600 hover:text-green-700 hover:bg-green-50 p-2"
+                                                            disabled={downloadDocument.isPending}
+                                                            title="Download document"
+                                                        >
+                                                            <img src="/material-symbols-download0.svg" alt="download" className="w-4 h-4" />
+                                                        </Button>
+                                                        {document.status === 'active' ? (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleArchiveDocument(document.id)}
+                                                                className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                                                            >
+                                                                <Archive className="w-4 h-4" />
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleRestoreDocument(document.id)}
+                                                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                            >
+                                                                Restore
+                                                            </Button>
+                                                        )}
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleDeleteDocument(document.id)}
+                                                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
+
+                            {/* Pagination - Pixel Perfect Match */}
+                            <div className="flex items-center justify-between mt-6">
+                                <p className="text-sm text-gray-600">
+                                    Showing {((currentPage - 1) * 8) + 1} to {Math.min(currentPage * 8, totalDocuments)} of {totalDocuments} contract folder lists
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="flex items-center gap-2"
+                                    >
+                                        Next
+                                        <ChevronRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
         </div>
     );
