@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import {
   useRequisitionStats,
   useRequisitions,
@@ -67,7 +71,7 @@ const ProcurementPlanningPage: React.FC = () => {
   const deletePlanItem = useDeletePlanItem();
   const [planViewMode, setPlanViewMode] = useState<'list' | 'compact'>('list');
   const [isCreatePlanOpen, setIsCreatePlanOpen] = useState(false);
-  const [newPlanItem, setNewPlanItem] = useState<any>({ item: '', description: '', est_cost: 0, budget_source: '', status: 'Pending', planned_date: '' });
+  const [newPlanItem, setNewPlanItem] = useState<any>({ item: '', description: '', est_cost: 0, budget_source: '', status: 'Pending', planned_date: null });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<any>({});
   const [matrixFilters, setMatrixFilters] = useState<{ entityType?: string; status?: string }>({});
@@ -219,13 +223,27 @@ const ProcurementPlanningPage: React.FC = () => {
   };
 
   const handleCreatePlanSubmit = async () => {
+    if (!newPlanItem.item || newPlanItem.item.trim() === '') {
+      toast.error('Item name is required');
+      return;
+    }
     try {
-      await createPlanItem.mutateAsync(newPlanItem);
+      const payload = {
+        item: newPlanItem.item.trim(),
+        description: newPlanItem.description || '',
+        est_cost: Number(newPlanItem.est_cost) || 0,
+        budget_source: newPlanItem.budget_source || '',
+        status: newPlanItem.status || 'Pending',
+        planned_date: newPlanItem.planned_date ? format(newPlanItem.planned_date, 'yyyy-MM-dd') : ''
+      };
+      console.log('Creating plan item with payload:', payload);
+      await createPlanItem.mutateAsync(payload);
       setIsCreatePlanOpen(false);
-      setNewPlanItem({ item: '', description: '', est_cost: 0, budget_source: '', status: 'Pending', planned_date: '' });
-      toast.success('Plan item added');
+      setNewPlanItem({ item: '', description: '', est_cost: 0, budget_source: '', status: 'Pending', planned_date: null });
+      toast.success('Plan item added successfully');
     } catch (e: any) {
-      toast.error(e?.message || 'Failed to add plan item');
+      console.error('Error creating plan item:', e);
+      toast.error(e?.message || 'Failed to add plan item. Please check the browser console for details.');
     }
   };
 
@@ -1313,7 +1331,32 @@ const ProcurementPlanningPage: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-600 mb-1">Planned date</label>
-                  <Input value={newPlanItem.planned_date} onChange={e => setNewPlanItem((v: any) => ({ ...v, planned_date: e.target.value }))} />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !newPlanItem.planned_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {newPlanItem.planned_date ? (
+                          format(newPlanItem.planned_date, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={newPlanItem.planned_date}
+                        onSelect={(date) => setNewPlanItem((v: any) => ({ ...v, planned_date: date }))}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
             </div>

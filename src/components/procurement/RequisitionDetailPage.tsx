@@ -62,7 +62,7 @@ const RequisitionDetailPage: React.FC<RequisitionDetailPageProps> = ({ requisiti
             <Card>
                 <CardHeader className="border-b">
                     <CardTitle className="flex items-center justify-between">
-                        <span>Requisition detail ({d.reference || id})</span>
+                        <span>Requisition detail ({d.reference || id.substring(0, 8).toUpperCase()})</span>
                         <div className="flex gap-2">
                             {!editing && (
                                 <Button variant="outline" size="sm" onClick={() => { setEditing(true); setDraft({ item_name: d.item_name, description: d.description, unit_cost: d.unit_cost, category: d.category, budget_source: d.budget_source }); }}>Edit</Button>
