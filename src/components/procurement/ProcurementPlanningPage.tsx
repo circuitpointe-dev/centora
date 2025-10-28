@@ -1306,8 +1306,8 @@ const ProcurementPlanningPage: React.FC = () => {
       {/* Create Plan Item Modal */}
       {isCreatePlanOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-            <div className="p-4 border-b flex items-center justify-between">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b flex items-center justify-between sticky top-0 bg-white z-10">
               <h3 className="text-lg font-semibold">Add plan item</h3>
               <button onClick={() => setIsCreatePlanOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
             </div>
@@ -1320,7 +1320,7 @@ const ProcurementPlanningPage: React.FC = () => {
                 <label className="block text-sm text-gray-600 mb-1">Description</label>
                 <Input value={newPlanItem.description} onChange={e => setNewPlanItem((v: any) => ({ ...v, description: e.target.value }))} />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 <div>
                   <label className="block text-sm text-gray-600 mb-1">Est. cost</label>
                   <Input type="number" value={newPlanItem.est_cost} onChange={e => setNewPlanItem((v: any) => ({ ...v, est_cost: Number(e.target.value) }))} />
@@ -1331,24 +1331,26 @@ const ProcurementPlanningPage: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-600 mb-1">Planned date</label>
-                  <Popover>
+                  <Popover modal={true}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal",
+                          "w-full justify-start text-left font-normal truncate",
                           !newPlanItem.planned_date && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {newPlanItem.planned_date ? (
-                          format(newPlanItem.planned_date, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
+                        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">
+                          {newPlanItem.planned_date ? (
+                            format(newPlanItem.planned_date, "MMM dd, yyyy")
+                          ) : (
+                            "Pick a date"
+                          )}
+                        </span>
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0" align="center" side="bottom">
                       <Calendar
                         mode="single"
                         selected={newPlanItem.planned_date}
@@ -1360,7 +1362,7 @@ const ProcurementPlanningPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="p-4 border-t flex items-center justify-end gap-2">
+            <div className="p-4 border-t flex items-center justify-end gap-2 sticky bottom-0 bg-white">
               <Button variant="outline" onClick={() => setIsCreatePlanOpen(false)}>Cancel</Button>
               <Button onClick={handleCreatePlanSubmit} className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">Add</Button>
             </div>

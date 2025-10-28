@@ -55,6 +55,8 @@ export function useCreatePlanItem() {
             if (!user) throw new Error('User not authenticated');
             const { data: profile } = await supabase.from('profiles').select('org_id').eq('id', user.id).single();
             const orgId = profile?.org_id;
+            if (!orgId) throw new Error('User organization not found');
+            
             // Ensure a plan exists for this org and get its id
             let { data: plan } = await (supabase as any)
                 .from('procurement_plans')
@@ -72,7 +74,15 @@ export function useCreatePlanItem() {
                 if (planErr) throw planErr;
                 plan = newPlan;
             }
-            const { error } = await (supabase as any).from("procurement_plan_items").insert({ ...payload, org_id: orgId, plan_id: plan.id });
+            
+            const insertData = { 
+                ...payload, 
+                org_id: orgId, 
+                plan_id: plan.id,
+                created_by: user.id
+            };
+            
+            const { error } = await (supabase as any).from("procurement_plan_items").insert(insertData);
             if (error) throw error;
         },
         onSuccess: () => {
