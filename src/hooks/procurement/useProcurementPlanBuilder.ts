@@ -125,4 +125,32 @@ export function useDeletePlanItem() {
     });
 }
 
+export function useCreatePlan() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload: { title: string }) => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('User not authenticated');
+            const { data: profile } = await supabase.from('profiles').select('org_id').eq('id', user.id).single();
+            const orgId = profile?.org_id;
+            if (!orgId) throw new Error('User organization not found');
+            
+            const { error } = await (supabase as any)
+                .from('procurement_plans')
+                .insert({
+                    org_id: orgId,
+                    title: payload.title,
+                    total_planned_spend: 0,
+                    total_items: 0,
+                    pending_items: 0,
+                    created_by: user.id
+                });
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["plan-stats"] });
+        }
+    });
+}
+
 

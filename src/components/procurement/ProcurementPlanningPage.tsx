@@ -20,7 +20,7 @@ import {
   RequisitionFilters
 } from "@/hooks/procurement/useProcurementRequisitions";
 import { toast } from "sonner";
-import { usePlanItems, usePlanStats, useCreatePlanItem, useUpdatePlanItem, useDeletePlanItem } from "@/hooks/procurement/useProcurementPlanBuilder";
+import { usePlanItems, usePlanStats, useCreatePlanItem, useUpdatePlanItem, useDeletePlanItem, useCreatePlan } from "@/hooks/procurement/useProcurementPlanBuilder";
 import { useApprovalMatrix, useCreateApprovalRule, useUpdateApprovalRule, useDeleteApprovalRule } from "@/hooks/procurement/useProcurementApprovalMatrix";
 
 const ProcurementPlanningPage: React.FC = () => {
@@ -69,8 +69,11 @@ const ProcurementPlanningPage: React.FC = () => {
   const createPlanItem = useCreatePlanItem();
   const updatePlanItem = useUpdatePlanItem();
   const deletePlanItem = useDeletePlanItem();
+  const createPlan = useCreatePlan();
   const [planViewMode, setPlanViewMode] = useState<'list' | 'compact'>('list');
   const [isCreatePlanOpen, setIsCreatePlanOpen] = useState(false);
+  const [isNewPlanDialogOpen, setIsNewPlanDialogOpen] = useState(false);
+  const [newPlanTitle, setNewPlanTitle] = useState('');
   const [newPlanItem, setNewPlanItem] = useState<any>({ item: '', description: '', est_cost: 0, budget_source: '', status: 'Pending', planned_date: null });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<any>({});
@@ -244,6 +247,22 @@ const ProcurementPlanningPage: React.FC = () => {
     } catch (e: any) {
       console.error('Error creating plan item:', e);
       toast.error(e?.message || 'Failed to add plan item. Please check the browser console for details.');
+    }
+  };
+
+  const handleCreateNewPlan = async () => {
+    if (!newPlanTitle || newPlanTitle.trim() === '') {
+      toast.error('Plan title is required');
+      return;
+    }
+    try {
+      await createPlan.mutateAsync({ title: newPlanTitle.trim() });
+      setIsNewPlanDialogOpen(false);
+      setNewPlanTitle('');
+      toast.success('New procurement plan created successfully');
+    } catch (e: any) {
+      console.error('Error creating plan:', e);
+      toast.error(e?.message || 'Failed to create plan');
     }
   };
 
@@ -525,6 +544,15 @@ const ProcurementPlanningPage: React.FC = () => {
                 >
                   <img className="w-4 h-4 mr-2" src="/typcn-upload0.svg" alt="Bulk upload" />
                   Bulk upload
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-[30px] px-3 text-xs border-[#7c3aed] text-[#7c3aed] hover:bg-[#7c3aed]/10"
+                  onClick={() => setIsNewPlanDialogOpen(true)}
+                >
+                  <img className="w-5 h-5 mr-1.5" src="/material-symbols-add-rounded0.svg" alt="New plan" />
+                  New plan
                 </Button>
                 <Button
                   onClick={handleNewRequisition}
@@ -1529,6 +1557,40 @@ const ProcurementPlanningPage: React.FC = () => {
                 </div>
                 <div className="p-4 border-t flex items-center justify-end">
                   <Button onClick={() => setIsDrillOpen(false)} className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white">Close</Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* New Plan Dialog */}
+          {isNewPlanDialogOpen && (
+            <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+                <div className="p-4 border-b flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Create new procurement plan</h3>
+                  <button onClick={() => setIsNewPlanDialogOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+                </div>
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Plan title *</label>
+                    <Input
+                      placeholder="Enter plan title..."
+                      value={newPlanTitle}
+                      onChange={(e) => setNewPlanTitle(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+                <div className="p-4 border-t flex items-center justify-end gap-2">
+                  <Button variant="outline" onClick={() => { setIsNewPlanDialogOpen(false); setNewPlanTitle(''); }}>Cancel</Button>
+                  <Button 
+                    onClick={handleCreateNewPlan} 
+                    disabled={createPlan.isPending}
+                    className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white"
+                  >
+                    {createPlan.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                    Create plan
+                  </Button>
                 </div>
               </div>
             </div>
