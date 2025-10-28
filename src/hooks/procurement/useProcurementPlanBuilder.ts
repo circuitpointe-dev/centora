@@ -78,8 +78,7 @@ export function useCreatePlanItem() {
             const insertData = { 
                 ...payload, 
                 org_id: orgId, 
-                plan_id: plan.id,
-                created_by: user.id
+                plan_id: plan.id
             };
             
             const { error } = await (supabase as any).from("procurement_plan_items").insert(insertData);
