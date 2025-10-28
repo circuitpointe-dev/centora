@@ -869,38 +869,128 @@ const ProcurementPlanningPage: React.FC = () => {
                   <Button size="sm" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white" onClick={() => { setNewRule((v: any) => ({ ...v, rule_code: generateRuleCode() })); setIsAddRuleOpen(true); }}>+ Add rule</Button>
                 </div>
               </div>
+              {/* Desktop Table View */}
               <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b">
-                    <tr className="text-left text-xs text-gray-500">
-                      <th className="px-4 py-3">Rule ID</th>
-                      <th className="px-4 py-3">Entity type</th>
-                      <th className="px-4 py-3">Condition</th>
-                      <th className="px-4 py-3">Approver sequence</th>
-                      <th className="px-4 py-3">Escalation SLA</th>
-                      <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3">Action</th>
+                    <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3">Rule ID</th>
+                      <th className="px-6 py-3">Entity type</th>
+                      <th className="px-6 py-3">Condition</th>
+                      <th className="px-6 py-3">Approver sequence</th>
+                      <th className="px-6 py-3">Escalation SLA</th>
+                      <th className="px-6 py-3">Status</th>
+                      <th className="px-6 py-3">Action</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {(matrix?.rules || []).map((r: any) => (
-                      <tr key={r.id} className="border-b text-sm">
-                        <td className="px-4 py-3 text-gray-700">{r.rule_code}</td>
-                        <td className="px-4 py-3 text-gray-700">{r.entity_type}</td>
-                        <td className="px-4 py-3 text-gray-700">{r.condition}</td>
-                        <td className="px-4 py-3 text-gray-700">{(r.approver_sequence || []).join(' → ')}</td>
-                        <td className="px-4 py-3 text-gray-700">{r.escalation_sla}</td>
-                        <td className="px-4 py-3">{getStatusBadge((r.status || 'Active').toLowerCase() as any)}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => updateRule.mutate({ id: r.id, updates: { status: (r.status === 'Active' ? 'Inactive' : 'Active') } })}>Toggle</Button>
-                            <Button variant="outline" size="sm" className="text-red-600" onClick={() => { if (confirm('Delete rule?')) deleteRule.mutate(r.id); }}>Delete</Button>
-                          </div>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {(matrix?.rules || []).length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">
+                          No approval rules found. Click "Add rule" to create one.
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      (matrix?.rules || []).map((r: any) => (
+                        <tr key={r.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#383839]">
+                            {r.rule_code}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">
+                            {r.entity_type}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#6b7280]">
+                            {r.condition || '-'}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#6b7280]">
+                            {(r.approver_sequence || []).join(' → ') || '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7280]">
+                            {r.escalation_sla || '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {getStatusBadge((r.status || 'Active').toLowerCase() as any)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <div className="flex items-center gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => updateRule.mutate({ id: r.id, updates: { status: (r.status === 'Active' ? 'Inactive' : 'Active') } })}
+                                className="hover:bg-gray-100"
+                              >
+                                {r.status === 'Active' ? 'Deactivate' : 'Activate'}
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="text-red-600 hover:bg-red-50 hover:text-red-700" 
+                                onClick={() => { if (confirm('Are you sure you want to delete this rule?')) deleteRule.mutate(r.id); }}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="lg:hidden divide-y divide-gray-200">
+                {(matrix?.rules || []).length === 0 ? (
+                  <div className="px-4 py-8 text-center text-sm text-gray-500">
+                    No approval rules found. Click "Add rule" to create one.
+                  </div>
+                ) : (
+                  (matrix?.rules || []).map((r: any) => (
+                    <div key={r.id} className="p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <div className="font-medium text-sm text-[#383839] mb-1">{r.rule_code}</div>
+                          <div className="text-xs text-[#6b7280]">{r.entity_type}</div>
+                        </div>
+                        {getStatusBadge((r.status || 'Active').toLowerCase() as any)}
+                      </div>
+                      
+                      <div className="space-y-2 mb-3">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-gray-500">Condition</span>
+                          <span className="text-sm text-[#383839]">{r.condition || '-'}</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs text-gray-500">Approver sequence</span>
+                          <span className="text-sm text-[#383839]">{(r.approver_sequence || []).join(' → ') || '-'}</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs text-gray-500">Escalation SLA</span>
+                          <span className="text-sm text-[#383839]">{r.escalation_sla || '-'}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => updateRule.mutate({ id: r.id, updates: { status: (r.status === 'Active' ? 'Inactive' : 'Active') } })}
+                          className="flex-1 hover:bg-gray-100"
+                        >
+                          {r.status === 'Active' ? 'Deactivate' : 'Activate'}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1 text-red-600 hover:bg-red-50 hover:text-red-700" 
+                          onClick={() => { if (confirm('Are you sure you want to delete this rule?')) deleteRule.mutate(r.id); }}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
               <div className="px-4 lg:px-6 py-4 border-t bg-gray-50">
                 <div className="flex items-center justify-between text-sm text-[#6b7280]">
