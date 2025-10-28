@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,12 +30,14 @@ import {
     useApproveInvoice,
     useMarkInvoicePaid,
     useDeleteInvoice,
+    useUploadInvoice,
     type Invoice,
     type InvoiceFilters
 } from '@/hooks/procurement/useInvoices';
 
 const InvoicesPaymentTrackersPage: React.FC = () => {
     const navigate = useNavigate();
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedInvoices, setSelectedInvoices] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -53,6 +55,7 @@ const InvoicesPaymentTrackersPage: React.FC = () => {
     const approveInvoice = useApproveInvoice();
     const markInvoicePaid = useMarkInvoicePaid();
     const deleteInvoice = useDeleteInvoice();
+    const uploadInvoice = useUploadInvoice();
 
     const invoices = invoicesData?.data || [];
     const totalInvoices = invoicesData?.total || 0;
@@ -102,6 +105,46 @@ const InvoicesPaymentTrackersPage: React.FC = () => {
         } catch (error) {
             toast.error('Failed to delete invoice');
         }
+    };
+
+    const handleUploadInvoice = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        try {
+            await uploadInvoice.mutateAsync(file);
+            toast.success('Invoice uploaded successfully');
+        } catch (error) {
+            toast.error('Failed to upload invoice');
+        }
+    };
+
+    const handleExportReport = () => {
+        const csvContent = [
+            ['Invoice #', 'Vendor', 'Amount', 'Linked PO #', 'Linked GRN #', 'Status', 'Date'],
+            ...invoices.map(invoice => [
+                invoice.invoice_number,
+                invoice.vendor_name,
+                invoice.total_amount,
+                invoice.linked_po_number || '',
+                invoice.linked_grn_number || '',
+                invoice.status,
+                invoice.invoice_date
+            ])
+        ].map(row => row.join(',')).join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'invoices-report.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        toast.success('Report exported successfully');
     };
 
     const getStatusColor = (status: string) => {
@@ -154,201 +197,233 @@ const InvoicesPaymentTrackersPage: React.FC = () => {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="bg-[#f5f7fa] min-h-screen">
+            <div className="p-8 space-y-8">
+                {/* Stats Cards - Pixel Perfect Match (Only 4 cards as per Figma) */}
+                <div className="grid grid-cols-4 gap-6 mb-8">
+                    {/* Pending Invoices */}
+                    <Card className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <img src="/uil-invoice0.svg" alt="pending" className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600">Pending invoices</p>
+                                    <p className="text-2xl font-semibold text-gray-900">{stats?.pendingInvoices || 0}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-4 gap-6 mb-8">
+                    {/* Matched Invoices */}
+                    <Card className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <img src="/uil-invoice1.svg" alt="matched" className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600">Matched invoices</p>
+                                    <p className="text-2xl font-semibold text-gray-900">{stats?.matchedInvoices || 0}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Approved Invoices */}
+                    <Card className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <img src="/uil-invoice2.svg" alt="approved" className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600">Approved invoices</p>
+                                    <p className="text-2xl font-semibold text-gray-900">{stats?.approvedInvoices || 0}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Paid Invoices */}
+                    <Card className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <img src="/uil-invoice3.svg" alt="paid" className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600">Paid invoices</p>
+                                    <p className="text-2xl font-semibold text-gray-900">{stats?.paidInvoices || 0}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Invoices List - Pixel Perfect Match */}
                 <Card className="bg-white border-0 shadow-sm">
                     <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                <img src="/uil-invoice0.svg" alt="pending" className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Pending invoices</p>
-                                <p className="text-2xl font-semibold text-gray-900">{stats?.pendingInvoices || 0}</p>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-lg font-semibold text-gray-900">Invoices list</h2>
+                            <div className="flex items-center gap-4">
+                                <div className="relative">
+                                    <Input
+                                        placeholder="Search..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-64 pr-10"
+                                    />
+                                    <img
+                                        src="/search0.svg"
+                                        alt="search"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+                                    />
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    className="flex items-center gap-2"
+                                    onClick={handleExportReport}
+                                >
+                                    <img src="/uil-export0.svg" alt="export" className="w-4 h-4" />
+                                    Export report
+                                </Button>
+                                <Button
+                                    className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white flex items-center gap-2"
+                                    onClick={handleUploadInvoice}
+                                >
+                                    <img src="/solar-upload-bold0.svg" alt="upload" className="w-4 h-4" />
+                                    Upload invoice
+                                </Button>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                />
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
 
-                <Card className="bg-white border-0 shadow-sm">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <img src="/uil-invoice1.svg" alt="matched" className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Matched invoices</p>
-                                <p className="text-2xl font-semibold text-gray-900">{stats?.matchedInvoices || 0}</p>
-                            </div>
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-12">
+                                            <Checkbox
+                                                checked={selectedInvoices.length === invoices.length && invoices.length > 0}
+                                                onCheckedChange={handleSelectAll}
+                                            />
+                                        </TableHead>
+                                        <TableHead>Invoice #</TableHead>
+                                        <TableHead>Vendor</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead>Linked PO #</TableHead>
+                                        <TableHead>Linked GRN #</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {invoices.map((invoice) => (
+                                        <TableRow key={invoice.id}>
+                                            <TableCell>
+                                                <Checkbox
+                                                    checked={selectedInvoices.includes(invoice.id)}
+                                                    onCheckedChange={(checked) =>
+                                                        handleSelectInvoice(invoice.id, checked as boolean)
+                                                    }
+                                                />
+                                            </TableCell>
+                                            <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
+                                            <TableCell>{invoice.vendor_name}</TableCell>
+                                            <TableCell>{formatCurrency(invoice.total_amount, invoice.currency)}</TableCell>
+                                            <TableCell>{invoice.linked_po_number || '—'}</TableCell>
+                                            <TableCell>{invoice.linked_grn_number || '—'}</TableCell>
+                                            <TableCell>
+                                                <Badge className={`${getStatusColor(invoice.status)} border`}>
+                                                    {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => navigate(`/dashboard/procurement/invoice-detail/${invoice.id}`)}
+                                                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-2"
+                                                        title="View invoice"
+                                                    >
+                                                        <img src="/eye0.svg" alt="view" className="w-4 h-4" />
+                                                    </Button>
+                                                    {invoice.status === 'pending' && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleApproveInvoice(invoice.id)}
+                                                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                        >
+                                                            Approve
+                                                        </Button>
+                                                    )}
+                                                    {invoice.status === 'approved' && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleMarkPaid(invoice.id)}
+                                                            className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                                        >
+                                                            Mark Paid
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleDeleteInvoice(invoice.id)}
+                                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </div>
-                    </CardContent>
-                </Card>
 
-                <Card className="bg-white border-0 shadow-sm">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <img src="/uil-invoice2.svg" alt="approved" className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Approved invoices</p>
-                                <p className="text-2xl font-semibold text-gray-900">{stats?.approvedInvoices || 0}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-white border-0 shadow-sm">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <img src="/uil-invoice3.svg" alt="paid" className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Paid invoices</p>
-                                <p className="text-2xl font-semibold text-gray-900">{stats?.paidInvoices || 0}</p>
+                        {/* Pagination - Pixel Perfect Match */}
+                        <div className="flex items-center justify-between mt-6">
+                            <p className="text-sm text-gray-600">
+                                Showing {((currentPage - 1) * 8) + 1} to {Math.min(currentPage * 8, totalInvoices)} of {totalInvoices} invoices lists
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="flex items-center gap-2"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                    Previous
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="flex items-center gap-2"
+                                >
+                                    Next
+                                    <ChevronRight className="w-4 h-4" />
+                                </Button>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Invoices List */}
-            <Card className="bg-white border-0 shadow-sm">
-                <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-lg font-semibold text-gray-900">Invoices list</h2>
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <Input
-                                    placeholder="Search..."
-                                    className="w-64 pr-10"
-                                />
-                                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            </div>
-                            <Button variant="outline" className="flex items-center gap-2">
-                                <img src="/uil-export0.svg" alt="export" className="w-4 h-4" />
-                                Export report
-                            </Button>
-                            <Button className="bg-[#7c3aed] text-white flex items-center gap-2">
-                                <img src="/solar-upload-bold0.svg" alt="upload" className="w-4 h-4" />
-                                Upload invoice
-                            </Button>
-                        </div>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-12">
-                                        <Checkbox
-                                            checked={selectedInvoices.length === invoices.length && invoices.length > 0}
-                                            onCheckedChange={handleSelectAll}
-                                        />
-                                    </TableHead>
-                                    <TableHead>Invoice #</TableHead>
-                                    <TableHead>Vendor</TableHead>
-                                    <TableHead>Amount</TableHead>
-                                    <TableHead>Linked PO #</TableHead>
-                                    <TableHead>Linked GRN #</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {invoices.map((invoice) => (
-                                    <TableRow key={invoice.id}>
-                                        <TableCell>
-                                            <Checkbox
-                                                checked={selectedInvoices.includes(invoice.id)}
-                                                onCheckedChange={(checked) =>
-                                                    handleSelectInvoice(invoice.id, checked as boolean)
-                                                }
-                                            />
-                                        </TableCell>
-                                        <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                                        <TableCell>{invoice.vendor_name}</TableCell>
-                                        <TableCell>{formatCurrency(invoice.total_amount, invoice.currency)}</TableCell>
-                                        <TableCell>{invoice.linked_po_number || '—'}</TableCell>
-                                        <TableCell>{invoice.linked_grn_number || '—'}</TableCell>
-                                        <TableCell>
-                                            <Badge className={`${getStatusColor(invoice.status)} border`}>
-                                                {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => navigate(`/dashboard/procurement/invoice-detail/${invoice.id}`)}
-                                                >
-                                                    <img src="/eye0.svg" alt="view" className="w-4 h-4" />
-                                                </Button>
-                                                {invoice.status === 'pending' && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleApproveInvoice(invoice.id)}
-                                                    >
-                                                        Approve
-                                                    </Button>
-                                                )}
-                                                {invoice.status === 'approved' && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleMarkPaid(invoice.id)}
-                                                    >
-                                                        Mark Paid
-                                                    </Button>
-                                                )}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleDeleteInvoice(invoice.id)}
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    {/* Pagination */}
-                    <div className="flex items-center justify-between mt-6">
-                        <p className="text-sm text-gray-600">
-                            Showing {((currentPage - 1) * 8) + 1} to {Math.min(currentPage * 8, totalInvoices)} of {totalInvoices} invoices
-                        </p>
-                        <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                disabled={currentPage === 1}
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                                Previous
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                disabled={currentPage === totalPages}
-                            >
-                                Next
-                                <ChevronRight className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 };

@@ -268,6 +268,62 @@ export const useCreateInvoice = () => {
     });
 };
 
+// Hook to upload invoice file
+export const useUploadInvoice = () => {
+    const queryClient = useQueryClient();
+    const { user } = useAuth();
+
+    return useMutation({
+        mutationFn: async (file: File) => {
+            if (!user) throw new Error('User not authenticated');
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('org_id')
+                .eq('id', user.id)
+                .single();
+
+            if (!profile) throw new Error('User profile not found');
+
+            // Upload file to storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const filePath = `invoices/${profile.org_id}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('documents')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            // Create invoice record
+            const { data, error } = await (supabase as any)
+                .from('invoices')
+                .insert({
+                    org_id: profile.org_id,
+                    invoice_number: `INV-${Date.now()}`,
+                    vendor_id: '', // Will be filled later
+                    vendor_name: 'Unknown Vendor', // Will be updated after processing
+                    total_amount: 0, // Will be extracted from file
+                    currency: 'USD',
+                    status: 'pending',
+                    invoice_date: new Date().toISOString().split('T')[0],
+                    attachments: [filePath],
+                    created_by: user.id
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['invoices'] });
+            queryClient.invalidateQueries({ queryKey: ['invoice-stats'] });
+        }
+    });
+};
+
 // Hook to update invoice
 export const useUpdateInvoice = () => {
     const queryClient = useQueryClient();

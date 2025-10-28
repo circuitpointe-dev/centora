@@ -217,8 +217,8 @@ const ProcurementExecutionPage: React.FC = () => {
                     ))}
                 </div>
 
-                {/* KPI Cards - Hide for mobile approvals */}
-                {activeTab !== 'mobile-approvals' && (
+                {/* KPI Cards - Hide for mobile approvals and invoices */}
+                {activeTab !== 'mobile-approvals' && activeTab !== 'invoices' && (
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         {activeTab === 'goods-received' ? (
                             <>
