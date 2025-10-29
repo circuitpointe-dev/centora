@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useGoals } from '@/hooks/hr/useGoals';
+import { usePerformanceReviews } from '@/hooks/hr/usePerformance';
+import { useEmployees } from '@/hooks/hr/useEmployees';
 import {
   Select,
   SelectContent,
@@ -82,81 +85,106 @@ const PerformanceManagement = () => {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Mock data for KPI summary cards
-  const kpiSummary = [
-    { icon: Target, number: '4', label: 'Total goals', color: 'text-purple-600' },
-    { icon: Target, number: '2', label: 'On track', color: 'text-green-600' },
-    { icon: AlertTriangle, number: '1', label: 'At risk', color: 'text-red-600' },
-    { icon: AlertTriangle, number: '1', label: 'Off risk', color: 'text-orange-600' },
-    { icon: BarChart3, number: '66%', label: 'Avg progress', color: 'text-blue-600' }
-  ];
+  // Live goals from database
+  const { data: goalsData, isLoading: goalsLoading } = useGoals();
 
-  // Mock data for goals
-  const goals = [
-    {
-      id: 1,
-      title: 'Improve NPS Score',
-      type: 'OKR',
-      description: 'Increase customer Net Promoter Score from 7.2 to 8.5',
-      companyOkr: 'Customer satisfaction',
-      owner: 'Jane Doe',
-      weight: '30%',
-      nextCheckIn: 'Jul 2, 2025',
-      progress: 65,
-      status: 'On track',
-      statusColor: 'bg-green-100 text-green-800'
-    },
-    {
-      id: 2,
-      title: 'Launch New Product Line',
-      type: 'Product',
-      description: 'Successfully launch the new eco-friendly product line by Q3',
-      companyOkr: 'Product development',
-      owner: 'John Smith',
-      weight: '40%',
-      nextCheckIn: 'Aug 15, 2025',
-      progress: 30,
-      status: 'At risk',
-      statusColor: 'bg-red-100 text-red-800'
-    },
-    {
-      id: 3,
-      title: 'Enhance Customer Support',
-      type: 'OKR',
-      description: 'Reduce average response time from 24 hours to 1 hour',
-      companyOkr: 'Customer support',
-      owner: 'Emily Davis',
-      weight: '25%',
-      nextCheckIn: 'Sep 30, 2025',
-      progress: 45,
-      status: 'Off risk',
-      statusColor: 'bg-yellow-100 text-yellow-800'
-    },
-    {
-      id: 4,
-      title: 'Improve Customer Satisfaction',
-      type: 'KPI',
-      description: 'Achieve a customer satisfaction score of 9.0 by EOY',
-      companyOkr: 'Customer Success',
-      owner: 'Alice Johnson',
-      weight: '35%',
-      nextCheckIn: 'Sep 15, 2025',
-      progress: 80,
-      status: 'On track',
-      statusColor: 'bg-green-100 text-green-800'
-    }
-  ];
+  // Calculate KPI summary from live data
+  const kpiSummary = useMemo(() => {
+    const total = goalsData?.length || 0;
+    const onTrack = goalsData?.filter(g => g.status === 'on_track').length || 0;
+    const atRisk = goalsData?.filter(g => g.status === 'at_risk').length || 0;
+    const offTrack = goalsData?.filter(g => g.status === 'off_track').length || 0;
+    const avgProgress = goalsData && goalsData.length > 0
+      ? Math.round(goalsData.reduce((sum, g) => sum + (g.progress || 0), 0) / goalsData.length)
+      : 0;
 
-  // Mock data for appraisal summary cards
-  const appraisalSummary = [
-    { icon: RefreshCw, number: '18', label: 'Total reviews', color: 'text-purple-600' },
-    { icon: CheckCircle, number: '8', label: 'Completed', color: 'text-green-600' },
-    { icon: Clock, number: '3', label: 'Pending', color: 'text-yellow-600' },
-    { icon: Users, number: '3.6', label: 'Avg rating', color: 'text-blue-600' }
-  ];
+    return [
+      { icon: Target, number: total.toString(), label: 'Total goals', color: 'text-purple-600' },
+      { icon: Target, number: onTrack.toString(), label: 'On track', color: 'text-green-600' },
+      { icon: AlertTriangle, number: atRisk.toString(), label: 'At risk', color: 'text-red-600' },
+      { icon: AlertTriangle, number: offTrack.toString(), label: 'Off track', color: 'text-orange-600' },
+      { icon: BarChart3, number: `${avgProgress}%`, label: 'Avg progress', color: 'text-blue-600' }
+    ];
+  }, [goalsData]);
 
-  // Mock data for reviews
-  const reviews = [
+  // Transform live goals data to match UI format
+  const goals = useMemo(() => {
+    return (goalsData || []).map((g) => {
+      const status = g.status || 'on_track';
+      const statusMap: Record<string, { label: string; color: string }> = {
+        'on_track': { label: 'On track', color: 'bg-green-100 text-green-800' },
+        'at_risk': { label: 'At risk', color: 'bg-red-100 text-red-800' },
+        'off_track': { label: 'Off track', color: 'bg-yellow-100 text-yellow-800' },
+        'completed': { label: 'Completed', color: 'bg-blue-100 text-blue-800' },
+      };
+      const statusInfo = statusMap[status] || statusMap['on_track'];
+
+      return {
+        id: g.id as unknown as number,
+        title: g.title,
+        type: g.type || 'OKR',
+        description: g.description || '',
+        companyOkr: g.company_okr || '',
+        owner: g.owner_name || '',
+        weight: g.weight || '',
+        nextCheckIn: g.next_check_in ? new Date(g.next_check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+        progress: g.progress || 0,
+        status: statusInfo.label,
+        statusColor: statusInfo.color,
+        goalData: g, // Store full record
+      };
+    });
+  }, [goalsData]);
+
+  // Live performance reviews from database
+  const { data: reviewsData, isLoading: reviewsLoading } = usePerformanceReviews();
+
+  // Calculate appraisal summary from live data
+  const appraisalSummary = useMemo(() => {
+    const total = reviewsData?.length || 0;
+    const completed = reviewsData?.filter(r => r.status === 'completed').length || 0;
+    const inProgress = reviewsData?.filter(r => r.status === 'in_progress').length || 0;
+    const pending = reviewsData?.filter(r => r.status === 'draft').length || 0;
+
+    return [
+      { icon: RefreshCw, number: total.toString(), label: 'Total reviews', color: 'text-purple-600' },
+      { icon: CheckCircle, number: completed.toString(), label: 'Completed', color: 'text-green-600' },
+      { icon: Clock, number: pending.toString(), label: 'Pending', color: 'text-yellow-600' },
+      { icon: Users, number: '--', label: 'Avg rating', color: 'text-blue-600' } // TODO: Calculate from ratings
+    ];
+  }, [reviewsData]);
+
+  // Live reviews from database - transform to UI format
+  const { data: employees } = useEmployees();
+  const reviews = useMemo(() => {
+    return (reviewsData || []).map((review) => {
+      const employee = employees?.find(e => e.id === review.employee_id);
+      const employeeName = employee ? `${employee.first_name} ${employee.last_name}`.trim() : 'Unknown Employee';
+      const employeeRole = employee ? `${employee.department || ''} | ${employee.position || ''}`.trim() : '';
+
+      const statusMap: Record<string, { label: string; color: string }> = {
+        'draft': { label: 'Self review', color: 'bg-blue-100 text-blue-800' },
+        'in_progress': { label: 'Manager review', color: 'bg-yellow-100 text-yellow-800' },
+        'completed': { label: 'Completed', color: 'bg-green-100 text-green-800' },
+      };
+      const statusInfo = statusMap[review.status] || statusMap['draft'];
+
+      return {
+        id: review.id as unknown as number,
+        employee: { name: employeeName, role: employeeRole },
+        manager: '—', // TODO: Fetch manager name from reviewer_id
+        dueDate: review.review_period_end ? new Date(review.review_period_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—',
+        progress: { completed: review.status === 'completed' ? 4 : review.status === 'in_progress' ? 2 : 0, total: 4 },
+        rating: review.overall_rating ? review.overall_rating.replace('_', '.') : '--',
+        status: statusInfo.label,
+        statusColor: statusInfo.color,
+        reviewData: review, // Store full record
+      };
+    });
+  }, [reviewsData, employees]);
+
+  // Legacy mock data removed - using live data above
+  const reviews_OLD = [
     {
       id: 1,
       employee: { name: 'Sarah Chen', role: 'Engineering | Senior' },
@@ -321,15 +349,15 @@ const PerformanceManagement = () => {
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    
+
     if (!formData.title.trim()) {
       errors.title = 'Goal title is required';
     }
-    
+
     if (!formData.description.trim()) {
       errors.description = 'Description is required';
     }
-    
+
     if (!formData.weight || formData.weight === '') {
       errors.weight = 'Weight is required';
     } else {
@@ -338,7 +366,7 @@ const PerformanceManagement = () => {
         errors.weight = 'Weight must be between 0 and 100';
       }
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -348,7 +376,7 @@ const PerformanceManagement = () => {
       ...prev,
       [field]: value
     }));
-    
+
     // Clear error when user starts typing
     if (formErrors[field]) {
       setFormErrors(prev => ({
@@ -362,7 +390,7 @@ const PerformanceManagement = () => {
     if (!validateForm()) {
       return;
     }
-    
+
     // Handle form submission here
     console.log('Creating goal:', formData);
     setIsCreateGoalModalOpen(false);
@@ -432,7 +460,7 @@ const PerformanceManagement = () => {
       ) : showSuccessionDetail ? (
         <SuccessionRoleDetailView onBack={() => setShowSuccessionDetail(false)} />
       ) : showPlanDetail && selectedPlan ? (
-        <SuccessorDevelopmentPlanDetailView 
+        <SuccessorDevelopmentPlanDetailView
           onBack={handleBackToDevelopmentPlans}
           employeeName={selectedPlan.name}
           employeeRole={selectedPlan.role}
@@ -440,10 +468,10 @@ const PerformanceManagement = () => {
         />
       ) : (
         <>
-      {/* Header */}
+          {/* Header */}
           <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-foreground">Performance management</h1>
-            <Button 
+            <h1 className="text-3xl font-bold text-foreground">Performance management</h1>
+            <Button
               onClick={() => {
                 console.log('Test button clicked');
                 setShowDetailView(true);
@@ -452,152 +480,22 @@ const PerformanceManagement = () => {
             >
               Test Detail View
             </Button>
-      </div>
-
-      {/* Tab Navigation */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 bg-muted">
-          <TabsTrigger value="kpi-objectives">KPI & Objectives</TabsTrigger>
-          <TabsTrigger value="appraisal-reviews">Appraisal & Reviews</TabsTrigger>
-          <TabsTrigger value="feedback-history">Feedback History</TabsTrigger>
-          <TabsTrigger value="succession-planning">Succession Planning</TabsTrigger>
-        </TabsList>
-
-        {/* KPI & Objectives Tab */}
-        <TabsContent value="kpi-objectives" className="space-y-6 mt-6">
-          {/* KPI Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {kpiSummary.map((item, index) => {
-              const IconComponent = item.icon;
-              return (
-                <Card key={index} className="text-center">
-                  <CardContent className="p-4">
-                    <div className={`w-8 h-8 mx-auto mb-2 ${item.color}`}>
-                      <IconComponent className="w-full h-full" />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground mb-1">{item.number}</div>
-                    <div className="text-sm text-muted-foreground">{item.label}</div>
-                  </CardContent>
-                </Card>
-              );
-            })}
           </div>
 
-          {/* KPIs & Objectives Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">KPIs & Objectives</CardTitle>
-                <div className="flex items-center space-x-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filter
-                  </Button>
-                  <Button 
-                    className="bg-purple-600 hover:bg-purple-700"
-                    onClick={() => setIsCreateGoalModalOpen(true)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Goal
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {goals.map((goal) => (
-                  <Card key={goal.id} className="border border-gray-200">
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        {/* Goal Header */}
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="text-lg font-semibold text-foreground">{goal.title}</h3>
-                            <Badge variant="outline" className="mt-1">
-                              {goal.type}
-                            </Badge>
-                          </div>
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
+          {/* Tab Navigation */}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-4 bg-muted">
+              <TabsTrigger value="kpi-objectives">KPI & Objectives</TabsTrigger>
+              <TabsTrigger value="appraisal-reviews">Appraisal & Reviews</TabsTrigger>
+              <TabsTrigger value="feedback-history">Feedback History</TabsTrigger>
+              <TabsTrigger value="succession-planning">Succession Planning</TabsTrigger>
+            </TabsList>
 
-                        {/* Description */}
-                        <p className="text-muted-foreground text-sm">{goal.description}</p>
-
-                        {/* Goal Details */}
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Company OKR:</span>
-                            <span className="text-foreground">{goal.companyOkr}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Owner:</span>
-                            <span className="text-foreground">{goal.owner}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Weight:</span>
-                            <span className="text-foreground">{goal.weight}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Next check-in:</span>
-                            <span className="text-foreground">{goal.nextCheckIn}</span>
-                          </div>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Progress</span>
-                            <span className="text-foreground">{goal.progress}%</span>
-                          </div>
-                          <div className="w-full bg-muted rounded-full h-2">
-                            <div
-                              className="bg-purple-600 h-2 rounded-full"
-                              style={{ width: `${goal.progress}%` }}
-                            ></div>
-                          </div>
-                        </div>
-
-                        {/* Status */}
-                        <div className="flex justify-between items-center">
-                          <Badge className={goal.statusColor}>{goal.status}</Badge>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => {
-                              console.log('View button clicked');
-                              handleViewGoal();
-                            }}
-                          >
-                            View
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Appraisal & Reviews Tab */}
-        <TabsContent value="appraisal-reviews" className="space-y-6 mt-6">
-          {showCalibrationView ? (
-            <>
-
-              {/* Calibration Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {calibrationSummary.map((item, index) => {
+            {/* KPI & Objectives Tab */}
+            <TabsContent value="kpi-objectives" className="space-y-6 mt-6">
+              {/* KPI Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                {kpiSummary.map((item, index) => {
                   const IconComponent = item.icon;
                   return (
                     <Card key={index} className="text-center">
@@ -605,7 +503,7 @@ const PerformanceManagement = () => {
                         <div className={`w-8 h-8 mx-auto mb-2 ${item.color}`}>
                           <IconComponent className="w-full h-full" />
                         </div>
-                        <div className={`text-2xl font-bold mb-1 ${item.color}`}>{item.number}</div>
+                        <div className="text-2xl font-bold text-foreground mb-1">{item.number}</div>
                         <div className="text-sm text-muted-foreground">{item.label}</div>
                       </CardContent>
                     </Card>
@@ -613,11 +511,11 @@ const PerformanceManagement = () => {
                 })}
               </div>
 
-              {/* Calibration Management Section */}
-          <Card>
+              {/* KPIs & Objectives Section */}
+              <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold">Calibration management</CardTitle>
+                    <CardTitle className="text-lg font-semibold">KPIs & Objectives</CardTitle>
                     <div className="flex items-center space-x-2">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -631,314 +529,553 @@ const PerformanceManagement = () => {
                         <Filter className="h-4 w-4 mr-2" />
                         Filter
                       </Button>
-                      <Button 
-                        className="bg-purple-600 hover:bg-purple-700 text-white"
-                        onClick={handleToggleCalibrationView}
+                      <Button
+                        className="bg-purple-600 hover:bg-purple-700"
+                        onClick={() => setIsCreateGoalModalOpen(true)}
                       >
-                        Reviews overview
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Lock className="h-4 w-4 mr-2" />
-                        Lock result
+                        <Plus className="h-4 w-4 mr-2" />
+                        New Goal
                       </Button>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {/* Sub-tabs */}
-                  <div className="flex space-x-6 border-b border-gray-200 mb-6">
-                    <button
-                      onClick={() => setCalibrationSubtab('distribution')}
-                      className={`pb-2 font-medium ${calibrationSubtab === 'distribution' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-muted-foreground hover:text-foreground'}`}
-                    >
-                      Distribution
-                    </button>
-                    <button
-                      onClick={() => setCalibrationSubtab('ninebox')}
-                      className={`pb-2 font-medium ${calibrationSubtab === 'ninebox' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-muted-foreground hover:text-foreground'}`}
-                    >
-                      Nine Box
-                    </button>
-                  </div>
-
-                  {/* Content */}
-                  {calibrationSubtab === 'distribution' ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Left Column - Rating Distribution Chart */}
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-foreground">Rating Distribution</h4>
-                      <div className="w-full h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <ReBarChart data={distributionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                            <XAxis dataKey="range" tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={{ stroke: '#E5E7EB' }} tickLine={false} />
-                            <YAxis allowDecimals={false} tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={{ stroke: '#E5E7EB' }} tickLine={false} />
-                            <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} formatter={(value: any, name: any, props: any) => [`${value} employees (${props.payload.percentage}%)`, '']} />
-                              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                                {distributionData.map((entry, index) => (
-                                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                                ))}
-                              </Bar>
-                          </ReBarChart>
-                        </ResponsiveContainer>
-                      </div>
-
-                      {/* Legend */}
-                      <div className="space-y-1">
-                        {distributionData.map((item, index) => (
-                          <div key={index} className="flex items-center space-x-2 text-sm">
-                            <div className={`w-3 h-3 rounded ${item.color}`}></div>
-                            <span className="text-muted-foreground">{item.range}: {item.count} employees ({item.percentage}%)</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Right Column - Distribution Guidelines and Moderation Notes */}
-                    <div className="space-y-6">
-                      {/* Distribution Guidelines (Card + Bars) */}
-                      <div className="space-y-4">
-                        <h4 className="font-medium text-foreground">Distribution Guidelines</h4>
-                        <div className="border rounded-lg p-3 bg-muted/50 border-gray-200 flex items-start space-x-2">
-                          <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
-                          <span className="text-sm text-muted-foreground">
-                            Target distribution: 5% Outstanding, 20% Exceeds, 60% Meets, 15% Needs Improvement.
-                          </span>
-                        </div>
-
-                        {/* Small compact bar chart for target vs actual */}
-                        <div className="w-full h-44">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <ReBarChart data={distributionGuidelines.map((d) => ({
-                              label: d.category.split(' ')[0],
-                              target: parseInt(d.target.replace('%','')),
-                              actual: parseInt(d.actual.replace('%','')),
-                              isDeviation: d.isDeviation
-                            }))} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                              <XAxis dataKey="label" tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={{ stroke: '#E5E7EB' }} tickLine={false} />
-                              <YAxis allowDecimals={false} tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={{ stroke: '#E5E7EB' }} tickLine={false} />
-                              <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} formatter={(value: any, name: any) => [`${value}%`, name === 'target' ? 'Target' : 'Actual']} />
-                              <Bar dataKey="target" stackId="a" fill="#E5E7EB" radius={[4,4,0,0]} />
-                              <Bar dataKey="actual" stackId="a" radius={[4,4,0,0]}>
-                                {distributionGuidelines.map((d, idx) => (
-                                  <Cell key={`c-${idx}`} fill={d.isDeviation ? '#F87171' : '#111827'} />
-                                ))}
-                              </Bar>
-                            </ReBarChart>
-                          </ResponsiveContainer>
-                        </div>
-
-                        {/* Rows with target vs actual chips */}
-                        <div className="space-y-2">
-                          {distributionGuidelines.map((item, index) => (
-                            <div key={index} className="flex items-center justify-between py-2">
-                              <span className="text-sm text-muted-foreground">{item.category}</span>
-                              <div className="flex items-center space-x-4">
-                                <span className="text-sm text-muted-foreground">Target: {item.target}</span>
-                                <span className={`text-sm font-medium px-2 py-1 rounded border ${
-                                  item.isDeviation ? 'bg-red-100 text-red-800 border-red-200' : 'bg-muted text-foreground border-gray-200'
-                                }`}>
-                                  Actual: {item.actual}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Moderation Notes */}
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Moderation Notes</Label>
-                        <Textarea
-                          placeholder="Add notes about distribution decisions..."
-                          className="min-h-[120px] focus:ring-purple-500 focus:border-purple-500 resize-none"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                      {/* Nine Box Grid */}
-                      <div className="lg:col-span-2">
-                        <div className="mb-4 text-sm font-medium text-foreground">Nine Box Grid</div>
-                        <div className="grid grid-cols-3 gap-4">
-                          {/* Row 1 - High Performance */}
-                          <div className="space-y-2">
-                            <div className="text-sm text-muted-foreground mb-1">High Potential</div>
-                            <div className="rounded-lg border border-green-200 bg-green-50 p-3 min-h-[88px]">
-                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Sarah Chen</div>
-                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground ml-2">Lisa Rodriguez</div>
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="text-sm text-muted-foreground mb-1">Medium Potential</div>
-                            <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 min-h-[88px]">
-                              <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Ryan Cole</div>
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="text-sm text-muted-foreground mb-1">Low Potential</div>
-                            <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]"></div>
-                          </div>
-
-                          {/* Row headers at left */}
-                          <div className="col-span-3 grid grid-cols-3 gap-4">
-                            <div>
-                              <div className="text-sm text-muted-foreground mb-1">High Performance</div>
-                            </div>
-                            <div></div>
-                            <div></div>
-                          </div>
-
-                          {/* Row 2 - Medium Performance */}
-                          <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Marcus Thompson</div>
-                          </div>
-                          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Jane Doe</div>
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground ml-2">Mike Wilson</div>
-                          </div>
-                          <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Tom Brown</div>
-                          </div>
-
-                          {/* Row 3 - Low Performance */}
-                          <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]"></div>
-                          <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Anna Davis</div>
-                          </div>
-                          <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
-                            <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">John Smith</div>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 flex items-start space-x-2 text-sm text-muted-foreground bg-muted/50 border border-gray-200 rounded-md p-3">
-                          <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
-                          <span>Drag employees between boxes to adjust their performance/potential ratings. Changes will be reflected in their review scores.</span>
-                        </div>
-                      </div>
-
-                      {/* Right Rail */}
-                      <div className="space-y-6">
-                        {/* Rating Legend */}
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="text-sm font-semibold">Rating Legend</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-3 text-sm">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <div>High Performance +</div>
-                                <div className="text-muted-foreground">High Potential</div>
-                              </div>
-                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">4.8</div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <div>High Performance +</div>
-                                <div className="text-muted-foreground">Med Potential</div>
-                              </div>
-                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">4.5</div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <div>Med Performance +</div>
-                                <div className="text-muted-foreground">High Potential</div>
-                              </div>
-                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">3.8</div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <div>Med Performance +</div>
-                                <div className="text-muted-foreground">Med Potential</div>
-                              </div>
-                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">3.1</div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div>Low Performance:</div>
-                              <div className="px-2 py-1 rounded bg-rose-100 text-rose-800 text-xs font-medium">2.2-2.8</div>
-                            </div>
-            </CardContent>
-          </Card>
-
-                        {/* Recent Changes */}
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="text-sm font-semibold">Recent Changes</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-4 text-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {goals.map((goal) => (
+                      <Card key={goal.id} className="border border-gray-200">
+                        <CardContent className="p-6">
+                          <div className="space-y-4">
+                            {/* Goal Header */}
                             <div className="flex items-start justify-between">
                               <div>
-                                <div className="font-medium">Anna Davis</div>
-                                <div className="text-muted-foreground">From: Low Performance / High Potential</div>
-                                <div className="text-muted-foreground">To: Low Performance / Medium Potential</div>
-                                <div className="text-muted-foreground">9/29/2025, 7:09:47 PM</div>
+                                <h3 className="text-lg font-semibold text-foreground">{goal.title}</h3>
+                                <Badge variant="outline" className="mt-1">
+                                  {goal.type}
+                                </Badge>
                               </div>
-                              <div className="px-2 py-1 rounded bg-rose-100 text-rose-800 text-xs font-medium">-0.3</div>
+                              <Button variant="ghost" size="sm">
+                                <Eye className="h-4 w-4" />
+                              </Button>
                             </div>
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <div className="font-medium">Anna Davis</div>
-                                <div className="text-muted-foreground">From: Low Performance / Medium Potential</div>
-                                <div className="text-muted-foreground">To: Low Performance / High Potential</div>
-                                <div className="text-muted-foreground">9/29/2025, 7:09:44 PM</div>
-                              </div>
-                              <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">0.0</div>
-                            </div>
-                          </CardContent>
-                        </Card>
 
-                        {/* Box Distribution */}
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="text-sm font-semibold">Box Distribution</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2 text-sm">
-                            {[
-                              ['HH', 2], ['HM', 1], ['HL', 0],
-                              ['MH', 1], ['MM', 2], ['ML', 2],
-                              ['LH', 0], ['LM', 1], ['LL', 1]
-                            ].map(([label, val], idx) => (
-                              <div key={idx as number} className="flex items-center justify-between">
-                                <span className="text-muted-foreground">{label as string}</span>
-                                <span className="px-2 py-0.5 rounded bg-muted text-foreground text-xs">{val as number}</span>
+                            {/* Description */}
+                            <p className="text-muted-foreground text-sm">{goal.description}</p>
+
+                            {/* Goal Details */}
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Company OKR:</span>
+                                <span className="text-foreground">{goal.companyOkr}</span>
                               </div>
-                            ))}
-                          </CardContent>
-                        </Card>
-                      </div>
-                    </div>
-                  )}
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Owner:</span>
+                                <span className="text-foreground">{goal.owner}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Weight:</span>
+                                <span className="text-foreground">{goal.weight}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Next check-in:</span>
+                                <span className="text-foreground">{goal.nextCheckIn}</span>
+                              </div>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Progress</span>
+                                <span className="text-foreground">{goal.progress}%</span>
+                              </div>
+                              <div className="w-full bg-muted rounded-full h-2">
+                                <div
+                                  className="bg-purple-600 h-2 rounded-full"
+                                  style={{ width: `${goal.progress}%` }}
+                                ></div>
+                              </div>
+                            </div>
+
+                            {/* Status */}
+                            <div className="flex justify-between items-center">
+                              <Badge className={goal.statusColor}>{goal.status}</Badge>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  console.log('View button clicked');
+                                  handleViewGoal();
+                                }}
+                              >
+                                View
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
-            </>
-          ) : (
-            <>
+            </TabsContent>
 
-              {/* Appraisal Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {appraisalSummary.map((item, index) => {
-                  const IconComponent = item.icon;
-                  return (
-                    <Card key={index} className="text-center">
-                      <CardContent className="p-4">
-                        <div className={`w-8 h-8 mx-auto mb-2 ${item.color}`}>
-                          <IconComponent className="w-full h-full" />
+            {/* Appraisal & Reviews Tab */}
+            <TabsContent value="appraisal-reviews" className="space-y-6 mt-6">
+              {showCalibrationView ? (
+                <>
+
+                  {/* Calibration Summary Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {calibrationSummary.map((item, index) => {
+                      const IconComponent = item.icon;
+                      return (
+                        <Card key={index} className="text-center">
+                          <CardContent className="p-4">
+                            <div className={`w-8 h-8 mx-auto mb-2 ${item.color}`}>
+                              <IconComponent className="w-full h-full" />
+                            </div>
+                            <div className={`text-2xl font-bold mb-1 ${item.color}`}>{item.number}</div>
+                            <div className="text-sm text-muted-foreground">{item.label}</div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+
+                  {/* Calibration Management Section */}
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg font-semibold">Calibration management</CardTitle>
+                        <div className="flex items-center space-x-2">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <input
+                              type="text"
+                              placeholder="Search..."
+                              className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            />
+                          </div>
+                          <Button variant="outline" size="sm">
+                            <Filter className="h-4 w-4 mr-2" />
+                            Filter
+                          </Button>
+                          <Button
+                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                            onClick={handleToggleCalibrationView}
+                          >
+                            Reviews overview
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <Lock className="h-4 w-4 mr-2" />
+                            Lock result
+                          </Button>
                         </div>
-                        <div className={`text-2xl font-bold mb-1 ${item.color}`}>{item.number}</div>
-                        <div className="text-sm text-muted-foreground">{item.label}</div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {/* Sub-tabs */}
+                      <div className="flex space-x-6 border-b border-gray-200 mb-6">
+                        <button
+                          onClick={() => setCalibrationSubtab('distribution')}
+                          className={`pb-2 font-medium ${calibrationSubtab === 'distribution' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-muted-foreground hover:text-foreground'}`}
+                        >
+                          Distribution
+                        </button>
+                        <button
+                          onClick={() => setCalibrationSubtab('ninebox')}
+                          className={`pb-2 font-medium ${calibrationSubtab === 'ninebox' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-muted-foreground hover:text-foreground'}`}
+                        >
+                          Nine Box
+                        </button>
+                      </div>
 
-          {/* Review Overview */}
-          <Card>
-            <CardHeader>
+                      {/* Content */}
+                      {calibrationSubtab === 'distribution' ? (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                          {/* Left Column - Rating Distribution Chart */}
+                          <div className="space-y-4">
+                            <h4 className="font-medium text-foreground">Rating Distribution</h4>
+                            <div className="w-full h-64">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <ReBarChart data={distributionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                  <XAxis dataKey="range" tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={{ stroke: '#E5E7EB' }} tickLine={false} />
+                                  <YAxis allowDecimals={false} tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={{ stroke: '#E5E7EB' }} tickLine={false} />
+                                  <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} formatter={(value: any, name: any, props: any) => [`${value} employees (${props.payload.percentage}%)`, '']} />
+                                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                                    {distributionData.map((entry, index) => (
+                                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                                    ))}
+                                  </Bar>
+                                </ReBarChart>
+                              </ResponsiveContainer>
+                            </div>
+
+                            {/* Legend */}
+                            <div className="space-y-1">
+                              {distributionData.map((item, index) => (
+                                <div key={index} className="flex items-center space-x-2 text-sm">
+                                  <div className={`w-3 h-3 rounded ${item.color}`}></div>
+                                  <span className="text-muted-foreground">{item.range}: {item.count} employees ({item.percentage}%)</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Right Column - Distribution Guidelines and Moderation Notes */}
+                          <div className="space-y-6">
+                            {/* Distribution Guidelines (Card + Bars) */}
+                            <div className="space-y-4">
+                              <h4 className="font-medium text-foreground">Distribution Guidelines</h4>
+                              <div className="border rounded-lg p-3 bg-muted/50 border-gray-200 flex items-start space-x-2">
+                                <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
+                                <span className="text-sm text-muted-foreground">
+                                  Target distribution: 5% Outstanding, 20% Exceeds, 60% Meets, 15% Needs Improvement.
+                                </span>
+                              </div>
+
+                              {/* Small compact bar chart for target vs actual */}
+                              <div className="w-full h-44">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <ReBarChart data={distributionGuidelines.map((d) => ({
+                                    label: d.category.split(' ')[0],
+                                    target: parseInt(d.target.replace('%', '')),
+                                    actual: parseInt(d.actual.replace('%', '')),
+                                    isDeviation: d.isDeviation
+                                  }))} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                    <XAxis dataKey="label" tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={{ stroke: '#E5E7EB' }} tickLine={false} />
+                                    <YAxis allowDecimals={false} tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={{ stroke: '#E5E7EB' }} tickLine={false} />
+                                    <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} formatter={(value: any, name: any) => [`${value}%`, name === 'target' ? 'Target' : 'Actual']} />
+                                    <Bar dataKey="target" stackId="a" fill="#E5E7EB" radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey="actual" stackId="a" radius={[4, 4, 0, 0]}>
+                                      {distributionGuidelines.map((d, idx) => (
+                                        <Cell key={`c-${idx}`} fill={d.isDeviation ? '#F87171' : '#111827'} />
+                                      ))}
+                                    </Bar>
+                                  </ReBarChart>
+                                </ResponsiveContainer>
+                              </div>
+
+                              {/* Rows with target vs actual chips */}
+                              <div className="space-y-2">
+                                {distributionGuidelines.map((item, index) => (
+                                  <div key={index} className="flex items-center justify-between py-2">
+                                    <span className="text-sm text-muted-foreground">{item.category}</span>
+                                    <div className="flex items-center space-x-4">
+                                      <span className="text-sm text-muted-foreground">Target: {item.target}</span>
+                                      <span className={`text-sm font-medium px-2 py-1 rounded border ${item.isDeviation ? 'bg-red-100 text-red-800 border-red-200' : 'bg-muted text-foreground border-gray-200'
+                                        }`}>
+                                        Actual: {item.actual}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Moderation Notes */}
+                            <div className="space-y-2">
+                              <Label className="text-sm font-medium text-foreground">Moderation Notes</Label>
+                              <Textarea
+                                placeholder="Add notes about distribution decisions..."
+                                className="min-h-[120px] focus:ring-purple-500 focus:border-purple-500 resize-none"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                          {/* Nine Box Grid */}
+                          <div className="lg:col-span-2">
+                            <div className="mb-4 text-sm font-medium text-foreground">Nine Box Grid</div>
+                            <div className="grid grid-cols-3 gap-4">
+                              {/* Row 1 - High Performance */}
+                              <div className="space-y-2">
+                                <div className="text-sm text-muted-foreground mb-1">High Potential</div>
+                                <div className="rounded-lg border border-green-200 bg-green-50 p-3 min-h-[88px]">
+                                  <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Sarah Chen</div>
+                                  <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground ml-2">Lisa Rodriguez</div>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="text-sm text-muted-foreground mb-1">Medium Potential</div>
+                                <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 min-h-[88px]">
+                                  <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Ryan Cole</div>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="text-sm text-muted-foreground mb-1">Low Potential</div>
+                                <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]"></div>
+                              </div>
+
+                              {/* Row headers at left */}
+                              <div className="col-span-3 grid grid-cols-3 gap-4">
+                                <div>
+                                  <div className="text-sm text-muted-foreground mb-1">High Performance</div>
+                                </div>
+                                <div></div>
+                                <div></div>
+                              </div>
+
+                              {/* Row 2 - Medium Performance */}
+                              <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 min-h-[88px]">
+                                <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Marcus Thompson</div>
+                              </div>
+                              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 min-h-[88px]">
+                                <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Jane Doe</div>
+                                <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground ml-2">Mike Wilson</div>
+                              </div>
+                              <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
+                                <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Tom Brown</div>
+                              </div>
+
+                              {/* Row 3 - Low Performance */}
+                              <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]"></div>
+                              <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
+                                <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">Anna Davis</div>
+                              </div>
+                              <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 min-h-[88px]">
+                                <div className="inline-flex items-center rounded-full border px-2 py-1 text-xs bg-card text-muted-foreground">John Smith</div>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 flex items-start space-x-2 text-sm text-muted-foreground bg-muted/50 border border-gray-200 rounded-md p-3">
+                              <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
+                              <span>Drag employees between boxes to adjust their performance/potential ratings. Changes will be reflected in their review scores.</span>
+                            </div>
+                          </div>
+
+                          {/* Right Rail */}
+                          <div className="space-y-6">
+                            {/* Rating Legend */}
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className="text-sm font-semibold">Rating Legend</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-3 text-sm">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div>High Performance +</div>
+                                    <div className="text-muted-foreground">High Potential</div>
+                                  </div>
+                                  <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">4.8</div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div>High Performance +</div>
+                                    <div className="text-muted-foreground">Med Potential</div>
+                                  </div>
+                                  <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">4.5</div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div>Med Performance +</div>
+                                    <div className="text-muted-foreground">High Potential</div>
+                                  </div>
+                                  <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">3.8</div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div>Med Performance +</div>
+                                    <div className="text-muted-foreground">Med Potential</div>
+                                  </div>
+                                  <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">3.1</div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <div>Low Performance:</div>
+                                  <div className="px-2 py-1 rounded bg-rose-100 text-rose-800 text-xs font-medium">2.2-2.8</div>
+                                </div>
+                              </CardContent>
+                            </Card>
+
+                            {/* Recent Changes */}
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className="text-sm font-semibold">Recent Changes</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-4 text-sm">
+                                <div className="flex items-start justify-between">
+                                  <div>
+                                    <div className="font-medium">Anna Davis</div>
+                                    <div className="text-muted-foreground">From: Low Performance / High Potential</div>
+                                    <div className="text-muted-foreground">To: Low Performance / Medium Potential</div>
+                                    <div className="text-muted-foreground">9/29/2025, 7:09:47 PM</div>
+                                  </div>
+                                  <div className="px-2 py-1 rounded bg-rose-100 text-rose-800 text-xs font-medium">-0.3</div>
+                                </div>
+                                <div className="flex items-start justify-between">
+                                  <div>
+                                    <div className="font-medium">Anna Davis</div>
+                                    <div className="text-muted-foreground">From: Low Performance / Medium Potential</div>
+                                    <div className="text-muted-foreground">To: Low Performance / High Potential</div>
+                                    <div className="text-muted-foreground">9/29/2025, 7:09:44 PM</div>
+                                  </div>
+                                  <div className="px-2 py-1 rounded bg-muted text-foreground text-xs font-medium">0.0</div>
+                                </div>
+                              </CardContent>
+                            </Card>
+
+                            {/* Box Distribution */}
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className="text-sm font-semibold">Box Distribution</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-2 text-sm">
+                                {[
+                                  ['HH', 2], ['HM', 1], ['HL', 0],
+                                  ['MH', 1], ['MM', 2], ['ML', 2],
+                                  ['LH', 0], ['LM', 1], ['LL', 1]
+                                ].map(([label, val], idx) => (
+                                  <div key={idx as number} className="flex items-center justify-between">
+                                    <span className="text-muted-foreground">{label as string}</span>
+                                    <span className="px-2 py-0.5 rounded bg-muted text-foreground text-xs">{val as number}</span>
+                                  </div>
+                                ))}
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </>
+              ) : (
+                <>
+
+                  {/* Appraisal Summary Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {appraisalSummary.map((item, index) => {
+                      const IconComponent = item.icon;
+                      return (
+                        <Card key={index} className="text-center">
+                          <CardContent className="p-4">
+                            <div className={`w-8 h-8 mx-auto mb-2 ${item.color}`}>
+                              <IconComponent className="w-full h-full" />
+                            </div>
+                            <div className={`text-2xl font-bold mb-1 ${item.color}`}>{item.number}</div>
+                            <div className="text-sm text-muted-foreground">{item.label}</div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+
+                  {/* Review Overview */}
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg font-semibold">Review overview</CardTitle>
+                        <div className="flex items-center space-x-2">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <input
+                              type="text"
+                              placeholder="Search..."
+                              className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            />
+                          </div>
+                          <Button variant="outline" size="sm">
+                            <Filter className="h-4 w-4 mr-2" />
+                            Filter
+                          </Button>
+                          <Button
+                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                            onClick={handleToggleCalibrationView}
+                          >
+                            Calibration view
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-gray-200">
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Employee</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Manager</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Due date</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Progress</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Rating</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {reviews.map((review) => (
+                              <tr key={review.id} className="border-b border-gray-100 hover:bg-muted/50">
+                                <td className="py-4 px-4">
+                                  <div>
+                                    <div className="font-semibold text-foreground">{review.employee.name}</div>
+                                    <div className="text-sm text-muted-foreground">{review.employee.role}</div>
+                                  </div>
+                                </td>
+                                <td className="py-4 px-4 text-foreground">{review.manager}</td>
+                                <td className="py-4 px-4 text-foreground">{review.dueDate}</td>
+                                <td className="py-4 px-4">
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-16 bg-muted rounded-full h-2">
+                                      <div
+                                        className="bg-purple-600 h-2 rounded-full"
+                                        style={{ width: `${(review.progress.completed / review.progress.total) * 100}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-sm text-muted-foreground">
+                                      {review.progress.completed}/{review.progress.total}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="py-4 px-4 text-foreground">{review.rating}</td>
+                                <td className="py-4 px-4">
+                                  <Badge className={review.statusColor}>{review.status}</Badge>
+                                </td>
+                                <td className="py-4 px-4">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-card border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground hover:border-border"
+                                    onClick={() => {
+                                      console.log('Appraisal view button clicked');
+                                      handleViewAppraisal();
+                                    }}
+                                  >
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Pagination */}
+                      <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                        <div className="text-sm text-muted-foreground">
+                          Showing 1 to 8 of 10 review overview
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button variant="outline" size="sm" disabled>
+                            <ChevronLeft className="h-4 w-4 mr-1" />
+                            Previous
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            Next
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+            </TabsContent>
+
+            <TabsContent value="feedback-history" className="space-y-6 mt-6">
+              {/* Header row with title, search and actions */}
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">Review overview</CardTitle>
+                <div className="text-lg font-semibold text-foreground">Feedback history</div>
                 <div className="flex items-center space-x-2">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -952,593 +1089,479 @@ const PerformanceManagement = () => {
                     <Filter className="h-4 w-4 mr-2" />
                     Filter
                   </Button>
-                  <Button 
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                    onClick={handleToggleCalibrationView}
-                  >
-                    Calibration view
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => setIsGiveFeedbackOpen(true)}>
+                    + Give feedback
                   </Button>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Employee</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Manager</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Due date</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Progress</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Rating</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reviews.map((review) => (
-                      <tr key={review.id} className="border-b border-gray-100 hover:bg-muted/50">
-                        <td className="py-4 px-4">
-                          <div>
-                            <div className="font-semibold text-foreground">{review.employee.name}</div>
-                            <div className="text-sm text-muted-foreground">{review.employee.role}</div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4 text-foreground">{review.manager}</td>
-                        <td className="py-4 px-4 text-foreground">{review.dueDate}</td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-16 bg-muted rounded-full h-2">
-                              <div
-                                className="bg-purple-600 h-2 rounded-full"
-                                style={{ width: `${(review.progress.completed / review.progress.total) * 100}%` }}
-                              />
+
+              {/* Feedback Feed */}
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-sm font-medium text-foreground mb-4">Feedback Feed</div>
+                  <div className="space-y-4">
+                    {feedbackFeed.map((item) => (
+                      <div key={item.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
+                              {item.authorInitials}
                             </div>
-                            <span className="text-sm text-muted-foreground">
-                              {review.progress.completed}/{review.progress.total}
+                            <div className={`text-xs font-medium px-2 py-1 rounded ${item.typeColor}`}>{item.type}</div>
+                            <div className="text-sm text-foreground">
+                              {item.author} → {item.to}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 text-xs text-muted-foreground">
+                            <span>{item.visibility}</span>
+                            <span>{item.timestamp}</span>
+                          </div>
+                        </div>
+                        <p className="mt-3 text-muted-foreground text-sm">{item.text}</p>
+                        {item.linked && (
+                          <div className="mt-3">
+                            <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-gray-200">
+                              Linked: {item.linked}
                             </span>
                           </div>
-                        </td>
-                        <td className="py-4 px-4 text-foreground">{review.rating}</td>
-                        <td className="py-4 px-4">
-                          <Badge className={review.statusColor}>{review.status}</Badge>
-                        </td>
-                        <td className="py-4 px-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="bg-card border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground hover:border-border"
-                            onClick={() => {
-                              console.log('Appraisal view button clicked');
-                              handleViewAppraisal();
-                            }}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            View
-                          </Button>
-                        </td>
-                      </tr>
+                        )}
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-              
-              {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-                <div className="text-sm text-muted-foreground">
-                  Showing 1 to 8 of 10 review overview
-                </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="succession-planning" className="space-y-6 mt-6">
+              {/* Header Row */}
+              <div className="flex items-center justify-between">
+                <div className="text-lg font-semibold text-foreground">Succession planning</div>
                 <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm" disabled>
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    Previous
-                  </Button>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
                   <Button variant="outline" size="sm">
-                    Next
-                    <ChevronRight className="h-4 w-4 ml-1" />
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filter
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-            </>
-          )}
-        </TabsContent>
 
-        <TabsContent value="feedback-history" className="space-y-6 mt-6">
-          {/* Header row with title, search and actions */}
-          <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold text-foreground">Feedback history</div>
-            <div className="flex items-center space-x-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
+              {/* Subtabs */}
+              <div className="flex items-center space-x-6 text-sm">
+                <button onClick={() => setSuccessionSubtab('critical')} className={`pb-2 font-medium ${successionSubtab === 'critical' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-muted-foreground hover:text-foreground'}`}>Critical plan mapping</button>
+                <button onClick={() => setSuccessionSubtab('development')} className={`pb-2 font-medium ${successionSubtab === 'development' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-muted-foreground hover:text-foreground'}`}>Successor development plans</button>
               </div>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => setIsGiveFeedbackOpen(true)}>
-                + Give feedback
-              </Button>
-            </div>
-          </div>
 
-          {/* Feedback Feed */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-sm font-medium text-foreground mb-4">Feedback Feed</div>
-              <div className="space-y-4">
-                {feedbackFeed.map((item) => (
-                  <div key={item.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
-                          {item.authorInitials}
-                        </div>
-                        <div className={`text-xs font-medium px-2 py-1 rounded ${item.typeColor}`}>{item.type}</div>
-                        <div className="text-sm text-foreground">
-                          {item.author} → {item.to}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3 text-xs text-muted-foreground">
-                        <span>{item.visibility}</span>
-                        <span>{item.timestamp}</span>
-                      </div>
-                    </div>
-                    <p className="mt-3 text-muted-foreground text-sm">{item.text}</p>
-                    {item.linked && (
-                      <div className="mt-3">
-                        <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-gray-200">
-                          Linked: {item.linked}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="succession-planning" className="space-y-6 mt-6">
-          {/* Header Row */}
-          <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold text-foreground">Succession planning</div>
-            <div className="flex items-center space-x-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-10 pr-4 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-            </div>
-          </div>
-
-          {/* Subtabs */}
-          <div className="flex items-center space-x-6 text-sm">
-            <button onClick={()=>setSuccessionSubtab('critical')} className={`pb-2 font-medium ${successionSubtab==='critical'?'border-b-2 border-purple-600 text-purple-600':'text-muted-foreground hover:text-foreground'}`}>Critical plan mapping</button>
-            <button onClick={()=>setSuccessionSubtab('development')} className={`pb-2 font-medium ${successionSubtab==='development'?'border-b-2 border-purple-600 text-purple-600':'text-muted-foreground hover:text-foreground'}`}>Successor development plans</button>
-          </div>
-
-          {/* Critical Roles Overview */}
-          {successionSubtab==='critical' ? (
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-sm font-medium text-foreground mb-4">Critical Roles Overview</div>
-              <div className="space-y-3">
-                {[
-                  { role: 'Head of Operations', tags: ['High Risk','Critical','Diversity Slate Met'], incumbent: 'L. Mensah', dept: 'Operations', loc: 'New York', succ: '0 / 1 / 2', now: 'Now/12m/24m', coverage: 67 },
-                  { role: 'Engineering Manager', tags: ['Medium Risk','High','Ready Now','Diversity Slate Met'], incumbent: 'J. Doe', dept: 'Engineering', loc: 'San Francisco', succ: '2 / 1 / 2', now: 'Now/12m/24m', coverage: 100 },
-                  { role: 'VP of Sales', tags: ['High Risk','Critical'], incumbent: 'M. Johnson', dept: 'Sales', loc: 'Chicago', succ: '0 / 1 / 1', now: 'Now/12m/24m', coverage: 67 },
-                  { role: 'Product Director', tags: ['Low Risk','High','Ready Now','Diversity Slate Met'], incumbent: 'K. Patel', dept: 'Product', loc: 'Austin', succ: '1 / 2 / 1', now: 'Now/12m/24m', coverage: 100 },
-                  { role: 'CFO', tags: ['High Risk','Critical'], incumbent: 'R. Williams', dept: 'Finance', loc: 'New York', succ: '0 / 0 / 1', now: 'Now/12m/24m', coverage: 33 },
-                  { role: 'Senior Engineering Lead', tags: ['Medium Risk','Medium','Ready Now','Diversity Slate Met'], incumbent: 'T. Anderson', dept: 'Engineering', loc: 'Seattle', succ: '1 / 1 / 0', now: 'Now/12m/24m', coverage: 100 },
-                ].map((r, idx) => (
-                  <div key={idx} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-3">
-                        <div className="font-semibold text-foreground">{r.role}</div>
-                        <div className="flex flex-wrap gap-2">
-                          {r.tags.map((t, i) => (
-                            <span key={i} className={`text-xs px-2 py-1 rounded ${
-                              t.includes('High Risk') ? 'bg-rose-100 text-rose-800' :
-                              t.includes('Medium Risk') ? 'bg-amber-100 text-amber-800' :
-                              t.includes('Low Risk') ? 'bg-emerald-100 text-emerald-800' :
-                              t.includes('Critical') ? 'bg-muted text-muted-foreground' :
-                              t.includes('Ready Now') ? 'bg-emerald-100 text-emerald-800' :
-                              t.includes('High') ? 'bg-emerald-100 text-emerald-800' :
-                              t.includes('Medium') ? 'bg-amber-100 text-amber-800' :
-                              'bg-violet-100 text-violet-800'
-                            }`}>{t}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-                        <span>Incumbent: {r.incumbent}</span>
-                        <span>{r.dept}</span>
-                        <span>{r.loc}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-8">
-                      <div className="text-sm text-muted-foreground">
-                        <div className="font-medium text-foreground">Successors</div>
-                        <div className="text-right">{r.succ}</div>
-                        <div className="text-right text-muted-foreground">{r.now}</div>
-                      </div>
-                      <div className="text-sm text-muted-foreground w-40">
-                        <div className="font-medium text-foreground flex items-center justify-between">
-                          <span>Coverage</span>
-                          <span>{r.coverage}%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2 mt-1">
-                          <div className="bg-foreground h-2 rounded-full" style={{ width: `${r.coverage}%` }} />
-                        </div>
-                      </div>
-                      <Button variant="ghost" className="text-muted-foreground" onClick={() => setShowSuccessionDetail(true)}>Open ▸</Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-          ) : (
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-sm font-medium text-foreground mb-4">Development Plans Overview (5)</div>
-              <div className="space-y-3">
-                {[
-                  { n: 'Alex Bello', role: 'Operations Manager', targetRole: 'Head of Operations', readiness: '≤12 months', progress: 60, overdue: 1, nextReview: '2025-07-15' },
-                  { n: 'Sarah Kim', role: 'Senior Engineer', targetRole: 'Engineering Manager', readiness: 'Ready Now', progress: 95, overdue: 0, nextReview: '2025-05-30' },
-                  { n: 'Ryan Cole', role: 'Sales Director', targetRole: 'VP of Sales', readiness: '≤6 months', progress: 75, overdue: 0, nextReview: '2025-06-01' },
-                  { n: 'Maria Rodriguez', role: 'Supply Chain Manager', targetRole: 'Head of Operations', readiness: '≤24 months', progress: 35, overdue: 2, nextReview: '2025-08-10' },
-                  { n: 'David Chen', role: 'Regional Sales Manager', targetRole: 'VP of Sales', readiness: '≤12 months', progress: 45, overdue: 1, nextReview: '2025-06-20' },
-                ].map((d, i) => (
-                  <div key={i} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">{d.n.split(' ').map(p=>p[0]).join('').slice(0,2)}</div>
-                      <div>
-                        <div className="font-medium text-foreground">{d.n}</div>
-                        <div className="text-xs text-muted-foreground">{d.role} → {d.targetRole}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-8 text-sm">
-                      <span className={`text-xs px-2 py-1 rounded ${d.readiness.includes('Ready') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{d.readiness}</span>
-                      <div className="w-48">
-                        <div className="text-muted-foreground">Plan Progress</div>
-                        <div className="flex items-center space-x-2">
-                          <div className="flex-1 bg-muted rounded-full h-2">
-                            <div className="bg-foreground h-2 rounded-full" style={{ width: `${d.progress}%` }} />
+              {/* Critical Roles Overview */}
+              {successionSubtab === 'critical' ? (
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="text-sm font-medium text-foreground mb-4">Critical Roles Overview</div>
+                    <div className="space-y-3">
+                      {[
+                        { role: 'Head of Operations', tags: ['High Risk', 'Critical', 'Diversity Slate Met'], incumbent: 'L. Mensah', dept: 'Operations', loc: 'New York', succ: '0 / 1 / 2', now: 'Now/12m/24m', coverage: 67 },
+                        { role: 'Engineering Manager', tags: ['Medium Risk', 'High', 'Ready Now', 'Diversity Slate Met'], incumbent: 'J. Doe', dept: 'Engineering', loc: 'San Francisco', succ: '2 / 1 / 2', now: 'Now/12m/24m', coverage: 100 },
+                        { role: 'VP of Sales', tags: ['High Risk', 'Critical'], incumbent: 'M. Johnson', dept: 'Sales', loc: 'Chicago', succ: '0 / 1 / 1', now: 'Now/12m/24m', coverage: 67 },
+                        { role: 'Product Director', tags: ['Low Risk', 'High', 'Ready Now', 'Diversity Slate Met'], incumbent: 'K. Patel', dept: 'Product', loc: 'Austin', succ: '1 / 2 / 1', now: 'Now/12m/24m', coverage: 100 },
+                        { role: 'CFO', tags: ['High Risk', 'Critical'], incumbent: 'R. Williams', dept: 'Finance', loc: 'New York', succ: '0 / 0 / 1', now: 'Now/12m/24m', coverage: 33 },
+                        { role: 'Senior Engineering Lead', tags: ['Medium Risk', 'Medium', 'Ready Now', 'Diversity Slate Met'], incumbent: 'T. Anderson', dept: 'Engineering', loc: 'Seattle', succ: '1 / 1 / 0', now: 'Now/12m/24m', coverage: 100 },
+                      ].map((r, idx) => (
+                        <div key={idx} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-3">
+                              <div className="font-semibold text-foreground">{r.role}</div>
+                              <div className="flex flex-wrap gap-2">
+                                {r.tags.map((t, i) => (
+                                  <span key={i} className={`text-xs px-2 py-1 rounded ${t.includes('High Risk') ? 'bg-rose-100 text-rose-800' :
+                                      t.includes('Medium Risk') ? 'bg-amber-100 text-amber-800' :
+                                        t.includes('Low Risk') ? 'bg-emerald-100 text-emerald-800' :
+                                          t.includes('Critical') ? 'bg-muted text-muted-foreground' :
+                                            t.includes('Ready Now') ? 'bg-emerald-100 text-emerald-800' :
+                                              t.includes('High') ? 'bg-emerald-100 text-emerald-800' :
+                                                t.includes('Medium') ? 'bg-amber-100 text-amber-800' :
+                                                  'bg-violet-100 text-violet-800'
+                                    }`}>{t}</span>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+                              <span>Incumbent: {r.incumbent}</span>
+                              <span>{r.dept}</span>
+                              <span>{r.loc}</span>
+                            </div>
                           </div>
-                          <span className="text-muted-foreground text-xs" style={{minWidth:28}}>{d.progress}%</span>
+
+                          <div className="flex items-center space-x-8">
+                            <div className="text-sm text-muted-foreground">
+                              <div className="font-medium text-foreground">Successors</div>
+                              <div className="text-right">{r.succ}</div>
+                              <div className="text-right text-muted-foreground">{r.now}</div>
+                            </div>
+                            <div className="text-sm text-muted-foreground w-40">
+                              <div className="font-medium text-foreground flex items-center justify-between">
+                                <span>Coverage</span>
+                                <span>{r.coverage}%</span>
+                              </div>
+                              <div className="w-full bg-muted rounded-full h-2 mt-1">
+                                <div className="bg-foreground h-2 rounded-full" style={{ width: `${r.coverage}%` }} />
+                              </div>
+                            </div>
+                            <Button variant="ghost" className="text-muted-foreground" onClick={() => setShowSuccessionDetail(true)}>Open ▸</Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="text-sm font-medium text-foreground mb-4">Development Plans Overview (5)</div>
+                    <div className="space-y-3">
+                      {[
+                        { n: 'Alex Bello', role: 'Operations Manager', targetRole: 'Head of Operations', readiness: '≤12 months', progress: 60, overdue: 1, nextReview: '2025-07-15' },
+                        { n: 'Sarah Kim', role: 'Senior Engineer', targetRole: 'Engineering Manager', readiness: 'Ready Now', progress: 95, overdue: 0, nextReview: '2025-05-30' },
+                        { n: 'Ryan Cole', role: 'Sales Director', targetRole: 'VP of Sales', readiness: '≤6 months', progress: 75, overdue: 0, nextReview: '2025-06-01' },
+                        { n: 'Maria Rodriguez', role: 'Supply Chain Manager', targetRole: 'Head of Operations', readiness: '≤24 months', progress: 35, overdue: 2, nextReview: '2025-08-10' },
+                        { n: 'David Chen', role: 'Regional Sales Manager', targetRole: 'VP of Sales', readiness: '≤12 months', progress: 45, overdue: 1, nextReview: '2025-06-20' },
+                      ].map((d, i) => (
+                        <div key={i} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">{d.n.split(' ').map(p => p[0]).join('').slice(0, 2)}</div>
+                            <div>
+                              <div className="font-medium text-foreground">{d.n}</div>
+                              <div className="text-xs text-muted-foreground">{d.role} → {d.targetRole}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-8 text-sm">
+                            <span className={`text-xs px-2 py-1 rounded ${d.readiness.includes('Ready') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{d.readiness}</span>
+                            <div className="w-48">
+                              <div className="text-muted-foreground">Plan Progress</div>
+                              <div className="flex items-center space-x-2">
+                                <div className="flex-1 bg-muted rounded-full h-2">
+                                  <div className="bg-foreground h-2 rounded-full" style={{ width: `${d.progress}%` }} />
+                                </div>
+                                <span className="text-muted-foreground text-xs" style={{ minWidth: 28 }}>{d.progress}%</span>
+                              </div>
+                            </div>
+                            <div className="w-24">
+                              <div className="text-muted-foreground">Overdue</div>
+                              <div className={`text-sm ${d.overdue > 0 ? 'text-rose-600' : 'text-foreground'}`}>{d.overdue}</div>
+                            </div>
+                            <div className="w-40">
+                              <div className="text-muted-foreground">Next Review</div>
+                              <div className="text-sm text-foreground">{d.nextReview}</div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              className="text-muted-foreground"
+                              onClick={() => handleViewPlan({ name: d.n, role: d.role, targetRole: d.targetRole })}
+                            >
+                              View Plan
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+          </Tabs>
+
+          {/* Create Goal Modal */}
+          {isCreateGoalModalOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  handleCancel();
+                }
+              }}
+            >
+              {/* Blurred Background Overlay */}
+              <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
+
+              {/* Modal Content */}
+              <div className="relative bg-card rounded-lg shadow-xl w-full max-w-2xl mx-4 h-[540px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
+                {/* Modal Header */}
+                <div className="p-6 border-b border-gray-200 flex-shrink-0">
+                  <h2 className="text-2xl font-bold text-foreground">Create new goal</h2>
+                  <p className="text-muted-foreground mt-1">
+                    Create a new goal with objectives, success criteria, and tracking details.
+                  </p>
+                </div>
+
+                {/* Scrollable Form Content */}
+                <div className="flex-1 overflow-y-auto">
+                  <form onSubmit={(e) => { e.preventDefault(); handleCreateGoal(); }} className="p-6 space-y-6">
+                    {/* Goal Title */}
+                    <div className="space-y-2">
+                      <Label htmlFor="goal-title" className="text-sm font-semibold text-foreground">
+                        Goal title <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="goal-title"
+                        type="text"
+                        value={formData.title}
+                        onChange={(e) => handleInputChange('title', e.target.value)}
+                        placeholder="Enter goal title"
+                        className={`focus:ring-purple-500 focus:border-purple-500 ${formErrors.title ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                          }`}
+                        required
+                      />
+                      {formErrors.title && (
+                        <p className="text-sm text-red-500">{formErrors.title}</p>
+                      )}
+                    </div>
+
+                    {/* Type */}
+                    <div className="space-y-2">
+                      <Label htmlFor="goal-type" className="text-sm font-semibold text-foreground">
+                        Type <span className="text-red-500">*</span>
+                      </Label>
+                      <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+                        <SelectTrigger className="focus:ring-purple-500 focus:border-purple-500">
+                          <SelectValue placeholder="Select goal type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="OKR">OKR</SelectItem>
+                          <SelectItem value="KPI">KPI</SelectItem>
+                          <SelectItem value="Product">Product</SelectItem>
+                          <SelectItem value="Project">Project</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-2">
+                      <Label htmlFor="goal-description" className="text-sm font-semibold text-foreground">
+                        Description <span className="text-red-500">*</span>
+                      </Label>
+                      <Textarea
+                        id="goal-description"
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        placeholder="Enter goal description"
+                        className={`min-h-[100px] focus:ring-purple-500 focus:border-purple-500 resize-none ${formErrors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                          }`}
+                        required
+                      />
+                      {formErrors.description && (
+                        <p className="text-sm text-red-500">{formErrors.description}</p>
+                      )}
+                    </div>
+
+                    {/* Weight and Cycle */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="goal-weight" className="text-sm font-semibold text-foreground">
+                          Weight (%) <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="goal-weight"
+                          type="number"
+                          value={formData.weight}
+                          onChange={(e) => handleInputChange('weight', e.target.value)}
+                          placeholder="0"
+                          min="0"
+                          max="100"
+                          className={`focus:ring-purple-500 focus:border-purple-500 ${formErrors.weight ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                            }`}
+                          required
+                        />
+                        {formErrors.weight && (
+                          <p className="text-sm text-red-500">{formErrors.weight}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="goal-cycle" className="text-sm font-semibold text-foreground">
+                          Cycle
+                        </Label>
+                        <Select value={formData.cycle} onValueChange={(value) => handleInputChange('cycle', value)}>
+                          <SelectTrigger className="focus:ring-purple-500 focus:border-purple-500">
+                            <SelectValue placeholder="Select cycle" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Q1 2025">Q1 2025</SelectItem>
+                            <SelectItem value="Q2 2025">Q2 2025</SelectItem>
+                            <SelectItem value="Q3 2025">Q3 2025</SelectItem>
+                            <SelectItem value="Q4 2025">Q4 2025</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Next Check-in */}
+                    <div className="space-y-2">
+                      <Label htmlFor="goal-checkin" className="text-sm font-semibold text-foreground">
+                        Next check-in
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="goal-checkin"
+                          type="date"
+                          value={formData.nextCheckIn}
+                          onChange={(e) => handleInputChange('nextCheckIn', e.target.value)}
+                          className="focus:ring-purple-500 focus:border-purple-500"
+                        />
+                        <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Modal Footer */}
+                <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 flex-shrink-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    onClick={handleCreateGoal}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6"
+                  >
+                    Create goal
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Give Feedback Modal */}
+          {isGiveFeedbackOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setIsGiveFeedbackOpen(false)
+              }}
+            >
+              {/* Blurred Background Overlay */}
+              <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
+
+              {/* Modal Content */}
+              <div className="relative bg-card rounded-lg shadow-xl w-full max-w-3xl mx-4 h-[560px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                  <div>
+                    <div className="text-lg font-semibold text-foreground">Give feedback</div>
+                    <p className="text-sm text-muted-foreground mt-1">Provide feedback to colleagues including kudos, coaching, or 1:1 notes with appropriate visibility settings.</p>
+                  </div>
+                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" onClick={() => setIsGiveFeedbackOpen(false)}>
+                    ✕
+                  </Button>
+                </div>
+
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setIsGiveFeedbackOpen(false);
+                    }}
+                    className="p-6 space-y-6"
+                  >
+                    {/* Type / To */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">Type</Label>
+                        <div className="relative">
+                          <select
+                            value={feedbackForm.type}
+                            onChange={(e) => setFeedbackForm({ ...feedbackForm, type: e.target.value })}
+                            className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
+                          >
+                            <option>Kudos</option>
+                            <option>Coaching</option>
+                            <option>1:1 Note</option>
+                            <option>Recognition</option>
+                          </select>
+                          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">▾</div>
                         </div>
                       </div>
-                      <div className="w-24">
-                        <div className="text-muted-foreground">Overdue</div>
-                        <div className={`text-sm ${d.overdue>0?'text-rose-600':'text-foreground'}`}>{d.overdue}</div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">To</Label>
+                        <input
+                          type="text"
+                          value={feedbackForm.to}
+                          onChange={(e) => setFeedbackForm({ ...feedbackForm, to: e.target.value })}
+                          className="w-full px-3 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          placeholder="Search name"
+                        />
                       </div>
-                      <div className="w-40">
-                        <div className="text-muted-foreground">Next Review</div>
-                        <div className="text-sm text-foreground">{d.nextReview}</div>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        className="text-muted-foreground"
-                        onClick={() => handleViewPlan({ name: d.n, role: d.role, targetRole: d.targetRole })}
-                      >
-                        View Plan
-                      </Button>
                     </div>
-                  </div>
-                ))}
+
+                    {/* Message */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-foreground">Message</Label>
+                      <Textarea
+                        value={feedbackForm.message}
+                        onChange={(e) => setFeedbackForm({ ...feedbackForm, message: e.target.value })}
+                        placeholder="Write your message..."
+                        className="min-h-[120px] focus:ring-purple-500 focus:border-purple-500 resize-none"
+                      />
+                    </div>
+
+                    {/* Visibility & Link */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">Visibility</Label>
+                        <div className="relative">
+                          <select
+                            value={feedbackForm.visibility}
+                            onChange={(e) => setFeedbackForm({ ...feedbackForm, visibility: e.target.value })}
+                            className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
+                          >
+                            <option>Public (Visible to organization)</option>
+                            <option>Manager+Employee</option>
+                            <option>Manager Only</option>
+                            <option>Private</option>
+                          </select>
+                          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">▾</div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">Link to goal (Optional)</Label>
+                        <input
+                          type="text"
+                          value={feedbackForm.linkToGoal}
+                          onChange={(e) => setFeedbackForm({ ...feedbackForm, linkToGoal: e.target.value })}
+                          className="w-full px-3 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          placeholder="Paste goal link or search"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Anonymous toggle */}
+                    <div className="flex items-center space-x-3">
+                      <Switch
+                        checked={feedbackForm.anonymous}
+                        onCheckedChange={(c) => setFeedbackForm({ ...feedbackForm, anonymous: !!c })}
+                      />
+                      <span className="text-sm text-muted-foreground">Give feedback anonymously</span>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between">
+                      <Button type="button" variant="outline" onClick={() => setIsGiveFeedbackOpen(false)} className="text-muted-foreground hover:text-foreground">Cancel</Button>
+                      <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">Send feedback</Button>
+                    </div>
+                  </form>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
           )}
-        </TabsContent>
-      </Tabs>
-
-      {/* Create Goal Modal */}
-      {isCreateGoalModalOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              handleCancel();
-            }
-          }}
-        >
-          {/* Blurred Background Overlay */}
-          <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
-          
-          {/* Modal Content */}
-          <div className="relative bg-card rounded-lg shadow-xl w-full max-w-2xl mx-4 h-[540px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
-            {/* Modal Header */}
-            <div className="p-6 border-b border-gray-200 flex-shrink-0">
-              <h2 className="text-2xl font-bold text-foreground">Create new goal</h2>
-              <p className="text-muted-foreground mt-1">
-                  Create a new goal with objectives, success criteria, and tracking details.
-                </p>
-            </div>
-
-            {/* Scrollable Form Content */}
-            <div className="flex-1 overflow-y-auto">
-              <form onSubmit={(e) => { e.preventDefault(); handleCreateGoal(); }} className="p-6 space-y-6">
-              {/* Goal Title */}
-              <div className="space-y-2">
-                <Label htmlFor="goal-title" className="text-sm font-semibold text-foreground">
-                  Goal title <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="goal-title"
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="Enter goal title"
-                  className={`focus:ring-purple-500 focus:border-purple-500 ${
-                    formErrors.title ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                  }`}
-                  required
-                />
-                {formErrors.title && (
-                  <p className="text-sm text-red-500">{formErrors.title}</p>
-                )}
-              </div>
-
-              {/* Type */}
-              <div className="space-y-2">
-                <Label htmlFor="goal-type" className="text-sm font-semibold text-foreground">
-                  Type <span className="text-red-500">*</span>
-                </Label>
-                <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                  <SelectTrigger className="focus:ring-purple-500 focus:border-purple-500">
-                    <SelectValue placeholder="Select goal type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="OKR">OKR</SelectItem>
-                    <SelectItem value="KPI">KPI</SelectItem>
-                    <SelectItem value="Product">Product</SelectItem>
-                    <SelectItem value="Project">Project</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <Label htmlFor="goal-description" className="text-sm font-semibold text-foreground">
-                  Description <span className="text-red-500">*</span>
-                </Label>
-                <Textarea
-                  id="goal-description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Enter goal description"
-                  className={`min-h-[100px] focus:ring-purple-500 focus:border-purple-500 resize-none ${
-                    formErrors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                  }`}
-                  required
-                />
-                {formErrors.description && (
-                  <p className="text-sm text-red-500">{formErrors.description}</p>
-                )}
-              </div>
-
-              {/* Weight and Cycle */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="goal-weight" className="text-sm font-semibold text-foreground">
-                    Weight (%) <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="goal-weight"
-                    type="number"
-                    value={formData.weight}
-                    onChange={(e) => handleInputChange('weight', e.target.value)}
-                    placeholder="0"
-                    min="0"
-                    max="100"
-                    className={`focus:ring-purple-500 focus:border-purple-500 ${
-                      formErrors.weight ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                    }`}
-                    required
-                  />
-                  {formErrors.weight && (
-                    <p className="text-sm text-red-500">{formErrors.weight}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="goal-cycle" className="text-sm font-semibold text-foreground">
-                    Cycle
-                  </Label>
-                  <Select value={formData.cycle} onValueChange={(value) => handleInputChange('cycle', value)}>
-                    <SelectTrigger className="focus:ring-purple-500 focus:border-purple-500">
-                      <SelectValue placeholder="Select cycle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Q1 2025">Q1 2025</SelectItem>
-                      <SelectItem value="Q2 2025">Q2 2025</SelectItem>
-                      <SelectItem value="Q3 2025">Q3 2025</SelectItem>
-                      <SelectItem value="Q4 2025">Q4 2025</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Next Check-in */}
-              <div className="space-y-2">
-                <Label htmlFor="goal-checkin" className="text-sm font-semibold text-foreground">
-                  Next check-in
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="goal-checkin"
-                    type="date"
-                    value={formData.nextCheckIn}
-                    onChange={(e) => handleInputChange('nextCheckIn', e.target.value)}
-                    className="focus:ring-purple-500 focus:border-purple-500"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                </div>
-              </div>
-            </form>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 flex-shrink-0">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                onClick={handleCreateGoal}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6"
-              >
-                Create goal
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Give Feedback Modal */}
-      {isGiveFeedbackOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsGiveFeedbackOpen(false)
-          }}
-        >
-          {/* Blurred Background Overlay */}
-          <div className="fixed inset-0 backdrop-blur-md bg-card/30" />
-
-          {/* Modal Content */}
-          <div className="relative bg-card rounded-lg shadow-xl w-full max-w-3xl mx-4 h-[560px] flex flex-col animate-in fade-in-0 zoom-in-95 duration-200">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <div>
-                <div className="text-lg font-semibold text-foreground">Give feedback</div>
-                <p className="text-sm text-muted-foreground mt-1">Provide feedback to colleagues including kudos, coaching, or 1:1 notes with appropriate visibility settings.</p>
-              </div>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" onClick={() => setIsGiveFeedbackOpen(false)}>
-                ✕
-              </Button>
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setIsGiveFeedbackOpen(false);
-                }}
-                className="p-6 space-y-6"
-              >
-                {/* Type / To */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-foreground">Type</Label>
-                    <div className="relative">
-                      <select
-                        value={feedbackForm.type}
-                        onChange={(e) => setFeedbackForm({ ...feedbackForm, type: e.target.value })}
-                        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
-                      >
-                        <option>Kudos</option>
-                        <option>Coaching</option>
-                        <option>1:1 Note</option>
-                        <option>Recognition</option>
-                      </select>
-                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">▾</div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-foreground">To</Label>
-                    <input
-                      type="text"
-                      value={feedbackForm.to}
-                      onChange={(e) => setFeedbackForm({ ...feedbackForm, to: e.target.value })}
-                      className="w-full px-3 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Search name"
-                    />
-                  </div>
-                </div>
-
-                {/* Message */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground">Message</Label>
-                  <Textarea
-                    value={feedbackForm.message}
-                    onChange={(e) => setFeedbackForm({ ...feedbackForm, message: e.target.value })}
-                    placeholder="Write your message..."
-                    className="min-h-[120px] focus:ring-purple-500 focus:border-purple-500 resize-none"
-                  />
-                </div>
-
-                {/* Visibility & Link */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-foreground">Visibility</Label>
-                    <div className="relative">
-                      <select
-                        value={feedbackForm.visibility}
-                        onChange={(e) => setFeedbackForm({ ...feedbackForm, visibility: e.target.value })}
-                        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
-                      >
-                        <option>Public (Visible to organization)</option>
-                        <option>Manager+Employee</option>
-                        <option>Manager Only</option>
-                        <option>Private</option>
-                      </select>
-                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">▾</div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-foreground">Link to goal (Optional)</Label>
-                    <input
-                      type="text"
-                      value={feedbackForm.linkToGoal}
-                      onChange={(e) => setFeedbackForm({ ...feedbackForm, linkToGoal: e.target.value })}
-                      className="w-full px-3 py-2 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Paste goal link or search"
-                    />
-                  </div>
-                </div>
-
-                {/* Anonymous toggle */}
-                <div className="flex items-center space-x-3">
-                  <Switch
-                    checked={feedbackForm.anonymous}
-                    onCheckedChange={(c) => setFeedbackForm({ ...feedbackForm, anonymous: !!c })}
-                  />
-                  <span className="text-sm text-muted-foreground">Give feedback anonymously</span>
-                </div>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between">
-                  <Button type="button" variant="outline" onClick={() => setIsGiveFeedbackOpen(false)} className="text-muted-foreground hover:text-foreground">Cancel</Button>
-                  <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">Send feedback</Button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
         </>
       )}
     </div>

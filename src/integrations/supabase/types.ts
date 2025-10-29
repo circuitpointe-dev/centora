@@ -1,3 +1,4 @@
+Initialising login role...
 export type Json =
   | string
   | number
@@ -11,6 +12,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -2239,6 +2265,456 @@ export type Database = {
           },
           {
             foreignKeyName: "grants_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_board_members: {
+        Row: {
+          appointment_date: string | null
+          attendance_percentage: number | null
+          compliance_status: string | null
+          created_at: string | null
+          email: string
+          first_name: string
+          id: string
+          independence: string | null
+          last_name: string
+          org_id: string | null
+          phone: string | null
+          profile_id: string | null
+          role: string
+          status: string | null
+          tenure_years: number | null
+          term_end_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_date?: string | null
+          attendance_percentage?: number | null
+          compliance_status?: string | null
+          created_at?: string | null
+          email: string
+          first_name: string
+          id?: string
+          independence?: string | null
+          last_name: string
+          org_id?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          role: string
+          status?: string | null
+          tenure_years?: number | null
+          term_end_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_date?: string | null
+          attendance_percentage?: number | null
+          compliance_status?: string | null
+          created_at?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          independence?: string | null
+          last_name?: string
+          org_id?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          role?: string
+          status?: string | null
+          tenure_years?: number | null
+          term_end_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_board_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_committee_members: {
+        Row: {
+          committee_id: string | null
+          id: string
+          joined_date: string | null
+          member_id: string | null
+          role: string | null
+        }
+        Insert: {
+          committee_id?: string | null
+          id?: string
+          joined_date?: string | null
+          member_id?: string | null
+          role?: string | null
+        }
+        Update: {
+          committee_id?: string | null
+          id?: string
+          joined_date?: string | null
+          member_id?: string | null
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_hr_committee_members_committee"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "hr_committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_hr_committee_members_member"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "hr_board_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_committees: {
+        Row: {
+          chairperson_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          org_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          chairperson_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          org_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          chairperson_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          org_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_hr_committees_chairperson"
+            columns: ["chairperson_id"]
+            isOneToOne: false
+            referencedRelation: "hr_board_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_committees_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_learning_courses: {
+        Row: {
+          category: string | null
+          course_name: string
+          course_type: string | null
+          created_at: string | null
+          description: string | null
+          duration_hours: number | null
+          enrollment_open: boolean | null
+          id: string
+          level: string | null
+          org_id: string | null
+          provider: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          course_name: string
+          course_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_hours?: number | null
+          enrollment_open?: boolean | null
+          id?: string
+          level?: string | null
+          org_id?: string | null
+          provider?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          course_name?: string
+          course_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_hours?: number | null
+          enrollment_open?: boolean | null
+          id?: string
+          level?: string | null
+          org_id?: string | null
+          provider?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_learning_courses_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_performance_goals: {
+        Row: {
+          company_okr: string | null
+          created_at: string | null
+          current_value: string | null
+          cycle: string | null
+          description: string | null
+          employee_id: string | null
+          id: string
+          next_check_in: string | null
+          org_id: string | null
+          owner_name: string | null
+          progress: number | null
+          status: string | null
+          target_value: string | null
+          title: string
+          type: string | null
+          updated_at: string | null
+          weight: string | null
+        }
+        Insert: {
+          company_okr?: string | null
+          created_at?: string | null
+          current_value?: string | null
+          cycle?: string | null
+          description?: string | null
+          employee_id?: string | null
+          id?: string
+          next_check_in?: string | null
+          org_id?: string | null
+          owner_name?: string | null
+          progress?: number | null
+          status?: string | null
+          target_value?: string | null
+          title: string
+          type?: string | null
+          updated_at?: string | null
+          weight?: string | null
+        }
+        Update: {
+          company_okr?: string | null
+          created_at?: string | null
+          current_value?: string | null
+          cycle?: string | null
+          description?: string | null
+          employee_id?: string | null
+          id?: string
+          next_check_in?: string | null
+          org_id?: string | null
+          owner_name?: string | null
+          progress?: number | null
+          status?: string | null
+          target_value?: string | null
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+          weight?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_performance_goals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_reference_check_details: {
+        Row: {
+          created_at: string | null
+          feedback: string | null
+          id: string
+          rating: number | null
+          received_date: string | null
+          referee_company: string | null
+          referee_email: string | null
+          referee_name: string
+          referee_phone: string | null
+          referee_relationship: string | null
+          reference_check_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          rating?: number | null
+          received_date?: string | null
+          referee_company?: string | null
+          referee_email?: string | null
+          referee_name: string
+          referee_phone?: string | null
+          referee_relationship?: string | null
+          reference_check_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          rating?: number | null
+          received_date?: string | null
+          referee_company?: string | null
+          referee_email?: string | null
+          referee_name?: string
+          referee_phone?: string | null
+          referee_relationship?: string | null
+          reference_check_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_hr_reference_check_details_ref"
+            columns: ["reference_check_id"]
+            isOneToOne: false
+            referencedRelation: "hr_reference_checks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_reference_checks: {
+        Row: {
+          application_id: string | null
+          candidate_email: string
+          candidate_name: string
+          created_at: string | null
+          department: string | null
+          flags: number | null
+          id: string
+          org_id: string | null
+          refs_received: number | null
+          refs_verified: number | null
+          requisition: string | null
+          status: string | null
+          total_refs_requested: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          candidate_email: string
+          candidate_name: string
+          created_at?: string | null
+          department?: string | null
+          flags?: number | null
+          id?: string
+          org_id?: string | null
+          refs_received?: number | null
+          refs_verified?: number | null
+          requisition?: string | null
+          status?: string | null
+          total_refs_requested?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          candidate_email?: string
+          candidate_name?: string
+          created_at?: string | null
+          department?: string | null
+          flags?: number | null
+          id?: string
+          org_id?: string | null
+          refs_received?: number | null
+          refs_verified?: number | null
+          requisition?: string | null
+          status?: string | null
+          total_refs_requested?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_reference_checks_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_volunteers: {
+        Row: {
+          assignments_count: number | null
+          availability: string[] | null
+          created_at: string | null
+          email: string | null
+          first_name: string
+          id: string
+          join_date: string | null
+          last_name: string
+          org_id: string | null
+          phone: string | null
+          profile_id: string | null
+          skills: string[] | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assignments_count?: number | null
+          availability?: string[] | null
+          created_at?: string | null
+          email?: string | null
+          first_name: string
+          id?: string
+          join_date?: string | null
+          last_name: string
+          org_id?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          skills?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assignments_count?: number | null
+          availability?: string[] | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string
+          id?: string
+          join_date?: string | null
+          last_name?: string
+          org_id?: string | null
+          phone?: string | null
+          profile_id?: string | null
+          skills?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_volunteers_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -5249,6 +5725,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["org_admin", "org_member"],
@@ -5358,3 +5837,5 @@ export const Constants = {
     },
   },
 } as const
+A new version of Supabase CLI is available: v2.54.11 (currently installed v2.47.2)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { useEmployees } from '@/hooks/hr/useEmployees';
+import { useVolunteers } from '@/hooks/hr/useVolunteers';
+import { useBoardMembers } from '@/hooks/hr/useBoardMembers';
+import { useCommittees, useCommitteeMembers } from '@/hooks/hr/useCommittees';
 import {
   Search,
   Filter,
@@ -32,84 +36,35 @@ const PeopleManagement = () => {
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'person'>('list');
   const [expandedCommittees, setExpandedCommittees] = useState<Set<string>>(new Set(['audit']));
 
-  // Mock data for staff directory
-  const staffData = [
-    {
-      id: 1,
-      name: 'John doe',
-      jobTitle: 'Software engineer',
-      department: 'Engineering',
-      location: 'Texas',
-      manager: 'Trey lexis',
-      status: 'Active'
-    },
-    {
-      id: 2,
-      name: 'Alice Smith',
-      jobTitle: 'Product Manager',
-      department: 'Product',
-      location: 'New York',
-      manager: 'Beta Co.',
-      status: 'Active'
-    },
-    {
-      id: 3,
-      name: 'Robert Johnson',
-      jobTitle: 'UX Designer',
-      department: 'Design',
-      location: 'San Francisco',
-      manager: 'Creative Minds',
-      status: 'Inactive'
-    },
-    {
-      id: 4,
-      name: 'Emily Davis',
-      jobTitle: 'Marketing Specialist',
-      department: 'Marketing',
-      location: 'Chicago',
-      manager: 'Marketing Pro',
-      status: 'Active'
-    },
-    {
-      id: 5,
-      name: 'Michael Brown',
-      jobTitle: 'Data Analyst',
-      department: 'Analytics',
-      location: 'Seattle',
-      manager: 'Data Insights',
-      status: 'Active'
-    },
-    {
-      id: 6,
-      name: 'Sarah Wilson',
-      jobTitle: 'HR Coordinator',
-      department: 'Human Resources',
-      location: 'Boston',
-      manager: 'HR Team',
-      status: 'Inactive'
-    },
-    {
-      id: 7,
-      name: 'David Thompson',
-      jobTitle: 'Sales Manager',
-      department: 'Sales',
-      location: 'Miami',
-      manager: 'Sales Director',
-      status: 'Active'
-    },
-    {
-      id: 8,
-      name: 'Sophia Martinez',
-      jobTitle: 'Operations Manager',
-      department: 'Operations',
-      location: 'Denver',
-      manager: 'Ops Lead',
-      status: 'Active'
-    }
-  ];
+  // Live staff directory
+  const { data: employees, isLoading: employeesLoading } = useEmployees();
+  const staffData = useMemo(() => {
+    return (employees || []).map((e) => ({
+      id: e.id as unknown as number,
+      name: `${e.first_name} ${e.last_name}`.trim(),
+      jobTitle: e.position || '—',
+      department: e.department || '—',
+      location: '—',
+      manager: '—',
+      status: (e.status || 'active').replace(/\b\w/g, c => c.toUpperCase()),
+    }));
+  }, [employees]);
 
-  // Mock data for volunteer management
-  const volunteerData = [
+  // Live data from database
+  const { data: volunteers, isLoading: volunteersLoading } = useVolunteers();
+  const volunteerData = useMemo(() => {
+    return (volunteers || []).map((v) => ({
+      id: v.id as unknown as number,
+      name: `${v.first_name} ${v.last_name}`.trim(),
+      skills: v.skills || [],
+      availability: v.availability || [],
+      assignments: v.assignments_count || 0,
+      status: (v.status || 'active').replace(/\b\w/g, c => c.toUpperCase()),
+    }));
+  }, [volunteers]);
+
+  // Legacy mock data removed - using live data above
+  const volunteerData_OLD = [
     {
       id: 1,
       name: 'John doe',
@@ -176,8 +131,28 @@ const PeopleManagement = () => {
     }
   ];
 
-  // Mock data for board management
-  const boardData = [
+  // Live board members from database
+  const { data: boardMembers, isLoading: boardLoading } = useBoardMembers();
+  const boardData = useMemo(() => {
+    return (boardMembers || []).map((b) => {
+      const tenureYears = b.tenure_years || 0;
+      return {
+        id: b.id as unknown as number,
+        name: `${b.first_name} ${b.last_name}`.trim(),
+        email: b.email,
+        role: b.role,
+        independence: b.independence || '—',
+        tenure: tenureYears > 0 ? `${tenureYears} ${tenureYears === 1 ? 'year' : 'years'}` : '—',
+        attendance: b.attendance_percentage ? `${b.attendance_percentage}%` : '—',
+        compliance: (b.compliance_status || 'compliant').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        status: (b.status || 'active').replace(/\b\w/g, c => c.toUpperCase()),
+        boardData: b, // Store full record
+      };
+    });
+  }, [boardMembers]);
+
+  // Legacy mock data removed - using live data above
+  const boardData_OLD = [
     {
       id: 1,
       name: 'John doe',
@@ -268,8 +243,23 @@ const PeopleManagement = () => {
     }
   ];
 
-  // Mock data for committees
-  const committeeData = [
+  // Live committees from database
+  const { data: committees, isLoading: committeesLoading } = useCommittees();
+
+  // We'll fetch committee members separately if needed, or use a query that joins
+  // For now, we'll create a simplified version that shows committees without members detail
+  const committeeData = useMemo(() => {
+    return (committees || []).map((committee) => ({
+      id: committee.id,
+      name: committee.name,
+      memberCount: 0, // TODO: Fetch actual member count when we have better data structure
+      members: [] as any[], // Members will be populated when detail view opens
+      committeeData: committee, // Store full record
+    }));
+  }, [committees]);
+
+  // Legacy mock data removed - using live data above
+  const committeeData_OLD = [
     {
       id: 'audit',
       name: 'Audit Committee',
@@ -345,8 +335,8 @@ const PeopleManagement = () => {
   const handleSelectAll = (checked: boolean) => {
     setSelectAll(checked);
     if (checked) {
-      const currentData = activeTab === 'staff-directory' ? staffData : 
-                         activeTab === 'volunteer-management' ? volunteerData : boardData;
+      const currentData = activeTab === 'staff-directory' ? staffData :
+        activeTab === 'volunteer-management' ? volunteerData : boardData;
       setSelectedRows(currentData.map(item => item.id));
     } else {
       setSelectedRows([]);
@@ -429,19 +419,19 @@ const PeopleManagement = () => {
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 bg-muted">
-          <TabsTrigger 
-            value="staff-directory" 
+          <TabsTrigger
+            value="staff-directory"
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
           >
             Staff directory
           </TabsTrigger>
-          <TabsTrigger 
+          <TabsTrigger
             value="volunteer-management"
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
           >
             Volunteer management
           </TabsTrigger>
-          <TabsTrigger 
+          <TabsTrigger
             value="board-management"
             className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
           >
@@ -518,9 +508,9 @@ const PeopleManagement = () => {
                           {getStatusBadge(staff.status)}
                         </td>
                         <td className="py-3 px-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             className="flex items-center space-x-1"
                             onClick={() => navigate('/dashboard/hr/staff-detail')}
                           >
@@ -637,9 +627,9 @@ const PeopleManagement = () => {
                           {getStatusBadge(volunteer.status)}
                         </td>
                         <td className="py-3 px-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             className="flex items-center space-x-1"
                             onClick={() => navigate('/dashboard/hr/volunteer-profile')}
                           >
@@ -689,25 +679,25 @@ const PeopleManagement = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button 
-                      variant={viewMode === 'list' ? 'default' : 'ghost'} 
-                      size="sm" 
+                    <Button
+                      variant={viewMode === 'list' ? 'default' : 'ghost'}
+                      size="sm"
                       className={`p-2 ${viewMode === 'list' ? 'bg-violet-600 text-white' : ''}`}
                       onClick={() => setViewMode('list')}
                     >
                       <List className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant={viewMode === 'grid' ? 'default' : 'ghost'} 
-                      size="sm" 
+                    <Button
+                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                      size="sm"
                       className={`p-2 ${viewMode === 'grid' ? 'bg-violet-600 text-white' : ''}`}
                       onClick={() => setViewMode('grid')}
                     >
                       <Grid3X3 className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant={viewMode === 'person' ? 'default' : 'ghost'} 
-                      size="sm" 
+                    <Button
+                      variant={viewMode === 'person' ? 'default' : 'ghost'}
+                      size="sm"
                       className={`p-2 ${viewMode === 'person' ? 'bg-violet-600 text-white' : ''}`}
                       onClick={() => setViewMode('person')}
                     >
@@ -779,9 +769,9 @@ const PeopleManagement = () => {
                             {getBoardStatusBadge(member.status)}
                           </td>
                           <td className="py-3 px-4">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
+                            <Button
+                              variant="outline"
+                              size="sm"
                               className="flex items-center space-x-1"
                               onClick={() => navigate('/dashboard/hr/board-member-detail')}
                             >
@@ -834,8 +824,8 @@ const PeopleManagement = () => {
                           <span className="text-sm font-medium text-muted-foreground">Attendance</span>
                           <div className="flex items-center space-x-2">
                             <div className="w-16 bg-muted rounded-full h-2">
-                              <div 
-                                className="bg-violet-600 h-2 rounded-full" 
+                              <div
+                                className="bg-violet-600 h-2 rounded-full"
                                 style={{ width: `${getAttendancePercentage(member.attendance)}%` }}
                               ></div>
                             </div>
@@ -858,9 +848,9 @@ const PeopleManagement = () => {
                         {/* Action */}
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium text-muted-foreground">Action</span>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             className="flex items-center space-x-1"
                             onClick={() => navigate('/dashboard/hr/board-member-detail')}
                           >
@@ -879,8 +869,8 @@ const PeopleManagement = () => {
                 <div className="space-y-4">
                   {committeeData.map((committee) => (
                     <Card key={committee.id} className="overflow-hidden">
-                      <Collapsible 
-                        open={expandedCommittees.has(committee.id)} 
+                      <Collapsible
+                        open={expandedCommittees.has(committee.id)}
                         onOpenChange={() => toggleCommittee(committee.id)}
                       >
                         <CollapsibleTrigger asChild>
@@ -912,7 +902,7 @@ const PeopleManagement = () => {
                                     <div className="w-12 h-12 bg-violet-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                                       {member.initials}
                                     </div>
-                                    
+
                                     {/* Member Details */}
                                     <div className="flex-1 space-y-1">
                                       <div className="flex items-center space-x-4">
@@ -929,13 +919,13 @@ const PeopleManagement = () => {
                                         <span>Attendance: {member.attendance}</span>
                                       </div>
                                     </div>
-                                    
+
                                     {/* Status and Action */}
                                     <div className="flex items-center space-x-3">
                                       {getBoardStatusBadge(member.status)}
-                                      <Button 
-                                        variant="outline" 
-                                        size="sm" 
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
                                         className="flex items-center space-x-1"
                                         onClick={() => navigate('/dashboard/hr/board-member-detail')}
                                       >

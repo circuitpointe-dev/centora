@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useLearningCourses } from '@/hooks/hr/useLearningCourses';
+import { useTrainingRecords } from '@/hooks/hr/useTraining';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -243,7 +245,22 @@ const LearningDevelopment = () => {
     { id: 'advanced-sql', name: 'Advanced SQL', category: 'Technical', selected: false }
   ];
 
-  const availableCourses = [
+  // Live courses from database
+  const { data: coursesData, isLoading: coursesLoading } = useLearningCourses();
+
+  const availableCourses = useMemo(() => {
+    return (coursesData || []).map((course) => ({
+      id: course.id,
+      name: course.course_name,
+      duration: course.duration_hours ? `${course.duration_hours} hours` : course.course_type || 'Self-paced',
+      format: course.course_type || 'Self-paced',
+      selected: false,
+      courseData: course, // Store full record
+    }));
+  }, [coursesData]);
+
+  // Legacy mock data removed - using live data above
+  const availableCourses_OLD = [
     { id: 'course-r-201', name: 'Course R-201: Advanced React Development', duration: '8 weeks', format: 'Self-paced', selected: true },
     { id: 'workshop-w-14', name: 'Workshop W-14: Root Cause Analysis', duration: '2 days', format: 'In-person', selected: false },
     { id: 'advanced-analytics', name: 'Advanced Analytics Course', duration: '10 weeks', format: 'Blended', selected: false },
@@ -540,11 +557,11 @@ const LearningDevelopment = () => {
   ];
 
   const calendarEvents = [
-    { 
-      id: 1, 
-      date: 4, 
-      title: 'Safety 101', 
-      attendance: '9/12', 
+    {
+      id: 1,
+      date: 4,
+      title: 'Safety 101',
+      attendance: '9/12',
       color: 'bg-green-200 text-green-800',
       details: {
         date: 'Tue, Oct 4 • 09:00 AM - 11:00 AM',
@@ -563,12 +580,12 @@ const LearningDevelopment = () => {
         ]
       }
     },
-    { 
-      id: 2, 
-      date: 8, 
-      title: 'Leadership', 
-      attendance: '30/30', 
-      color: 'bg-blue-200 text-blue-800', 
+    {
+      id: 2,
+      date: 8,
+      title: 'Leadership',
+      attendance: '30/30',
+      color: 'bg-blue-200 text-blue-800',
       icon: FileText,
       details: {
         date: 'Tue, Oct 8 • 08:00 AM - 12:00 PM',
@@ -587,12 +604,12 @@ const LearningDevelopment = () => {
         ]
       }
     },
-    { 
-      id: 3, 
-      date: 9, 
-      title: 'Leadership', 
-      attendance: '30/30', 
-      color: 'bg-blue-200 text-blue-800', 
+    {
+      id: 3,
+      date: 9,
+      title: 'Leadership',
+      attendance: '30/30',
+      color: 'bg-blue-200 text-blue-800',
       icon: FileText,
       details: {
         date: 'Wed, Oct 9 • 08:00 AM - 12:00 PM',
@@ -611,12 +628,12 @@ const LearningDevelopment = () => {
         ]
       }
     },
-    { 
-      id: 4, 
-      date: 10, 
-      title: 'Leadership', 
-      attendance: '30/30', 
-      color: 'bg-blue-200 text-blue-800', 
+    {
+      id: 4,
+      date: 10,
+      title: 'Leadership',
+      attendance: '30/30',
+      color: 'bg-blue-200 text-blue-800',
       icon: FileText,
       details: {
         date: 'Thu, Oct 10 • 08:00 AM - 12:00 PM',
@@ -635,12 +652,12 @@ const LearningDevelopment = () => {
         ]
       }
     },
-    { 
-      id: 5, 
-      date: 24, 
-      title: 'React Workshop', 
-      attendance: '15/15', 
-      color: 'bg-purple-200 text-purple-800', 
+    {
+      id: 5,
+      date: 24,
+      title: 'React Workshop',
+      attendance: '15/15',
+      color: 'bg-purple-200 text-purple-800',
       icon: FileText,
       details: {
         date: 'Thu, Oct 24 • 10:00 AM - 04:00 PM',
@@ -993,17 +1010,17 @@ const LearningDevelopment = () => {
         { title: 'Inconsistent policy implementation', subtitle: 'Needs standardization' }
       ],
       evidence: [
-        { 
-          filename: 'Organizational_Structure_2025.pdf', 
-          author: 'Sarah Johnson', 
-          date: '3/15/2025', 
-          size: '2.4 MB' 
+        {
+          filename: 'Organizational_Structure_2025.pdf',
+          author: 'Sarah Johnson',
+          date: '3/15/2025',
+          size: '2.4 MB'
         },
-        { 
-          filename: 'Board_meeting_2025.docs', 
-          author: 'Micheal Torres', 
-          date: '3/20/2025', 
-          size: '856 KB' 
+        {
+          filename: 'Board_meeting_2025.docs',
+          author: 'Micheal Torres',
+          date: '3/20/2025',
+          size: '856 KB'
         }
       ],
       linkedTrainings: [
@@ -1084,11 +1101,11 @@ const LearningDevelopment = () => {
 
   const handleAssignBundleToTeam = () => {
     console.log('Assigning bundle to team:', bundleForm, bundleItems);
-    
+
     // Mark all bundle items as "In Bundle" when assigned
     const assignedIds = bundleItems.map(item => item.id);
     setBundleRecommendationIds(new Set([...bundleRecommendationIds, ...assignedIds]));
-    
+
     handleCloseAssignBundleModal();
   };
 
@@ -1114,12 +1131,12 @@ const LearningDevelopment = () => {
   };
 
   const filteredData = trainingNeedsData.filter(item => {
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       item.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.team.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.skill.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.owner.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     return matchesSearch;
   });
 
@@ -1156,7 +1173,7 @@ const LearningDevelopment = () => {
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <button 
+          <button
             onClick={onBack}
             className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
@@ -1221,7 +1238,7 @@ const LearningDevelopment = () => {
                 <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
                 <p className="text-sm text-muted-foreground">General details about the training plan</p>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="planName" className="text-sm font-medium text-foreground">
@@ -1235,7 +1252,7 @@ const LearningDevelopment = () => {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
                   <Textarea
@@ -1247,7 +1264,7 @@ const LearningDevelopment = () => {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="targetRole" className="text-sm font-medium text-foreground">
@@ -1265,7 +1282,7 @@ const LearningDevelopment = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="priority" className="text-sm font-medium text-foreground">Priority</Label>
                     <Select value={trainingPlanForm.priority} onValueChange={(value) => setTrainingPlanForm(prev => ({ ...prev, priority: value }))}>
@@ -1291,7 +1308,7 @@ const LearningDevelopment = () => {
                 </h3>
                 <p className="text-sm text-muted-foreground">Select the skill gaps this plan will address</p>
               </div>
-              
+
               <div className="space-y-3">
                 {availableSkills.map((skill) => (
                   <div key={skill.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
@@ -1323,7 +1340,7 @@ const LearningDevelopment = () => {
                 </h3>
                 <p className="text-sm text-muted-foreground">Select courses and learning activities for this plan</p>
               </div>
-              
+
               <div className="space-y-3">
                 {availableCourses.map((course) => (
                   <div key={course.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
@@ -1353,7 +1370,7 @@ const LearningDevelopment = () => {
               <div>
                 <h3 className="text-lg font-semibold text-foreground">Additional Information</h3>
               </div>
-              
+
               <div>
                 <Label htmlFor="notes" className="text-sm font-medium text-foreground">Notes</Label>
                 <Textarea
@@ -1390,7 +1407,7 @@ const LearningDevelopment = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="startDate" className="text-sm font-medium text-foreground">Start Date</Label>
                   <Input
@@ -1401,7 +1418,7 @@ const LearningDevelopment = () => {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="dueDate" className="text-sm font-medium text-foreground">
                     Due Date <span className="text-red-500">*</span>
@@ -1414,13 +1431,13 @@ const LearningDevelopment = () => {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
                     <span className="text-sm text-foreground">Priority: {trainingPlanForm.priority}</span>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-sm font-medium text-foreground">Skills ({trainingPlanForm.selectedSkills.length})</h4>
                     <div className="flex flex-wrap gap-1 mt-2">
@@ -1434,7 +1451,7 @@ const LearningDevelopment = () => {
                       })}
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-sm font-medium text-foreground">Courses ({trainingPlanForm.selectedCourses.length})</h4>
                     <div className="space-y-1 mt-2">
@@ -1507,7 +1524,7 @@ const LearningDevelopment = () => {
                   id="planTitle"
                   placeholder="Enter plan title"
                   value={actionPlanForm.planTitle}
-                  onChange={(e) => setActionPlanForm({...actionPlanForm, planTitle: e.target.value})}
+                  onChange={(e) => setActionPlanForm({ ...actionPlanForm, planTitle: e.target.value })}
                   className="mt-1"
                 />
               </div>
@@ -1519,7 +1536,7 @@ const LearningDevelopment = () => {
                   id="description"
                   placeholder="Describe the objectives and expected outcomes of this action plan"
                   value={actionPlanForm.description}
-                  onChange={(e) => setActionPlanForm({...actionPlanForm, description: e.target.value})}
+                  onChange={(e) => setActionPlanForm({ ...actionPlanForm, description: e.target.value })}
                   className="mt-1"
                   rows={4}
                 />
@@ -1529,7 +1546,7 @@ const LearningDevelopment = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="priority" className="text-sm font-medium text-foreground">Priority</Label>
-                  <Select value={actionPlanForm.priority} onValueChange={(value) => setActionPlanForm({...actionPlanForm, priority: value})}>
+                  <Select value={actionPlanForm.priority} onValueChange={(value) => setActionPlanForm({ ...actionPlanForm, priority: value })}>
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
@@ -1548,7 +1565,7 @@ const LearningDevelopment = () => {
                     id="targetDate"
                     type="date"
                     value={actionPlanForm.targetCompletionDate}
-                    onChange={(e) => setActionPlanForm({...actionPlanForm, targetCompletionDate: e.target.value})}
+                    onChange={(e) => setActionPlanForm({ ...actionPlanForm, targetCompletionDate: e.target.value })}
                     className="mt-1"
                   />
                 </div>
@@ -1557,7 +1574,7 @@ const LearningDevelopment = () => {
               {/* Assigned To */}
               <div>
                 <Label htmlFor="assignedTo" className="text-sm font-medium text-foreground">Assigned to</Label>
-                <Select value={actionPlanForm.assignedTo} onValueChange={(value) => setActionPlanForm({...actionPlanForm, assignedTo: value})}>
+                <Select value={actionPlanForm.assignedTo} onValueChange={(value) => setActionPlanForm({ ...actionPlanForm, assignedTo: value })}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select assignee" />
                   </SelectTrigger>
@@ -1574,7 +1591,7 @@ const LearningDevelopment = () => {
               <div>
                 <Label htmlFor="budget" className="text-sm font-medium text-foreground">Estimated Budget (Optional)</Label>
                 <div className="flex mt-1">
-                  <Select value={actionPlanForm.currency} onValueChange={(value) => setActionPlanForm({...actionPlanForm, currency: value})}>
+                  <Select value={actionPlanForm.currency} onValueChange={(value) => setActionPlanForm({ ...actionPlanForm, currency: value })}>
                     <SelectTrigger className="w-20">
                       <SelectValue />
                     </SelectTrigger>
@@ -1589,7 +1606,7 @@ const LearningDevelopment = () => {
                     type="number"
                     placeholder="0.00"
                     value={actionPlanForm.estimatedBudget}
-                    onChange={(e) => setActionPlanForm({...actionPlanForm, estimatedBudget: e.target.value})}
+                    onChange={(e) => setActionPlanForm({ ...actionPlanForm, estimatedBudget: e.target.value })}
                     className="ml-2"
                   />
                 </div>
@@ -1602,7 +1619,7 @@ const LearningDevelopment = () => {
                   id="keyActions"
                   placeholder="List the specific actions and steps to be taken to achieve the objectives"
                   value={actionPlanForm.keyActions}
-                  onChange={(e) => setActionPlanForm({...actionPlanForm, keyActions: e.target.value})}
+                  onChange={(e) => setActionPlanForm({ ...actionPlanForm, keyActions: e.target.value })}
                   className="mt-1"
                   rows={4}
                 />
@@ -1638,7 +1655,7 @@ const LearningDevelopment = () => {
           <Button variant="outline" onClick={onBack}>
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleFormSubmit}
             className="bg-violet-600 hover:bg-violet-700 text-white"
           >
@@ -1758,7 +1775,7 @@ const LearningDevelopment = () => {
           <Button variant="outline" onClick={onBack}>
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleCreateActionPlan}
             className="bg-violet-600 hover:bg-violet-700 text-white"
           >
@@ -1773,33 +1790,33 @@ const LearningDevelopment = () => {
   const TeamAttendanceCalendar = () => {
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    
+
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     const monthName = monthNames[month];
-    
+
     // Get first day of month and number of days
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    
+
     // Get starting day of week (0 = Sunday, 1 = Monday, etc.)
     const startDay = firstDay.getDay();
     const adjustedStartDay = startDay === 0 ? 6 : startDay - 1; // Convert to Monday = 0
-    
+
     // Generate calendar days
     const calendarDays = [];
-    
+
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < adjustedStartDay; i++) {
       calendarDays.push(null);
     }
-    
+
     // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       calendarDays.push(day);
     }
-    
+
     // Get events for a specific day
     const getEventsForDay = (day: number) => {
       return calendarEvents.filter(event => event.date === day);
@@ -1813,14 +1830,14 @@ const LearningDevelopment = () => {
             <h1 className="text-2xl font-bold text-foreground">Team Attendance Calendar</h1>
             <p className="text-sm text-muted-foreground mt-1">Plan training sessions and visualize team availability</p>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="flex items-center space-x-3">
             <Button variant="outline" className="flex items-center space-x-2">
               <Filter className="h-4 w-4" />
               <span>Filter</span>
             </Button>
-            <Button 
+            <Button
               onClick={handleNewSession}
               className="bg-violet-600 hover:bg-violet-700 text-white flex items-center space-x-2"
             >
@@ -1855,26 +1872,26 @@ const LearningDevelopment = () => {
                   {day}
                 </div>
               ))}
-              
+
               {/* Calendar Days */}
               {calendarDays.map((day, index) => {
                 const events = day ? getEventsForDay(day) : [];
-                
+
                 return (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="bg-card min-h-[120px] p-2 border-r border-b border-gray-200"
                   >
                     {day && (
                       <>
                         <div className="text-sm font-medium text-foreground mb-2">{day}</div>
-                        
+
                         {/* Events */}
                         <div className="space-y-1">
                           {events.map((event) => {
                             const IconComponent = event.icon || FileText;
                             return (
-                              <div 
+                              <div
                                 key={event.id}
                                 className={`${event.color} rounded px-2 py-1 text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity`}
                                 onClick={() => handleSessionClick(event)}
@@ -1906,7 +1923,7 @@ const LearningDevelopment = () => {
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <button 
+          <button
             onClick={onBack}
             className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
@@ -1961,7 +1978,7 @@ const LearningDevelopment = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Available Spots:</span>
@@ -2017,7 +2034,7 @@ const LearningDevelopment = () => {
                         <tr key={employee.id} className="border-b border-gray-200 hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
-                              <Checkbox 
+                              <Checkbox
                                 checked={bulkEnrollmentForm.selectedEmployees.includes(employee.name)}
                                 onCheckedChange={(checked) => handleEmployeeSelection(employee.id, checked as boolean)}
                               />
@@ -2032,7 +2049,7 @@ const LearningDevelopment = () => {
                     </tbody>
                   </table>
                 </div>
-                
+
                 {/* Pagination */}
                 <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
                   <div className="text-sm text-muted-foreground">
@@ -2072,7 +2089,7 @@ const LearningDevelopment = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3">
                   <Checkbox
                     id="requireManagerApproval"
@@ -2114,7 +2131,7 @@ const LearningDevelopment = () => {
                     <div className="text-muted-foreground">Leadership Fundamentals</div>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">Capacity</div>
                   <div className="flex items-center space-x-2 text-sm text-foreground">
@@ -2122,12 +2139,12 @@ const LearningDevelopment = () => {
                     <span>5 spots available</span>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">Selected employees</div>
                   <div className="text-sm font-medium text-foreground">{bulkEnrollmentForm.selectedEmployees.length}</div>
                 </div>
-                
+
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">Options</div>
                   <div className="space-y-2 text-sm text-foreground">
@@ -2169,7 +2186,7 @@ const LearningDevelopment = () => {
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <button 
+          <button
             onClick={onBack}
             className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
@@ -2196,7 +2213,7 @@ const LearningDevelopment = () => {
                     <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
                     <p className="text-sm text-muted-foreground">General details about the training session</p>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="course" className="text-sm font-medium text-foreground">
@@ -2213,7 +2230,7 @@ const LearningDevelopment = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="sessionName" className="text-sm font-medium text-foreground">
                         Session name <span className="text-red-500">*</span>
@@ -2225,7 +2242,7 @@ const LearningDevelopment = () => {
                         className="mt-1"
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
                       <Textarea
@@ -2237,7 +2254,7 @@ const LearningDevelopment = () => {
                         className="mt-1"
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="sessionFormat" className="text-sm font-medium text-foreground">
@@ -2254,7 +2271,7 @@ const LearningDevelopment = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      
+
                       <div>
                         <Label htmlFor="duration" className="text-sm font-medium text-foreground">Duration</Label>
                         <Input
@@ -2266,7 +2283,7 @@ const LearningDevelopment = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="location" className="text-sm font-medium text-foreground">
                         Location <span className="text-red-500">*</span>
@@ -2291,7 +2308,7 @@ const LearningDevelopment = () => {
                     <h3 className="text-lg font-semibold text-foreground">Schedule</h3>
                     <p className="text-sm text-muted-foreground">Set dates and times for this session</p>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       <div>
@@ -2306,7 +2323,7 @@ const LearningDevelopment = () => {
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <Label htmlFor="endDate" className="text-sm font-medium text-foreground">
                           End date <span className="text-red-500">*</span>
@@ -2319,7 +2336,7 @@ const LearningDevelopment = () => {
                           className="mt-1"
                         />
                       </div>
-                      
+
                       <div>
                         <Label htmlFor="registrationDeadline" className="text-sm font-medium text-foreground">
                           Registration deadline <span className="text-red-500">*</span>
@@ -2333,7 +2350,7 @@ const LearningDevelopment = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <Label className="text-sm font-medium text-foreground">Session Times (Optional)</Label>
                       <div className="space-y-3 mt-2">
@@ -2385,7 +2402,7 @@ const LearningDevelopment = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">Instructor & Capacity</h3>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="instructor" className="text-sm font-medium text-foreground">
@@ -2402,7 +2419,7 @@ const LearningDevelopment = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="maxCapacity" className="text-sm font-medium text-foreground">Maximum capacity</Label>
                       <Input
@@ -2413,7 +2430,7 @@ const LearningDevelopment = () => {
                         className="mt-1"
                       />
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="allowWaitlist"
@@ -2432,7 +2449,7 @@ const LearningDevelopment = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">Session settings</h3>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-start space-x-3">
                       <Checkbox
@@ -2450,7 +2467,7 @@ const LearningDevelopment = () => {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start space-x-3">
                       <Checkbox
                         id="markAsMandatory"
@@ -2467,7 +2484,7 @@ const LearningDevelopment = () => {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start space-x-3">
                       <Checkbox
                         id="sendNotifications"
@@ -2492,7 +2509,7 @@ const LearningDevelopment = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">Prerequisites</h3>
                   </div>
-                  
+
                   <div>
                     <Textarea
                       placeholder="List any prerequisites or requirements..."
@@ -2508,7 +2525,7 @@ const LearningDevelopment = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">Internal Notes</h3>
                   </div>
-                  
+
                   <div>
                     <Textarea
                       placeholder="Add any notes for coordinators or admins..."
@@ -2540,14 +2557,14 @@ const LearningDevelopment = () => {
                   <div className="text-xs text-muted-foreground mb-1">Course</div>
                   <div className="text-sm font-medium text-foreground">{addSessionForm.course}</div>
                 </div>
-                
+
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">Format</div>
                   <Badge className="bg-muted text-muted-foreground px-2 py-1 text-xs font-medium">
                     {addSessionForm.sessionFormat}
                   </Badge>
                 </div>
-                
+
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">Schedule</div>
                   <div className="space-y-1 text-sm text-foreground">
@@ -2556,7 +2573,7 @@ const LearningDevelopment = () => {
                     <div>Registration closes: {new Date(addSessionForm.registrationDeadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">Instructor</div>
                   <div className="space-y-1 text-sm text-foreground">
@@ -2564,7 +2581,7 @@ const LearningDevelopment = () => {
                     <div className="text-muted-foreground">{addSessionForm.instructor.split(' - ')[1]}</div>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">Capacity</div>
                   <div className="flex items-center space-x-2 text-sm text-foreground">
@@ -2601,7 +2618,7 @@ const LearningDevelopment = () => {
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <button 
+          <button
             onClick={onBack}
             className="flex items-center space-x-1 hover:text-foreground transition-colors"
           >
@@ -2658,20 +2675,20 @@ const LearningDevelopment = () => {
           {/* Course Tabs */}
           <Tabs value={activeDetailTab} onValueChange={setActiveDetailTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 bg-muted max-w-md">
-              <TabsTrigger 
-                value="overview" 
+              <TabsTrigger
+                value="overview"
                 className="data-[state=active]:bg-violet-600 data-[state=active]:text-white"
               >
                 Overview
               </TabsTrigger>
-              <TabsTrigger 
-                value="curriculum" 
+              <TabsTrigger
+                value="curriculum"
                 className="data-[state=active]:bg-violet-600 data-[state=active]:text-white"
               >
                 Curriculum
               </TabsTrigger>
-              <TabsTrigger 
-                value="instructor" 
+              <TabsTrigger
+                value="instructor"
                 className="data-[state=active]:bg-violet-600 data-[state=active]:text-white"
               >
                 Instructor
@@ -2734,8 +2751,8 @@ const LearningDevelopment = () => {
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
                       {course.competencies.map((competency: string, index: number) => (
-                        <Badge 
-                          key={index} 
+                        <Badge
+                          key={index}
                           className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium"
                         >
                           {competency}
@@ -2756,7 +2773,7 @@ const LearningDevelopment = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {course.curriculum.modules.map((module: any) => (
-                      <div 
+                      <div
                         key={module.id}
                         className="bg-card border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
                       >
@@ -2766,7 +2783,7 @@ const LearningDevelopment = () => {
                             <h3 className="text-lg font-semibold text-foreground">{module.title}</h3>
                             <p className="text-sm text-muted-foreground">{module.duration}</p>
                           </div>
-                          <Badge 
+                          <Badge
                             className="bg-muted text-muted-foreground px-3 py-1 text-xs font-medium rounded-md"
                           >
                             {module.status}
@@ -2789,16 +2806,16 @@ const LearningDevelopment = () => {
                         <h2 className="text-2xl font-bold text-foreground">{course.instructor.name}</h2>
                         <p className="text-lg text-muted-foreground mt-1">{course.instructor.title}</p>
                       </div>
-                      
+
                       <div>
                         <p className="text-muted-foreground leading-relaxed">
                           {course.instructor.experience}
                         </p>
                       </div>
-                      
+
                       <div className="pt-4">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="border-gray-300 text-muted-foreground hover:bg-muted/50"
                         >
                           Contact Instructor
@@ -2825,7 +2842,7 @@ const LearningDevelopment = () => {
                     <span className="text-sm text-muted-foreground">Start Date</span>
                   </div>
                   <p className="text-foreground font-medium">{course.startDate}</p>
-                  
+
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">End Date</span>
@@ -2855,8 +2872,8 @@ const LearningDevelopment = () => {
                     <span className="text-sm text-foreground font-medium">{course.enrolled}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-violet-600 h-2 rounded-full transition-all duration-300" 
+                    <div
+                      className="bg-violet-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${course.enrollmentProgress}%` }}
                     />
                   </div>
@@ -2864,7 +2881,7 @@ const LearningDevelopment = () => {
 
                 {/* Action Buttons */}
                 <div className="space-y-3 pt-4">
-                  <Button 
+                  <Button
                     className="w-full bg-gray-900 hover:bg-gray-800 text-white"
                     onClick={handleEnrollNow}
                   >
@@ -2904,744 +2921,216 @@ const LearningDevelopment = () => {
         <CourseDetailView course={selectedCourse} onBack={handleBackToTrainingNeeds} />
       ) : (
         <>
-      {/* Navigation Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-muted">
-          <TabsTrigger 
-            value="training-needs" 
-            className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
-          >
-            Training needs
-          </TabsTrigger>
-          <TabsTrigger 
-            value="lms-integration" 
-            className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
-          >
-            LMS integration
-          </TabsTrigger>
-          <TabsTrigger 
-            value="completion-records" 
-            className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
-          >
-            Completion records
-          </TabsTrigger>
-          <TabsTrigger 
-            value="team-attendance" 
-            className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
-          >
-            Team attendance calendar
-          </TabsTrigger>
-          <TabsTrigger 
-            value="oca" 
-            className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
-          >
-            OCA
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Training Needs Tab Content */}
-        <TabsContent value="training-needs" className="space-y-6 mt-6">
-          {/* Training Needs Matrix Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">Training Needs Matrix</CardTitle>
-                <div className="flex items-center space-x-4">
-                  <div className="relative">
-                    <Input
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  </div>
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Filter className="h-4 w-4" />
-                    <span>Filter</span>
-                  </Button>
-                  <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2" onClick={() => setIsSkillGapModalOpen(true)}>
-                    <Plus className="h-4 w-4" />
-                    <span>Create plan</span>
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-
-              {/* Data Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4">
-                        <Checkbox
-                          checked={selectAll}
-                          onCheckedChange={handleSelectAll}
-                        />
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Role / Teams</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Skill</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Owner</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Required</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Current</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Due</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Gap</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Plan</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredData.map((item) => (
-                      <tr key={item.id} className="border-b border-gray-200 hover:bg-muted/50">
-                        <td className="py-3 px-4">
-                          <Checkbox
-                            checked={selectedRows.includes(item.id)}
-                            onCheckedChange={(checked) => handleSelectRow(item.id, checked as boolean)}
-                          />
-                        </td>
-                        <td className="py-3 px-4">
-                          <div>
-                            <div className="font-medium text-foreground">{item.role}</div>
-                            <div className="text-sm text-muted-foreground">({item.team})</div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-foreground">{item.skill}</td>
-                        <td className="py-3 px-4 text-foreground">{item.owner}</td>
-                        <td className="py-3 px-4">
-                          <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getLevelBadgeColor(item.required, 'required')}`}>
-                            {item.required}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getLevelBadgeColor(item.current, 'current')}`}>
-                            {item.current}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-foreground">{item.due}</td>
-                        <td className="py-3 px-4">
-                          <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getLevelBadgeColor(item.gap, 'gap')}`}>
-                            {item.gap}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-foreground">{item.plan}</td>
-                        <td className="py-3 px-4">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="flex items-center gap-1"
-                            onClick={() => setIsSkillGapModalOpen(true)}
-                          >
-                            <Eye className="h-4 w-4" />
-                            <span className="text-sm">View</span>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* LMS Integration Tab Content */}
-        <TabsContent value="lms-integration" className="space-y-6 mt-6">
-          {/* LMS Integration Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg font-semibold">Training Needs Matrix</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">Connect to external learning management systems</p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Filter className="h-4 w-4" />
-                    <span>Filter</span>
-                  </Button>
-                  <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2">
-                    <Plus className="h-4 w-4" />
-                    <span>Add connector</span>
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* LMS Connectors Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4">
-                        <Checkbox />
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Conector</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Last sync</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Enrollments</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Completions</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lmsConnectorsData.map((connector) => (
-                      <tr key={connector.id} className="border-b border-gray-200 hover:bg-muted/50">
-                        <td className="py-3 px-4">
-                          <Checkbox />
-                        </td>
-                        <td className="py-3 px-4 text-foreground font-medium">{connector.name}</td>
-                        <td className="py-3 px-4 text-foreground">{connector.lastSync}</td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-1 text-foreground">
-                            <ArrowRight className="h-4 w-4" />
-                            <span>{connector.enrollments}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-1 text-foreground">
-                            <ArrowRight className="h-4 w-4" />
-                            <span>{connector.completions}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getStatusBadgeColor(connector.status)}`}>
-                            {connector.status}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                            <Eye className="h-4 w-4" />
-                            <span className="text-sm">View</span>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Completion Records Tab Content */}
-        <TabsContent value="completion-records" className="space-y-6 mt-6">
-          {/* Completion Records Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg font-semibold">Completed records</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">Track enrollments and completions for all training</p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Filter className="h-4 w-4" />
-                    <span>Filter</span>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center space-x-2"
-                    onClick={handleAddSession}
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span>Add session</span>
-                  </Button>
-                  <Button 
-                    className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2"
-                    onClick={handleBulkEnrollment}
-                  >
-                    <Upload className="h-4 w-4" />
-                    <span>Bulk enroll</span>
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Completion Records Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4">
-                        <Checkbox />
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Learner</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Course</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Due</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Completed</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Score</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Source</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {completionRecordsData.map((record) => (
-                      <tr key={record.id} className="border-b border-gray-200 hover:bg-muted/50">
-                        <td className="py-3 px-4">
-                          <Checkbox />
-                        </td>
-                        <td className="py-3 px-4 text-foreground font-medium">{record.learner}</td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-2">
-                            {record.hasRedDot && (
-                              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                            )}
-                            <span className="text-foreground">{record.course}</span>
-                          </div>
-                        </td>
-                        <td className={`py-3 px-4 ${record.dueOverdue ? 'text-red-600' : 'text-foreground'}`}>
-                          {record.due}
-                        </td>
-                        <td className="py-3 px-4 text-foreground">{record.completed}</td>
-                        <td className="py-3 px-4 text-foreground">{record.score}</td>
-                        <td className="py-3 px-4">
-                          <Badge className="bg-muted text-muted-foreground px-2 py-1 text-xs font-medium">
-                            {record.source}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getCompletionStatusBadgeColor(record.status)}`}>
-                            {record.status}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="flex items-center gap-1"
-                            onClick={() => handleViewEnrollmentDetails(record)}
-                          >
-                            <Eye className="h-4 w-4" />
-                            <span className="text-sm">View</span>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="team-attendance" className="space-y-6 mt-6">
-          <TeamAttendanceCalendar />
-        </TabsContent>
-
-        <TabsContent value="oca" className="space-y-6 mt-6">
-          {/* OCA Secondary Tabs */}
-          <Tabs value={ocaActiveTab} onValueChange={setOcaActiveTab} className="w-full">
-            <TabsList className="flex w-fit bg-transparent space-x-8">
-              <TabsTrigger 
-                value="self-assessment" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+          {/* Navigation Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-5 bg-muted">
+              <TabsTrigger
+                value="training-needs"
+                className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
               >
-                Self-assessment surveys
+                Training needs
               </TabsTrigger>
-              <TabsTrigger 
-                value="capacity-scorecards" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+              <TabsTrigger
+                value="lms-integration"
+                className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
               >
-                Capacity Scorecards
+                LMS integration
               </TabsTrigger>
-              <TabsTrigger 
-                value="recommendations" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+              <TabsTrigger
+                value="completion-records"
+                className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
               >
-                Recommendations
+                Completion records
+              </TabsTrigger>
+              <TabsTrigger
+                value="team-attendance"
+                className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
+              >
+                Team attendance calendar
+              </TabsTrigger>
+              <TabsTrigger
+                value="oca"
+                className={`data-[state=active]:bg-violet-600 data-[state=active]:text-white`}
+              >
+                OCA
               </TabsTrigger>
             </TabsList>
 
-            {/* Self-Assessment Surveys Tab */}
-            <TabsContent value="self-assessment" className="space-y-6 mt-6">
-          <Card>
+            {/* Training Needs Tab Content */}
+            <TabsContent value="training-needs" className="space-y-6 mt-6">
+              {/* Training Needs Matrix Section */}
+              <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-xl font-bold text-foreground">Self-Assessment Surveys</h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Collect structured capacity responses from teams and partners
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Button variant="outline" size="sm">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filter
+                    <CardTitle className="text-lg font-semibold">Training Needs Matrix</CardTitle>
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <Input
+                          placeholder="Search..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      </div>
+                      <Button variant="outline" className="flex items-center space-x-2">
+                        <Filter className="h-4 w-4" />
+                        <span>Filter</span>
                       </Button>
-                      <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Assign survey
+                      <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2" onClick={() => setIsSkillGapModalOpen(true)}>
+                        <Plus className="h-4 w-4" />
+                        <span>Create plan</span>
                       </Button>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
+
+                  {/* Data Table */}
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-foreground">
-                            <Checkbox />
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-3 px-4">
+                            <Checkbox
+                              checked={selectAll}
+                              onCheckedChange={handleSelectAll}
+                            />
                           </th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Org/Team</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Template</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Role / Teams</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Skill</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Owner</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Required</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Current</th>
                           <th className="text-left py-3 px-4 font-medium text-foreground">Due</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Program</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Responses</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Gap</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Plan</th>
                           <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {ocaSurveysData.map((survey) => (
-                          <tr key={survey.id} className="border-b hover:bg-muted/50">
+                        {filteredData.map((item) => (
+                          <tr key={item.id} className="border-b border-gray-200 hover:bg-muted/50">
                             <td className="py-3 px-4">
-                              <Checkbox />
+                              <Checkbox
+                                checked={selectedRows.includes(item.id)}
+                                onCheckedChange={(checked) => handleSelectRow(item.id, checked as boolean)}
+                              />
                             </td>
                             <td className="py-3 px-4">
                               <div>
-                                <div className="text-sm font-semibold text-foreground">{survey.program}</div>
-                                <div className="text-xs text-muted-foreground">{survey.orgTeam}</div>
+                                <div className="font-medium text-foreground">{item.role}</div>
+                                <div className="text-sm text-muted-foreground">({item.team})</div>
                               </div>
                             </td>
+                            <td className="py-3 px-4 text-foreground">{item.skill}</td>
+                            <td className="py-3 px-4 text-foreground">{item.owner}</td>
                             <td className="py-3 px-4">
-                              <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
-                                {survey.template}
+                              <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getLevelBadgeColor(item.required, 'required')}`}>
+                                {item.required}
                               </Badge>
                             </td>
-                            <td className="py-3 px-4 text-sm text-muted-foreground">
-                              {survey.due}
-                            </td>
                             <td className="py-3 px-4">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-20 bg-gray-200 rounded-full h-2">
-                                  <div 
-                                    className="bg-violet-600 h-2 rounded-full" 
-                                    style={{ width: `${survey.progress}%` }}
-                                  ></div>
-                                </div>
-                                <span className="text-sm font-medium text-foreground">
-                                  {survey.progress}%
-                                </span>
-                              </div>
+                              <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getLevelBadgeColor(item.current, 'current')}`}>
+                                {item.current}
+                              </Badge>
                             </td>
-                            <td className="py-3 px-4 text-sm text-muted-foreground">
-                              {survey.responses.completed}/{survey.responses.total}
-                            </td>
+                            <td className="py-3 px-4 text-foreground">{item.due}</td>
                             <td className="py-3 px-4">
-                              <Button variant="outline" size="sm" onClick={() => handleViewSurveyDetails(survey)}>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View
+                              <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getLevelBadgeColor(item.gap, 'gap')}`}>
+                                {item.gap}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4 text-foreground">{item.plan}</td>
+                            <td className="py-3 px-4">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="flex items-center gap-1"
+                                onClick={() => setIsSkillGapModalOpen(true)}
+                              >
+                                <Eye className="h-4 w-4" />
+                                <span className="text-sm">View</span>
                               </Button>
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-            {/* Capacity Scorecards Tab */}
-            <TabsContent value="capacity-scorecards" className="space-y-6 mt-6">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-xl font-bold text-foreground">Capacity Scorecards</h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Visualize capacity strengths and gaps by domain
-                      </p>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      <Filter className="h-4 w-4 mr-2" />
-                      Filter
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {/* Capacity Heatmap Section */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-foreground">Capacity Heatmap</h3>
-                    
-                    {/* Legend */}
-                    <div className="flex items-center space-x-6 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span className="text-muted-foreground">Below 2.5</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <span className="text-muted-foreground">2.5 - 3.5</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-muted-foreground">Above 3.5</span>
-                      </div>
-                    </div>
-
-                    {/* Heatmap Table */}
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-3 px-4 font-medium text-foreground">Organization</th>
-                            <th className="text-left py-3 px-4 font-medium text-foreground">Governance</th>
-                            <th className="text-left py-3 px-4 font-medium text-foreground">HR</th>
-                            <th className="text-left py-3 px-4 font-medium text-foreground">Finance</th>
-                            <th className="text-left py-3 px-4 font-medium text-foreground">Programs</th>
-                            <th className="text-left py-3 px-4 font-medium text-foreground">M&E</th>
-                            <th className="text-left py-3 px-4 font-medium text-foreground">IT</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {capacityScorecardsData.map((org) => (
-                            <tr key={org.id} className="border-b hover:bg-muted/50">
-                              <td className="py-3 px-4 text-sm font-medium text-foreground">
-                                {org.organization}
-                              </td>
-                              <td className="py-3 px-4">
-                                <Badge 
-                                  className={`${getScoreColor(org.domains.governance)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
-                                  onClick={() => handleViewDomainDetails(org, 'Governance', org.domains.governance)}
-                                >
-                                  {org.domains.governance}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <Badge 
-                                  className={`${getScoreColor(org.domains.hr)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
-                                  onClick={() => handleViewDomainDetails(org, 'HR', org.domains.hr)}
-                                >
-                                  {org.domains.hr}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <Badge 
-                                  className={`${getScoreColor(org.domains.finance)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
-                                  onClick={() => handleViewDomainDetails(org, 'Finance', org.domains.finance)}
-                                >
-                                  {org.domains.finance}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <Badge 
-                                  className={`${getScoreColor(org.domains.programs)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
-                                  onClick={() => handleViewDomainDetails(org, 'Programs', org.domains.programs)}
-                                >
-                                  {org.domains.programs}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <Badge 
-                                  className={`${getScoreColor(org.domains.me)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
-                                  onClick={() => handleViewDomainDetails(org, 'M&E', org.domains.me)}
-                                >
-                                  {org.domains.me}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <Badge 
-                                  className={`${getScoreColor(org.domains.it)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
-                                  onClick={() => handleViewDomainDetails(org, 'IT', org.domains.it)}
-                                >
-                                  {org.domains.it}
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* Summary Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                    {/* Average Score Card */}
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-foreground">Average Score</h4>
-                          <div className="text-2xl font-bold text-foreground">3.2</div>
-                          <div className="text-sm text-green-600 font-medium">+0.3 vs Q1</div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Organizations Below Target Card */}
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-foreground">Organizations Below Target</h4>
-                          <div className="text-2xl font-bold text-foreground">2 of 4</div>
-                          <Badge className="bg-red-500 text-white text-xs">Needs attention</Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Lowest Domain Card */}
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-foreground">Lowest Domain</h4>
-                          <div className="text-2xl font-bold text-foreground">M&E (2.7)</div>
-                          <Badge className="bg-red-500 text-white text-xs">Critical</Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* Recommendations Tab */}
-            <TabsContent value="recommendations" className="space-y-6 mt-6">
+            {/* LMS Integration Tab Content */}
+            <TabsContent value="lms-integration" className="space-y-6 mt-6">
+              {/* LMS Integration Section */}
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-bold text-foreground">Recommendations Engine</h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Turn capacity findings into targeted training plans
-                      </p>
+                      <CardTitle className="text-lg font-semibold">Training Needs Matrix</CardTitle>
+                      <p className="text-sm text-muted-foreground mt-1">Connect to external learning management systems</p>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                        <Input
-                          placeholder="Search..."
-                          className="pl-10 w-64"
-                        />
-                      </div>
-                      <Button variant="outline" size="sm">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filter
+                    <div className="flex items-center space-x-4">
+                      <Button variant="outline" className="flex items-center space-x-2">
+                        <Filter className="h-4 w-4" />
+                        <span>Filter</span>
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <ShoppingBag className="h-4 w-4 mr-2" />
-                        Bundle (0)
+                      <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2">
+                        <Plus className="h-4 w-4" />
+                        <span>Add connector</span>
                       </Button>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {/* Summary Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {/* Total Recommendations Card */}
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
-                            <ThumbsUp className="h-5 w-5 text-violet-600" />
-                          </div>
-                          <div>
-                            <div className="text-2xl font-bold text-foreground">4</div>
-                            <div className="text-sm text-muted-foreground">Total recommendations</div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* High Impact Card */}
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                            <ShoppingBag className="h-5 w-5 text-red-600" />
-                          </div>
-                          <div>
-                            <div className="text-2xl font-bold text-foreground">2</div>
-                            <div className="text-sm text-muted-foreground">High impact</div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Acceptance Rate Card */}
-                    <Card>
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                          </div>
-                          <div>
-                            <div className="text-2xl font-bold text-foreground">78%</div>
-                            <div className="text-sm text-muted-foreground">Acceptance rate</div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  {/* Recommendations Table */}
+                  {/* LMS Connectors Table */}
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium text-foreground">
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-3 px-4">
                             <Checkbox />
                           </th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Finding</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Domain</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Suggestion</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Impact</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Conector</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Last sync</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Enrollments</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Completions</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
                           <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {recommendationsData.map((recommendation) => (
-                          <tr key={recommendation.id} className="border-b hover:bg-muted/50">
+                        {lmsConnectorsData.map((connector) => (
+                          <tr key={connector.id} className="border-b border-gray-200 hover:bg-muted/50">
                             <td className="py-3 px-4">
                               <Checkbox />
                             </td>
-                            <td className="py-3 px-4 text-sm font-medium text-foreground">
-                              {recommendation.finding}
-                            </td>
+                            <td className="py-3 px-4 text-foreground font-medium">{connector.name}</td>
+                            <td className="py-3 px-4 text-foreground">{connector.lastSync}</td>
                             <td className="py-3 px-4">
-                              <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
-                                {recommendation.domain}
-                              </Badge>
-                            </td>
-                            <td className="py-3 px-4 text-sm text-muted-foreground">
-                              {recommendation.suggestion}
-                            </td>
-                            <td className="py-3 px-4">
-                              <Badge className={`${getImpactBadgeColor(recommendation.impact)} text-xs px-2 py-1`}>
-                                {recommendation.impact}
-                              </Badge>
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex items-center space-x-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => handleAssignRecommendation(recommendation)}
-                                >
-                                  <FileText className="h-4 w-4 mr-2" />
-                                  {recommendation.action}
-                                </Button>
-                                {bundleRecommendationIds.has(recommendation.id) ? (
-                                  <div 
-                                    className="flex items-center px-3 py-2 text-sm text-muted-foreground bg-muted rounded-md cursor-pointer hover:bg-gray-200 hover:text-muted-foreground transition-colors"
-                                    onClick={() => handleRemoveFromBundleByRecommendationId(recommendation.id)}
-                                    title="Click to remove from bundle"
-                                  >
-                                    <CheckCircle className="h-4 w-4 mr-2" />
-                                    In Bundle
-                                  </div>
-                                ) : (
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => handleAddToBundle(recommendation)}
-                                  >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Add to bundle
-                                  </Button>
-                                )}
+                              <div className="flex items-center space-x-1 text-foreground">
+                                <ArrowRight className="h-4 w-4" />
+                                <span>{connector.enrollments}</span>
                               </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center space-x-1 text-foreground">
+                                <ArrowRight className="h-4 w-4" />
+                                <span>{connector.completions}</span>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getStatusBadgeColor(connector.status)}`}>
+                                {connector.status}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                                <Eye className="h-4 w-4" />
+                                <span className="text-sm">View</span>
+                              </Button>
                             </td>
                           </tr>
                         ))}
@@ -3651,9 +3140,537 @@ const LearningDevelopment = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-      </Tabs>
-        </TabsContent>
-      </Tabs>
+
+            {/* Completion Records Tab Content */}
+            <TabsContent value="completion-records" className="space-y-6 mt-6">
+              {/* Completion Records Section */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg font-semibold">Completed records</CardTitle>
+                      <p className="text-sm text-muted-foreground mt-1">Track enrollments and completions for all training</p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <Button variant="outline" className="flex items-center space-x-2">
+                        <Filter className="h-4 w-4" />
+                        <span>Filter</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="flex items-center space-x-2"
+                        onClick={handleAddSession}
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Add session</span>
+                      </Button>
+                      <Button
+                        className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2"
+                        onClick={handleBulkEnrollment}
+                      >
+                        <Upload className="h-4 w-4" />
+                        <span>Bulk enroll</span>
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {/* Completion Records Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-3 px-4">
+                            <Checkbox />
+                          </th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Learner</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Course</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Due</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Completed</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Score</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Source</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {completionRecordsData.map((record) => (
+                          <tr key={record.id} className="border-b border-gray-200 hover:bg-muted/50">
+                            <td className="py-3 px-4">
+                              <Checkbox />
+                            </td>
+                            <td className="py-3 px-4 text-foreground font-medium">{record.learner}</td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center space-x-2">
+                                {record.hasRedDot && (
+                                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                )}
+                                <span className="text-foreground">{record.course}</span>
+                              </div>
+                            </td>
+                            <td className={`py-3 px-4 ${record.dueOverdue ? 'text-red-600' : 'text-foreground'}`}>
+                              {record.due}
+                            </td>
+                            <td className="py-3 px-4 text-foreground">{record.completed}</td>
+                            <td className="py-3 px-4 text-foreground">{record.score}</td>
+                            <td className="py-3 px-4">
+                              <Badge className="bg-muted text-muted-foreground px-2 py-1 text-xs font-medium">
+                                {record.source}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getCompletionStatusBadgeColor(record.status)}`}>
+                                {record.status}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="flex items-center gap-1"
+                                onClick={() => handleViewEnrollmentDetails(record)}
+                              >
+                                <Eye className="h-4 w-4" />
+                                <span className="text-sm">View</span>
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="team-attendance" className="space-y-6 mt-6">
+              <TeamAttendanceCalendar />
+            </TabsContent>
+
+            <TabsContent value="oca" className="space-y-6 mt-6">
+              {/* OCA Secondary Tabs */}
+              <Tabs value={ocaActiveTab} onValueChange={setOcaActiveTab} className="w-full">
+                <TabsList className="flex w-fit bg-transparent space-x-8">
+                  <TabsTrigger
+                    value="self-assessment"
+                    className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+                  >
+                    Self-assessment surveys
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="capacity-scorecards"
+                    className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+                  >
+                    Capacity Scorecards
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="recommendations"
+                    className="data-[state=active]:bg-transparent data-[state=active]:text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-violet-600 data-[state=active]:rounded-none data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-b-2 data-[state=inactive]:border-transparent px-0 py-3"
+                  >
+                    Recommendations
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Self-Assessment Surveys Tab */}
+                <TabsContent value="self-assessment" className="space-y-6 mt-6">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h2 className="text-xl font-bold text-foreground">Self-Assessment Surveys</h2>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Collect structured capacity responses from teams and partners
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <Button variant="outline" size="sm">
+                            <Filter className="h-4 w-4 mr-2" />
+                            Filter
+                          </Button>
+                          <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Assign survey
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-3 px-4 font-medium text-foreground">
+                                <Checkbox />
+                              </th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Org/Team</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Template</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Due</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Program</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Responses</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {ocaSurveysData.map((survey) => (
+                              <tr key={survey.id} className="border-b hover:bg-muted/50">
+                                <td className="py-3 px-4">
+                                  <Checkbox />
+                                </td>
+                                <td className="py-3 px-4">
+                                  <div>
+                                    <div className="text-sm font-semibold text-foreground">{survey.program}</div>
+                                    <div className="text-xs text-muted-foreground">{survey.orgTeam}</div>
+                                  </div>
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
+                                    {survey.template}
+                                  </Badge>
+                                </td>
+                                <td className="py-3 px-4 text-sm text-muted-foreground">
+                                  {survey.due}
+                                </td>
+                                <td className="py-3 px-4">
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-20 bg-gray-200 rounded-full h-2">
+                                      <div
+                                        className="bg-violet-600 h-2 rounded-full"
+                                        style={{ width: `${survey.progress}%` }}
+                                      ></div>
+                                    </div>
+                                    <span className="text-sm font-medium text-foreground">
+                                      {survey.progress}%
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="py-3 px-4 text-sm text-muted-foreground">
+                                  {survey.responses.completed}/{survey.responses.total}
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Button variant="outline" size="sm" onClick={() => handleViewSurveyDetails(survey)}>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Capacity Scorecards Tab */}
+                <TabsContent value="capacity-scorecards" className="space-y-6 mt-6">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h2 className="text-xl font-bold text-foreground">Capacity Scorecards</h2>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Visualize capacity strengths and gaps by domain
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          <Filter className="h-4 w-4 mr-2" />
+                          Filter
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {/* Capacity Heatmap Section */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-foreground">Capacity Heatmap</h3>
+
+                        {/* Legend */}
+                        <div className="flex items-center space-x-6 text-sm">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <span className="text-muted-foreground">Below 2.5</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <span className="text-muted-foreground">2.5 - 3.5</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <span className="text-muted-foreground">Above 3.5</span>
+                          </div>
+                        </div>
+
+                        {/* Heatmap Table */}
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead>
+                              <tr className="border-b">
+                                <th className="text-left py-3 px-4 font-medium text-foreground">Organization</th>
+                                <th className="text-left py-3 px-4 font-medium text-foreground">Governance</th>
+                                <th className="text-left py-3 px-4 font-medium text-foreground">HR</th>
+                                <th className="text-left py-3 px-4 font-medium text-foreground">Finance</th>
+                                <th className="text-left py-3 px-4 font-medium text-foreground">Programs</th>
+                                <th className="text-left py-3 px-4 font-medium text-foreground">M&E</th>
+                                <th className="text-left py-3 px-4 font-medium text-foreground">IT</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {capacityScorecardsData.map((org) => (
+                                <tr key={org.id} className="border-b hover:bg-muted/50">
+                                  <td className="py-3 px-4 text-sm font-medium text-foreground">
+                                    {org.organization}
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <Badge
+                                      className={`${getScoreColor(org.domains.governance)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
+                                      onClick={() => handleViewDomainDetails(org, 'Governance', org.domains.governance)}
+                                    >
+                                      {org.domains.governance}
+                                    </Badge>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <Badge
+                                      className={`${getScoreColor(org.domains.hr)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
+                                      onClick={() => handleViewDomainDetails(org, 'HR', org.domains.hr)}
+                                    >
+                                      {org.domains.hr}
+                                    </Badge>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <Badge
+                                      className={`${getScoreColor(org.domains.finance)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
+                                      onClick={() => handleViewDomainDetails(org, 'Finance', org.domains.finance)}
+                                    >
+                                      {org.domains.finance}
+                                    </Badge>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <Badge
+                                      className={`${getScoreColor(org.domains.programs)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
+                                      onClick={() => handleViewDomainDetails(org, 'Programs', org.domains.programs)}
+                                    >
+                                      {org.domains.programs}
+                                    </Badge>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <Badge
+                                      className={`${getScoreColor(org.domains.me)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
+                                      onClick={() => handleViewDomainDetails(org, 'M&E', org.domains.me)}
+                                    >
+                                      {org.domains.me}
+                                    </Badge>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <Badge
+                                      className={`${getScoreColor(org.domains.it)} text-xs px-2 py-1 cursor-pointer hover:opacity-80`}
+                                      onClick={() => handleViewDomainDetails(org, 'IT', org.domains.it)}
+                                    >
+                                      {org.domains.it}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                        {/* Average Score Card */}
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-medium text-foreground">Average Score</h4>
+                              <div className="text-2xl font-bold text-foreground">3.2</div>
+                              <div className="text-sm text-green-600 font-medium">+0.3 vs Q1</div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Organizations Below Target Card */}
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-medium text-foreground">Organizations Below Target</h4>
+                              <div className="text-2xl font-bold text-foreground">2 of 4</div>
+                              <Badge className="bg-red-500 text-white text-xs">Needs attention</Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Lowest Domain Card */}
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-medium text-foreground">Lowest Domain</h4>
+                              <div className="text-2xl font-bold text-foreground">M&E (2.7)</div>
+                              <Badge className="bg-red-500 text-white text-xs">Critical</Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Recommendations Tab */}
+                <TabsContent value="recommendations" className="space-y-6 mt-6">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h2 className="text-xl font-bold text-foreground">Recommendations Engine</h2>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Turn capacity findings into targeted training plans
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <Input
+                              placeholder="Search..."
+                              className="pl-10 w-64"
+                            />
+                          </div>
+                          <Button variant="outline" size="sm">
+                            <Filter className="h-4 w-4 mr-2" />
+                            Filter
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <ShoppingBag className="h-4 w-4 mr-2" />
+                            Bundle (0)
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        {/* Total Recommendations Card */}
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
+                                <ThumbsUp className="h-5 w-5 text-violet-600" />
+                              </div>
+                              <div>
+                                <div className="text-2xl font-bold text-foreground">4</div>
+                                <div className="text-sm text-muted-foreground">Total recommendations</div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* High Impact Card */}
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <ShoppingBag className="h-5 w-5 text-red-600" />
+                              </div>
+                              <div>
+                                <div className="text-2xl font-bold text-foreground">2</div>
+                                <div className="text-sm text-muted-foreground">High impact</div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Acceptance Rate Card */}
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                              </div>
+                              <div>
+                                <div className="text-2xl font-bold text-foreground">78%</div>
+                                <div className="text-sm text-muted-foreground">Acceptance rate</div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {/* Recommendations Table */}
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-3 px-4 font-medium text-foreground">
+                                <Checkbox />
+                              </th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Finding</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Domain</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Suggestion</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Impact</th>
+                              <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {recommendationsData.map((recommendation) => (
+                              <tr key={recommendation.id} className="border-b hover:bg-muted/50">
+                                <td className="py-3 px-4">
+                                  <Checkbox />
+                                </td>
+                                <td className="py-3 px-4 text-sm font-medium text-foreground">
+                                  {recommendation.finding}
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs">
+                                    {recommendation.domain}
+                                  </Badge>
+                                </td>
+                                <td className="py-3 px-4 text-sm text-muted-foreground">
+                                  {recommendation.suggestion}
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Badge className={`${getImpactBadgeColor(recommendation.impact)} text-xs px-2 py-1`}>
+                                    {recommendation.impact}
+                                  </Badge>
+                                </td>
+                                <td className="py-3 px-4">
+                                  <div className="flex items-center space-x-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleAssignRecommendation(recommendation)}
+                                    >
+                                      <FileText className="h-4 w-4 mr-2" />
+                                      {recommendation.action}
+                                    </Button>
+                                    {bundleRecommendationIds.has(recommendation.id) ? (
+                                      <div
+                                        className="flex items-center px-3 py-2 text-sm text-muted-foreground bg-muted rounded-md cursor-pointer hover:bg-gray-200 hover:text-muted-foreground transition-colors"
+                                        onClick={() => handleRemoveFromBundleByRecommendationId(recommendation.id)}
+                                        title="Click to remove from bundle"
+                                      >
+                                        <CheckCircle className="h-4 w-4 mr-2" />
+                                        In Bundle
+                                      </div>
+                                    ) : (
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleAddToBundle(recommendation)}
+                                      >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Add to bundle
+                                      </Button>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </TabsContent>
+          </Tabs>
         </>
       )}
 
@@ -3669,7 +3686,7 @@ const LearningDevelopment = () => {
               Create a new training plan to address skill gaps and development needs.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -3699,7 +3716,7 @@ const LearningDevelopment = () => {
                 </Select>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="level">Target Level</Label>
@@ -3726,7 +3743,7 @@ const LearningDevelopment = () => {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="dueDate">Due Date</Label>
               <Input
@@ -3736,7 +3753,7 @@ const LearningDevelopment = () => {
                 onChange={(e) => setCreatePlanForm(prev => ({ ...prev, dueDate: e.target.value }))}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -3747,7 +3764,7 @@ const LearningDevelopment = () => {
                 rows={3}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="resources">Resources</Label>
               <Textarea
@@ -3759,7 +3776,7 @@ const LearningDevelopment = () => {
               />
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={handleCancelCreatePlan}>
               Cancel
@@ -3774,7 +3791,7 @@ const LearningDevelopment = () => {
       {/* Skill Gap Details Modal */}
       <Dialog open={isSkillGapModalOpen} onOpenChange={setIsSkillGapModalOpen}>
         <DialogPortal>
-          <DialogOverlay 
+          <DialogOverlay
             className="fixed inset-0 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.04)',
@@ -3783,98 +3800,98 @@ const LearningDevelopment = () => {
             }}
           />
           <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-foreground">
-              Skill gap details
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-6">
-            {/* Skill Information */}
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-base font-medium text-foreground">
-                  React proficiency for SE II
-                </h3>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Current level</span>
-                  <Badge className="px-2 py-1 text-xs rounded-full font-medium bg-muted text-muted-foreground">
-                    L2
-                  </Badge>
+            <DialogHeader>
+              <DialogTitle className="text-lg font-semibold text-foreground">
+                Skill gap details
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-6">
+              {/* Skill Information */}
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-base font-medium text-foreground">
+                    React proficiency for SE II
+                  </h3>
                 </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Required level</span>
-                  <Badge className="px-2 py-1 text-xs rounded-full font-medium bg-muted text-muted-foreground">
-                    L3
-                  </Badge>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Current level</span>
+                    <Badge className="px-2 py-1 text-xs rounded-full font-medium bg-muted text-muted-foreground">
+                      L2
+                    </Badge>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Required level</span>
+                    <Badge className="px-2 py-1 text-xs rounded-full font-medium bg-muted text-muted-foreground">
+                      L3
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Suggested Courses */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-foreground">Suggested courses</h4>
+
+                <div className="space-y-3">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
+                    <div className="space-y-2">
+                      <div className="font-medium text-foreground">Course R-201: Advanced React Development</div>
+                      <div className="text-sm text-muted-foreground">8 weeks · Self-paced</div>
+                      <div className="text-xs text-muted-foreground">Master advanced React concepts including hooks, context, performance optimization</div>
+                    </div>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
+                    <div className="space-y-2">
+                      <div className="font-medium text-foreground">Course R-102: React Fundamentals</div>
+                      <div className="text-sm text-muted-foreground">6 weeks · Self-paced</div>
+                      <div className="text-xs text-muted-foreground">Build a solid foundation in React development</div>
+                    </div>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
+                    <div className="space-y-2">
+                      <div className="font-medium text-foreground">Workshop W-15: React Best Practices</div>
+                      <div className="text-sm text-muted-foreground">2 days · In-person</div>
+                      <div className="text-xs text-muted-foreground">Hands-on workshop covering React best practices</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Suggested Courses */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-foreground">Suggested courses</h4>
-              
-              <div className="space-y-3">
-              <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
-                <div className="space-y-2">
-                    <div className="font-medium text-foreground">Course R-201: Advanced React Development</div>
-                  <div className="text-sm text-muted-foreground">8 weeks · Self-paced</div>
-                    <div className="text-xs text-muted-foreground">Master advanced React concepts including hooks, context, performance optimization</div>
-                  </div>
-                </div>
-                
-                <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
-                  <div className="space-y-2">
-                    <div className="font-medium text-foreground">Course R-102: React Fundamentals</div>
-                    <div className="text-sm text-muted-foreground">6 weeks · Self-paced</div>
-                    <div className="text-xs text-muted-foreground">Build a solid foundation in React development</div>
-                  </div>
-                </div>
-                
-                <div className="border border-gray-200 rounded-lg p-4 bg-muted/50">
-                  <div className="space-y-2">
-                    <div className="font-medium text-foreground">Workshop W-15: React Best Practices</div>
-                    <div className="text-sm text-muted-foreground">2 days · In-person</div>
-                    <div className="text-xs text-muted-foreground">Hands-on workshop covering React best practices</div>
-                  </div>
-                </div>
+            <DialogFooter className="flex justify-between">
+              <Button variant="outline" onClick={handleCloseSkillGapModal}>
+                Cancel
+              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleViewCourseDetails}
+                  className="bg-card border-gray-300 text-muted-foreground hover:bg-muted/50"
+                >
+                  View course details
+                </Button>
+                <Button
+                  onClick={handleAddToPlan}
+                  className="bg-gray-900 hover:bg-gray-800 text-white"
+                >
+                  Add to plan
+                </Button>
               </div>
-            </div>
-          </div>
-          
-          <DialogFooter className="flex justify-between">
-            <Button variant="outline" onClick={handleCloseSkillGapModal}>
-              Cancel
-            </Button>
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                onClick={handleViewCourseDetails}
-                className="bg-card border-gray-300 text-muted-foreground hover:bg-muted/50"
-              >
-                View course details
-              </Button>
-              <Button 
-                onClick={handleAddToPlan}
-                className="bg-gray-900 hover:bg-gray-800 text-white"
-              >
-                Add to plan
-              </Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
+            </DialogFooter>
+          </DialogContent>
         </DialogPortal>
       </Dialog>
 
       {/* Session Details Modal */}
       <Dialog open={isSessionDetailsModalOpen} onOpenChange={setIsSessionDetailsModalOpen}>
         <DialogPortal>
-          <DialogOverlay 
+          <DialogOverlay
             className="fixed inset-0 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
             style={{
               backdropFilter: 'blur(8px)',
@@ -3882,131 +3899,131 @@ const LearningDevelopment = () => {
             }}
           />
           <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-foreground">
-              {selectedSession?.title}
-            </DialogTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {selectedSession?.details?.date}
-            </p>
-          </DialogHeader>
-          
-          {selectedSession && (
-            <div className="space-y-6">
-              {/* Capacity & Waitlist Cards */}
-              <div className="grid grid-cols-2 gap-4">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Users className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-foreground">Capacity</div>
-                        <div className="text-sm text-muted-foreground">
-                          {selectedSession.details.capacity.enrolled} enrolled • {selectedSession.details.capacity.max} max
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <CalendarIcon className="h-4 w-4 text-orange-600" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-foreground">Waitlist</div>
-                        <div className="text-sm text-muted-foreground">
-                          {selectedSession.details.waitlist} people waiting
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-foreground">
+                {selectedSession?.title}
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                {selectedSession?.details?.date}
+              </p>
+            </DialogHeader>
 
-              {/* Details Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-foreground">Details</h3>
+            {selectedSession && (
+              <div className="space-y-6">
+                {/* Capacity & Waitlist Cards */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Session format</div>
-                    <div className="text-sm font-medium text-foreground">{selectedSession.details.format}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Location</div>
-                    <div className="text-sm font-medium text-foreground">{selectedSession.details.location}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Instructor</div>
-                    <div className="text-sm font-medium text-foreground">{selectedSession.details.instructor}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Course</div>
-                    <div className="text-sm font-medium text-foreground">{selectedSession.details.course}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Attendees Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-foreground">
-                  Attendees ({selectedSession.details.attendees.length})
-                </h3>
-                <div className="space-y-3">
-                  {selectedSession.details.attendees.map((attendee: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between">
+                  <Card>
+                    <CardContent className="p-4">
                       <div className="flex items-center space-x-3">
-                        <Checkbox />
-                        <span className="text-sm font-medium text-foreground">{attendee.name}</span>
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <Users className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-foreground">Capacity</div>
+                          <div className="text-sm text-muted-foreground">
+                            {selectedSession.details.capacity.enrolled} enrolled • {selectedSession.details.capacity.max} max
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        {attendee.status === 'accepted' ? (
-                          <>
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                            <span className="text-sm text-green-600">Accepted</span>
-                          </>
-                        ) : attendee.status === 'no-response' ? (
-                          <>
-                            <X className="h-4 w-4 text-red-600" />
-                            <span className="text-sm text-red-600">Didn't respond</span>
-                          </>
-                        ) : (
-                          <>
-                            <Clock className="h-4 w-4 text-gray-400" />
-                            <span className="text-sm text-muted-foreground">Pending</span>
-                          </>
-                        )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                          <CalendarIcon className="h-4 w-4 text-orange-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-foreground">Waitlist</div>
+                          <div className="text-sm text-muted-foreground">
+                            {selectedSession.details.waitlist} people waiting
+                          </div>
+                        </div>
                       </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Details Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-foreground">Details</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Session format</div>
+                      <div className="text-sm font-medium text-foreground">{selectedSession.details.format}</div>
                     </div>
-                  ))}
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Location</div>
+                      <div className="text-sm font-medium text-foreground">{selectedSession.details.location}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Instructor</div>
+                      <div className="text-sm font-medium text-foreground">{selectedSession.details.instructor}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Course</div>
+                      <div className="text-sm font-medium text-foreground">{selectedSession.details.course}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Attendees Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Attendees ({selectedSession.details.attendees.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedSession.details.attendees.map((attendee: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Checkbox />
+                          <span className="text-sm font-medium text-foreground">{attendee.name}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {attendee.status === 'accepted' ? (
+                            <>
+                              <CheckCircle className="h-4 w-4 text-green-600" />
+                              <span className="text-sm text-green-600">Accepted</span>
+                            </>
+                          ) : attendee.status === 'no-response' ? (
+                            <>
+                              <X className="h-4 w-4 text-red-600" />
+                              <span className="text-sm text-red-600">Didn't respond</span>
+                            </>
+                          ) : (
+                            <>
+                              <Clock className="h-4 w-4 text-gray-400" />
+                              <span className="text-sm text-muted-foreground">Pending</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          
-          <DialogFooter className="flex justify-between">
-            <Button variant="outline" onClick={handleCloseSessionDetailsModal}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSendInvites}
-              className="bg-violet-600 hover:bg-violet-700 text-white"
-            >
-              Send invites
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+            )}
+
+            <DialogFooter className="flex justify-between">
+              <Button variant="outline" onClick={handleCloseSessionDetailsModal}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSendInvites}
+                className="bg-violet-600 hover:bg-violet-700 text-white"
+              >
+                Send invites
+              </Button>
+            </DialogFooter>
+          </DialogContent>
         </DialogPortal>
       </Dialog>
 
       {/* Assign Bundle Modal */}
       <Dialog open={isAssignBundleModalOpen} onOpenChange={setIsAssignBundleModalOpen}>
         <DialogPortal>
-          <DialogOverlay 
+          <DialogOverlay
             className="fixed inset-0 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
             style={{
               backdropFilter: 'blur(8px)',
@@ -4022,7 +4039,7 @@ const LearningDevelopment = () => {
                 Configure and assign {bundleItems.length} training recommendation{bundleItems.length !== 1 ? 's' : ''} as a package
               </p>
             </DialogHeader>
-            
+
             <div className="space-y-6">
               {/* Plan Title */}
               <div>
@@ -4031,7 +4048,7 @@ const LearningDevelopment = () => {
                   id="bundlePlanTitle"
                   placeholder="Enter plan title"
                   value={bundleForm.planTitle}
-                  onChange={(e) => setBundleForm({...bundleForm, planTitle: e.target.value})}
+                  onChange={(e) => setBundleForm({ ...bundleForm, planTitle: e.target.value })}
                   className="mt-1"
                 />
               </div>
@@ -4043,7 +4060,7 @@ const LearningDevelopment = () => {
                   id="bundleDescription"
                   placeholder="Enter description"
                   value={bundleForm.description}
-                  onChange={(e) => setBundleForm({...bundleForm, description: e.target.value})}
+                  onChange={(e) => setBundleForm({ ...bundleForm, description: e.target.value })}
                   className="mt-1"
                   rows={3}
                 />
@@ -4087,9 +4104,9 @@ const LearningDevelopment = () => {
               {/* Target Audience */}
               <div>
                 <Label htmlFor="targetAudience" className="text-sm font-medium text-foreground">Target Audience</Label>
-                <Select 
-                  value={bundleForm.targetAudience} 
-                  onValueChange={(value) => setBundleForm({...bundleForm, targetAudience: value})}
+                <Select
+                  value={bundleForm.targetAudience}
+                  onValueChange={(value) => setBundleForm({ ...bundleForm, targetAudience: value })}
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select target audience" />
@@ -4111,7 +4128,7 @@ const LearningDevelopment = () => {
                   id="completionDueDate"
                   type="date"
                   value={bundleForm.completionDueDate}
-                  onChange={(e) => setBundleForm({...bundleForm, completionDueDate: e.target.value})}
+                  onChange={(e) => setBundleForm({ ...bundleForm, completionDueDate: e.target.value })}
                   className="mt-1"
                 />
               </div>
@@ -4119,9 +4136,9 @@ const LearningDevelopment = () => {
               {/* Require Approval From */}
               <div>
                 <Label htmlFor="requireApprovalFrom" className="text-sm font-medium text-foreground">Require Approval From</Label>
-                <Select 
-                  value={bundleForm.requireApprovalFrom} 
-                  onValueChange={(value) => setBundleForm({...bundleForm, requireApprovalFrom: value})}
+                <Select
+                  value={bundleForm.requireApprovalFrom}
+                  onValueChange={(value) => setBundleForm({ ...bundleForm, requireApprovalFrom: value })}
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select approver" />
@@ -4144,16 +4161,16 @@ const LearningDevelopment = () => {
                 </div>
                 <Switch
                   checked={bundleForm.pushToLMS}
-                  onCheckedChange={(checked) => setBundleForm({...bundleForm, pushToLMS: checked})}
+                  onCheckedChange={(checked) => setBundleForm({ ...bundleForm, pushToLMS: checked })}
                 />
               </div>
             </div>
-            
+
             <DialogFooter className="flex justify-between">
               <Button variant="outline" onClick={handleCloseAssignBundleModal}>
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleAssignBundleToTeam}
                 className="bg-violet-600 hover:bg-violet-700 text-white"
               >
@@ -4167,7 +4184,7 @@ const LearningDevelopment = () => {
       {/* Assign Recommendation Modal */}
       <Dialog open={isAssignRecommendationModalOpen} onOpenChange={setIsAssignRecommendationModalOpen}>
         <DialogPortal>
-          <DialogOverlay 
+          <DialogOverlay
             className="fixed inset-0 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
             style={{
               backdropFilter: 'blur(8px)',
@@ -4185,7 +4202,7 @@ const LearningDevelopment = () => {
                 </p>
               )}
             </DialogHeader>
-            
+
             {selectedRecommendation && (
               <div className="space-y-6">
                 {/* Finding */}
@@ -4222,9 +4239,9 @@ const LearningDevelopment = () => {
                 {/* Approver */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-foreground">Approver (optional)</Label>
-                  <Select 
-                    value={assignRecommendationForm.approver} 
-                    onValueChange={(value) => setAssignRecommendationForm({...assignRecommendationForm, approver: value})}
+                  <Select
+                    value={assignRecommendationForm.approver}
+                    onValueChange={(value) => setAssignRecommendationForm({ ...assignRecommendationForm, approver: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select approver" />
@@ -4243,7 +4260,7 @@ const LearningDevelopment = () => {
                   <Label className="text-sm font-medium text-foreground">Push to LMS</Label>
                   <Switch
                     checked={assignRecommendationForm.pushToLMS}
-                    onCheckedChange={(checked) => setAssignRecommendationForm({...assignRecommendationForm, pushToLMS: checked})}
+                    onCheckedChange={(checked) => setAssignRecommendationForm({ ...assignRecommendationForm, pushToLMS: checked })}
                   />
                 </div>
 
@@ -4255,12 +4272,12 @@ const LearningDevelopment = () => {
                 </div>
               </div>
             )}
-            
+
             <DialogFooter className="flex justify-between">
               <Button variant="outline" onClick={handleCloseAssignRecommendationModal}>
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleAssignTraining}
                 className="bg-violet-600 hover:bg-violet-700 text-white"
               >
@@ -4274,7 +4291,7 @@ const LearningDevelopment = () => {
       {/* Survey Details Modal */}
       <Dialog open={isSurveyDetailsModalOpen} onOpenChange={setIsSurveyDetailsModalOpen}>
         <DialogPortal>
-          <DialogOverlay 
+          <DialogOverlay
             className="fixed inset-0 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
             style={{
               backdropFilter: 'blur(8px)',
@@ -4292,7 +4309,7 @@ const LearningDevelopment = () => {
                 </p>
               )}
             </DialogHeader>
-            
+
             {selectedSurvey && (
               <div className="space-y-6">
                 {/* Progress Section */}
@@ -4301,8 +4318,8 @@ const LearningDevelopment = () => {
                   <div className="space-y-2">
                     <div className="flex items-center space-x-3">
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-violet-600 h-2 rounded-full" 
+                        <div
+                          className="bg-violet-600 h-2 rounded-full"
                           style={{ width: `${selectedSurvey.progress}%` }}
                         ></div>
                       </div>
@@ -4327,8 +4344,8 @@ const LearningDevelopment = () => {
                           <span className="text-sm text-muted-foreground">{domain.score}</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-gray-900 h-2 rounded-full" 
+                          <div
+                            className="bg-gray-900 h-2 rounded-full"
                             style={{ width: `${(domain.score / domain.maxScore) * 100}%` }}
                           ></div>
                         </div>
@@ -4355,20 +4372,20 @@ const LearningDevelopment = () => {
                 )}
               </div>
             )}
-            
+
             <DialogFooter className="flex justify-between">
               <Button variant="outline" onClick={handleCloseSurveyDetailsModal}>
                 Cancel
               </Button>
               <div className="flex space-x-2">
-                <Button 
+                <Button
                   variant="outline"
                   onClick={handleSendSurveyReminder}
                   className="bg-gray-900 hover:bg-gray-800 text-white"
                 >
                   Send remainder
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={handleExportData}
                 >
@@ -4388,7 +4405,7 @@ const LearningDevelopment = () => {
               Enrollment details
             </DialogTitle>
           </DialogHeader>
-          
+
           {selectedEnrollment && (
             <div className="space-y-6">
               {/* Learning Timeline */}
@@ -4406,10 +4423,10 @@ const LearningDevelopment = () => {
                         <FileTextIcon className="h-4 w-4 text-white" />
                       </button>
                     </div>
-                    
+
                     {/* Timeline Line */}
                     <div className="flex-1 h-0.5 bg-violet-600 mx-4"></div>
-                    
+
                     {/* Started */}
                     <div className="flex flex-col items-center space-y-2">
                       <button
@@ -4419,10 +4436,10 @@ const LearningDevelopment = () => {
                         <BookOpen className="h-4 w-4 text-white" />
                       </button>
                     </div>
-                    
+
                     {/* Timeline Line */}
                     <div className="flex-1 h-0.5 bg-violet-600 mx-4"></div>
-                    
+
                     {/* Completed */}
                     <div className="flex flex-col items-center space-y-2">
                       <button
@@ -4433,7 +4450,7 @@ const LearningDevelopment = () => {
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Labels Container */}
                   <div className="flex w-full justify-between">
                     <div className="text-center">
@@ -4499,7 +4516,7 @@ const LearningDevelopment = () => {
               </div>
             </div>
           )}
-          
+
           <DialogFooter className="flex justify-center">
             <Button variant="outline" onClick={handleCloseEnrollmentDetailsModal}>
               Cancel
