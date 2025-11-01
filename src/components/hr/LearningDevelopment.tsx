@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { useLearningCourses } from '@/hooks/hr/useLearningCourses';
-import { useTrainingRecords } from '@/hooks/hr/useTraining';
+import { useLearningCourses, useCreateCourse, useUpdateCourse, useDeleteCourse } from '@/hooks/hr/useLearningCourses';
+import { useTrainingRecords, useCreateTrainingRecord, useUpdateTrainingProgress } from '@/hooks/hr/useTraining';
+import { useEmployees } from '@/hooks/hr/useEmployees';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -64,7 +65,7 @@ import {
 const LearningDevelopment = () => {
   const [activeTab, setActiveTab] = useState('training-needs');
   const [ocaActiveTab, setOcaActiveTab] = useState('self-assessment');
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterQuery, setFilterQuery] = useState('');
@@ -156,7 +157,7 @@ const LearningDevelopment = () => {
     title: '',
     skill: '',
     level: '',
-    owner: '',
+    employeeId: '',
     dueDate: '',
     description: '',
     resources: ''
@@ -247,15 +248,20 @@ const LearningDevelopment = () => {
 
   // Live courses from database
   const { data: coursesData, isLoading: coursesLoading } = useLearningCourses();
+  const createCourse = useCreateCourse();
+  const updateCourse = useUpdateCourse();
+  const deleteCourse = useDeleteCourse();
 
   const availableCourses = useMemo(() => {
     return (coursesData || []).map((course) => ({
       id: course.id,
       name: course.course_name,
-      duration: course.duration_hours ? `${course.duration_hours} hours` : course.course_type || 'Self-paced',
+      duration: course.duration_hours ? `${course.duration_hours} hours` : (course.course_type || 'Self-paced'),
       format: course.course_type || 'Self-paced',
-      selected: false,
-      courseData: course, // Store full record
+      status: course.status,
+      enrollment_open: course.enrollment_open,
+      provider: course.provider || '—',
+      courseData: course,
     }));
   }, [coursesData]);
 
@@ -678,93 +684,49 @@ const LearningDevelopment = () => {
     }
   ];
 
-  // Mock data for training needs matrix
-  const trainingNeedsData = [
-    {
-      id: 1,
-      role: 'SE II',
-      team: 'Engineering',
-      skill: 'React proficiency',
-      owner: 'Jane Doe',
-      required: 'L3',
-      current: 'L2',
-      due: 'Sep 12, 2025',
-      gap: 'L1',
-      plan: 'React proficiency'
-    },
-    {
-      id: 2,
-      role: 'SE III',
-      team: 'Product Design',
-      skill: 'Figma expertise',
-      owner: 'John Smith',
-      required: 'L4',
-      current: 'L3',
-      due: 'Oct 5, 2025',
-      gap: 'L2',
-      plan: 'Figma expertise'
-    },
-    {
-      id: 3,
-      role: 'SE IV',
-      team: 'Data Science',
-      skill: 'Python skills',
-      owner: 'Emily Johnson',
-      required: 'L5',
-      current: 'L4',
-      due: 'Nov 20, 2025',
-      gap: 'L2',
-      plan: 'Python skills'
-    },
-    {
-      id: 4,
-      role: 'SE V',
-      team: 'Marketing',
-      skill: 'SEO strategies',
-      owner: 'Michael Brown',
-      required: 'L2',
-      current: 'L1',
-      due: 'Dec 15, 2025',
-      gap: 'L1',
-      plan: 'SEO strategies'
-    },
-    {
-      id: 5,
-      role: 'SE VI',
-      team: 'Cyber Security',
-      skill: 'Ethical hacking',
-      owner: 'Sarah Davis',
-      required: 'L4',
-      current: 'L3',
-      due: 'Jan 30, 2026',
-      gap: 'L2',
-      plan: 'Ethical hacking'
-    },
-    {
-      id: 6,
-      role: 'SE VII',
-      team: 'DevOps',
-      skill: 'Continuous integration',
-      owner: 'David Wilson',
-      required: 'L3',
-      current: 'L2',
-      due: 'Feb 28, 2026',
-      gap: 'L1',
-      plan: 'Continuous inte...'
-    },
-    {
-      id: 7,
-      role: 'SE VIII',
-      team: 'Quality Assurance',
-      skill: 'Test automation',
-      owner: 'Lisa Anderson',
-      required: 'L4',
-      current: 'L2',
-      due: 'Mar 15, 2026',
-      gap: 'L2',
-      plan: 'Test automation'
+  // Live data for Training Needs Matrix
+  const { data: trainingRecords = [], isLoading: trainingLoading } = useTrainingRecords();
+  const { data: employeeList = [] } = useEmployees();
+  const createTraining = useCreateTrainingRecord();
+
+  const trainingNeedsData = useMemo(() => {
+    const byEmployee = new Map(employeeList.map((e) => [e.id, e]));
+    function levelFromPct(pct: number): 'L1' | 'L2' | 'L3' | 'L4' | 'L5' {
+      if (pct >= 90) return 'L5';
+      if (pct >= 75) return 'L4';
+      if (pct >= 50) return 'L3';
+      if (pct >= 25) return 'L2';
+      return 'L1';
     }
-  ];
+    function gap(required: 'L1' | 'L2' | 'L3' | 'L4' | 'L5', current: 'L1' | 'L2' | 'L3' | 'L4' | 'L5') {
+      const order = ['L1', 'L2', 'L3', 'L4', 'L5'];
+      const diff = order.indexOf(required) - order.indexOf(current);
+      return diff <= 0 ? 'L0' : (`L${diff}` as const);
+    }
+    const requiredDefault: 'L1' | 'L2' | 'L3' | 'L4' | 'L5' = 'L3';
+    return trainingRecords.map((r) => {
+      const emp = byEmployee.get(r.employee_id as unknown as string);
+      const owner = emp ? `${emp.first_name} ${emp.last_name}` : '—';
+      const role = emp?.position || '—';
+      const team = emp?.department || '—';
+      const currentLevel = levelFromPct(r.completion_percentage || 0);
+      const reqLevel = requiredDefault; // MVP
+      const due = r.end_date ? new Date(r.end_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+      return {
+        id: r.id,
+        role,
+        team,
+        skill: r.training_name,
+        owner,
+        required: reqLevel,
+        current: currentLevel,
+        due,
+        gap: gap(reqLevel, currentLevel),
+        plan: r.training_name,
+        status: r.completion_status,
+      };
+    });
+  }, [trainingRecords, employeeList]);
 
   const handleSelectAll = (checked: boolean) => {
     setSelectAll(checked);
@@ -775,7 +737,7 @@ const LearningDevelopment = () => {
     }
   };
 
-  const handleSelectRow = (id: number, checked: boolean) => {
+  const handleSelectRow = (id: string, checked: boolean) => {
     if (checked) {
       setSelectedRows(prev => [...prev, id]);
     } else {
@@ -784,32 +746,36 @@ const LearningDevelopment = () => {
     }
   };
 
-  const handleCreatePlan = () => {
-    // Here you would typically save the plan to your backend
-    console.log('Creating plan:', createPlanForm);
-    setIsCreatePlanModalOpen(false);
-    setCreatePlanForm({
-      title: '',
-      skill: '',
-      level: '',
-      owner: '',
-      dueDate: '',
-      description: '',
-      resources: ''
-    });
+  const isCreatePlanValid = useMemo(() => {
+    return Boolean(createPlanForm.title && createPlanForm.skill && createPlanForm.level && createPlanForm.employeeId && createPlanForm.dueDate);
+  }, [createPlanForm]);
+
+  const handleCreatePlan = async () => {
+    if (!isCreatePlanValid || createTraining.isPending) return;
+    try {
+      await createTraining.mutateAsync({
+        employee_id: createPlanForm.employeeId,
+        training_name: createPlanForm.title,
+        training_type: 'plan',
+        provider: 'Internal',
+        start_date: new Date().toISOString().slice(0, 10),
+        end_date: createPlanForm.dueDate,
+        completion_status: 'pending',
+        completion_percentage: 0,
+        certificate_url: null as any,
+        org_id: '' as any, // filled in hook
+        id: '' as any,
+        created_at: '' as any,
+        updated_at: '' as any,
+      } as any);
+      setIsCreatePlanModalOpen(false);
+      setCreatePlanForm({ title: '', skill: '', level: '', employeeId: '', dueDate: '', description: '', resources: '' });
+    } catch (_) { }
   };
 
   const handleCancelCreatePlan = () => {
+    if (createTraining.isPending) return;
     setIsCreatePlanModalOpen(false);
-    setCreatePlanForm({
-      title: '',
-      skill: '',
-      level: '',
-      owner: '',
-      dueDate: '',
-      description: '',
-      resources: ''
-    });
   };
 
   const handleCloseSkillGapModal = () => {
@@ -2614,6 +2580,21 @@ const LearningDevelopment = () => {
   const CourseDetailView = ({ course, onBack }: { course: any, onBack: () => void }) => {
     const [activeDetailTab, setActiveDetailTab] = useState('overview');
 
+    // Map database course to UI format
+    const courseName = course?.course_name || 'Untitled Course';
+    const courseDescription = course?.description || 'No description available.';
+    const courseCategory = course?.category || 'General';
+    const courseLevel = course?.level || 'All Levels';
+    const courseType = course?.course_type || 'Self-paced';
+    const duration = course?.duration_hours ? `${course.duration_hours} hours` : 'Self-paced';
+    const provider = course?.provider || 'Internal';
+    const status = course?.status || 'active';
+    const enrollmentOpen = course?.enrollment_open ?? false;
+
+    // Get enrollment count from training records
+    const { data: trainingRecords = [] } = useTrainingRecords();
+    const enrollmentCount = trainingRecords.filter(tr => tr.training_name === courseName).length;
+
     return (
       <div className="space-y-6">
         {/* Breadcrumb Navigation */}
@@ -2633,42 +2614,47 @@ const LearningDevelopment = () => {
         <div className="space-y-4">
           {/* Tags */}
           <div className="flex space-x-2">
-            <Badge className="bg-gray-900 text-white px-3 py-1 text-sm font-medium">
-              {course.tags[0]}
-            </Badge>
-            <Badge className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium">
-              {course.tags[1]}
-            </Badge>
-            <Badge className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium">
-              {course.tags[2]}
+            {courseCategory && (
+              <Badge className="bg-gray-900 text-white px-3 py-1 text-sm font-medium">
+                {courseCategory}
+              </Badge>
+            )}
+            {courseLevel && (
+              <Badge className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium">
+                {courseLevel}
+              </Badge>
+            )}
+            <Badge className={`px-3 py-1 text-sm font-medium ${enrollmentOpen ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+              {enrollmentOpen ? 'Enrollment Open' : 'Enrollment Closed'}
             </Badge>
           </div>
 
           {/* Course Title */}
-          <h1 className="text-3xl font-bold text-foreground">{course.title}</h1>
+          <h1 className="text-3xl font-bold text-foreground">{courseName}</h1>
 
           {/* Course Description */}
           <p className="text-muted-foreground text-lg leading-relaxed max-w-4xl">
-            {course.description}
+            {courseDescription}
           </p>
 
           {/* Course Stats */}
           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Clock className="h-4 w-4" />
-              <span>{course.duration}</span>
+              <span>{duration}</span>
             </div>
             <div className="flex items-center space-x-1">
               <BookOpen className="h-4 w-4" />
-              <span>{course.pace}</span>
+              <span>{courseType}</span>
             </div>
             <div className="flex items-center space-x-1">
               <Users className="h-4 w-4" />
-              <span>{course.enrolled}</span>
+              <span>{enrollmentCount} enrolled</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Star className="h-4 w-4" />
-              <span>{course.rating}</span>
+              <Badge className={`px-2 py-1 text-xs ${status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                {status}
+              </Badge>
             </div>
           </div>
 
@@ -2703,62 +2689,57 @@ const LearningDevelopment = () => {
           <div className="lg:col-span-2 space-y-6">
             <Tabs value={activeDetailTab} onValueChange={setActiveDetailTab}>
               <TabsContent value="overview" className="space-y-6">
-                {/* Learning Objectives */}
+                {/* Course Information */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
                       <Target className="h-5 w-5 text-violet-600" />
-                      <span>Learning Objectives</span>
+                      <span>Course Information</span>
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">What you'll achieve by completing this course</p>
+                    <p className="text-sm text-muted-foreground">Details about this course</p>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {course.learningObjectives.map((objective: string, index: number) => (
-                        <li key={index} className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-muted-foreground">{objective}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                {/* Prerequisites */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Prerequisites</CardTitle>
-                    <p className="text-sm text-muted-foreground">Required knowledge and skills before starting</p>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {course.prerequisites.map((prereq: string, index: number) => (
-                        <li key={index} className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
-                          <span className="text-muted-foreground">{prereq}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                {/* Target Competencies */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Target Competencies</CardTitle>
-                    <p className="text-sm text-muted-foreground">Skills and competencies this course develops</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {course.competencies.map((competency: string, index: number) => (
-                        <Badge
-                          key={index}
-                          className="bg-muted text-muted-foreground px-3 py-1 text-sm font-medium"
-                        >
-                          {competency}
-                        </Badge>
-                      ))}
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Category:</span>
+                        <p className="text-sm text-muted-foreground mt-1">{courseCategory}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Level:</span>
+                        <p className="text-sm text-muted-foreground mt-1">{courseLevel}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Type:</span>
+                        <p className="text-sm text-muted-foreground mt-1">{courseType}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Provider:</span>
+                        <p className="text-sm text-muted-foreground mt-1">{provider}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Duration:</span>
+                        <p className="text-sm text-muted-foreground mt-1">{duration}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Status:</span>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          <Badge className={`px-2 py-1 text-xs ${status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                            {status}
+                          </Badge>
+                        </p>
+                      </div>
                     </div>
+                  </CardContent>
+                </Card>
+
+                {/* Description */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Description</CardTitle>
+                    <p className="text-sm text-muted-foreground">Course overview and details</p>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground leading-relaxed">{courseDescription}</p>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -2766,31 +2747,32 @@ const LearningDevelopment = () => {
               <TabsContent value="curriculum" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl font-bold text-foreground">Course Modules</CardTitle>
+                    <CardTitle className="text-xl font-bold text-foreground">Course Structure</CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      {course.curriculum.totalModules} modules · {course.curriculum.totalWeeks} weeks total
+                      Course format and delivery method
                     </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {course.curriculum.modules.map((module: any) => (
-                      <div
-                        key={module.id}
-                        className="bg-card border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground font-medium">Module {module.id}</p>
-                            <h3 className="text-lg font-semibold text-foreground">{module.title}</h3>
-                            <p className="text-sm text-muted-foreground">{module.duration}</p>
-                          </div>
-                          <Badge
-                            className="bg-muted text-muted-foreground px-3 py-1 text-xs font-medium rounded-md"
-                          >
-                            {module.status}
-                          </Badge>
-                        </div>
+                    <div className="bg-card border border-gray-200 rounded-lg p-4 shadow-sm">
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-semibold text-foreground">{courseName}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          <span className="font-medium">Format:</span> {courseType}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          <span className="font-medium">Duration:</span> {duration}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          <span className="font-medium">Category:</span> {courseCategory}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          <span className="font-medium">Level:</span> {courseLevel}
+                        </p>
                       </div>
-                    ))}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Detailed curriculum information will be available once course modules are added.
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -2798,18 +2780,18 @@ const LearningDevelopment = () => {
               <TabsContent value="instructor" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl font-bold text-foreground">About the Instructor</CardTitle>
+                    <CardTitle className="text-xl font-bold text-foreground">Provider Information</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
                       <div>
-                        <h2 className="text-2xl font-bold text-foreground">{course.instructor.name}</h2>
-                        <p className="text-lg text-muted-foreground mt-1">{course.instructor.title}</p>
+                        <h2 className="text-2xl font-bold text-foreground">{provider}</h2>
+                        <p className="text-lg text-muted-foreground mt-1">Course Provider</p>
                       </div>
 
                       <div>
                         <p className="text-muted-foreground leading-relaxed">
-                          {course.instructor.experience}
+                          This course is provided by {provider}. For more information about the course provider, please contact your HR department.
                         </p>
                       </div>
 
@@ -2818,7 +2800,7 @@ const LearningDevelopment = () => {
                           variant="outline"
                           className="border-gray-300 text-muted-foreground hover:bg-muted/50"
                         >
-                          Contact Instructor
+                          Contact Provider
                         </Button>
                       </div>
                     </div>
@@ -2835,48 +2817,39 @@ const LearningDevelopment = () => {
                 <CardTitle>Enrollment Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Course Dates */}
+                {/* Course Details */}
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Start Date</span>
-                  </div>
-                  <p className="text-foreground font-medium">{course.startDate}</p>
-
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">End Date</span>
-                  </div>
-                  <p className="text-foreground font-medium">{course.endDate}</p>
-                </div>
-
-                {/* Time Commitment */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
                     <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Time Commitment</span>
+                    <span className="text-sm text-muted-foreground">Duration</span>
                   </div>
-                  <p className="text-foreground font-medium">{course.timeCommitment}</p>
+                  <p className="text-foreground font-medium">{duration}</p>
+
+                  <div className="flex items-center space-x-2">
+                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Format</span>
+                  </div>
+                  <p className="text-foreground font-medium">{courseType}</p>
                 </div>
 
-                {/* Availability */}
+                {/* Enrollment Status */}
                 <div className="space-y-2">
-                  <span className="text-sm text-muted-foreground">Availability</span>
-                  <p className="text-foreground font-medium">{course.availability}</p>
-                </div>
-
-                {/* Enrollment Progress */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">Enrollment</span>
-                    <span className="text-sm text-foreground font-medium">{course.enrolled}</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-violet-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${course.enrollmentProgress}%` }}
-                    />
-                  </div>
+                  <p className="text-foreground font-medium">{enrollmentCount} enrolled</p>
+                  <Badge className={`w-full justify-center ${enrollmentOpen ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {enrollmentOpen ? 'Enrollment Open' : 'Enrollment Closed'}
+                  </Badge>
+                </div>
+
+                {/* Course Status */}
+                <div className="space-y-2">
+                  <span className="text-sm text-muted-foreground">Status</span>
+                  <Badge className={`w-full justify-center ${status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {status}
+                  </Badge>
                 </div>
 
                 {/* Action Buttons */}
@@ -3093,44 +3066,56 @@ const LearningDevelopment = () => {
                           <th className="text-left py-3 px-4">
                             <Checkbox />
                           </th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Conector</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Last sync</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Enrollments</th>
-                          <th className="text-left py-3 px-4 font-medium text-foreground">Completions</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Course</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Provider</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Format</th>
                           <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                          <th className="text-left py-3 px-4 font-medium text-foreground">Enrollment</th>
                           <th className="text-left py-3 px-4 font-medium text-foreground">Action</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {lmsConnectorsData.map((connector) => (
-                          <tr key={connector.id} className="border-b border-gray-200 hover:bg-muted/50">
+                        {coursesLoading ? (
+                          <tr><td className="py-6 px-4 text-muted-foreground" colSpan={7}>Loading courses…</td></tr>
+                        ) : availableCourses.length === 0 ? (
+                          <tr><td className="py-6 px-4 text-muted-foreground" colSpan={7}>No courses found.</td></tr>
+                        ) : availableCourses.map((course) => (
+                          <tr key={course.id} className="border-b border-gray-200 hover:bg-muted/50">
                             <td className="py-3 px-4">
                               <Checkbox />
                             </td>
-                            <td className="py-3 px-4 text-foreground font-medium">{connector.name}</td>
-                            <td className="py-3 px-4 text-foreground">{connector.lastSync}</td>
+                            <td className="py-3 px-4 text-foreground font-medium">{course.name}</td>
+                            <td className="py-3 px-4 text-foreground">{course.provider}</td>
+                            <td className="py-3 px-4 text-foreground">{course.format}</td>
                             <td className="py-3 px-4">
-                              <div className="flex items-center space-x-1 text-foreground">
-                                <ArrowRight className="h-4 w-4" />
-                                <span>{connector.enrollments}</span>
-                              </div>
+                              <Badge className="px-2 py-1 text-xs rounded-full font-medium">{course.status}</Badge>
                             </td>
                             <td className="py-3 px-4">
-                              <div className="flex items-center space-x-1 text-foreground">
-                                <ArrowRight className="h-4 w-4" />
-                                <span>{connector.completions}</span>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <Badge className={`px-2 py-1 text-xs rounded-full font-medium ${getStatusBadgeColor(connector.status)}`}>
-                                {connector.status}
-                              </Badge>
-                            </td>
-                            <td className="py-3 px-4">
-                              <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                                <Eye className="h-4 w-4" />
-                                <span className="text-sm">View</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => updateCourse.mutate({ id: course.id, updates: { enrollment_open: !course.enrollment_open } })}
+                                disabled={updateCourse.isPending}
+                              >
+                                {course.enrollment_open ? 'Open' : 'Closed'}
                               </Button>
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="sm" className="flex items-center gap-1" onClick={() => {
+                                  setSelectedCourse(course.courseData);
+                                  setShowCourseDetail(true);
+                                }}>
+                                  <Eye className="h-4 w-4" />
+                                  <span className="text-sm">View</span>
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => updateCourse.mutate({ id: course.id, updates: { status: course.status === 'active' ? 'archived' : 'active' } })} disabled={updateCourse.isPending}>
+                                  {course.status === 'active' ? 'Archive' : 'Activate'}
+                                </Button>
+                                <Button variant="destructive" size="sm" onClick={() => deleteCourse.mutate(course.id)} disabled={deleteCourse.isPending}>
+                                  Delete
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -3735,12 +3720,16 @@ const LearningDevelopment = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="owner">Owner</Label>
-                <Input
-                  id="owner"
-                  placeholder="Enter owner name"
-                  value={createPlanForm.owner}
-                  onChange={(e) => setCreatePlanForm(prev => ({ ...prev, owner: e.target.value }))}
-                />
+                <Select value={createPlanForm.employeeId} onValueChange={(value) => setCreatePlanForm(prev => ({ ...prev, employeeId: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select employee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {employeeList.map((e) => (
+                      <SelectItem key={e.id} value={e.id}>{`${e.first_name} ${e.last_name}`}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -3781,8 +3770,8 @@ const LearningDevelopment = () => {
             <Button variant="outline" onClick={handleCancelCreatePlan}>
               Cancel
             </Button>
-            <Button onClick={handleCreatePlan} className="bg-violet-600 hover:bg-violet-700">
-              Create Plan
+            <Button onClick={handleCreatePlan} className="bg-violet-600 hover:bg-violet-700" disabled={!isCreatePlanValid || createTraining.isPending}>
+              {createTraining.isPending ? 'Creating…' : 'Create Plan'}
             </Button>
           </DialogFooter>
         </DialogContent>

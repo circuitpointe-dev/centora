@@ -10,6 +10,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import SalarySimulationModal from './SalarySimulationModal';
+import { useEmployees } from '@/hooks/hr/useEmployees';
+import { useSalaryBenchmarks } from '@/hooks/hr/useSalaryBenchmarks';
+import { useRecordSalarySimulation } from '@/hooks/hr/useRecordSalarySimulation';
 import {
   ArrowLeft,
   Users,
@@ -22,17 +25,43 @@ interface NewSalarySimulationProps {
 }
 
 const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => {
-  const [currentStep, setCurrentStep] = useState(3);
+  const [currentStep, setCurrentStep] = useState(1);
   const [isSimulationModalOpen, setIsSimulationModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    roleFamily: 'Product',
-    role: 'Product designer',
-    level: 'L5 - Senior IC',
-    location: 'Lagos, Nigeria',
+    roleLevel: '',
+    location: '',
+    employeeId: '',
     employeeName: '',
     department: '',
     simulationType: 'existing-employee'
   });
+
+  const { data: benchmarks = [] } = useSalaryBenchmarks();
+  const { data: employees = [] } = useEmployees();
+
+  const uniqueRoleLevels = Array.from(new Set(benchmarks.map((b: any) => b.role_level)));
+  const uniqueLocations = Array.from(new Set(benchmarks.map((b: any) => b.location).filter(Boolean)));
+
+  const selectedBenchmark = benchmarks.find((b: any) => b.role_level === formData.roleLevel && b.location === formData.location);
+
+  function parseMoney(value?: string) {
+    if (!value) return null;
+    const m = value.toLowerCase().match(/([0-9]+(?:\.[0-9]+)?)(\s*[mk])?/);
+    if (!m) return null;
+    const n = parseFloat(m[1]);
+    const suf = m[2]?.trim();
+    if (suf === 'm') return n * 1_000_000;
+    if (suf === 'k') return n * 1_000;
+    return n;
+  }
+  function parseBandToMinMax(band?: string) {
+    if (!band) return { min: null as number | null, max: null as number | null };
+    const parts = band.split('-');
+    if (parts.length !== 2) return { min: null, max: null };
+    const min = parseMoney(parts[0]);
+    const max = parseMoney(parts[1]);
+    return { min: min ?? null, max: max ?? null };
+  }
 
   const steps = [
     {
@@ -59,19 +88,32 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
   ];
 
   const handleNext = () => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
+    if (currentStep === 1) {
+      if (!formData.roleLevel || !formData.location) return;
     }
+    if (currentStep === 2) {
+      if (!formData.employeeId) return;
+    }
+    if (currentStep < 3) setCurrentStep(currentStep + 1);
   };
 
   const handleOpenSimulation = () => {
     setIsSimulationModalOpen(true);
   };
 
-  const handleApproveSimulation = () => {
-    console.log('Simulation approved and applied');
+  const recordSim = useRecordSalarySimulation();
+  const handleApproveSimulation = (data: { currentSalary: number; proposedSalary: number; compaRatio: number }) => {
+    recordSim.mutate({
+      employee_id: formData.employeeId,
+      role_level: formData.roleLevel,
+      location: formData.location,
+      current_salary: data.currentSalary,
+      proposed_salary: data.proposedSalary,
+      market_p50: selectedBenchmark?.market_p50 || null,
+      internal_band: selectedBenchmark?.internal_band || null,
+      compa_ratio: data.compaRatio,
+    });
     setIsSimulationModalOpen(false);
-    // Could also close the entire wizard or navigate somewhere
   };
 
   const handleBack = () => {
@@ -92,13 +134,12 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
         return (
           <div key={step.number} className="flex items-center">
             <div className="flex items-center">
-              <div className={`w-8 h-8 rounded flex items-center justify-center ${
-                step.active 
-                  ? 'bg-purple-600 text-white' 
-                  : step.completed 
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-muted-foreground'
-              }`}>
+              <div className={`w-8 h-8 rounded flex items-center justify-center ${step.active
+                ? 'bg-purple-600 text-white'
+                : step.completed
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-200 text-muted-foreground'
+                }`}>
                 {step.completed ? (
                   <Check className="w-4 h-4" />
                 ) : (
@@ -106,18 +147,16 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
                 )}
               </div>
               <div className="ml-3">
-                <p className={`text-sm font-medium ${
-                  step.active ? 'text-purple-600' : 'text-muted-foreground'
-                }`}>
+                <p className={`text-sm font-medium ${step.active ? 'text-purple-600' : 'text-muted-foreground'
+                  }`}>
                   Step {step.number} of 3: {step.title}
                 </p>
               </div>
             </div>
             {index < steps.length - 1 && (
               <div className="flex-1 mx-4">
-                <div className={`h-0.5 ${
-                  step.completed ? 'bg-green-600' : 'bg-gray-200'
-                }`}></div>
+                <div className={`h-0.5 ${step.completed ? 'bg-green-600' : 'bg-gray-200'
+                  }`}></div>
               </div>
             )}
           </div>
@@ -130,77 +169,35 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground">Role family</label>
-          <Select 
-            value={formData.roleFamily} 
-            onValueChange={(value) => setFormData({...formData, roleFamily: value})}
+          <label className="text-sm font-medium text-muted-foreground">Role & Level</label>
+          <Select
+            value={formData.roleLevel}
+            onValueChange={(value) => setFormData({ ...formData, roleLevel: value })}
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Product">Product</SelectItem>
-              <SelectItem value="Engineering">Engineering</SelectItem>
-              <SelectItem value="Design">Design</SelectItem>
-              <SelectItem value="Data">Data</SelectItem>
-              <SelectItem value="Marketing">Marketing</SelectItem>
-              <SelectItem value="Sales">Sales</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground">Role</label>
-          <Select 
-            value={formData.role} 
-            onValueChange={(value) => setFormData({...formData, role: value})}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Product designer">Product designer</SelectItem>
-              <SelectItem value="Product manager">Product manager</SelectItem>
-              <SelectItem value="Product analyst">Product analyst</SelectItem>
-              <SelectItem value="Product owner">Product owner</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground">Level</label>
-          <Select 
-            value={formData.level} 
-            onValueChange={(value) => setFormData({...formData, level: value})}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="L3 - IC3">L3 - IC3</SelectItem>
-              <SelectItem value="L4 - IC4">L4 - IC4</SelectItem>
-              <SelectItem value="L5 - Senior IC">L5 - Senior IC</SelectItem>
-              <SelectItem value="L6 - Staff IC">L6 - Staff IC</SelectItem>
-              <SelectItem value="L7 - Principal IC">L7 - Principal IC</SelectItem>
+              {uniqueRoleLevels.map((r) => (
+                <SelectItem key={r} value={r}>{r}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-muted-foreground">Location</label>
-          <Select 
-            value={formData.location} 
-            onValueChange={(value) => setFormData({...formData, location: value})}
+          <Select
+            value={formData.location}
+            onValueChange={(value) => setFormData({ ...formData, location: value })}
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Lagos, Nigeria">Lagos, Nigeria</SelectItem>
-              <SelectItem value="Nairobi, Kenya">Nairobi, Kenya</SelectItem>
-              <SelectItem value="Accra, Ghana">Accra, Ghana</SelectItem>
-              <SelectItem value="Kampala, Uganda">Kampala, Uganda</SelectItem>
-              <SelectItem value="Remote">Remote</SelectItem>
+              {uniqueLocations.map((loc) => (
+                <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -212,15 +209,15 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Market P50 (Median)</p>
-            <p className="text-lg font-semibold text-foreground">8.5m NGN</p>
+            <p className="text-lg font-semibold text-foreground">{selectedBenchmark?.market_p50 || '—'}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">Internal Band</p>
-            <p className="text-lg font-semibold text-foreground">7.0m NGN - 9.5m NGN</p>
+            <p className="text-lg font-semibold text-foreground">{selectedBenchmark?.internal_band || '—'}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">Last Updated</p>
-            <p className="text-lg font-semibold text-foreground">Apr 2025</p>
+            <p className="text-lg font-semibold text-foreground">—</p>
           </div>
         </div>
       </div>
@@ -233,15 +230,17 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-muted-foreground">Employee / Candidate name</label>
-          <Select>
+          <Select value={formData.employeeId} onValueChange={(v) => {
+            const emp = (employees as any).find((e: any) => e.id === v);
+            setFormData({ ...formData, employeeId: v, employeeName: emp ? `${emp.first_name} ${emp.last_name}` : '' });
+          }}>
             <SelectTrigger>
-              <SelectValue placeholder="Select employee or enter name" />
+              <SelectValue placeholder="Select employee" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="sarah-chen">Sarah Chen</SelectItem>
-              <SelectItem value="michael-johnson">Michael Johnson</SelectItem>
-              <SelectItem value="emily-davis">Emily Davis</SelectItem>
-              <SelectItem value="david-kim">David Kim</SelectItem>
+              {employees.map((e: any) => (
+                <SelectItem key={e.id} value={e.id}>{e.first_name} {e.last_name}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -266,43 +265,40 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
       {/* Simulation Type Selection */}
       <div className="space-y-4">
         <label className="text-sm font-medium text-muted-foreground">Stimulation type</label>
-        
+
         <div className="flex space-x-1 bg-muted p-1 rounded-lg">
           <Button
             variant={formData.simulationType === 'existing-employee' ? 'default' : 'ghost'}
-            className={`flex-1 ${
-              formData.simulationType === 'existing-employee' 
-                ? 'bg-gray-900 text-white hover:bg-gray-800' 
-                : 'bg-transparent text-muted-foreground hover:bg-gray-200'
-            }`}
-            onClick={() => setFormData({...formData, simulationType: 'existing-employee'})}
+            className={`flex-1 ${formData.simulationType === 'existing-employee'
+              ? 'bg-gray-900 text-white hover:bg-gray-800'
+              : 'bg-transparent text-muted-foreground hover:bg-gray-200'
+              }`}
+            onClick={() => setFormData({ ...formData, simulationType: 'existing-employee' })}
           >
             Existing Employee
           </Button>
           <Button
             variant={formData.simulationType === 'new-hire' ? 'default' : 'ghost'}
-            className={`flex-1 ${
-              formData.simulationType === 'new-hire' 
-                ? 'bg-gray-900 text-white hover:bg-gray-800' 
-                : 'bg-transparent text-muted-foreground hover:bg-gray-200'
-            }`}
-            onClick={() => setFormData({...formData, simulationType: 'new-hire'})}
+            className={`flex-1 ${formData.simulationType === 'new-hire'
+              ? 'bg-gray-900 text-white hover:bg-gray-800'
+              : 'bg-transparent text-muted-foreground hover:bg-gray-200'
+              }`}
+            onClick={() => setFormData({ ...formData, simulationType: 'new-hire' })}
           >
             New Hire
           </Button>
           <Button
             variant={formData.simulationType === 'external-offer' ? 'default' : 'ghost'}
-            className={`flex-1 ${
-              formData.simulationType === 'external-offer' 
-                ? 'bg-gray-900 text-white hover:bg-gray-800' 
-                : 'bg-transparent text-muted-foreground hover:bg-gray-200'
-            }`}
-            onClick={() => setFormData({...formData, simulationType: 'external-offer'})}
+            className={`flex-1 ${formData.simulationType === 'external-offer'
+              ? 'bg-gray-900 text-white hover:bg-gray-800'
+              : 'bg-transparent text-muted-foreground hover:bg-gray-200'
+              }`}
+            onClick={() => setFormData({ ...formData, simulationType: 'external-offer' })}
           >
             External Offer
           </Button>
         </div>
-        
+
         <p className="text-sm text-muted-foreground">
           {formData.simulationType === 'existing-employee' && 'Analyze adjustment for current employee'}
           {formData.simulationType === 'new-hire' && 'Simulate compensation for new hire'}
@@ -321,14 +317,8 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-foreground mb-3">Simulation Context</h3>
             <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Role:</span>
-                <span className="text-sm font-medium text-foreground">SE II (L5)</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Location:</span>
-                <span className="text-sm font-medium text-foreground">Lagos, Nigeria</span>
-              </div>
+              <div className="flex items-center space-x-2"><span className="text-sm text-muted-foreground">Role:</span><span className="text-sm font-medium text-foreground">{formData.roleLevel || '—'}</span></div>
+              <div className="flex items-center space-x-2"><span className="text-sm text-muted-foreground">Location:</span><span className="text-sm font-medium text-foreground">{formData.location || '—'}</span></div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-muted-foreground">Type:</span>
                 <span className="text-sm font-medium text-foreground">
@@ -361,18 +351,9 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
       <div className="bg-card border border-gray-200 rounded-lg p-6 max-w-md mx-auto">
         <h3 className="text-lg font-semibold text-foreground mb-4">Employee Details</h3>
         <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Employee:</span>
-            <span className="text-sm font-medium text-foreground">John Doe</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Role & Level:</span>
-            <span className="text-sm font-medium text-foreground">SE II (L5)</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Location:</span>
-            <span className="text-sm font-medium text-foreground">Lagos, Nigeria</span>
-          </div>
+          <div className="flex justify-between items-center"><span className="text-sm text-muted-foreground">Employee:</span><span className="text-sm font-medium text-foreground">{formData.employeeName || '—'}</span></div>
+          <div className="flex justify-between items-center"><span className="text-sm text-muted-foreground">Role & Level:</span><span className="text-sm font-medium text-foreground">{formData.roleLevel || '—'}</span></div>
+          <div className="flex justify-between items-center"><span className="text-sm text-muted-foreground">Location:</span><span className="text-sm font-medium text-foreground">{formData.location || '—'}</span></div>
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Type:</span>
             <Badge className="bg-gray-900 text-white text-xs">
@@ -403,9 +384,9 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
     <div className="space-y-6">
       {/* Breadcrumb Navigation */}
       <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onBack}
           className="p-0 h-auto hover:bg-transparent"
         >
@@ -441,14 +422,14 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
               </Button>
             </div>
             {currentStep === 3 ? (
-              <Button 
+              <Button
                 onClick={handleOpenSimulation}
                 className="bg-gray-900 hover:bg-gray-800"
               >
                 Open stimulation
               </Button>
             ) : (
-              <Button 
+              <Button
                 onClick={handleNext}
                 disabled={currentStep === 3}
                 className="bg-gray-900 hover:bg-gray-800"
@@ -465,6 +446,11 @@ const NewSalarySimulation: React.FC<NewSalarySimulationProps> = ({ onBack }) => 
         isOpen={isSimulationModalOpen}
         onClose={() => setIsSimulationModalOpen(false)}
         onApprove={handleApproveSimulation}
+        employeeName={formData.employeeName}
+        roleLevel={formData.roleLevel}
+        bandMin={parseBandToMinMax(selectedBenchmark?.internal_band).min}
+        bandMax={parseBandToMinMax(selectedBenchmark?.internal_band).max}
+        marketMedian={parseMoney(selectedBenchmark?.market_p50)}
       />
     </div>
   );

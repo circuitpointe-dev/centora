@@ -44,4 +44,27 @@ export function useEmployees(search?: string) {
     });
 }
 
+export function useEmployee(employeeId?: string) {
+    const { user } = useAuth();
+
+    return useQuery({
+        queryKey: ['hr-employee', user?.org_id, employeeId],
+        queryFn: async (): Promise<HREmployee | null> => {
+            if (!user?.org_id || !employeeId) return null;
+
+            const { data, error } = await (supabase as any)
+                .from('hr_employees')
+                .select('*')
+                .eq('org_id', user.org_id)
+                .eq('id', employeeId)
+                .single();
+
+            if (error && error.code !== 'PGRST116') throw error;
+            return (data || null) as HREmployee | null;
+        },
+        enabled: !!employeeId && !!user?.org_id,
+        staleTime: 5 * 60 * 1000,
+    });
+}
+
 

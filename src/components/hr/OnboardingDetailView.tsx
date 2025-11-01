@@ -16,60 +16,37 @@ import {
 } from 'lucide-react';
 
 interface OnboardingDetailViewProps {
-  onBack?: () => void;
+  onBack: () => void;
+  checklist?: {
+    name?: string;
+    email?: string;
+    role?: string | null;
+    start?: string | null;
+    manager?: string | null;
+    progress?: number;
+    blockers?: number;
+    status?: string;
+  } | null;
 }
 
-const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) => {
-  const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set(['offer-accepted']));
+const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack, checklist }) => {
+  const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
+  const [currentCompletedTasks, setCurrentCompletedTasks] = useState<Set<string>>(completedTasks);
   const [isPositiveView, setIsPositiveView] = useState(false);
 
-  // Define all task IDs
-  const allTaskIds = [
-    'offer-accepted',
-    'document-signed', 
-    'security-badge-setup',
-    'access-codebase',
-    'user-feedback-analysis',
-    'deployment-features'
-  ];
-
-  // Get current completed tasks based on view mode
-  const getCurrentCompletedTasks = () => {
-    if (isPositiveView) {
-      return new Set(allTaskIds);
-    }
-    return completedTasks;
-  };
-
-  const currentCompletedTasks = getCurrentCompletedTasks();
-
-  const handleTaskToggle = (taskId: string) => {
-    if (isPositiveView) {
-      // In positive view, don't allow toggling
-      return;
-    }
-    const newCompleted = new Set(completedTasks);
-    if (newCompleted.has(taskId)) {
-      newCompleted.delete(taskId);
-    } else {
-      newCompleted.add(taskId);
-    }
-    setCompletedTasks(newCompleted);
-  };
-
   const isOverdue = (dueDate: string) => {
-    const due = new Date(dueDate);
     const today = new Date();
+    const due = new Date(dueDate);
     return due < today;
   };
 
-  const TaskCard = ({ 
-    taskId, 
-    title, 
-    assignee, 
-    dueDate, 
-    note, 
-    icon: Icon 
+  const TaskCard = ({
+    taskId,
+    title,
+    assignee,
+    dueDate,
+    note,
+    icon: Icon
   }: {
     taskId: string;
     title: string;
@@ -80,7 +57,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
   }) => {
     const isCompleted = currentCompletedTasks.has(taskId);
     const overdue = isOverdue(dueDate) && !isPositiveView;
-    
+
     return (
       <Card className={`transition-all duration-200 ${isCompleted ? 'bg-green-50 border-green-200' : 'hover:shadow-md'}`}>
         <CardContent className="p-4">
@@ -91,7 +68,7 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
                   <Check className="w-3 h-3 text-white" />
                 </div>
               ) : (
-                <Checkbox 
+                <Checkbox
                   checked={false}
                   onCheckedChange={() => handleTaskToggle(taskId)}
                   disabled={isPositiveView}
@@ -99,180 +76,69 @@ const OnboardingDetailView: React.FC<OnboardingDetailViewProps> = ({ onBack }) =
                 />
               )}
             </div>
-            
+
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className={`font-medium ${isCompleted ? 'text-green-800 line-through' : 'text-foreground'}`}>
-                  {title}
-                </h3>
-                {overdue && !isCompleted && (
-                  <Badge variant="destructive" className="text-xs">
-                    Overdue
-                  </Badge>
-                )}
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-foreground">{title}</h3>
+                {Icon && <Icon className="w-4 h-4 text-muted-foreground" />}
               </div>
-              
-              <div className="space-y-1">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <span className="font-medium">Assigned to:</span>
-                  <span className="ml-1">{assignee}</span>
-                </div>
-                
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <span className="font-medium">Due date:</span>
-                  <span className={`ml-1 ${overdue && !isCompleted ? 'text-red-600 font-medium' : ''}`}>
-                    {dueDate}
-                  </span>
-                </div>
-                
-                {note && (
-                  <div className="text-sm text-muted-foreground italic mt-2">
-                    {note}
-                  </div>
-                )}
+              <div className="mt-1 text-xs text-muted-foreground">
+                <span>Assignee: {assignee}</span>
+                <span className="mx-2">•</span>
+                <span>Due: {dueDate}</span>
               </div>
+              {note && (
+                <p className="mt-2 text-xs text-muted-foreground">{note}</p>
+              )}
             </div>
-            
-            {Icon && (
-              <div className="flex-shrink-0">
-                <Icon className="w-5 h-5 text-muted-foreground" />
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
     );
   };
 
+  const handleTaskToggle = (taskId: string) => {
+    setCompletedTasks(prev => {
+      const next = new Set(prev);
+      if (next.has(taskId)) next.delete(taskId); else next.add(taskId);
+      setCurrentCompletedTasks(next);
+      return next;
+    });
+  };
+
   return (
     <div className="space-y-6">
-      {/* Breadcrumb Navigation */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onBack}
-            className="p-0 h-auto hover:bg-transparent"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-          </Button>
-          <span>Onboarding checklist</span>
-          <span>/</span>
-          <span className="text-foreground font-medium">Hire detail view</span>
-        </div>
-        
-        {/* View Toggle Button */}
-        <Button
-          variant="outline"
-          onClick={() => setIsPositiveView(!isPositiveView)}
-          className="flex items-center gap-2"
-        >
-          {isPositiveView ? 'Show Current Status' : 'Show Positive View'}
-        </Button>
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <ArrowLeft className="h-4 w-4 cursor-pointer" onClick={onBack} />
+        <span>Onboarding checklist</span>
       </div>
 
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground mb-2">Sarah Chen - Onboarding</h1>
-        <p className="text-muted-foreground">
-          Track onboarding progress, view tasks by category, and manage completion status for this new hire.
-        </p>
-      </div>
-
-      {/* Overview Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Overview</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <span>{checklist?.name || 'Checklist'}</span>
+            <Badge className="bg-muted text-muted-foreground">{checklist?.status || 'in_progress'}</Badge>
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Position</label>
-              <p className="text-foreground">Software Engineer</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Start date</label>
-              <p className="text-foreground">Aug 5, 2025</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Manager</label>
-              <p className="text-foreground">Alicia smith</p>
-            </div>
-          </div>
-          
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-muted-foreground">Progress</label>
-              <span className="text-sm font-medium text-foreground">
-                {isPositiveView ? '100%' : '62%'}
-              </span>
-            </div>
-            <Progress value={isPositiveView ? 100 : 62} className="h-2" />
-          </div>
+        <CardContent className="space-y-2 text-sm text-muted-foreground">
+          <div>Role: <span className="text-foreground">{checklist?.role || '—'}</span></div>
+          <div>Start date: <span className="text-foreground">{checklist?.start || '—'}</span></div>
+          <div>Manager: <span className="text-foreground">{checklist?.manager || '—'}</span></div>
+          <div>Progress: <span className="text-foreground">{(checklist?.progress ?? 0)}%</span></div>
+          <div>Blockers: <span className="text-foreground">{checklist?.blockers ?? 0}</span></div>
         </CardContent>
       </Card>
 
-      {/* Pre-Day 1 Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-foreground">Pre-Day 1</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <TaskCard
-            taskId="offer-accepted"
-            title="Offer accepted"
-            assignee="HR Team"
-            dueDate="Jul 15, 2025"
-            icon={Users}
-          />
-          
-          <TaskCard
-            taskId="document-signed"
-            title="Document signed"
-            assignee="HR Team"
-            dueDate="Jul 20, 2025"
-            note="Missing tax forms"
-            icon={Users}
-          />
-          
-          <TaskCard
-            taskId="security-badge-setup"
-            title="Security badge setup"
-            assignee="Facilities"
-            dueDate="Aug 1, 2025"
-            note="Background check pending"
-            icon={Shield}
-          />
-        </div>
+      {/* Example tasks (static for now) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <TaskCard taskId="t1" title="Sign offer & policy docs" assignee={checklist?.name || '—'} dueDate={checklist?.start || '—'} icon={Shield} />
+        <TaskCard taskId="t2" title="Create accounts & access" assignee={checklist?.manager || 'HR'} dueDate={checklist?.start || '—'} icon={Settings} />
+        <TaskCard taskId="t3" title="Equipment & tools ready" assignee={checklist?.manager || 'IT'} dueDate={checklist?.start || '—'} icon={Code} />
+        <TaskCard taskId="t4" title="First week schedule" assignee={checklist?.manager || '—'} dueDate={checklist?.start || '—'} icon={Users} />
       </div>
 
-      {/* Day 1 Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-foreground">Day 1 - Aug 15, 2025</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <TaskCard
-            taskId="access-codebase"
-            title="Access to the codebase"
-            assignee="IT Team"
-            dueDate="Aug 15, 2025"
-            icon={Code}
-          />
-          
-          <TaskCard
-            taskId="user-feedback-analysis"
-            title="User feedback analysis"
-            assignee="Product Management"
-            dueDate="Aug 15, 2025"
-            icon={BarChart3}
-          />
-          
-          <TaskCard
-            taskId="deployment-features"
-            title="Deployment of new features"
-            assignee="Development Team"
-            dueDate="Aug 15, 2025"
-            icon={Rocket}
-          />
-        </div>
+      <div className="flex justify-end">
+        <Button onClick={onBack} variant="outline">Back</Button>
       </div>
     </div>
   );

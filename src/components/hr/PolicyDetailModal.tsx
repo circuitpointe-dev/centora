@@ -11,14 +11,18 @@ interface PolicyDetailModalProps {
   onAcknowledge: () => void;
   onSendReminders: () => void;
   policy?: {
-    id: number;
+    id: string | number;
     title: string;
-    category: string;
-    updated: string;
-    version: string;
-    ackRate: number;
-    hasLowAck: boolean;
+    category?: string;
+    updated_at_date?: string | null;
+    version?: string;
+    document_url?: string | null;
+    ackRate?: number;
+    hasLowAck?: boolean;
   };
+  assignedCount?: number;
+  acknowledgedCount?: number;
+  pendingCount?: number;
 }
 
 const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
@@ -26,16 +30,20 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
   onClose,
   onAcknowledge,
   onSendReminders,
-  policy
+  policy,
+  assignedCount = 0,
+  acknowledgedCount = 0,
+  pendingCount = 0,
 }) => {
   const [activeTab, setActiveTab] = useState('summary');
 
   if (!isOpen || !policy) return null;
 
-  const formatDate = (dateString: string) => {
-    // Convert "Jul 2, 2025" to "2025-03-22" format for display
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return '—';
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    if (isNaN(date.getTime())) return '—';
+    return date.toLocaleDateString();
   };
 
   // Handle PDF download
@@ -65,7 +73,7 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
           <div>
             <h2 className="text-xl font-semibold text-foreground">{policy.title}</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {policy.category} • {policy.version} • Updated {formatDate(policy.updated)}
+              {(policy.category || '—')} • {(policy.version || '—')} • Updated {formatDate(policy.updated_at_date)}
             </p>
           </div>
           <Button
@@ -83,20 +91,20 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="border-b border-border">
               <TabsList className="h-auto p-0 bg-transparent flex space-x-8 justify-start">
-                <TabsTrigger 
-                  value="summary" 
+                <TabsTrigger
+                  value="summary"
                   className="relative px-0 py-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
                 >
                   Summary
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="document" 
+                <TabsTrigger
+                  value="document"
                   className="relative px-0 py-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
                 >
                   Documents
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="assignments" 
+                <TabsTrigger
+                  value="assignments"
                   className="relative px-0 py-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:rounded-none"
                 >
                   Assignments
@@ -109,7 +117,7 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
                 <p className="text-muted-foreground mb-6">
                   Defines expected behaviors and ethical standards for all employees and contractors.
                 </p>
-                
+
                 <div>
                   <h4 className="text-md font-semibold text-foreground mb-3">Key changes in {policy.version}</h4>
                   <ul className="space-y-2 text-muted-foreground">
@@ -133,17 +141,17 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-medium text-muted-foreground">Policy Document</h4>
                       <div className="flex items-center space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="text-xs"
                           onClick={handleDownloadPDF}
                         >
                           Download
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="text-xs"
                           onClick={handlePrintPDF}
                         >
@@ -153,11 +161,17 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
                     </div>
                   </div>
                   <div className="h-96">
-                    <iframe
-                      src="/src/assets/documents/dashboard-report-2025-09-30.pdf"
-                      className="w-full h-full border-0"
-                      title="Policy Document"
-                    />
+                    {policy.document_url ? (
+                      <iframe
+                        src={policy.document_url}
+                        className="w-full h-full border-0"
+                        title="Policy Document"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
+                        No document uploaded for this policy.
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -166,17 +180,17 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
             <TabsContent value="assignments" className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-4">Acknowledgement Status</h3>
-                
+
                 <div className="space-y-4">
                   {/* Total Assigned Card */}
                   <div className="bg-card border border-border rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="text-sm font-medium text-foreground">Total Assigned</h4>
-                        <p className="text-sm text-muted-foreground mt-1">124 people</p>
+                        <p className="text-sm text-muted-foreground mt-1">{(assignedCount ?? 0)} people</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-lg font-semibold text-foreground">100%</span>
+                        <span className="text-lg font-semibold text-foreground">{(assignedCount ?? 0) > 0 ? '100%' : '0%'}</span>
                       </div>
                     </div>
                   </div>
@@ -186,10 +200,10 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="text-sm font-medium text-foreground">Acknowledged</h4>
-                        <p className="text-sm text-muted-foreground mt-1">119 people</p>
+                        <p className="text-sm text-muted-foreground mt-1">{(acknowledgedCount ?? 0)} people</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-lg font-semibold text-foreground">96%</span>
+                        <span className="text-lg font-semibold text-foreground">{(assignedCount ?? 0) > 0 ? Math.round(((acknowledgedCount ?? 0) / (assignedCount ?? 0)) * 100) + '%' : '0%'}</span>
                       </div>
                     </div>
                   </div>
@@ -199,10 +213,10 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="text-sm font-medium text-foreground">Pending</h4>
-                        <p className="text-sm text-muted-foreground mt-1">5 people</p>
+                        <p className="text-sm text-muted-foreground mt-1">{(pendingCount ?? 0)} people</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-lg font-semibold text-white bg-red-600 px-2 py-1 rounded">4%</span>
+                        <span className="text-lg font-semibold text-white bg-red-600 px-2 py-1 rounded">{(assignedCount ?? 0) > 0 ? Math.round(((pendingCount ?? 0) / (assignedCount ?? 0)) * 100) + '%' : '0%'}</span>
                       </div>
                     </div>
                   </div>
@@ -218,17 +232,17 @@ const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({
             Cancel
           </Button>
           <div className="flex space-x-3">
-            <Button 
+            <Button
               onClick={onAcknowledge}
               className="bg-foreground hover:bg-muted-foreground"
             >
               I acknowledge
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={onSendReminders}
             >
-              Send remainders (HR)
+              Send reminders (HR)
             </Button>
           </div>
         </div>

@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
+import { useOverdueEmployees } from '@/hooks/hr/useOverdueEmployees';
 
 interface EscalateAcknowledgementsModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface EscalateAcknowledgementsModalProps {
     policy: string;
     org: string;
     overdue: number;
+    policy_id?: string;
   };
 }
 
@@ -28,27 +30,8 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
   const [escalationNote, setEscalationNote] = useState('');
   const [ccManager, setCcManager] = useState(false);
 
-  // Mock data for people with overdue acknowledgements
-  const overduePeople = [
-    {
-      id: 1,
-      name: 'Jane Doe',
-      email: 'jane.doe@company.com',
-      daysOverdue: 5
-    },
-    {
-      id: 2,
-      name: 'John Smith',
-      email: 'john.smith@company.com',
-      daysOverdue: 3
-    },
-    {
-      id: 3,
-      name: 'Alice Johnson',
-      email: 'alice.johnson@company.com',
-      daysOverdue: 2
-    }
-  ];
+  // Real data for people with overdue acknowledgements
+  const { data: overdueEmployees = [], isLoading } = useOverdueEmployees(policy?.policy_id);
 
   if (!isOpen || !policy) return null;
 
@@ -82,23 +65,37 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
           {/* People with Overdue Acknowledgements */}
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">
-              People with Overdue Acknowledgements ({policy.overdue})
+              People with Overdue Acknowledgements ({isLoading ? '—' : overdueEmployees.length})
             </h3>
-            <div className="space-y-3">
-              {overduePeople.map((person) => (
-                <div key={person.id} className="bg-card border border-border rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-foreground">{person.name}</h4>
-                      <p className="text-sm text-muted-foreground">{person.email}</p>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : overdueEmployees.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No overdue employees found for this policy.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {overdueEmployees.map((emp) => {
+                  const fullName = `${emp.employee.first_name} ${emp.employee.last_name}`;
+                  const email = emp.employee.email || '—';
+                  return (
+                    <div key={emp.employee_id} className="bg-card border border-border rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-foreground">{fullName}</h4>
+                          <p className="text-sm text-muted-foreground">{email}</p>
+                        </div>
+                        <Badge variant="destructive" className="bg-red-600 text-white">
+                          {emp.daysOverdue}d
+                        </Badge>
+                      </div>
                     </div>
-                    <Badge variant="destructive" className="bg-red-600 text-white">
-                      {person.daysOverdue}d
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Escalation Note */}
@@ -130,13 +127,13 @@ const EscalateAcknowledgementsModal: React.FC<EscalateAcknowledgementsModalProps
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={onScheduleForLater}
             variant="outline"
           >
             Schedule for later
           </Button>
-          <Button 
+          <Button
             onClick={onSendEscalation}
             className="bg-foreground hover:bg-muted-foreground"
           >

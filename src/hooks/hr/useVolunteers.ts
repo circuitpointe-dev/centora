@@ -20,19 +20,26 @@ export interface Volunteer {
     updated_at: string;
 }
 
-export function useVolunteers() {
+export function useVolunteers(search?: string) {
     const { user } = useAuth();
 
     return useQuery({
-        queryKey: ['hr-volunteers', user?.org_id],
+        queryKey: ['hr-volunteers', user?.org_id, search],
         queryFn: async (): Promise<Volunteer[]> => {
             if (!user?.org_id) return [];
 
-            const { data, error } = await supabase
+            let query = supabase
                 .from('hr_volunteers')
                 .select('*')
-                .eq('org_id', user.org_id)
-                .order('created_at', { ascending: false });
+                .eq('org_id', user.org_id);
+
+            if (search && search.trim()) {
+                query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`);
+            }
+
+            query = query.order('created_at', { ascending: false });
+
+            const { data, error } = await query;
 
             if (error && error.code !== 'PGRST116') throw error;
             return (data || []) as Volunteer[];

@@ -8,13 +8,23 @@ import { X, TrendingUp, ChevronUp, ChevronDown } from 'lucide-react';
 interface SalarySimulationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApprove: () => void;
+  onApprove: (data: { currentSalary: number; proposedSalary: number; compaRatio: number }) => void;
+  employeeName?: string;
+  roleLevel?: string;
+  bandMin?: number | null;
+  bandMax?: number | null;
+  marketMedian?: number | null;
 }
 
 const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
   isOpen,
   onClose,
-  onApprove
+  onApprove,
+  employeeName = '—',
+  roleLevel = '—',
+  bandMin = 7000000,
+  bandMax = 9500000,
+  marketMedian = 8500000,
 }) => {
   const [currentSalary, setCurrentSalary] = useState(7425000);
   const [proposedSalary, setProposedSalary] = useState(8250000);
@@ -28,14 +38,14 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
   };
 
   const calculateCompaRatio = (salary: number) => {
-    const bandMid = 8250000; // Mid-point of 7.0m - 9.5m band
+    const bandMid = bandMin && bandMax ? (bandMin + bandMax) / 2 : 1;
     return (salary / bandMid).toFixed(2);
   };
 
   const calculateMarketPercentile = (salary: number) => {
     // Simplified calculation - in real app this would be based on market data
-    const min = 7000000;
-    const max = 9500000;
+    const min = bandMin ?? 0;
+    const max = bandMax ?? Math.max(min + 1, min);
     const percentile = Math.round(((salary - min) / (max - min)) * 100);
     return `~${percentile}th`;
   };
@@ -47,16 +57,16 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
   };
 
   const getPositionInBand = (salary: number) => {
-    const min = 7000000;
-    const max = 9500000;
+    const min = bandMin ?? 0;
+    const max = bandMax ?? Math.max(min + 1, min);
     const position = ((salary - min) / (max - min)) * 100;
     return Math.round(position);
   };
 
   const getCompetitivePositioning = (salary: number) => {
-    const marketMedian = 8500000;
-    if (salary < marketMedian) return 'Below market median';
-    if (salary > marketMedian) return 'Above market median';
+    const marketMedianVal = marketMedian ?? 0;
+    if (salary < marketMedianVal) return 'Below market median';
+    if (salary > marketMedianVal) return 'Above market median';
     return 'At market median';
   };
 
@@ -95,11 +105,11 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Employee</label>
-              <Input value="John Doe" readOnly className="bg-muted/50" />
+              <Input value={employeeName} readOnly className="bg-muted/50" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Role & Level</label>
-              <Input value="SE II (L5)" readOnly className="bg-muted/50" />
+              <Input value={roleLevel} readOnly className="bg-muted/50" />
             </div>
           </div>
 
@@ -156,8 +166,8 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
                   />
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>7.0m</span>
-                  <span>9.5m</span>
+                  <span>{(bandMin ?? 0).toLocaleString()}</span>
+                  <span>{(bandMax ?? 0).toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -216,8 +226,8 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
                   />
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>7.0m</span>
-                  <span>9.5m</span>
+                  <span>{(bandMin ?? 0).toLocaleString()}</span>
+                  <span>{(bandMax ?? 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-center mt-2">
                   <Badge className="bg-foreground text-background text-xs">
@@ -264,8 +274,8 @@ const SalarySimulationModal: React.FC<SalarySimulationModalProps> = ({
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
-          <Button 
-            onClick={onApprove}
+          <Button
+            onClick={() => onApprove({ currentSalary, proposedSalary, compaRatio: parseFloat(calculateCompaRatio(proposedSalary)) })}
             className="bg-purple-600 hover:bg-purple-700"
           >
             Approve & apply

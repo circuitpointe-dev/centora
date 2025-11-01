@@ -7,9 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useEmployees } from '@/hooks/hr/useEmployees';
-import { useVolunteers } from '@/hooks/hr/useVolunteers';
+import { useCreateEmployee, useUpdateEmployee, useDeleteEmployee } from '@/hooks/hr/useEmployeeCRUD';
+import { useVolunteers, useCreateVolunteer, useUpdateVolunteer, useDeleteVolunteer, Volunteer } from '@/hooks/hr/useVolunteers';
 import { useBoardMembers } from '@/hooks/hr/useBoardMembers';
 import { useCommittees, useCommitteeMembers } from '@/hooks/hr/useCommittees';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Search,
   Filter,
@@ -25,7 +30,8 @@ import {
   Users,
   ChevronUp,
   ChevronDown,
-  FileText
+  FileText,
+  X
 } from 'lucide-react';
 
 const PeopleManagement = () => {
@@ -35,11 +41,61 @@ const PeopleManagement = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'person'>('list');
   const [expandedCommittees, setExpandedCommittees] = useState<Set<string>>(new Set(['audit']));
+  const [staffSearch, setStaffSearch] = useState('');
+  const [volunteerSearch, setVolunteerSearch] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isVolunteerFilterOpen, setIsVolunteerFilterOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isVolunteerCreateOpen, setIsVolunteerCreateOpen] = useState(false);
+  const [isVolunteerEditOpen, setIsVolunteerEditOpen] = useState(false);
+  const [isVolunteerViewOpen, setIsVolunteerViewOpen] = useState(false);
+  const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
+  const [isBulkOpen, setIsBulkOpen] = useState(false);
+  const [isVolunteerBulkOpen, setIsVolunteerBulkOpen] = useState(false);
+  const [filters, setFilters] = useState({ department: '', status: '' });
+  const [volunteerFilters, setVolunteerFilters] = useState({ status: '', skills: '' });
+  const [newDept, setNewDept] = useState('');
+  const [showNewDept, setShowNewDept] = useState(false);
+  const [newPosition, setNewPosition] = useState('');
+  const [showNewPosition, setShowNewPosition] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    employee_id: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    department: '',
+    position: '',
+    employment_type: 'full-time',
+    hire_date: '',
+    status: 'active'
+  });
+  const [volunteerForm, setVolunteerForm] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    skills: [] as string[],
+    availability: [] as string[],
+    status: 'active',
+    join_date: ''
+  });
+  const [newSkill, setNewSkill] = useState('');
+  const [newAvailability, setNewAvailability] = useState('');
 
-  // Live staff directory
-  const { data: employees, isLoading: employeesLoading } = useEmployees();
+  // Live staff directory with search
+  const { data: employees, isLoading: employeesLoading } = useEmployees(staffSearch);
+  const createEmployee = useCreateEmployee();
+  const updateEmployee = useUpdateEmployee();
+  const deleteEmployee = useDeleteEmployee();
   const staffData = useMemo(() => {
-    return (employees || []).map((e) => ({
+    let filtered = employees || [];
+    if (filters.department) {
+      filtered = filtered.filter(e => e.department === filters.department);
+    }
+    if (filters.status) {
+      filtered = filtered.filter(e => (e.status || 'active').toLowerCase() === filters.status.toLowerCase());
+    }
+    return filtered.map((e) => ({
       id: e.id as unknown as number,
       name: `${e.first_name} ${e.last_name}`.trim(),
       jobTitle: e.position || '—',
@@ -47,21 +103,39 @@ const PeopleManagement = () => {
       location: '—',
       manager: '—',
       status: (e.status || 'active').replace(/\b\w/g, c => c.toUpperCase()),
+      employee: e,
     }));
-  }, [employees]);
+  }, [employees, filters]);
 
   // Live data from database
-  const { data: volunteers, isLoading: volunteersLoading } = useVolunteers();
+  const { data: volunteers, isLoading: volunteersLoading } = useVolunteers(volunteerSearch);
+  const createVolunteer = useCreateVolunteer();
+  const updateVolunteer = useUpdateVolunteer();
+  const deleteVolunteer = useDeleteVolunteer();
+
   const volunteerData = useMemo(() => {
-    return (volunteers || []).map((v) => ({
+    let filtered = volunteers || [];
+
+    // Apply filters
+    if (volunteerFilters.status) {
+      filtered = filtered.filter(v => v.status === volunteerFilters.status.toLowerCase());
+    }
+    if (volunteerFilters.skills) {
+      filtered = filtered.filter(v =>
+        v.skills?.some(skill => skill.toLowerCase().includes(volunteerFilters.skills.toLowerCase()))
+      );
+    }
+
+    return filtered.map((v) => ({
       id: v.id as unknown as number,
+      volunteer: v, // Store full volunteer object for editing
       name: `${v.first_name} ${v.last_name}`.trim(),
       skills: v.skills || [],
       availability: v.availability || [],
       assignments: v.assignments_count || 0,
       status: (v.status || 'active').replace(/\b\w/g, c => c.toUpperCase()),
     }));
-  }, [volunteers]);
+  }, [volunteers, volunteerFilters]);
 
   // Legacy mock data removed - using live data above
   const volunteerData_OLD = [
@@ -450,19 +524,29 @@ const PeopleManagement = () => {
                     <input
                       type="text"
                       placeholder="Search..."
+                      value={staffSearch}
+                      onChange={(e) => setStaffSearch(e.target.value)}
                       className="w-64 px-4 py-2 pl-10 pr-4 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                     />
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
-                  <Button variant="outline" className="flex items-center space-x-2">
+                  <Button variant="outline" className="flex items-center space-x-2" onClick={() => setIsFilterOpen(true)}>
                     <Filter className="h-4 w-4" />
                     <span>Filter</span>
                   </Button>
-                  <Button variant="outline" className="flex items-center space-x-2">
+                  <Button variant="outline" className="flex items-center space-x-2" onClick={() => setIsBulkOpen(true)}>
                     <Upload className="h-4 w-4" />
                     <span>Bulk upload</span>
                   </Button>
-                  <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2">
+                  <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2" onClick={() => {
+                    // Auto-generate employee ID
+                    const existingIds = (employees || []).map(e => e.employee_id).filter(Boolean);
+                    let nextNum = 1;
+                    while (existingIds.includes(`EMP-${String(nextNum).padStart(4, '0')}`)) nextNum++;
+                    const newId = `EMP-${String(nextNum).padStart(4, '0')}`;
+                    setCreateForm({ employee_id: newId, first_name: '', last_name: '', email: '', department: '', position: '', employment_type: 'full-time', hire_date: '', status: 'active' });
+                    setIsCreateOpen(true);
+                  }}>
                     <Plus className="h-4 w-4" />
                     <span>Add new staff</span>
                   </Button>
@@ -491,7 +575,11 @@ const PeopleManagement = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {staffData.map((staff) => (
+                    {employeesLoading ? (
+                      <tr><td className="py-6 px-4 text-muted-foreground" colSpan={8}>Loading…</td></tr>
+                    ) : staffData.length === 0 ? (
+                      <tr><td className="py-6 px-4 text-muted-foreground" colSpan={8}>No staff found.</td></tr>
+                    ) : staffData.map((staff) => (
                       <tr key={staff.id} className="border-b border-border hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <Checkbox
@@ -512,14 +600,15 @@ const PeopleManagement = () => {
                             variant="outline"
                             size="sm"
                             className="flex items-center space-x-1"
-                            onClick={() => navigate('/dashboard/hr/staff-detail')}
+                            onClick={() => navigate(`/dashboard/hr/staff-detail?employeeId=${staff.employee.id}`)}
                           >
                             <Eye className="h-4 w-4" />
                             <span>View</span>
                           </Button>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                    }
                   </tbody>
                 </table>
               </div>
@@ -527,7 +616,7 @@ const PeopleManagement = () => {
               {/* Pagination */}
               <div className="flex items-center justify-between mt-6">
                 <div className="text-sm text-muted-foreground">
-                  Showing 1 to 8 of 120 staff directory lists
+                  Showing 1 to {staffData.length} of {staffData.length} staff directory lists
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button variant="outline" size="sm" className="flex items-center space-x-1">
@@ -552,22 +641,47 @@ const PeopleManagement = () => {
                 <CardTitle className="text-lg font-semibold">Volunteer management lists</CardTitle>
                 <div className="flex items-center space-x-4">
                   <div className="relative">
-                    <input
+                    <Input
                       type="text"
-                      placeholder="Search...."
-                      className="w-64 px-4 py-2 pl-10 pr-4 border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                      placeholder="Search..."
+                      value={volunteerSearch}
+                      onChange={(e) => setVolunteerSearch(e.target.value)}
+                      className="w-64 pl-10"
                     />
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
-                  <Button variant="outline" className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center space-x-2"
+                    onClick={() => setIsVolunteerFilterOpen(true)}
+                  >
                     <Filter className="h-4 w-4" />
                     <span>Filter</span>
                   </Button>
-                  <Button variant="outline" className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center space-x-2"
+                    onClick={() => setIsVolunteerBulkOpen(true)}
+                  >
                     <Upload className="h-4 w-4" />
                     <span>Bulk upload</span>
                   </Button>
-                  <Button className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2">
+                  <Button
+                    className="bg-violet-600 hover:bg-violet-700 flex items-center space-x-2"
+                    onClick={() => {
+                      setVolunteerForm({
+                        first_name: '',
+                        last_name: '',
+                        email: '',
+                        phone: '',
+                        skills: [],
+                        availability: [],
+                        status: 'active',
+                        join_date: ''
+                      });
+                      setIsVolunteerCreateOpen(true);
+                    }}
+                  >
                     <Plus className="h-4 w-4" />
                     <span>Add volunteer</span>
                   </Button>
@@ -627,15 +741,52 @@ const PeopleManagement = () => {
                           {getStatusBadge(volunteer.status)}
                         </td>
                         <td className="py-3 px-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center space-x-1"
-                            onClick={() => navigate('/dashboard/hr/volunteer-profile')}
-                          >
-                            <Eye className="h-4 w-4" />
-                            <span>View</span>
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
+                              onClick={() => {
+                                setSelectedVolunteer(volunteer.volunteer);
+                                setIsVolunteerViewOpen(true);
+                              }}
+                            >
+                              <Eye className="h-4 w-4" />
+                              <span>View</span>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedVolunteer(volunteer.volunteer);
+                                setVolunteerForm({
+                                  first_name: volunteer.volunteer.first_name || '',
+                                  last_name: volunteer.volunteer.last_name || '',
+                                  email: volunteer.volunteer.email || '',
+                                  phone: volunteer.volunteer.phone || '',
+                                  skills: volunteer.volunteer.skills || [],
+                                  availability: volunteer.volunteer.availability || [],
+                                  status: volunteer.volunteer.status || 'active',
+                                  join_date: volunteer.volunteer.join_date || ''
+                                });
+                                setIsVolunteerEditOpen(true);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                if (confirm(`Are you sure you want to delete ${volunteer.name}?`)) {
+                                  deleteVolunteer.mutate(volunteer.volunteer.id);
+                                }
+                              }}
+                              disabled={deleteVolunteer.isPending}
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -644,21 +795,31 @@ const PeopleManagement = () => {
               </div>
 
               {/* Pagination */}
-              <div className="flex items-center justify-between mt-6">
-                <div className="text-sm text-muted-foreground">
-                  Showing 1 to 8 of 120 volunteer management lists
+              {volunteersLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <p className="text-sm text-muted-foreground">Loading volunteers...</p>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm" className="flex items-center space-x-1">
-                    <ChevronLeft className="h-4 w-4" />
-                    <span>Previous</span>
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex items-center space-x-1">
-                    <span>Next</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+              ) : volunteerData.length === 0 ? (
+                <div className="flex items-center justify-center py-8">
+                  <p className="text-sm text-muted-foreground">No volunteers found</p>
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-center justify-between mt-6">
+                  <div className="text-sm text-muted-foreground">
+                    Showing 1 to {volunteerData.length} of {volunteerData.length} volunteer management lists
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                      <ChevronLeft className="h-4 w-4" />
+                      <span>Previous</span>
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                      <span>Next</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -969,6 +1130,832 @@ const PeopleManagement = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Filter Modal */}
+      <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Filter Staff</DialogTitle>
+            <DialogDescription>Filter staff by department and status</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Department</Label>
+              <Select value={filters.department || 'all'} onValueChange={(v) => setFilters(prev => ({ ...prev, department: v === 'all' ? '' : v }))}>
+                <SelectTrigger><SelectValue placeholder="All departments" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All departments</SelectItem>
+                  {[...new Set((employees || []).map(e => e.department).filter(Boolean))].length > 0 ? (
+                    [...new Set((employees || []).map(e => e.department).filter(Boolean))].map(d => (
+                      <SelectItem key={d} value={d || 'unknown'}>{d}</SelectItem>
+                    ))
+                  ) : null}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Status</Label>
+              <Select value={filters.status || 'all'} onValueChange={(v) => setFilters(prev => ({ ...prev, status: v === 'all' ? '' : v }))}>
+                <SelectTrigger><SelectValue placeholder="All statuses" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All statuses</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="terminated">Terminated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setFilters({ department: '', status: '' }); setIsFilterOpen(false); }}>Clear</Button>
+            <Button onClick={() => setIsFilterOpen(false)}>Apply</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Employee Modal */}
+      <Dialog open={isCreateOpen} onOpenChange={(open) => {
+        setIsCreateOpen(open);
+        if (!open) {
+          setShowNewDept(false);
+          setShowNewPosition(false);
+          setNewDept('');
+          setNewPosition('');
+        }
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add New Staff</DialogTitle>
+            <DialogDescription>Create a new employee record in the system</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Employee ID *</Label>
+                <Input value={createForm.employee_id || ''} onChange={(e) => setCreateForm(prev => ({ ...prev, employee_id: e.target.value }))} placeholder="EMP-0001" />
+                <p className="text-xs text-muted-foreground mt-1">Auto-generated, but can be customized</p>
+              </div>
+              <div>
+                <Label>Hire Date</Label>
+                <Input type="date" value={createForm.hire_date || ''} onChange={(e) => setCreateForm(prev => ({ ...prev, hire_date: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>First Name *</Label>
+                <Input value={createForm.first_name || ''} onChange={(e) => setCreateForm(prev => ({ ...prev, first_name: e.target.value }))} />
+              </div>
+              <div>
+                <Label>Last Name *</Label>
+                <Input value={createForm.last_name || ''} onChange={(e) => setCreateForm(prev => ({ ...prev, last_name: e.target.value }))} />
+              </div>
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input type="email" value={createForm.email || ''} onChange={(e) => setCreateForm(prev => ({ ...prev, email: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Department</Label>
+                {!showNewDept ? (
+                  <div className="space-y-2">
+                    <Select value={createForm.department || ''} onValueChange={(v) => {
+                      if (v === '__add_new__') {
+                        setShowNewDept(true);
+                      } else {
+                        setCreateForm(prev => ({ ...prev, department: v }));
+                      }
+                    }}>
+                      <SelectTrigger><SelectValue placeholder="Select or add department" /></SelectTrigger>
+                      <SelectContent>
+                        {[...new Set((employees || []).map(e => e.department).filter(Boolean))].length > 0 ? (
+                          [...new Set((employees || []).map(e => e.department).filter(Boolean))].map(d => (
+                            <SelectItem key={d} value={d}>{d}</SelectItem>
+                          ))
+                        ) : null}
+                        <SelectItem value="__add_new__" className="font-medium text-violet-600">+ Add New Department</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Input value={newDept} onChange={(e) => setNewDept(e.target.value)} placeholder="Enter new department name" />
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => {
+                        if (newDept.trim()) {
+                          setCreateForm(prev => ({ ...prev, department: newDept.trim() }));
+                          setShowNewDept(false);
+                          setNewDept('');
+                        }
+                      }}>Add</Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setShowNewDept(false); setNewDept(''); }}>Cancel</Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label>Position</Label>
+                {!showNewPosition ? (
+                  <div className="space-y-2">
+                    <Select value={createForm.position || ''} onValueChange={(v) => {
+                      if (v === '__add_new__') {
+                        setShowNewPosition(true);
+                      } else {
+                        setCreateForm(prev => ({ ...prev, position: v }));
+                      }
+                    }}>
+                      <SelectTrigger><SelectValue placeholder="Select or add position" /></SelectTrigger>
+                      <SelectContent>
+                        {[...new Set((employees || []).map(e => e.position).filter(Boolean))].length > 0 ? (
+                          [...new Set((employees || []).map(e => e.position).filter(Boolean))].map(p => (
+                            <SelectItem key={p} value={p}>{p}</SelectItem>
+                          ))
+                        ) : null}
+                        <SelectItem value="__add_new__" className="font-medium text-violet-600">+ Add New Position</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Input value={newPosition} onChange={(e) => setNewPosition(e.target.value)} placeholder="Enter new position name" />
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => {
+                        if (newPosition.trim()) {
+                          setCreateForm(prev => ({ ...prev, position: newPosition.trim() }));
+                          setShowNewPosition(false);
+                          setNewPosition('');
+                        }
+                      }}>Add</Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setShowNewPosition(false); setNewPosition(''); }}>Cancel</Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Employment Type</Label>
+                <Select value={createForm.employment_type || 'full-time'} onValueChange={(v) => setCreateForm(prev => ({ ...prev, employment_type: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="full-time">Full-time</SelectItem>
+                    <SelectItem value="part-time">Part-time</SelectItem>
+                    <SelectItem value="contract">Contract</SelectItem>
+                    <SelectItem value="intern">Intern</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Status</Label>
+                <Select value={createForm.status || 'active'} onValueChange={(v) => setCreateForm(prev => ({ ...prev, status: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setIsCreateOpen(false);
+              setCreateForm({ employee_id: '', first_name: '', last_name: '', email: '', department: '', position: '', employment_type: 'full-time', hire_date: '', status: 'active' });
+              setShowNewDept(false);
+              setShowNewPosition(false);
+              setNewDept('');
+              setNewPosition('');
+            }}>Cancel</Button>
+            <Button onClick={() => {
+              if (!createForm.employee_id || !createForm.first_name || !createForm.last_name) return;
+              createEmployee.mutate(createForm as any, {
+                onSuccess: () => {
+                  setIsCreateOpen(false);
+                  setCreateForm({ employee_id: '', first_name: '', last_name: '', email: '', department: '', position: '', employment_type: 'full-time', hire_date: '', status: 'active' });
+                  setShowNewDept(false);
+                  setShowNewPosition(false);
+                  setNewDept('');
+                  setNewPosition('');
+                }
+              });
+            }} disabled={createEmployee.isPending || !createForm.employee_id || !createForm.first_name || !createForm.last_name}>
+              {createEmployee.isPending ? 'Creating…' : 'Create'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Upload Modal */}
+      <Dialog open={isBulkOpen} onOpenChange={setIsBulkOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bulk Upload Staff</DialogTitle>
+            <DialogDescription>Upload a CSV file to import multiple employees at once</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">Upload a CSV file with columns: employee_id, first_name, last_name, email, department, position, employment_type, hire_date, status</p>
+            <div>
+              <Label>CSV File</Label>
+              <Input type="file" accept=".csv" onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const text = await file.text();
+                const lines = text.split('\n').filter(l => l.trim());
+                const headers = lines[0].split(',').map(h => h.trim());
+                const rows = lines.slice(1).map(line => {
+                  const values = line.split(',').map(v => v.trim());
+                  const obj: any = {};
+                  headers.forEach((h, i) => { obj[h] = values[i] || ''; });
+                  return obj;
+                });
+                for (const row of rows) {
+                  try {
+                    await createEmployee.mutateAsync({
+                      employee_id: row.employee_id || `EMP-${Date.now()}`,
+                      first_name: row.first_name || '',
+                      last_name: row.last_name || '',
+                      email: row.email || undefined,
+                      department: row.department || undefined,
+                      position: row.position || undefined,
+                      employment_type: row.employment_type || 'full-time',
+                      hire_date: row.hire_date || undefined,
+                      status: row.status || 'active',
+                    } as any);
+                  } catch (_) { }
+                }
+                setIsBulkOpen(false);
+              }} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsBulkOpen(false)}>Cancel</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Volunteer Filter Modal */}
+      <Dialog open={isVolunteerFilterOpen} onOpenChange={setIsVolunteerFilterOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Filter Volunteers</DialogTitle>
+            <DialogDescription>Filter volunteers by status and skills</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Status</Label>
+              <Select value={volunteerFilters.status || 'all'} onValueChange={(v) => setVolunteerFilters(prev => ({ ...prev, status: v === 'all' ? '' : v }))}>
+                <SelectTrigger><SelectValue placeholder="All statuses" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All statuses</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Skills (contains)</Label>
+              <Input
+                value={volunteerFilters.skills}
+                onChange={(e) => setVolunteerFilters(prev => ({ ...prev, skills: e.target.value }))}
+                placeholder="Search by skill..."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setVolunteerFilters({ status: '', skills: '' }); setIsVolunteerFilterOpen(false); }}>Clear</Button>
+            <Button onClick={() => setIsVolunteerFilterOpen(false)}>Apply</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Volunteer Modal */}
+      <Dialog open={isVolunteerCreateOpen} onOpenChange={setIsVolunteerCreateOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add New Volunteer</DialogTitle>
+            <DialogDescription>Create a new volunteer record in the system</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>First Name *</Label>
+                <Input
+                  value={volunteerForm.first_name}
+                  onChange={(e) => setVolunteerForm(prev => ({ ...prev, first_name: e.target.value }))}
+                  placeholder="John"
+                />
+              </div>
+              <div>
+                <Label>Last Name *</Label>
+                <Input
+                  value={volunteerForm.last_name}
+                  onChange={(e) => setVolunteerForm(prev => ({ ...prev, last_name: e.target.value }))}
+                  placeholder="Doe"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={volunteerForm.email}
+                  onChange={(e) => setVolunteerForm(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="john.doe@example.com"
+                />
+              </div>
+              <div>
+                <Label>Phone</Label>
+                <Input
+                  type="tel"
+                  value={volunteerForm.phone}
+                  onChange={(e) => setVolunteerForm(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="+1234567890"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Join Date</Label>
+              <Input
+                type="date"
+                value={volunteerForm.join_date}
+                onChange={(e) => setVolunteerForm(prev => ({ ...prev, join_date: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label>Skills</Label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    placeholder="Enter skill and press Add"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newSkill.trim()) {
+                        e.preventDefault();
+                        setVolunteerForm(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
+                        setNewSkill('');
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (newSkill.trim()) {
+                        setVolunteerForm(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
+                        setNewSkill('');
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {volunteerForm.skills.map((skill, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => setVolunteerForm(prev => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }))}
+                        className="ml-1 hover:text-destructive"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <Label>Availability</Label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    value={newAvailability}
+                    onChange={(e) => setNewAvailability(e.target.value)}
+                    placeholder="e.g., Weekends, Morning, Evening"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newAvailability.trim()) {
+                        e.preventDefault();
+                        setVolunteerForm(prev => ({ ...prev, availability: [...prev.availability, newAvailability.trim()] }));
+                        setNewAvailability('');
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (newAvailability.trim()) {
+                        setVolunteerForm(prev => ({ ...prev, availability: [...prev.availability, newAvailability.trim()] }));
+                        setNewAvailability('');
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {volunteerForm.availability.map((availability, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {availability}
+                      <button
+                        type="button"
+                        onClick={() => setVolunteerForm(prev => ({ ...prev, availability: prev.availability.filter((_, i) => i !== index) }))}
+                        className="ml-1 hover:text-destructive"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <Label>Status</Label>
+              <Select
+                value={volunteerForm.status}
+                onValueChange={(v) => setVolunteerForm(prev => ({ ...prev, status: v }))}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsVolunteerCreateOpen(false)}>Cancel</Button>
+            <Button
+              onClick={async () => {
+                if (!volunteerForm.first_name || !volunteerForm.last_name || createVolunteer.isPending) return;
+                try {
+                  await createVolunteer.mutateAsync({
+                    first_name: volunteerForm.first_name,
+                    last_name: volunteerForm.last_name,
+                    email: volunteerForm.email || undefined,
+                    phone: volunteerForm.phone || undefined,
+                    skills: volunteerForm.skills.length > 0 ? volunteerForm.skills : undefined,
+                    availability: volunteerForm.availability.length > 0 ? volunteerForm.availability : undefined,
+                    status: volunteerForm.status,
+                    join_date: volunteerForm.join_date || undefined,
+                  });
+                  setIsVolunteerCreateOpen(false);
+                  setVolunteerForm({
+                    first_name: '',
+                    last_name: '',
+                    email: '',
+                    phone: '',
+                    skills: [],
+                    availability: [],
+                    status: 'active',
+                    join_date: ''
+                  });
+                } catch (_) { }
+              }}
+              disabled={createVolunteer.isPending || !volunteerForm.first_name || !volunteerForm.last_name}
+            >
+              {createVolunteer.isPending ? 'Creating…' : 'Create'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Volunteer Modal */}
+      <Dialog open={isVolunteerEditOpen} onOpenChange={setIsVolunteerEditOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Volunteer</DialogTitle>
+            <DialogDescription>Update volunteer information</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>First Name *</Label>
+                <Input
+                  value={volunteerForm.first_name}
+                  onChange={(e) => setVolunteerForm(prev => ({ ...prev, first_name: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label>Last Name *</Label>
+                <Input
+                  value={volunteerForm.last_name}
+                  onChange={(e) => setVolunteerForm(prev => ({ ...prev, last_name: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={volunteerForm.email}
+                  onChange={(e) => setVolunteerForm(prev => ({ ...prev, email: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label>Phone</Label>
+                <Input
+                  type="tel"
+                  value={volunteerForm.phone}
+                  onChange={(e) => setVolunteerForm(prev => ({ ...prev, phone: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Join Date</Label>
+              <Input
+                type="date"
+                value={volunteerForm.join_date}
+                onChange={(e) => setVolunteerForm(prev => ({ ...prev, join_date: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label>Skills</Label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    placeholder="Enter skill and press Add"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newSkill.trim()) {
+                        e.preventDefault();
+                        setVolunteerForm(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
+                        setNewSkill('');
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (newSkill.trim()) {
+                        setVolunteerForm(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
+                        setNewSkill('');
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {volunteerForm.skills.map((skill, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => setVolunteerForm(prev => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }))}
+                        className="ml-1 hover:text-destructive"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <Label>Availability</Label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    value={newAvailability}
+                    onChange={(e) => setNewAvailability(e.target.value)}
+                    placeholder="e.g., Weekends, Morning, Evening"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newAvailability.trim()) {
+                        e.preventDefault();
+                        setVolunteerForm(prev => ({ ...prev, availability: [...prev.availability, newAvailability.trim()] }));
+                        setNewAvailability('');
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (newAvailability.trim()) {
+                        setVolunteerForm(prev => ({ ...prev, availability: [...prev.availability, newAvailability.trim()] }));
+                        setNewAvailability('');
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {volunteerForm.availability.map((availability, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {availability}
+                      <button
+                        type="button"
+                        onClick={() => setVolunteerForm(prev => ({ ...prev, availability: prev.availability.filter((_, i) => i !== index) }))}
+                        className="ml-1 hover:text-destructive"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <Label>Status</Label>
+              <Select
+                value={volunteerForm.status}
+                onValueChange={(v) => setVolunteerForm(prev => ({ ...prev, status: v }))}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsVolunteerEditOpen(false)}>Cancel</Button>
+            <Button
+              onClick={async () => {
+                if (!selectedVolunteer || !volunteerForm.first_name || !volunteerForm.last_name || updateVolunteer.isPending) return;
+                try {
+                  await updateVolunteer.mutateAsync({
+                    id: selectedVolunteer.id,
+                    updates: {
+                      first_name: volunteerForm.first_name,
+                      last_name: volunteerForm.last_name,
+                      email: volunteerForm.email || undefined,
+                      phone: volunteerForm.phone || undefined,
+                      skills: volunteerForm.skills.length > 0 ? volunteerForm.skills : undefined,
+                      availability: volunteerForm.availability.length > 0 ? volunteerForm.availability : undefined,
+                      status: volunteerForm.status,
+                      join_date: volunteerForm.join_date || undefined,
+                    }
+                  });
+                  setIsVolunteerEditOpen(false);
+                  setSelectedVolunteer(null);
+                } catch (_) { }
+              }}
+              disabled={updateVolunteer.isPending || !volunteerForm.first_name || !volunteerForm.last_name}
+            >
+              {updateVolunteer.isPending ? 'Saving…' : 'Save Changes'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Upload Volunteers Modal */}
+      <Dialog open={isVolunteerBulkOpen} onOpenChange={setIsVolunteerBulkOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bulk Upload Volunteers</DialogTitle>
+            <DialogDescription>Upload a CSV file to import multiple volunteers at once</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">Upload a CSV file with columns: first_name, last_name, email, phone, skills (comma-separated), availability (comma-separated), status, join_date</p>
+            <div>
+              <Label>CSV File</Label>
+              <Input type="file" accept=".csv" onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const text = await file.text();
+                const lines = text.split('\n').filter(l => l.trim());
+                const headers = lines[0].split(',').map(h => h.trim());
+                const rows = lines.slice(1).map(line => {
+                  const values = line.split(',').map(v => v.trim());
+                  const obj: any = {};
+                  headers.forEach((h, i) => { obj[h] = values[i] || ''; });
+                  return obj;
+                });
+                for (const row of rows) {
+                  try {
+                    await createVolunteer.mutateAsync({
+                      first_name: row.first_name || '',
+                      last_name: row.last_name || '',
+                      email: row.email || undefined,
+                      phone: row.phone || undefined,
+                      skills: row.skills ? row.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
+                      availability: row.availability ? row.availability.split(',').map((a: string) => a.trim()).filter(Boolean) : undefined,
+                      status: row.status || 'active',
+                      join_date: row.join_date || undefined,
+                    });
+                  } catch (_) { }
+                }
+                setIsVolunteerBulkOpen(false);
+              }} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsVolunteerBulkOpen(false)}>Cancel</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Volunteer Modal */}
+      <Dialog open={isVolunteerViewOpen} onOpenChange={setIsVolunteerViewOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Volunteer Details</DialogTitle>
+            <DialogDescription>
+              {selectedVolunteer ? `${selectedVolunteer.first_name} ${selectedVolunteer.last_name}` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedVolunteer && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">First Name</Label>
+                  <p className="text-sm text-foreground mt-1">{selectedVolunteer.first_name}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Last Name</Label>
+                  <p className="text-sm text-foreground mt-1">{selectedVolunteer.last_name}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Email</Label>
+                  <p className="text-sm text-foreground mt-1">{selectedVolunteer.email || '—'}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Phone</Label>
+                  <p className="text-sm text-foreground mt-1">{selectedVolunteer.phone || '—'}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Status</Label>
+                  <div className="mt-1">
+                    {getStatusBadge(selectedVolunteer.status.replace(/\b\w/g, c => c.toUpperCase()))}
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Join Date</Label>
+                  <p className="text-sm text-foreground mt-1">
+                    {selectedVolunteer.join_date ? new Date(selectedVolunteer.join_date).toLocaleDateString() : '—'}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Assignments</Label>
+                  <p className="text-sm text-foreground mt-1">{selectedVolunteer.assignments_count || 0}</p>
+                </div>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Skills</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedVolunteer.skills && selectedVolunteer.skills.length > 0 ? (
+                    selectedVolunteer.skills.map((skill, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No skills listed</p>
+                  )}
+                </div>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Availability</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedVolunteer.availability && selectedVolunteer.availability.length > 0 ? (
+                    selectedVolunteer.availability.map((availability, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {availability}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No availability listed</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsVolunteerViewOpen(false)}>Close</Button>
+            {selectedVolunteer && (
+              <Button
+                onClick={() => {
+                  setIsVolunteerViewOpen(false);
+                  setVolunteerForm({
+                    first_name: selectedVolunteer.first_name || '',
+                    last_name: selectedVolunteer.last_name || '',
+                    email: selectedVolunteer.email || '',
+                    phone: selectedVolunteer.phone || '',
+                    skills: selectedVolunteer.skills || [],
+                    availability: selectedVolunteer.availability || [],
+                    status: selectedVolunteer.status || 'active',
+                    join_date: selectedVolunteer.join_date || ''
+                  });
+                  setIsVolunteerEditOpen(true);
+                }}
+                className="bg-violet-600 hover:bg-violet-700"
+              >
+                Edit Volunteer
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
