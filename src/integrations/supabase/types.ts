@@ -1,4 +1,3 @@
-Initialising login role...
 export type Json =
   | string
   | number
@@ -12,31 +11,6 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
-  }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
   }
   public: {
     Tables: {
@@ -2427,6 +2401,124 @@ export type Database = {
           },
         ]
       }
+      hr_employee_documents: {
+        Row: {
+          created_at: string | null
+          document_name: string
+          document_number: string | null
+          document_type: string
+          document_url: string | null
+          employee_id: string | null
+          expiry_date: string | null
+          id: string
+          is_expiring_soon: boolean | null
+          issue_date: string | null
+          org_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          document_name: string
+          document_number?: string | null
+          document_type: string
+          document_url?: string | null
+          employee_id?: string | null
+          expiry_date?: string | null
+          id?: string
+          is_expiring_soon?: boolean | null
+          issue_date?: string | null
+          org_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          document_name?: string
+          document_number?: string | null
+          document_type?: string
+          document_url?: string | null
+          employee_id?: string | null
+          expiry_date?: string | null
+          id?: string
+          is_expiring_soon?: boolean | null
+          issue_date?: string | null
+          org_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_employee_documents_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_employees: {
+        Row: {
+          created_at: string | null
+          department: string | null
+          email: string | null
+          employee_id: string
+          employment_type: string | null
+          first_name: string
+          hire_date: string | null
+          id: string
+          last_name: string
+          org_id: string | null
+          phone: string | null
+          position: string | null
+          profile_id: string | null
+          status: string | null
+          termination_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          employee_id: string
+          employment_type?: string | null
+          first_name: string
+          hire_date?: string | null
+          id?: string
+          last_name: string
+          org_id?: string | null
+          phone?: string | null
+          position?: string | null
+          profile_id?: string | null
+          status?: string | null
+          termination_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          employee_id?: string
+          employment_type?: string | null
+          first_name?: string
+          hire_date?: string | null
+          id?: string
+          last_name?: string
+          org_id?: string | null
+          phone?: string | null
+          position?: string | null
+          profile_id?: string | null
+          status?: string | null
+          termination_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_employees_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hr_learning_courses: {
         Row: {
           category: string | null
@@ -2476,6 +2568,63 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "hr_learning_courses_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_onboarding_checklists: {
+        Row: {
+          blockers: number | null
+          created_at: string | null
+          employee_id: string | null
+          id: string
+          manager: string | null
+          org_id: string | null
+          progress: number | null
+          role: string | null
+          start_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          blockers?: number | null
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          manager?: string | null
+          org_id?: string | null
+          progress?: number | null
+          role?: string | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          blockers?: number | null
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          manager?: string | null
+          org_id?: string | null
+          progress?: number | null
+          role?: string | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_onboarding_checklists_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "hr_employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_onboarding_checklists_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -2547,6 +2696,101 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_policies: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          document_url: string | null
+          id: string
+          org_id: string | null
+          title: string
+          updated_at: string | null
+          updated_at_date: string | null
+          version: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          document_url?: string | null
+          id?: string
+          org_id?: string | null
+          title: string
+          updated_at?: string | null
+          updated_at_date?: string | null
+          version?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          document_url?: string | null
+          id?: string
+          org_id?: string | null
+          title?: string
+          updated_at?: string | null
+          updated_at_date?: string | null
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_policies_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_policy_acknowledgments: {
+        Row: {
+          acknowledged_at: string | null
+          created_at: string | null
+          employee_id: string | null
+          id: string
+          last_reminded_at: string | null
+          org_id: string | null
+          policy_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          last_reminded_at?: string | null
+          org_id?: string | null
+          policy_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          last_reminded_at?: string | null
+          org_id?: string | null
+          policy_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_policy_acknowledgments_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_policy_acknowledgments_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "hr_policies"
             referencedColumns: ["id"]
           },
         ]
@@ -2656,6 +2900,166 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "hr_reference_checks_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_salary_benchmarks: {
+        Row: {
+          created_at: string | null
+          id: string
+          internal_band: string | null
+          location: string | null
+          market_p25: string | null
+          market_p50: string | null
+          market_p75: string | null
+          org_id: string | null
+          role_level: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          internal_band?: string | null
+          location?: string | null
+          market_p25?: string | null
+          market_p50?: string | null
+          market_p75?: string | null
+          org_id?: string | null
+          role_level: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          internal_band?: string | null
+          location?: string | null
+          market_p25?: string | null
+          market_p50?: string | null
+          market_p75?: string | null
+          org_id?: string | null
+          role_level?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_salary_benchmarks_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_salary_simulations: {
+        Row: {
+          compa_ratio: number | null
+          created_at: string | null
+          current_salary: number | null
+          employee_id: string | null
+          id: string
+          internal_band: string | null
+          location: string | null
+          market_p50: string | null
+          org_id: string | null
+          proposed_salary: number | null
+          role_level: string | null
+        }
+        Insert: {
+          compa_ratio?: number | null
+          created_at?: string | null
+          current_salary?: number | null
+          employee_id?: string | null
+          id?: string
+          internal_band?: string | null
+          location?: string | null
+          market_p50?: string | null
+          org_id?: string | null
+          proposed_salary?: number | null
+          role_level?: string | null
+        }
+        Update: {
+          compa_ratio?: number | null
+          created_at?: string | null
+          current_salary?: number | null
+          employee_id?: string | null
+          id?: string
+          internal_band?: string | null
+          location?: string | null
+          market_p50?: string | null
+          org_id?: string | null
+          proposed_salary?: number | null
+          role_level?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_salary_simulations_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "hr_employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_salary_simulations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_training_records: {
+        Row: {
+          certificate_url: string | null
+          completion_percentage: number | null
+          completion_status: string | null
+          created_at: string | null
+          employee_id: string | null
+          end_date: string | null
+          id: string
+          org_id: string | null
+          provider: string | null
+          start_date: string | null
+          training_name: string
+          training_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          certificate_url?: string | null
+          completion_percentage?: number | null
+          completion_status?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          end_date?: string | null
+          id?: string
+          org_id?: string | null
+          provider?: string | null
+          start_date?: string | null
+          training_name: string
+          training_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          certificate_url?: string | null
+          completion_percentage?: number | null
+          completion_status?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          end_date?: string | null
+          id?: string
+          org_id?: string | null
+          provider?: string | null
+          start_date?: string | null
+          training_name?: string
+          training_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_training_records_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -5725,9 +6129,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       app_role: ["org_admin", "org_member"],
@@ -5837,5 +6238,3 @@ export const Constants = {
     },
   },
 } as const
-A new version of Supabase CLI is available: v2.54.11 (currently installed v2.47.2)
-We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
